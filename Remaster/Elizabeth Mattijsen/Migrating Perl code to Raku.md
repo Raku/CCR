@@ -50,6 +50,6 @@ Summary
 
 Raku has matured in such a way that using Raku is now a viable approach to creating new, interactive projects.  Being able to use reliable and proven Perl language components aids in lowering the threshold for developers to use Raku, and it builds towards a situation where the sum of Perl and Raku becomes greater than its parts.
 
-Update February 2021
---------------------
+*Update February 2021*
+====================
 Since 1 August 2018, more than 7000 additional commits have been done to the Rakudo code base, about 600 module distributions have been added to the ecosystem, and another 3 books have been published.  [Comma, the Raku IDE](https://commaide.com) is now maturely available in a free Community Edition with a 3-month update cycle, as well as a subscription service with additional features in monthly updates.

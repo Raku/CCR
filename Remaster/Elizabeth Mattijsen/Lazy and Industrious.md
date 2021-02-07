@@ -38,7 +38,7 @@ if $needed {
 
 So if `$needed` is true, calling the `.execute` function will make the `$sth` become a real statemement handle after having made `$dbh` a real database handle. Isn't that great? Because if you didn't need it, all the elves doing the query preparation could be doing other things, and the elves making the database connection could **also** be doing other things. Not to mention the elves of the database being blissfully ignorant of your initial plan to make a database connnection at all!
 
-Of course, if you **did** need the database connection, it is always a good idea to tell the elves of the database that you're done. In Perl 6, this doesn't happen automatically, because Santa doesn't keep track of how much each elf is doing. Santa likes to delegate responsibility! You typically tell the database elves that you're done when you leave the section of code in which you needed the database handle.
+Of course, if you **did** need the database connection, it is always a good idea to tell the elves of the database that you're done. In Raku, this doesn't happen automatically, because Santa doesn't keep track of how much each elf is doing. Santa likes to delegate responsibility! You typically tell the database elves that you're done when you leave the section of code in which you needed the database handle.
 
 ```` raku
 LEAVE .disconnect with $dbh;

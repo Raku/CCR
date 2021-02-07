@@ -1,7 +1,7 @@
 Lazy and Industrious Elves
 ==========================
 
-Originally published at https://perl6advent.wordpress.com/2018/12/06/day-6-lazy-and-industrious-elves/ on 6 December 2018.
+*Originally published on [6 December 2018](https://perl6advent.wordpress.com/2018/12/06/day-6-lazy-and-industrious-elves/).*
 
 Christmas is always a busy time of the year for Santa. Fortunately, Santa has a lot of helpers. Always doing little jobs and chores, just to create the best holiday season experience there is to be!
 

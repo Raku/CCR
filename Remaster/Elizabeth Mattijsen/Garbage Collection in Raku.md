@@ -26,7 +26,7 @@ In Perl, if the value is an object (aka blessed), the `DESTROY` method will be c
 {
     my $a = Foo->new;
 }
-# $a->DESTROT called
+# $a->DESTROY called
 ````
 
 If no external resources are involved, timely destruction is just another way of managing memory used by a program. And you, as a programmer, shouldn’t need to care about how and when things get recycled. Having said that, timely destruction is a very nice feature to have if you need to deal with external resources, such as database handles (of which there are generally only a limited number provided by the database server). And reference counting can provide that.

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7]><html class="no-js iem7"  lang="en" dir="ltr"><![endif]-->
+<!--[if lte IE 6]><html class="no-js lt-ie9 lt-ie8 lt-ie7"  lang="en" dir="ltr"><![endif]-->
+<!--[if (IE 7)&(!IEMobile)]><html class="no-js lt-ie9 lt-ie8"  lang="en" dir="ltr"><![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"  lang="en" dir="ltr"><![endif]-->
+<!--[if (gte IE 9)|(gt IEMobile 7)]><!--><html class="no-js"  lang="en" dir="ltr" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# book: http://ogp.me/ns/book# profile: http://ogp.me/ns/profile# video: http://ogp.me/ns/video# product: http://ogp.me/ns/product# content: http://purl.org/rss/1.0/modules/content/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ rdfs: http://www.w3.org/2000/01/rdf-schema# sioc: http://rdfs.org/sioc/ns# sioct: http://rdfs.org/sioc/types# skos: http://www.w3.org/2004/02/skos/core# xsd: http://www.w3.org/2001/XMLSchema# schema: http://schema.org/"><!--<![endif]-->
+
+<head>
+  <!-- Adobe Digital Data integration -->
+  <script type="text/javascript">
+    var digitalData = {};
+  </script>
+    <script id="adobe_dtm" src="https://www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8" />
+<link href="https://opensource.com/rss.xml" rel="alternate" type="application/rss+xml" title="Opensource.com RSS" />
+<link rel="shortcut icon" href="https://opensource.com/sites/all/themes/opensource/favicon.ico" type="image/vnd.microsoft.icon" />
+<meta name="description" content="In the eighth article in this series comparing Perl 5 to Perl 6, learn about their differences in creating and handling exceptions." />
+<meta name="rating" content="general" />
+<meta name="referrer" content="no-referrer" />
+<meta name="generator" content="Drupal 7 (http://drupal.org)" />
+<link rel="canonical" href="https://opensource.com/article/18/11/failure-option-perl-6" />
+<link rel="shortlink" href="https://opensource.com/node/49826" />
+<meta name="revisit-after" content="1 day" />
+<meta property="og:site_name" content="Opensource.com" />
+<meta property="og:url" content="https://opensource.com/article/18/11/failure-option-perl-6" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Failure is an option in Perl 6" />
+<meta property="og:description" content="In the eighth article in this series comparing Perl 5 to Perl 6, learn about their differences in creating and handling exceptions." />
+<meta property="og:image" content="https://opensource.com/sites/default/files/lead-images/programming-code-keyboard-laptop.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@opensourceway" />
+<meta name="twitter:creator" content="@" />
+<meta name="twitter:title" content="Failure is an option in Perl 6" />
+<meta name="twitter:description" content="In the eighth article in this series comparing Perl 5 to Perl 6, learn about their differences in creating and handling exceptions." />
+<meta name="twitter:image" content="https://opensource.com/sites/default/files/lead-images/programming-code-keyboard-laptop.png" />
+  <title>Failure is an option in Perl 6 | Opensource.com</title>
+
+      <meta name="MobileOptimized" content="width">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="cleartype" content="on">
+
+  <link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_lQaZfjVpwP_oGNqdtWCSpJT1EMqXdMiU84ekLLxQnc4.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_ntCz7udh66prM85dlibL5cSl16uR5mFkmPYLsA2b56k.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_jxFjYlNIEjGhl1ZDngmG5vPMTzM4jP3dwxQjHLkTN_A.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_w8R-13eJnEJsif2OQPrWkKVVN4AuZJxI-s925NcYARQ.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_BRqtvNISSHnd_wBpEelIr145xd7L9bSKvGZhL6iKJw8.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_PxsPpITToy8ZnO0bJDA1TEC6bbFpGTfSWr2ZP8LuFYo.css" media="all" />
+  <script src="/sites/all/themes/opensource/js/use-typekit.js"></script>
+  <script>try{Typekit.load({ async: true });}catch(e){}</script>
+  <script src="https://opensource.com/sites/default/files/js/js_bHixdNqIm_fGV7c3IlqVJl-OQXz4T0rdcigI0kCjuGg.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_CwA9uD2kYGc1ubylea-Ul8iN5PWYS40GWBA4ue9Bo4w.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_tBWHhFjU_NjWsmd07Hrx5ScmFu-4-PJD_GwzNMH3UwA.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_1-nvUqaL5esR8x8JM30KpLqEPQEF6IzjWV9p7GgYQVY.js"></script>
+<script>(function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,"script","https://www.google-analytics.com/analytics.js","ga");ga("create", "UA-33294138-1", {"cookieDomain":".opensource.com"});ga("send", "pageview");</script>
+<script src="https://opensource.com/sites/default/files/js/js_rVcPYhZ5_LfvT-dWbCnRngMcccEhwUaw2iNYx0yXj_Q.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_KbByFnBctcQt9juhHXNabaQDr4mJAc1OExQYJ-HcyXk.js"></script>
+<script>jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"opensource","theme_token":"AshxVO42BGzxPZq7Ve7ybr4tSlr3H-PYhDn0rxACaZI","js":{"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets-spotlight.js":1,"0":1,"1":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/jquery\/1.10\/jquery.min.js":1,"misc\/jquery-extend-3.4.0.js":1,"misc\/jquery-html-prefilter-3.5.0-backport.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.core.min.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.widget.min.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.tabs.min.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.accordion.min.js":1,"sites\/all\/modules\/contrib\/comment_notify\/comment_notify.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_images\/panopoly-images.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_admin\/panopoly-admin.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_magic\/panopoly-magic.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/js\/panopoly-accordion.js":1,"profiles\/panopoly\/modules\/contrib\/caption_filter\/js\/caption-filter.js":1,"sites\/all\/modules\/contrib\/loginlogout\/loginlogout.js":1,"profiles\/panopoly\/libraries\/jquery.imagesloaded\/jquery.imagesloaded.min.js":1,"sites\/all\/modules\/contrib\/rate\/rate.js":1,"sites\/all\/libraries\/waypoints\/lib\/noframework.waypoints.min.js":1,"sites\/all\/themes\/opensource\/js\/os_waypoints.js":1,"sites\/all\/modules\/contrib\/google_analytics\/googleanalytics.js":1,"2":1,"file":1,"sites\/all\/themes\/opensource\/js\/addtoany-page.js":1,"sites\/all\/libraries\/superfish\/jquery.hoverIntent.minified.js":1,"sites\/all\/libraries\/superfish\/sftouchscreen.js":1,"sites\/all\/libraries\/superfish\/supposition.js":1,"sites\/all\/libraries\/superfish\/superfish.js":1,"sites\/all\/libraries\/superfish\/supersubs.js":1,"sites\/all\/modules\/contrib\/superfish\/superfish.js":1,"sites\/all\/themes\/opensource\/js\/script.js":1,"sites\/all\/themes\/opensource\/js\/cookie-banner.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"misc\/ui\/jquery.ui.theme.css":1,"misc\/ui\/jquery.ui.accordion.css":1,"sites\/all\/modules\/contrib\/comment_notify\/comment_notify.css":1,"sites\/all\/modules\/contrib\/calendar\/css\/calendar_multiday.css":1,"profiles\/panopoly\/modules\/contrib\/date\/date_api\/date.css":1,"profiles\/panopoly\/modules\/contrib\/date\/date_popup\/themes\/datepicker.1.7.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_admin\/panopoly-admin.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_admin\/panopoly-admin-navbar.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_core\/css\/panopoly-dropbutton.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_magic\/css\/panopoly-magic.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_magic\/css\/panopoly-modal.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/css\/panopoly-featured.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/css\/panopoly-accordian.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/css\/panopoly-layouts.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets-spotlight.css":1,"modules\/poll\/poll.css":1,"profiles\/panopoly\/modules\/contrib\/radix_layouts\/radix_layouts.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/workflow\/workflow_admin_ui\/workflow_admin_ui.css":1,"profiles\/panopoly\/modules\/contrib\/views\/css\/views.css":1,"profiles\/panopoly\/modules\/contrib\/caption_filter\/caption-filter.css":1,"sites\/all\/modules\/contrib\/ckeditor\/css\/ckeditor.css":1,"profiles\/panopoly\/modules\/contrib\/media\/modules\/media_wysiwyg\/css\/media_wysiwyg.base.css":1,"profiles\/panopoly\/modules\/contrib\/ctools\/css\/ctools.css":1,"public:\/\/geshi\/geshifilter-languages.css":1,"sites\/all\/modules\/contrib\/geshifilter\/geshifilter.css":1,"sites\/all\/modules\/features\/os_common_components\/css\/os_common_components.css":1,"profiles\/panopoly\/modules\/contrib\/panels\/css\/panels.css":1,"sites\/all\/modules\/contrib\/rate\/rate.css":1,"sites\/all\/modules\/features\/os_common_components\/plugins\/layouts\/opensource_article\/opensource-article.css":1,"modules\/comment\/comment.css":1,"sites\/all\/modules\/contrib\/rate\/templates\/thumbs-up\/thumbs-up.css":1,"sites\/all\/libraries\/superfish\/css\/superfish.css":1,"sites\/all\/themes\/opensource\/system.menus.css":1,"sites\/all\/themes\/opensource\/system.messages.css":1,"sites\/all\/themes\/opensource\/system.theme.css":1,"sites\/all\/themes\/opensource\/panels.css":1,"sites\/all\/themes\/opensource\/css\/styles.css":1,"sites\/all\/themes\/opensource\/css\/geshifilter.css":1,"sites\/all\/themes\/opensource\/fonts\/css\/fontello.css":1,"sites\/all\/themes\/opensource\/css\/cookie-banner.css":1,"sites\/all\/themes\/opensource\/calendar_multiday.css":1,"sites\/all\/themes\/opensource\/date_views.css":1,"sites\/all\/themes\/opensource\/quicktabs.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_images\/panopoly-images.css":1}},"loginlogout":{"urls":{"\/user\/login":"\/user\/login?destination=node\/49826","\/user":"\/user?destination=node\/49826"}},"CToolsModal":{"modalSize":{"type":"scale","width":".9","height":".9","addWidth":0,"addHeight":0,"contentRight":25,"contentBottom":75},"modalOptions":{"opacity":".55","background-color":"#FFF"},"animationSpeed":"fast","modalTheme":"CToolsModalDialog","throbberTheme":"CToolsModalThrobber"},"panopoly_magic":{"pane_add_preview_mode":"automatic"},"rate":{"basePath":"\/rate\/vote\/js","destination":"node\/49826"},"googleanalytics":{"trackOutbound":1,"trackMailto":1,"trackDownload":1,"trackDownloadExtensions":"7z|aac|arc|arj|asf|asx|avi|bin|csv|doc(x|m)?|dot(x|m)?|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt(x|m)?|pot(x|m)?|pps(x|m)?|ppam|sld(x|m)?|thmx|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls(x|m|b)?|xlt(x|m)|xlam|xml|z|zip","trackDomainMode":1},"urlIsAjaxTrusted":{"\/article\/18\/11\/failure-option-perl-6":true},"superfish":{"1":{"id":"1","sf":{"delay":"0","animation":{"opacity":"show","height":"show"},"speed":"\u0027fast\u0027","autoArrows":false,"dropShadows":false,"disableHI":false},"plugins":{"touchscreen":{"mode":"window_width","breakpoint":1070},"supposition":true,"bgiframe":false,"supersubs":{"minWidth":"12","maxWidth":"27","extraWidth":1}}}}});</script>
+      <!--[if lt IE 9]>
+    <script src="/sites/all/themes/zen/js/html5-respond.js"></script>
+    <![endif]-->
+  </head>
+<body class="html not-front not-logged-in no-sidebars page-node page-node- page-node-49826 node-type-article region-content section-article page-panels" >
+      <p id="skip-link">
+      <a href="#main-menu" class="element-invisible element-focusable">Jump to navigation</a>
+    </p>
+      
+<header class="header" id="header" role="banner">
+
+    
+    <div class="header-banner">
+      <div class="header-banner__inner">
+                  <div class="header__name-and-slogan" id="name-and-slogan">
+                          <div class="header__site-name" id="site-name">
+                <a href="/" title="Home" class="header__site-link" rel="home"><img alt="Opensource.com" src="/sites/all/themes/opensource/logo.svg" onerror="this.src='/sites/all/themes/opensource/logo.png';this.onerror=null;" /></a>
+                <a href="https://www.redhat.com/en?intcmp=701600000011l7VAAQ" title="Home" class="header__sponsor-link" rel="home"><img alt="RedHat" src="/sites/all/themes/opensource/images/redhat-logo.svg" onerror="this.src='/sites/all/themes/opensource/images/redhat-logo.png';this.onerror=null;"/></a>
+              </div>
+            
+                      </div>
+                <nav class="desktop-user-links">
+            <div class="header__region region region-header">
+    <div id="block-menu-block-1" class="block block-menu-block first last odd" role="navigation">
+
+      
+  <div class="menu-block-wrapper menu-block-1 menu-name-user-menu parent-mlid-0 menu-level-1">
+  <ul class="menu"><li class="menu__item is-leaf first leaf menu-mlid-195"><a href="/user/login" class="menu__link">Log in</a></li>
+<li class="menu__item is-leaf last leaf menu-mlid-1179"><a href="/user/register" title="Sign Up" class="menu__link">Sign Up</a></li>
+</ul></div>
+
+</div>
+  </div>
+        </nav>
+      </div>
+    </div>
+
+    <div class="sf-nav">
+      <div class="sf-nav__inner">
+          <div class="js-mobile-header-buttons region region-navigation-top">
+    <div id="block-os-solr-search-form" class="block block-os-solr-search first odd">
+
+      
+  <form action="/article/18/11/failure-option-perl-6" method="post" id="os-search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
+      <h2 class="element-invisible">Search form</h2>
+    <div class="form-item form-type-textfield form-item-search">
+  <label class="element-invisible" for="edit-search">Search </label>
+ <input title="Enter the terms you wish to search for." placeholder="Search opensource.com" type="text" id="edit-search" name="search" value="" size="15" maxlength="128" class="form-text" />
+</div>
+<div class="form-actions form-wrapper" id="edit-actions"><input type="submit" id="edit-submit" name="op" value="GO" class="form-submit" /></div><input type="hidden" name="form_build_id" value="form-pjfTcLWMaHh6F6O7feBe7kdLtXoxEjXg6RcB2n2zjbI" />
+<input type="hidden" name="form_id" value="os_search_block_form" />
+</div>
+</div></form>
+</div>
+<div id="block-superfish-1" class="block block-superfish even">
+
+        <h2 class="block__title block-title">Main menu</h2>
+    
+  <ul id="superfish-1" class="menu sf-menu sf-main-menu sf-horizontal sf-style-default sf-total-items-5 sf-parent-items-5 sf-single-items-0"><li id="menu-1906-1" class="first odd sf-item-1 sf-depth-1 sf-total-children-11 sf-parent-children-4 sf-single-children-7 menuparent"><a href="/" title="" class="sf-depth-1 menuparent">Articles</a><ul><li id="menu-12341-1" class="first odd sf-item-1 sf-depth-2 sf-no-children"><a href="/tags/containers" title="" class="sf-depth-2">Containers</a></li><li id="menu-12416-1" class="middle even sf-item-2 sf-depth-2 sf-no-children"><a href="/tags/devops" title="" class="sf-depth-2">DevOps</a></li><li id="menu-12346-1" class="middle odd sf-item-3 sf-depth-2 sf-no-children"><a href="/tags/gaming" title="" class="sf-depth-2">Gaming</a></li><li id="menu-17776-1" class="middle even sf-item-4 sf-depth-2 sf-no-children"><a href="/tags/government" title="" class="sf-depth-2">Government</a></li><li id="menu-12351-1" class="middle odd sf-item-5 sf-depth-2 sf-total-children-3 sf-parent-children-0 sf-single-children-3 menuparent"><a href="/tags/hardware" title="" class="sf-depth-2 menuparent">Hardware</a><ul><li id="menu-12376-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/3d-printing" title="" class="sf-depth-3">3D printing</a></li><li id="menu-12386-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/tags/arduino" title="" class="sf-depth-3">Arduino</a></li><li id="menu-12381-1" class="last odd sf-item-3 sf-depth-3 sf-no-children"><a href="/tags/raspberry-pi" title="" class="sf-depth-3">Raspberry Pi</a></li></ul></li><li id="menu-27341-1" class="middle even sf-item-6 sf-depth-2 sf-no-children"><a href="https://opensource.com/tags/kubernetes" title="" class="sf-depth-2">Kubernetes</a></li><li id="menu-1946-1" class="middle odd sf-item-7 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/tags/law" title="" class="sf-depth-2 menuparent">Law</a><ul><li id="menu-12391-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/licensing" title="" class="sf-depth-3">Licensing</a></li><li id="menu-12396-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/tags/patents" title="" class="sf-depth-3">Patents</a></li></ul></li><li id="menu-12356-1" class="middle even sf-item-8 sf-depth-2 sf-total-children-1 sf-parent-children-0 sf-single-children-1 menuparent"><a href="/tags/linux" title="" class="sf-depth-2 menuparent">Linux</a><ul><li id="menu-19831-1" class="firstandlast odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/command-line" title="" class="sf-depth-3">Command line</a></li></ul></li><li id="menu-12361-1" class="middle odd sf-item-9 sf-depth-2 sf-no-children"><a href="/tags/openstack" title="" class="sf-depth-2">OpenStack</a></li><li id="menu-12366-1" class="middle even sf-item-10 sf-depth-2 sf-total-children-3 sf-parent-children-0 sf-single-children-3 menuparent"><a href="/tags/programming" title="" class="sf-depth-2 menuparent">Programming</a><ul><li id="menu-17771-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/go" title="" class="sf-depth-3">Go</a></li><li id="menu-12411-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/tags/javascript" title="" class="sf-depth-3">JavaScript</a></li><li id="menu-12406-1" class="last odd sf-item-3 sf-depth-3 sf-no-children"><a href="/tags/python" title="" class="sf-depth-3">Python</a></li></ul></li><li id="menu-12371-1" class="last odd sf-item-11 sf-depth-2 sf-no-children"><a href="/tags/sysadmin" title="" class="sf-depth-2">Sysadmin</a></li></ul></li><li id="menu-1921-1" class="middle even sf-item-2 sf-depth-1 sf-total-children-6 sf-parent-children-3 sf-single-children-3 menuparent"><a href="/resources" title="" class="sf-depth-1 menuparent">Resources</a><ul><li id="menu-19841-1" class="first odd sf-item-1 sf-depth-2 sf-total-children-1 sf-parent-children-0 sf-single-children-1 menuparent"><a href="/resources/what-open-source" title="" class="sf-depth-2 menuparent">What is open source?</a><ul><li id="menu-1991-1" class="firstandlast odd sf-item-1 sf-depth-3 sf-no-children"><a href="/open-source-way" class="sf-depth-3">The open source way</a></li></ul></li><li id="menu-2016-1" class="middle even sf-item-2 sf-depth-2 sf-no-children"><a href="/resources/projects-and-applications" title="" class="sf-depth-2">Projects and applications</a></li><li id="menu-2021-1" class="middle odd sf-item-3 sf-depth-2 sf-no-children"><a href="/resources/organizations" title="" class="sf-depth-2">Organizations</a></li><li id="menu-5556-1" class="middle even sf-item-4 sf-depth-2 sf-total-children-14 sf-parent-children-1 sf-single-children-13 menuparent"><a href="/resources/cloud" title="" class="sf-depth-2 menuparent">Cloud technology</a><ul><li id="menu-27201-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/resources/what-ansible" title="" class="sf-depth-3">Ansible</a></li><li id="menu-5576-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/resources/big-data" title="" class="sf-depth-3">Big data</a></li><li id="menu-19861-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/resources/data-science" title="" class="sf-depth-3">Data science</a></li><li id="menu-5566-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/resources/what-docker" title="" class="sf-depth-3">Docker</a></li><li id="menu-19926-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/resources/what-is-git" class="sf-depth-3">Git</a></li><li id="menu-5591-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="/resources/internet-of-things" title="" class="sf-depth-3">Internet of things</a></li><li id="menu-19921-1" class="middle odd sf-item-7 sf-depth-3 sf-no-children"><a href="/resources/java" title="" class="sf-depth-3">Java</a></li><li id="menu-5596-1" class="middle even sf-item-8 sf-depth-3 sf-no-children"><a href="/resources/what-is-kubernetes" title="" class="sf-depth-3">Kubernetes</a></li><li id="menu-5571-1" class="middle odd sf-item-9 sf-depth-3 sf-no-children"><a href="/resources/what-are-linux-containers" title="" class="sf-depth-3">Linux containers</a></li><li id="menu-5586-1" class="middle even sf-item-10 sf-depth-3 sf-no-children"><a href="/resources/what-are-microservices" title="" class="sf-depth-3">Microservices</a></li><li id="menu-5561-1" class="middle odd sf-item-11 sf-depth-3 sf-no-children"><a href="/resources/what-is-openstack" title="" class="sf-depth-3">OpenStack</a></li><li id="menu-19836-1" class="middle even sf-item-12 sf-depth-3 sf-total-children-4 sf-parent-children-0 sf-single-children-4 menuparent"><a href="/resources/python" title="" class="sf-depth-3 menuparent">Python</a><ul><li id="menu-19866-1" class="first odd sf-item-1 sf-depth-4 sf-no-children"><a href="/resources/python/gui-frameworks" class="sf-depth-4">Python GUI frameworks</a></li><li id="menu-19871-1" class="middle even sf-item-2 sf-depth-4 sf-no-children"><a href="/resources/python/ides" class="sf-depth-4">Python IDEs</a></li><li id="menu-19881-1" class="middle odd sf-item-3 sf-depth-4 sf-no-children"><a href="/resources/python/template-libraries" title="" class="sf-depth-4">Python template libraries</a></li><li id="menu-19876-1" class="last even sf-item-4 sf-depth-4 sf-no-children"><a href="/resources/python/web-scraper-crawler" title="" class="sf-depth-4">Python web scrapers</a></li></ul></li><li id="menu-5581-1" class="middle odd sf-item-13 sf-depth-3 sf-no-children"><a href="/resources/what-is-software-defined-networking" title="" class="sf-depth-3">Software defined networking</a></li><li id="menu-12601-1" class="last even sf-item-14 sf-depth-3 sf-no-children"><a href="/resources/virtualization" title="" class="sf-depth-3">Virtualization</a></li></ul></li><li id="menu-2036-1" class="middle odd sf-item-5 sf-depth-2 sf-total-children-13 sf-parent-children-0 sf-single-children-13 menuparent"><a href="/alternatives" title="" class="sf-depth-2 menuparent">Open source alternatives</a><ul><li id="menu-4646-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/alternatives/adobe-acrobat" class="sf-depth-3">Alternatives to Acrobat</a></li><li id="menu-4656-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/alternatives/autocad" class="sf-depth-3">Alternatives to AutoCAD</a></li><li id="menu-4636-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/alternatives/dreamweaver" class="sf-depth-3">Alternatives to Dreamweaver</a></li><li id="menu-5506-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/alternatives/gmail" class="sf-depth-3">Alternatives to Gmail</a></li><li id="menu-5551-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/alternatives/matlab" class="sf-depth-3">Alternatives to MATLAB</a></li><li id="menu-5501-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="/alternatives/minecraft" class="sf-depth-3">Alternatives to Minecraft</a></li><li id="menu-4651-1" class="middle odd sf-item-7 sf-depth-3 sf-no-children"><a href="/alternatives/google-photos" class="sf-depth-3">Alternatives to Google Photos</a></li><li id="menu-27351-1" class="middle even sf-item-8 sf-depth-3 sf-no-children"><a href="/life/12/6/design-without-debt-five-tools-for-designers" title="" class="sf-depth-3">Alternatives to Photoshop</a></li><li id="menu-4661-1" class="middle odd sf-item-9 sf-depth-3 sf-no-children"><a href="/alternatives/microsoft-publisher" class="sf-depth-3">Alternatives to Publisher</a></li><li id="menu-27371-1" class="middle even sf-item-10 sf-depth-3 sf-no-children"><a href="/alternatives/skype" class="sf-depth-3">Alternatives to Skype</a></li><li id="menu-5511-1" class="middle odd sf-item-11 sf-depth-3 sf-no-children"><a href="/alternatives/slack" class="sf-depth-3">Alternatives to Slack</a></li><li id="menu-4641-1" class="middle even sf-item-12 sf-depth-3 sf-no-children"><a href="/alternatives/trello" class="sf-depth-3">Alternatives to Trello</a></li><li id="menu-5546-1" class="last odd sf-item-13 sf-depth-3 sf-no-children"><a href="/alternatives" title="" class="sf-depth-3">More...</a></li></ul></li><li id="menu-19886-1" class="last even sf-item-6 sf-depth-2 sf-no-children"><a href="/resources/linux" title="" class="sf-depth-2">Linux</a></li></ul></li><li id="menu-19666-1" class="middle odd sf-item-3 sf-depth-1 sf-total-children-6 sf-parent-children-6 sf-single-children-0 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-1 menuparent">Downloads</a><ul><li id="menu-19406-1" class="first odd sf-item-1 sf-depth-2 sf-total-children-28 sf-parent-children-0 sf-single-children-28 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">Cheat sheets</a><ul><li id="menu-27711-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/ansible-cheat-sheet" class="sf-depth-3">Ansible cheat sheet</a></li><li id="menu-27476-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/ansible-k8s-cheat-sheet" class="sf-depth-3">Ansible k8s cheat sheet</a></li><li id="menu-19651-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-awk-features" class="sf-depth-3">AWK cheat sheet</a></li><li id="menu-27241-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/downloads/bash-cheat-sheet" class="sf-depth-3">Bash cheat sheet</a></li><li id="menu-18641-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/blender-hotkey-cheat-sheet" class="sf-depth-3">Blender cheat sheet</a></li><li id="menu-27466-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="https://opensource.com/downloads/c-programming-cheat-sheet" title="" class="sf-depth-3">C cheat sheet</a></li><li id="menu-27336-1" class="middle odd sf-item-7 sf-depth-3 sf-no-children"><a href="/downloads/emacs-cheat-sheet" class="sf-depth-3">Emacs cheat sheet</a></li><li id="menu-27356-1" class="middle even sf-item-8 sf-depth-3 sf-no-children"><a href="/downloads/firewall-cheat-sheet" class="sf-depth-3">Firewall Cheat Sheet</a></li><li id="menu-18856-1" class="middle odd sf-item-9 sf-depth-3 sf-no-children"><a href="/downloads/freedos-commands-cheat-sheet" class="sf-depth-3">FreeDOS cheat sheet</a></li><li id="menu-19721-1" class="middle even sf-item-10 sf-depth-3 sf-no-children"><a href="/content/cheat-sheet-gimp" class="sf-depth-3">GIMP cheat sheet</a></li><li id="menu-19696-1" class="middle odd sf-item-11 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-gnome-3" class="sf-depth-3">GNOME cheat sheet</a></li><li id="menu-18661-1" class="middle even sf-item-12 sf-depth-3 sf-no-children"><a href="/downloads/groff-macros-cheat-sheet" class="sf-depth-3">Groff macros cheat sheet</a></li><li id="menu-19731-1" class="middle odd sf-item-13 sf-depth-3 sf-no-children"><a href="/downloads/go-cheat-sheet" class="sf-depth-3">Go cheat sheet</a></li><li id="menu-19716-1" class="middle even sf-item-14 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-i3-window-manager-keybinding" class="sf-depth-3">i3 window manager cheat sheet</a></li><li id="menu-19781-1" class="middle odd sf-item-15 sf-depth-3 sf-no-children"><a href="/downloads/inkscape-cheat-sheet" class="sf-depth-3">Inkscape Cheat Sheet</a></li><li id="menu-16886-1" class="middle even sf-item-16 sf-depth-3 sf-no-children"><a href="/irc-cheat-sheet" class="sf-depth-3">IRC cheat sheet</a></li><li id="menu-27271-1" class="middle odd sf-item-17 sf-depth-3 sf-no-children"><a href="/downloads/java-cheat-sheet" class="sf-depth-3">Java cheat sheet</a></li><li id="menu-27471-1" class="middle even sf-item-18 sf-depth-3 sf-no-children"><a href="https://opensource.com/downloads/kubectl-cheat-sheet" title="" class="sf-depth-3">Kubectl cheat sheet</a></li><li id="menu-27246-1" class="middle odd sf-item-19 sf-depth-3 sf-no-children"><a href="/downloads/linux-common-commands-cheat-sheet" class="sf-depth-3">Linux common commands cheat sheet</a></li><li id="menu-27216-1" class="middle even sf-item-20 sf-depth-3 sf-no-children"><a href="/downloads/linux-permissions-cheat-sheet" class="sf-depth-3">Linux user permissions cheat sheet</a></li><li id="menu-27256-1" class="middle odd sf-item-21 sf-depth-3 sf-no-children"><a href="/downloads/microservices-cheat-sheet" class="sf-depth-3">Microservices cheat sheet</a></li><li id="menu-19301-1" class="middle even sf-item-22 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-networking" class="sf-depth-3">Networking cheat sheet</a></li><li id="menu-18636-1" class="middle odd sf-item-23 sf-depth-3 sf-no-children"><a href="/downloads/pandoc-cheat-sheet" class="sf-depth-3">Pandoc cheat sheet</a></li><li id="menu-27261-1" class="middle even sf-item-24 sf-depth-3 sf-no-children"><a href="/downloads/pip-cheat-sheet" class="sf-depth-3">pip cheat sheet</a></li><li id="menu-19711-1" class="middle odd sf-item-25 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-python-37-beginners" class="sf-depth-3">Python 3.7 cheat sheet</a></li><li id="menu-19726-1" class="middle even sf-item-26 sf-depth-3 sf-no-children"><a href="/downloads/getting-started-raspberry-pi-cheat-sheet" class="sf-depth-3">Raspberry Pi cheat sheet</a></li><li id="menu-19691-1" class="middle odd sf-item-27 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-selinux" class="sf-depth-3">SELinux cheat sheet</a></li><li id="menu-18591-1" class="last even sf-item-28 sf-depth-3 sf-no-children"><a href="/downloads/advanced-ssh-cheat-sheet" class="sf-depth-3">SSH cheat sheet</a></li></ul></li><li id="menu-12466-1" class="middle even sf-item-2 sf-depth-2 sf-total-children-5 sf-parent-children-0 sf-single-children-5 menuparent"><a href="/yearbook/2017" title="" class="sf-depth-2 menuparent">Open Source Yearbook</a><ul><li id="menu-19681-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/yearbook/2015" title="" class="sf-depth-3">2015</a></li><li id="menu-19676-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/yearbook/2016" title="" class="sf-depth-3">2016</a></li><li id="menu-19671-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/yearbook/2017" title="" class="sf-depth-3">2017</a></li><li id="menu-19786-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/yearbook/2018" title="" class="sf-depth-3">2018</a></li><li id="menu-27346-1" class="last odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/2019-yearbook-special-edition" title="" class="sf-depth-3">2019 Special Edition</a></li></ul></li><li id="menu-19906-1" class="middle odd sf-item-3 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">Programming guides</a><ul><li id="menu-19891-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/7-essential-pypi-libraries" title="" class="sf-depth-3">7 essential PyPI libraries</a></li><li id="menu-27706-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/jupyter-guide" class="sf-depth-3">6 surprising ways to use Jupyter</a></li></ul></li><li id="menu-19911-1" class="middle even sf-item-4 sf-depth-2 sf-total-children-5 sf-parent-children-0 sf-single-children-5 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">DevOps guides</a><ul><li id="menu-19806-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/devops-transformation" class="sf-depth-3">Starting a DevOps transformation</a></li><li id="menu-19776-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/small-scale-scrum" class="sf-depth-3">Introduction to Small Scale Scrum</a></li><li id="menu-19771-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/downloads/devsecops" class="sf-depth-3">Getting started with DevSecOps</a></li><li id="menu-19701-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/downloads/devops-monitoring-guide" class="sf-depth-3">DevOps monitoring tools guide</a></li><li id="menu-19686-1" class="last odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/devops-hiring-guide" class="sf-depth-3">DevOps hiring guide</a></li></ul></li><li id="menu-19916-1" class="middle odd sf-item-5 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">Sysadmin guides</a><ul><li id="menu-19801-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="https://opensource.com/downloads/ansible-quickstart" title="" class="sf-depth-3">Ansible Automation for Sysadmins</a></li><li id="menu-19706-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/containers-primer" class="sf-depth-3">Containers primer</a></li></ul></li><li id="menu-19901-1" class="last even sf-item-6 sf-depth-2 sf-total-children-7 sf-parent-children-0 sf-single-children-7 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">eBooks</a><ul><li id="menu-19896-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/getting-started-kubernetes-ebook" class="sf-depth-3">Getting started with Kubernetes</a></li><li id="menu-27276-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/guide-inter-process-communication-linux" class="sf-depth-3">Inter-process communication in Linux</a></li><li id="menu-27321-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/downloads/collaboration-tools-ebook" class="sf-depth-3">5 open source collaboration tools</a></li><li id="menu-27311-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/downloads/organization-tools" class="sf-depth-3">6 open source tools for staying organized</a></li><li id="menu-27316-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/desktop-tools" class="sf-depth-3">7 open source desktop tools</a></li><li id="menu-27366-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="/downloads/raspberry-pi-guide" class="sf-depth-3">Raspberry Pi: How to get started</a></li><li id="menu-27451-1" class="last odd sf-item-7 sf-depth-3 sf-no-children"><a href="/downloads/kubernetes-raspberry-pi" title="" class="sf-depth-3">Running Kubernetes on your Raspberry Pi</a></li></ul></li></ul></li><li id="menu-4691-1" class="middle even sf-item-4 sf-depth-1 sf-total-children-3 sf-parent-children-2 sf-single-children-1 menuparent"><a href="/about" class="sf-depth-1 menuparent">About</a><ul><li id="menu-27381-1" class="first odd sf-item-1 sf-depth-2 sf-total-children-6 sf-parent-children-0 sf-single-children-6 menuparent"><a href="/about" title="" class="sf-depth-2 menuparent">About Opensource.com</a><ul><li id="menu-12516-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/participate" class="sf-depth-3">Welcome to the Opensource.com community</a></li><li id="menu-1971-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/opensourcecom-team" class="sf-depth-3">Meet the team</a></li><li id="menu-27386-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/user/register" title="" class="sf-depth-3">Create an account</a></li><li id="menu-12526-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/rules-comments-and-discussions" class="sf-depth-3">Rules for comments and discussions</a></li><li id="menu-12531-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/correspondent-program" class="sf-depth-3">Correspondent Program</a></li><li id="menu-27391-1" class="last even sf-item-6 sf-depth-3 sf-no-children"><a href="/faq" class="sf-depth-3">Frequently Asked Questions</a></li></ul></li><li id="menu-17761-1" class="middle even sf-item-2 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/how-submit-article" title="" class="sf-depth-2 menuparent">Contribute to Opensource.com</a><ul><li id="menu-2041-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/submission-style-guide" title="" class="sf-depth-3">Opensource.com style guide</a></li><li id="menu-12586-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/article/20/1/write-for-us" class="sf-depth-3">Writing topics</a></li></ul></li><li id="menu-2001-1" class="last odd sf-item-3 sf-depth-2 sf-no-children"><a href="/contact" title="" class="sf-depth-2">Contact us</a></li></ul></li><li id="menu-2136-1" class="last odd sf-item-5 sf-depth-1 sf-total-children-3 sf-parent-children-2 sf-single-children-1 menuparent"><a href="/open-organization" title="" class="sf-depth-1 menuparent">Open Organization</a><ul><li id="menu-27251-1" class="first odd sf-item-1 sf-depth-2 sf-no-children"><a href="https://opensource.com/open-organization/start" title="" class="sf-depth-2">Get started</a></li><li id="menu-15051-1" class="middle even sf-item-2 sf-depth-2 sf-total-children-6 sf-parent-children-0 sf-single-children-6 menuparent"><a href="/open-organization/resources/book-series" title="" class="sf-depth-2 menuparent">Book series</a><ul><li id="menu-16906-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/open-organization/resources/field-guide" title="" class="sf-depth-3">Field Guide</a></li><li id="menu-16891-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/open-organization/resources/leaders-manual" class="sf-depth-3">Leaders Manual</a></li><li id="menu-16896-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/open-organization/resources/culture-change" title="" class="sf-depth-3">Guide to IT Culture Change</a></li><li id="menu-19856-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/open-organization/resources/educators-guide" class="sf-depth-3">Guide for Educators</a></li><li id="menu-17796-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/open-organization/resources/workbook" title="" class="sf-depth-3">Workbook</a></li><li id="menu-18656-1" class="last even sf-item-6 sf-depth-3 sf-no-children"><a href="/open-organization/resources/organize-innovation" class="sf-depth-3">Organize for Innovation</a></li></ul></li><li id="menu-2146-1" class="last odd sf-item-3 sf-depth-2 sf-total-children-3 sf-parent-children-0 sf-single-children-3 menuparent"><a href="/open-organization/resources" title="" class="sf-depth-2 menuparent">Resources</a><ul><li id="menu-12471-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/open-organization/resources/open-org-definition" title="What is an open organization?" class="sf-depth-3">What is an open organization?</a></li><li id="menu-15056-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/open-organization/resources/open-org-maturity-model" title="" class="sf-depth-3">How open is your organization?</a></li><li id="menu-12421-1" class="last odd sf-item-3 sf-depth-3 sf-no-children"><a href="/open-organization/resources/open-decision-framework" title="" class="sf-depth-3">What is an open decision?</a></li></ul></li></ul></li></ul>
+</div>
+<div id="block-system-user-menu" class="block block-system block-menu odd" role="navigation">
+
+      
+  <ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/user/login" class="menu__link">Log in</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/user/register" title="Sign Up" class="menu__link">Sign Up</a></li>
+</ul>
+</div>
+<div id="block-menu-block-2" class="block block-menu-block last even" role="navigation">
+
+      
+  <div class="menu-block-wrapper menu-block-2 menu-name-menu-social-links parent-mlid-0 menu-level-1">
+  <ul class="menu"><li class="menu__item is-leaf first leaf menu-mlid-13171"><a href="http://twitter.com/opensourceway" title="twitter" class="menu__link">Twitter</a></li>
+<li class="menu__item is-leaf leaf menu-mlid-13176"><a href="https://www.facebook.com/opensourceway" title="facebook" class="menu__link">Facebook</a></li>
+<li class="menu__item is-leaf last leaf menu-mlid-13166"><a href="/feed" title="feed" class="menu__link">Feed</a></li>
+</ul></div>
+
+</div>
+  </div>
+
+        <div class="mobile--menu-region">
+            <div class="region region-navigation">
+    <div id="block-system-main-menu" class="block block-system block-menu first last odd" role="navigation">
+
+        <h2 class="block__title block-title">Main menu</h2>
+    
+  <ul class="menu"><li class="menu__item is-expanded first expanded"><a href="/" title="" class="menu__link">Articles</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/tags/containers" title="" class="menu__link">Containers</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/devops" title="" class="menu__link">DevOps</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/gaming" title="" class="menu__link">Gaming</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/government" title="" class="menu__link">Government</a></li>
+<li class="menu__item is-expanded expanded"><a href="/tags/hardware" title="" class="menu__link">Hardware</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/tags/3d-printing" title="" class="menu__link">3D printing</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/arduino" title="" class="menu__link">Arduino</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/tags/raspberry-pi" title="" class="menu__link">Raspberry Pi</a></li>
+</ul></li>
+<li class="menu__item is-leaf leaf"><a href="https://opensource.com/tags/kubernetes" title="" class="menu__link">Kubernetes</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/tags/law" title="" class="menu__link">Law</a></li>
+<li class="menu__item is-expanded expanded"><a href="/tags/linux" title="" class="menu__link">Linux</a><ul class="menu"><li class="menu__item is-leaf first last leaf"><a href="/tags/command-line" title="" class="menu__link">Command line</a></li>
+</ul></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/openstack" title="" class="menu__link">OpenStack</a></li>
+<li class="menu__item is-expanded expanded"><a href="/tags/programming" title="" class="menu__link">Programming</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/tags/go" title="" class="menu__link">Go</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/javascript" title="" class="menu__link">JavaScript</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/tags/python" title="" class="menu__link">Python</a></li>
+</ul></li>
+<li class="menu__item is-collapsed last collapsed"><a href="/tags/sysadmin" title="" class="menu__link">Sysadmin</a></li>
+</ul></li>
+<li class="menu__item is-expanded expanded"><a href="/resources" title="" class="menu__link">Resources</a><ul class="menu"><li class="menu__item is-collapsed first collapsed"><a href="/resources/what-open-source" title="" class="menu__link">What is open source?</a></li>
+<li class="menu__item is-leaf leaf"><a href="/resources/projects-and-applications" title="" class="menu__link">Projects and applications</a></li>
+<li class="menu__item is-leaf leaf"><a href="/resources/organizations" title="" class="menu__link">Organizations</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/resources/cloud" title="" class="menu__link">Cloud technology</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/alternatives" title="" class="menu__link">Open source alternatives</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/resources/linux" title="" class="menu__link">Linux</a></li>
+</ul></li>
+<li class="menu__item is-collapsed collapsed"><a href="/downloads/cheat-sheets" title="" class="menu__link">Downloads</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/about" class="menu__link">About</a></li>
+<li class="menu__item is-expanded last expanded"><a href="/open-organization" title="" class="menu__link">Open Organization</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="https://opensource.com/open-organization/start" title="" class="menu__link">Get started</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/open-organization/resources/book-series" title="" class="menu__link">Book series</a></li>
+<li class="menu__item is-expanded last expanded"><a href="/open-organization/resources" title="" class="menu__link">Resources</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/open-organization/resources/open-org-definition" title="What is an open organization?" class="menu__link">What is an open organization?</a></li>
+<li class="menu__item is-leaf leaf"><a href="/open-organization/resources/open-org-maturity-model" title="" class="menu__link">How open is your organization?</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/open-organization/resources/open-decision-framework" title="" class="menu__link">What is an open decision?</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+  </div>
+        </div>
+      </div>
+    </div>
+
+</header>
+
+<div id="page">
+
+      <div id="main">
+        <div class="pre-content">
+                                                </div>
+        <div id="content" class="column" role="main">
+                              <a id="main-content"></a>
+                                <h1 class="page__title title" id="page-title">Failure is an option in Perl 6</h1>
+                              
+
+
+
+<div class="panel-display os-article clearfix os-article--with-image " id="article-template">
+
+      <div class="os-article__top">
+      <div class="os-article__top-inner">
+        <div class="panel-pane pane-node-title"  >
+  
+      
+  
+  <h1>Failure is an option in Perl 6</h1>
+
+  
+  </div>
+<div class="panel-pane pane-entity-field pane-node-field-article-subhead"  >
+  
+      
+  
+  <div class="field field-name-field-article-subhead field-type-text-long field-label-hidden">
+    <div class="field-items">
+          <h2>In the eighth article in this series comparing Perl 5 to Perl 6, learn about their differences in creating and handling exceptions.</h2>
+      </div>
+</div>
+
+  
+  </div>
+<div class="panel-pane pane-os-content-article-byline"  >
+  
+      
+  
+  <div class="byline"><span class="byline__date">22 Nov 2018</span>
+<span class="byline__author-name"><a href="/users/lizmat" title="View user profile." class="username" xml:lang="" about="/users/lizmat" typeof="sioc:UserAccount" property="foaf:name" datatype="">Elizabeth Mattijsen</a>&nbsp;<span class="byline__feed"><a href="/user/238941/feed">Feed</a></span>
+</span>
+<span class="byline__social"><span class="byline__voting-widget"><div class="rate-widget-1 rate-widget clear-block rate-average rate-widget-thumbs_up rate-b96202bc10f20beaff4eee7eb899a592 rate-node-49826-1-1" id="rate-node-49826-1-1"><div class="rate-info">160</div><a class="rate-button rate-thumbs-up-btn-up" id="rate-button-1" rel="nofollow" href="/article/18/11/failure-option-perl-6?rate=_DofvnNuNH9GmIEAOhBpCEEDe2GxqG8r_7MrDcYZ5ok" title="up">up</a></div></span>
+</span>
+<span class="byline__comment-count"><a href="#comments">3 comments</a></span>
+</div>
+  
+  </div>
+      </div>
+    </div>
+  
+      <div class="os-article__image">
+      <div class="panel-pane pane-entity-field pane-node-field-lead-image"  >
+  
+      
+  
+  <div class="field field-name-field-lead-image field-type-image field-label-hidden"><div class="field-items"><div class="field-item even" rel="schema:contentUrl" resource="https://opensource.com/sites/default/files/styles/image-full-size/public/lead-images/programming-code-keyboard-laptop.png?itok=pGfEfu2S"><img class="image-full-size" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/image-full-size/public/lead-images/programming-code-keyboard-laptop.png?itok=pGfEfu2S" width="520" height="292" alt="Hands programming" title="Hands programming" /></div></div></div>
+  
+  </div>
+<div class="panel-pane pane-entity-field pane-file-field-file-image-caption"  >
+  
+      
+  
+  <div class="field field-name-field-file-image-caption field-type-text-long field-label-inline clearfix"><div class="field-label">Image by :&nbsp;</div><div class="field-items"><div class="field-item even">WOCinTech Chat. Modified by Opensource.com. CC BY-SA 4.0
+</div></div></div>
+  
+  </div>
+    </div>
+  
+      <div class="os-article__left">
+      <div class="panel-pane pane-block pane-bean-email-capture widget-block widget-block__left"  >
+      <div class="target-band-never-show-button">x</div>
+        <h2 class="pane-title">
+      Subscribe now    </h2>
+    
+  
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/email-capture" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p class="eloqua-email-capture-text">Get the highlights in your inbox every week.</p>
+
+<!-- <p class="eloqua-email-capture-text"><a href="https://opensource.com/email-newsletter" target="_blank">Subscribe today.</a></p> -->
+<p><iframe id="fkfkx" scrolling="no" src="/eloqua-embedded-email-capture-block.html?offer_id=70160000000QzXNAA0" style="max-width:600px;margin:0 auto;" width="250" height="100" frameborder="0"></iframe></p></div></div></div>  </div>
+</div>
+
+  
+  </div>
+    </div>
+  
+  
+      <div class="os-article__middle">
+      <div class="panel-pane pane-entity-field pane-node-body"  >
+  
+      
+  
+  <div class="field field-name-body field-type-text-with-summary field-label-hidden"><div class="field-items"><div class="field-item even" property="schema:articleBody content:encoded"><p>This is the eighth in <a href="https://opensource.com/users/lizmat">a series of articles</a> about migrating code from Perl 5 to Perl 6. This article looks at the differences in creating and handling exceptions between Perl 5 and Perl 6.</p>
+
+<p>The first part of this article describes working with exceptions in Perl 6, and the second part explains how you can create your own exceptions and how failure <em>is</em> an option in Perl 6.</p>
+
+<h2 id="exception-handling-phasers">Exception-handling phasers</h2>
+
+<p>In Perl 5, you can use <a href="https://perldoc.perl.org/functions/eval.html" target="_blank"><strong>eval</strong></a> to catch exceptions in a piece of code. In Perl 6, this functionality is covered by <strong><a href="https://docs.perl6.org/language/exceptions#index-entry-try_blocks" target="_blank">try</a></strong>:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<a href="http://perldoc.perl.org/functions/eval.html"><span class="kw3">eval</span></a> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> <span class="st0">&quot;Goodbye cruel world&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><span class="sy0">;</span><br />
+say <span class="co5">$@</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Goodbye cruel world at ...</span><br />
+say <span class="st0">&quot;Alive again!&quot;</span><br />
+<br />
+<span class="co1"># Perl 6</span><br />
+try <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> <span class="st0">&quot;Goodbye cruel world&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+say <span class="co5">$!</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># Goodbye cruel world␤ &nbsp;in block ...</span><br />
+say <span class="st0">&quot;Alive again!&quot;</span></div></div></pre>
+
+<p>In Perl 5, you can also use the return value of <strong>eval</strong> in an expression:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> <a href="http://perldoc.perl.org/functions/eval.html"><span class="kw3">eval</span></a> <span class="br0">&#123;</span> <span class="sy0">...</span> <span class="br0">&#125;</span><span class="sy0">;</span> &nbsp;<span class="co1"># undef if exception was thrown</span></div></div></pre>
+
+<p>This works the same way in Perl 6 for <strong>try</strong>:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> try <span class="br0">&#123;</span> <span class="nu0">42</span> <span class="sy0">/</span> <span class="re0">$something</span> <span class="br0">&#125;</span><span class="sy0">;</span> &nbsp; <span class="co1"># Nil if $something is 0</span></div></div></pre>
+
+<p>and it doesn't even have to be a block:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> try <span class="nu0">42</span> <span class="sy0">/</span> <span class="re0">$something</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># Nil if $something is 0</span></div></div></pre>
+
+<p>In Perl 5, if you need finer control over what to do when an exception occurs, you can use special <a href="https://perldoc.pl/variables/%25SIG" target="_blank">signal handlers</a> <strong>$SIG{__DIE__}</strong> and <strong>$SIG{__WARN__}</strong>.</p>
+
+<p>In Perl 6, these are replaced by two exception-handling phasers, which due to their scoping behaviour <em>must</em> always be specified with curly braces. These exception-handling phasers (in the following table) are applicable only to the surrounding block, and you can have only <em>one</em> of each type in a block.</p>
+
+<table border="1" cellpadding="2" cellspacing="1"><thead><tr><th scope="col">Name</th>
+			<th scope="col">Description</th>
+		</tr></thead><tbody><tr><td>CATCH</td>
+			<td>Run when an exception is thrown</td>
+		</tr><tr><td>CONTROL</td>
+			<td>Run for any (other) control exception</td>
+		</tr></tbody></table><h2 id="catching-exceptions">Catching exceptions</h2>
+
+<p>The <strong>$SIG{__DIE__}</strong> pseudo-signal handler in Perl 5 is no longer recommended. There are several competing CPAN modules that provide <strong>try/catch</strong> mechanisms (such as: <a href="https://metacpan.org/pod/Try::Tiny" target="_blank">Try::Tiny</a> and <a href="https://metacpan.org/pod/Syntax::Keyword::Try" target="_blank">Syntax::Keyword::Try</a>). Even though these modules differ completely in implementation, they provide very similar syntax with only very minor semantic differences, so they're a good way to compare Perl 6 and Perl 5 features.</p>
+
+<p>In Perl 5, you can catch an exception only in conjunction with a <strong>try</strong> block:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<span class="kw2">use</span> Try<span class="sy0">::</span><span class="me2">Tiny</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># or Syntax::Keyword::Try</span><br />
+try <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> <span class="st0">&quot;foo&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+catch <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/warn.html"><span class="kw3">warn</span></a> <span class="st0">&quot;caught error: $_&quot;</span><span class="sy0">;</span> <span class="co1"># $@ when using Syntax::Keyword::Try</span><br />
+<span class="br0">&#125;</span></div></div></pre>
+
+<p>Perl 6 doesn't require a <strong>try</strong> block. The code inside a <a href="https://docs.perl6.org/language/phasers#CATCH" target="_blank"><strong>CATCH</strong></a> phaser will be called whenever an exception is thrown in the <em>immediately surrounding</em> lexical scope:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="br0">&#123;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1"># surrounding scope, added for clarity</span><br />
+&nbsp; &nbsp; CATCH <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; say <span class="st0">&quot;aw, died&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">.</span>resume<span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># $_, AKA the topic, contains the exception</span><br />
+&nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> <span class="st0">&quot;goodbye cruel world&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; say <span class="st0">&quot;alive again&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="co1"># aw, died</span><br />
+<span class="co1"># alive again</span></div></div></pre>
+
+<p>Again, you do <em>not</em> need a <strong>try</strong> statement to catch exceptions in Perl 6. You <em>can</em> use a <strong>try</strong> block on its own, if you want, but it's just a convenient way to disregard any exceptions thrown inside that block.</p>
+
+<p>Also, note that <strong>$_</strong> will be set to the <strong>Exception</strong> object inside the <strong>CATCH</strong> block. In this example, execution will continue with the statement after the one that caused the <strong>Exception</strong> to be thrown. This is achieved by calling the <strong>resume</strong> method on the <strong>Exception</strong> object. If the exception is not resumed, it will be thrown again and possibly caught by an outer <strong>CATCH</strong> block (if there is one). And if there are no outer <strong>CATCH</strong> blocks, the exception will result in program termination.</p>
+
+<p>The <a href="https://docs.perl6.org/language/control#default_and_when" target="_blank"><strong>when</strong></a> statement makes it easy to check for a specific exception:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="br0">&#123;</span><br />
+&nbsp; &nbsp; CATCH <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; when X<span class="sy0">::</span><span class="me2">NYI</span> <span class="br0">&#123;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># Not Yet Implemented exception thrown</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; say <span class="st0">&quot;aw, too early in history&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">.</span>resume<span class="sy0">;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; default <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; say <span class="st0">&quot;WAT?&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">.</span>rethrow<span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># throw the exception again</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; X<span class="sy0">::</span><span class="me2">NYI</span><span class="sy0">.</span><span class="kw2">new</span><span class="br0">&#40;</span>feature <span class="sy0">=&gt;</span> <span class="st0">&quot;Frobnicator&quot;</span><span class="br0">&#41;</span><span class="sy0">.</span>throw<span class="sy0">;</span> &nbsp;<span class="co1"># caught, resumed</span><br />
+&nbsp; &nbsp; now <span class="sy0">/</span> <span class="nu0">0</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># caught, rethrown</span><br />
+&nbsp; &nbsp; say <span class="st0">&quot;back to the future&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="co1"># aw, too early in history</span><br />
+<span class="co1"># WAT?</span><br />
+<span class="co1"># Attempt to divide 1234.5678 by zero using /</span></div></div></pre>
+
+<p>In this example, only <strong>X::NYI</strong> exceptions will resume; all the others will be thrown to any outer <strong>CATCH</strong> block and will probably result in program termination. And we'll never go back to the future.</p>
+
+<h2 id="catching-warnings">Catching warnings</h2>
+
+<p>If you do not want any warnings to emanate when a piece of code executes, you can use the <strong>no warnings</strong> pragma in Perl 5:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<span class="kw2">use</span> warnings<span class="sy0">;</span> &nbsp; &nbsp; <span class="co1"># need to enable warnings explicitely</span><br />
+<span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/no.html"><span class="kw3">no</span></a> warnings<span class="sy0">;</span><br />
+&nbsp; &nbsp; <span class="kw1">my</span> <span class="re0">$foo</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; say <span class="re0">$foo</span><span class="sy0">;</span> &nbsp; &nbsp; <span class="co1"># no visible warning</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">my</span> <span class="re0">$bar</span><span class="sy0">;</span><br />
+<a href="http://perldoc.perl.org/functions/print.html"><span class="kw3">print</span></a> <span class="re0">$bar</span><span class="sy0">;</span><br />
+<span class="co1"># Use of uninitialized value $bar in print...</span></div></div></pre>
+
+<p>In Perl 6, you can use a <strong>quietly</strong> block:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># warnings are enabled by default</span><br />
+quietly <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <span class="kw1">my</span> <span class="re0">$foo</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; say <span class="re0">$foo</span><span class="sy0">;</span> &nbsp; &nbsp; <span class="co1"># no visible warning</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">my</span> <span class="re0">$bar</span><span class="sy0">;</span><br />
+<a href="http://perldoc.perl.org/functions/print.html"><span class="kw3">print</span></a> <span class="re0">$bar</span><span class="sy0">;</span><br />
+<span class="co1"># Use of uninitialized value of type Any in string context...</span></div></div></pre>
+
+<p>The <strong>quietly</strong> block will catch <em>any</em> warnings that emanate from that block and disregard them.</p>
+
+<p>If you want finer control on which warnings you want to see, you can select the <a href="https://perldoc.pl/warnings#Category-Hierarchy" target="_blank">warning categories</a> you want enabled or disabled with <strong>use warnings</strong> or <strong>no warnings</strong>, respectively, in Perl 5. For example:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<span class="kw2">use</span> warnings<span class="sy0">;</span><br />
+<span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/no.html"><span class="kw3">no</span></a> warnings <span class="st_h">'uninitialized'</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; <span class="kw1">my</span> <span class="re0">$bar</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/print.html"><span class="kw3">print</span></a> <span class="re0">$bar</span><span class="sy0">;</span> &nbsp; &nbsp;<span class="co1"># no visible warning</span><br />
+<span class="br0">&#125;</span></div></div></pre>
+
+<p>If you want to have finer control in Perl 6, you will need a <strong>CONTROL</strong> phaser.</p>
+
+<h2 id="control">CONTROL</h2>
+
+<p>The <strong>CONTROL</strong> phaser is very much like the <strong>CATCH</strong> phaser, but it handles a special type of exception called the "control exception." A control exception is thrown whenever a warning is generated in Perl 6, which you can catch with the <strong>CONTROL</strong> phaser. This example will <em>not</em> show warnings for using uninitialized values in expressions:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="br0">&#123;</span><br />
+&nbsp; &nbsp; CONTROL <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; when CX<span class="sy0">::</span><span class="me2">Warn</span> <span class="br0">&#123;</span> &nbsp;<span class="co1"># Control eXception type for Warnings</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; note <span class="sy0">.</span>message<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">unless</span> <span class="sy0">.</span>message<span class="sy0">.</span>starts<span class="sy0">-</span>with<span class="br0">&#40;</span><span class="st_h">'Use of uninitialized value'</span><span class="br0">&#41;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; <span class="kw1">my</span> <span class="re0">$bar</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/print.html"><span class="kw3">print</span></a> <span class="re0">$bar</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1"># no visible warning</span><br />
+<span class="br0">&#125;</span></div></div></pre>
+
+<p>There are currently no warning categories defined in Perl 6, but they are being discussed for future development. In the meantime, you will have to check for the actual <strong>message</strong> of the control exception <strong>CX::Warn</strong> type, as shown above.</p>
+
+<p>The control exception mechanism is used for quite a lot of other functionality in addition to warnings. The following statements (in alphabetical order) also create control exceptions:</p>
+
+<ul><li><a href="https://docs.perl6.org/language/control#supply/emit" target="_blank">emit</a></li>
+	<li><a href="https://docs.perl6.org/language/control#fail" target="_blank">fail</a></li>
+	<li><a href="https://docs.perl6.org/language/control#last" target="_blank">last</a></li>
+	<li><a href="https://docs.perl6.org/language/control#next" target="_blank">next</a></li>
+	<li><a href="https://docs.perl6.org/language/control#proceed" target="_blank">proceed</a></li>
+	<li><a href="https://docs.perl6.org/language/control#redo" target="_blank">redo</a></li>
+	<li><a href="https://docs.perl6.org/language/control#return" target="_blank">return</a></li>
+	<li><a href="https://docs.perl6.org/language/control#return-rw" target="_blank">return-rw</a></li>
+	<li><a href="https://docs.perl6.org/language/control#succeed" target="_blank">succeed</a></li>
+	<li><a href="https://docs.perl6.org/language/control#gather/take" target="_blank">take</a></li>
+</ul><p>Control exceptions generated by these statements will also show up in any <strong>CONTROL</strong> phaser. Luckily, if you don't do anything with the given control exception, it will be rethrown when the <strong>CONTROL</strong> phaser is finished and ensure its intended action is performed.</p>
+
+<h2 id="failure-is-an-option">Failure is an option</h2>
+
+<p>In Perl 5, you need to prepare for a possible exception by using <strong>eval</strong> or some version of <strong>try</strong> when using a CPAN module. In Perl 6, you can do the same with <strong>try</strong> (as seen before).</p>
+
+<p>But Perl 6 also has another option: <a href="https://docs.perl6.org/type/Failure" target="_blank"><strong>Failure</strong></a>, which is a special class for wrapping an <strong><a href="https://docs.perl6.org/type/Exception" target="_blank">Exception</a></strong>. Whenever a <strong>Failure</strong> object is used in an unanticipated way, it will throw the <strong>Exception</strong> it is wrapping. Here is a simple example:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw1">my</span> <span class="re0">$handle</span> <span class="sy0">=</span> <a href="http://perldoc.perl.org/functions/open.html"><span class="kw3">open</span></a> <span class="st0">&quot;non-existing file&quot;</span><span class="sy0">;</span><br />
+say <span class="st0">&quot;we tried to open the file&quot;</span><span class="sy0">;</span><br />
+say <span class="re0">$handle</span><span class="sy0">.</span>get<span class="sy0">;</span> &nbsp;<span class="co1"># unanticipated use of $handle, throws exception</span><br />
+say <span class="st0">&quot;this will never be shown&quot;</span><span class="sy0">;</span><br />
+<span class="co1"># we tried to open the handle</span><br />
+<span class="co1"># Failed to open file non-existing file: No such file or directory</span></div></div></pre>
+
+<p>The <strong><a href="https://docs.perl6.org/routine/open#(IO)_sub_open" target="_blank">open</a></strong> function in Perl 6 returns an <strong><a href="https://docs.perl6.org/type/IO::Handle" target="_blank">IO::Handle</a></strong> if it successfully opens the requested file. If it fails, it returns a <strong>Failure</strong>. This, however, is <em>not</em> what throws the exception—if we actually try to <em>use</em> the <strong>Failure</strong> in an unanticipated way, <em>then</em> the <strong>Exception</strong> will be thrown.</p>
+
+<p>There are only <em>two</em> ways of preventing the <strong>Exception</strong> inside a <strong>Failure</strong> to be thrown (i.e., anticipating a potential failure):</p>
+
+<ul><li>Call the <strong>.defined</strong> method on the Failure</li>
+	<li>Call the <strong>.Bool</strong> method on the Failure</li>
+</ul><p>In either case, these methods will return <strong>False</strong> (even though technically the <strong>Failure</strong> object <em>is</em> instantiated). Apart from that, they will <em>also</em> mark the <strong>Failure</strong> as "handled," meaning that if the <strong>Failure</strong> is later used in an unanticipated way, it will <em>not</em> throw the <strong>Exception</strong> but simply return <strong>False</strong>.</p>
+
+<p>Calling <strong>.defined</strong> or <strong>.Bool</strong> on most other instantiated objects will always return <strong>True</strong>. This gives you an easy way to find out if something you expected to return a "real" instantiated object returned something you can really use.</p>
+
+<p>However, it does seem like a lot of work. Fortunately, you don't have to explicitly call these methods (unless you really want to). Let's rephrase the above code to more gently handle not being able to open the file:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw1">my</span> <span class="re0">$handle</span> <span class="sy0">=</span> <a href="http://perldoc.perl.org/functions/open.html"><span class="kw3">open</span></a> <span class="st0">&quot;non-existing file&quot;</span><span class="sy0">;</span><br />
+say <span class="st0">&quot;tried to open the file&quot;</span><span class="sy0">;</span><br />
+<span class="kw1">if</span> <span class="re0">$handle</span> <span class="br0">&#123;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1"># &quot;if&quot; calls .Bool, True on an IO::Handle</span><br />
+&nbsp; &nbsp; say <span class="st0">&quot;we opened the file&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; <span class="sy0">.</span>say <span class="kw1">for</span> <span class="re0">$handle</span><span class="sy0">.</span>lines<span class="sy0">;</span> &nbsp; &nbsp; <span class="co1"># read/show all lines one by one</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">else</span> <span class="br0">&#123;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1"># opening the file failed</span><br />
+&nbsp; &nbsp; say <span class="st0">&quot;could not open file&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+say <span class="st0">&quot;but still in business&quot;</span><span class="sy0">;</span><br />
+<span class="co1"># tried to open the file</span><br />
+<span class="co1"># could not open file</span><br />
+<span class="co1"># but still in business</span></div></div></pre>
+
+<h2 id="throwing-exceptions">Throwing exceptions</h2>
+
+<p>As in Perl 5, the simplest way to create an exception and throw it is to use the <strong><a href="https://docs.perl6.org/routine/die" target="_blank">die</a></strong> function. In Perl 6, this is a shortcut to creating an <strong><a href="https://docs.perl6.org/type/X::AdHoc" target="_blank">X::AdHoc</a></strong><strong> Exception</strong> and throwing it:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<span class="kw2">sub</span> alas <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> <span class="st0">&quot;Goodbye cruel world&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; say <span class="st0">&quot;this will not be shown&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+alas<span class="sy0">;</span><br />
+<span class="co1"># Goodbye cruel world at ...</span><br />
+<br />
+<span class="co1"># Perl 6</span><br />
+<span class="kw2">sub</span> alas <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> <span class="st0">&quot;Goodbye cruel world&quot;</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; say <span class="st0">&quot;this will not be shown&quot;</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="co1"># Goodbye cruel world</span><br />
+<span class="co1"># &nbsp; in sub alas at ...</span><br />
+<span class="co1"># &nbsp; in ...</span></div></div></pre>
+
+<p>There are some subtle differences between <strong>die</strong> in Perl 5 and Perl 6, but semantically they are the same: they immediately stop an execution.</p>
+
+<h2 id="returning-with-a-failure">Returning with a failure</h2>
+
+<p>Perl 6 has added the <strong><a href="https://docs.perl6.org/syntax/%20fail" target="_blank">fail</a></strong> function. This will immediately return from the surrounding subroutine/method with the given <strong>Exception</strong>: if a string is supplied to the `fail` function (rather than an `Exception` object), then an <strong>X::AdHoc</strong> exception will be created.</p>
+
+<p>Suppose you have a subroutine taking one parameter, a value that is checked for truthiness:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw2">sub</span> maybe<span class="sy0">-</span>alas<span class="br0">&#40;</span><span class="re0">$expected</span><span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; fail <span class="st0">&quot;Not what was expected&quot;</span> <span class="kw1">unless</span> <span class="re0">$expected</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/return.html"><span class="kw3">return</span></a> <span class="nu0">42</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">my</span> <span class="re0">$a</span> <span class="sy0">=</span> maybe<span class="sy0">-</span>alas<span class="br0">&#40;</span><span class="nu0">666</span><span class="br0">&#41;</span><span class="sy0">;</span><br />
+<span class="kw1">my</span> <span class="re0">$b</span> <span class="sy0">=</span> maybe<span class="sy0">-</span>alas<span class="br0">&#40;</span><span class="st0">&quot;&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span><br />
+say <span class="st0">&quot;values gathered&quot;</span><span class="sy0">;</span><br />
+say <span class="re0">$a</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># ok</span><br />
+say <span class="re0">$b</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># will throw, because it has a Failure</span><br />
+say <span class="st0">&quot;still in business&quot;</span><span class="sy0">;</span> &nbsp;<span class="co1"># will not be shown</span><br />
+<span class="co1"># values gathered</span><br />
+<span class="co1"># 42</span><br />
+<span class="co1"># Not what was expected</span><br />
+<span class="co1"># &nbsp; in sub maybe-alas at ...</span></div></div></pre>
+
+<p>Note that you do not have to provide <strong>try</strong> or <strong>CATCH</strong>: the <strong>Failure</strong> will be returned from the subroutine/method in question as if all is normal. Only if the <strong>Failure</strong> is used in an unanticipated way will the <strong>Exception</strong> embedded in it be thrown. An alternative way of handling this would be:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw2">sub</span> maybe<span class="sy0">-</span>alas<span class="br0">&#40;</span><span class="re0">$expected</span><span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; fail <span class="st0">&quot;Not what was expected&quot;</span> <span class="kw1">unless</span> <span class="re0">$expected</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; <a href="http://perldoc.perl.org/functions/return.html"><span class="kw3">return</span></a> <span class="nu0">42</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">my</span> <span class="re0">$a</span> <span class="sy0">=</span> maybe<span class="sy0">-</span>alas<span class="br0">&#40;</span><span class="nu0">666</span><span class="br0">&#41;</span><span class="sy0">;</span><br />
+<span class="kw1">my</span> <span class="re0">$b</span> <span class="sy0">=</span> maybe<span class="sy0">-</span>alas<span class="br0">&#40;</span><span class="st0">&quot;&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span><br />
+say <span class="st0">&quot;values gathered&quot;</span><span class="sy0">;</span><br />
+say <span class="re0">$a</span> <span class="sy0">??</span> <span class="st0">&quot;got $a for a&quot;</span> <span class="sy0">!!</span> <span class="st0">&quot;no valid value returned for a&quot;</span><span class="sy0">;</span><br />
+say <span class="re0">$b</span> <span class="sy0">??</span> <span class="st0">&quot;got $b for b&quot;</span> <span class="sy0">!!</span> <span class="st0">&quot;no valid value returned for b&quot;</span><span class="sy0">;</span><br />
+say <span class="st0">&quot;still in business&quot;</span><span class="sy0">;</span><br />
+<span class="co1"># values gathered</span><br />
+<span class="co1"># got 42 for a</span><br />
+<span class="co1"># no valid value returned for b</span><br />
+<span class="co1"># still in business</span></div></div></pre>
+
+<p>Note that the ternary operator <strong>?? !!</strong> calls <strong>.Bool</strong> on the condition, so it effectively disarms the <strong>Failure</strong> that was returned by <strong>fail</strong>.</p>
+
+<p>You can think of <strong>fail</strong> as syntactic sugar for returning a <strong>Failure</strong> object:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+fail <span class="st0">&quot;Not what was expected&quot;</span><span class="sy0">;</span><br />
+<br />
+<span class="co1"># Perl 6</span><br />
+<a href="http://perldoc.perl.org/functions/return.html"><span class="kw3">return</span></a> Failure<span class="sy0">.</span><span class="kw2">new</span><span class="br0">&#40;</span><span class="st0">&quot;Not what was expected&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span> &nbsp;<span class="co1"># semantically the same</span></div></div></pre>
+
+<h2 id="creating-your-own-exceptions">Creating your own exceptions</h2>
+
+<p>Perl 6 makes it very easy to create your own (typed) <strong>Exception</strong> classes. You just need to inherit from the <strong>Exception</strong> class and provide a <strong>message</strong> method. It is customary to make custom classes in the <strong>X::</strong> namespace. For example:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+class X<span class="sy0">::</span><span class="me2">Frobnication</span><span class="sy0">::</span><span class="me2">Failed</span> is Exception <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; has $<span class="sy0">.</span>reason<span class="sy0">;</span> &nbsp;<span class="co1"># public attribute</span><br />
+&nbsp; &nbsp; method message<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="st0">&quot;Frobnication failed because of $.reason&quot;</span><br />
+&nbsp; &nbsp; <span class="br0">&#125;</span><br />
+<span class="br0">&#125;</span></div></div></pre>
+
+<p>You can then use that exception in your code in any <strong>die</strong> or <strong>fail</strong> statement:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<a href="http://perldoc.perl.org/functions/die.html"><span class="kw3">die</span></a> X<span class="sy0">::</span><span class="me2">Frobnication</span><span class="sy0">::</span><span class="me2">Failed</span><span class="sy0">.</span><span class="kw2">new</span><span class="br0">&#40;</span> reason <span class="sy0">=&gt;</span> <span class="st0">&quot;too much interference&quot;</span> <span class="br0">&#41;</span><span class="sy0">;</span><br />
+<br />
+<span class="co1"># Perl 6</span><br />
+fail X<span class="sy0">::</span><span class="me2">Frobnication</span><span class="sy0">::</span><span class="me2">Failed</span><span class="sy0">.</span><span class="kw2">new</span><span class="br0">&#40;</span> reason <span class="sy0">=&gt;</span> <span class="st0">&quot;too much interference&quot;</span> <span class="br0">&#41;</span><span class="sy0">;</span></div></div></pre>
+
+<p>which you can check for inside a <strong>CATCH</strong> block and introspect if necessary:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+CATCH <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; when X<span class="sy0">::</span><span class="me2">Frobnicate</span><span class="sy0">::</span><span class="me2">Failed</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span> <span class="sy0">.</span>reason <span class="kw1">eq</span> <span class="st_h">'too much interference'</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="sy0">.</span>resume &nbsp; &nbsp; <span class="co1"># too much interference is ok</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; <span class="br0">&#125;</span><br />
+<span class="br0">&#125;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="co1"># all others will re-throw</span></div></div></pre>
+
+<p>You are completely free in how you set up your <strong>Exception</strong> classes; the only thing the class needs to provide a method called 'message' that should return a string. How that string is created is entirely up to you, as long as the <strong>method</strong> returns a string. If you prefer working with error codes, you can:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 6</span><br />
+<span class="kw1">my</span> <span class="re0">@texts</span> <span class="sy0">=</span><br />
+&nbsp; <span class="st0">&quot;unknown error&quot;</span><span class="sy0">,</span><br />
+&nbsp; <span class="st0">&quot;too much interference&quot;</span><span class="sy0">,</span><br />
+<span class="sy0">;</span><br />
+<span class="kw1">my</span> constant TOO_MUCH_INTERFERENCE <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span><br />
+class X<span class="sy0">::</span><span class="me2">Frobnication</span><span class="sy0">::</span><span class="me2">Failed</span> is Exception <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; has Int $<span class="sy0">.</span>reason <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; method message<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="st0">&quot;Frobnication failed because of @texts[$.reason]&quot;</span><br />
+&nbsp; &nbsp; <span class="br0">&#125;</span><br />
+<span class="br0">&#125;</span></div></div></pre>
+
+<p>As you can see, this quickly becomes more elaborate, so your mileage may vary.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>Catching exceptions and warnings are handled by phasers in Perl 6, not by <strong>eval</strong> or signal handlers, as in Perl 5. <strong>Exception</strong>s are first-class objects in Perl 6.</p>
+
+<p>Perl 6 also introduces the concept of a <strong>Failure</strong> object, which embeds an <strong>Exception</strong> object. If the <strong>Failure</strong> object is used in an unanticipated way, the embedded <strong>Exception</strong> will be thrown.</p>
+
+<p>You can easily check for a <strong>Failure</strong> with <strong>if</strong>, <strong>?? !!</strong> (which checks for truthiness by calling the <strong>.Bool</strong> method) and <strong>with</strong> (which checks for definedness by calling the <strong>.defined</strong> method).</p>
+
+<p>You can also create <strong>Exception</strong> classes very easily by inheriting from the <strong>Exception</strong> class and providing a <strong>message</strong> method.</p>
+</div></div></div>
+  
+  </div>
+<div class="panel-pane pane-views-panes pane-listacles-panel-pane-1"  >
+  
+      
+  
+  <div class="view view-listacles view-id-listacles view-display-id-panel_pane_1 view-dom-id-88d72d7bc71847938684a7366f7ef3ea">
+        
+  
+  
+      <div class="view-content">
+              
+  <div class="views-field views-field-field-listacles">        <div class="field-content"></div>  </div>      </div>
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+<div class="panel-pane pane-entity-field pane-node-field-tags"  >
+  
+        <h2 class="pane-title">
+      Topics    </h2>
+    
+  
+  <div class="field field-name-field-tags field-type-taxonomy-term-reference field-label-hidden"><div class="field-items"><div class="field-item even" rel="schema:keywords"><a href="/tags/perl" typeof="skos:Concept" property="rdfs:label skos:prefLabel" datatype="">Perl</a></div></div></div>
+  
+  </div>
+<div class="panel-pane pane-views-panes pane-author-info-panel-pane-1"  >
+  
+      
+  
+  <div class="view view-author-info view-id-author_info view-display-id-panel_pane_1 view-dom-id-89c1b4a8a4cd07fa5a74a89f00968758">
+        
+  
+  
+      <div class="view-content">
+              
+  <div class="authorbio">        <h2 class="authorbio__pane-title pane-title">About the author</h2>
+<div class="authorbio__thumbnail"><a href="/users/lizmat"><img class="profile-pictures" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/profile_pictures/public/pictures/liz.jpg?itok=9e20o5mx" width="100" height="100" alt="Elizabeth Mattijsen" /></a></div>
+<div class="authorbio__content">
+  <span class="authorbio__name">Elizabeth Mattijsen</span> - <span class="authorbio__about">Elizabeth Mattijsen has been programming for a living since 1978 in various (mostly now defunct) programming languages before she started programming in Perl 4.  In 1994 she started the first commercial web site development company in the Netherlands, using Perl 5 as the main programming language.  From 2003 onwards, she was involved in the rapid growth of an online Hotel Reservation service.  In 2012 she got more directly involved in the development of Rakudo Perl 6.  From 2015 she has also...</span>
+  <div class="authorbio__more-link"><a href="/users/lizmat">More about me</a></div>
+</div>  </div>      </div>
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+<div class="panel-pane pane-block pane-bean-article-promo-block"  >
+  
+      
+  
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/article-promo-block" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"></div></div></div>  </div>
+</div>
+
+  
+  </div>
+    </div>
+  
+      <div class="os-article__bottom">
+      <div class="panel-pane pane-views-panes pane-related-articles-panel-pane-1"  >
+  
+        <h2 class="pane-title">
+      Recommended reading    </h2>
+    
+  
+  <div class="view view-related-articles view-id-related_articles view-display-id-panel_pane_1 related-content view-dom-id-a26eb3ccc62141b070b57350689d421e">
+        
+  
+  
+      <div id="related-content-footer" class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/20/3/markov-models-perl"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/osdc_520x292_opendata_0613mm.png?itok=CkimrPpx" width="315" height="177" alt="Open data brain" title="Open data brain" /><br />
+Getting started with hidden Markov models using Perl</a></span>  </div>  </div>  <div class="views-row views-row-2 views-row-even">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/19/8/command-line-heroes-perl"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/command-line-heroes-520x292.png?itok=MfuERtOp" width="315" height="177" alt="Listen to the Command Line Heroes Podcast" title="Listen to the Command Line Heroes Podcast" /><br />
+Is Perl going extinct?</a></span>  </div>  </div>  <div class="views-row views-row-3 views-row-odd">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/18/12/calling-subs-and-typing-perl-6"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/programming_keys.jpg?itok=9Vn-HU9y" width="315" height="177" alt="A keyboard." title="A keyboard." /><br />
+Calling subs and typing in Perl 6</a></span>  </div>  </div>  <div class="views-row views-row-4 views-row-even">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/18/11/perl-foss-first-love"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/red-love-heart-alone-stone-path.jpg?itok=0q0lxZYb" width="315" height="177" alt="Red heart with text &quot;you are not alone&quot;" title="Red heart with text &quot;you are not alone&quot;" /><br />
+My first FOSS love was Perl</a></span>  </div>  </div>  <div class="views-row views-row-5 views-row-odd">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/18/11/how-make-perl-more-classy"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/coffee_cafe_brew_laptop_desktop.jpg?itok=dFCcx93T" width="315" height="177" alt="Coffee and laptop" title="Coffee and laptop" /><br />
+How to make Perl more classy</a></span>  </div>  </div>  <div class="views-row views-row-6 views-row-even views-row-last">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/18/10/how-phasers-work-perl-6"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/programming_keyboard_coding.png?itok=PMb0eF7s" width="315" height="177" alt="Programming keyboard." title="Programming keyboard." /><br />
+How phasers work in Perl 6</a></span>  </div>  </div>    </div>
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+    </div>
+  
+      <div class="os-article__footer">
+      <div class="panel-pane pane-node-comments"  id="comments" >
+  
+          <h2 class="pane-title">
+      3 Comments, <a href="/user/register">Register</a> or <a href="/user/login">Log in</a> to post a comment.    </h2>
+    
+  
+  <a id="comment-167161"></a>
+<div class="comment first odd clearfix" about="/comment/167161#comment-167161" typeof="sioc:Post sioct:Comment">
+
+  <div class="user-picture-badges">
+    <img class="comment-avatar" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/comment_avatar/public/osdc_default_avatar.png?itok=pk-4pxZV" width="50" height="50" alt="shimnasuresh" title="shimnasuresh" />      </div>
+
+  
+  <div class="submitted">
+    <span property="dc:date dc:created" content="2018-11-22T05:04:29-05:00" datatype="xsd:dateTime" rel="sioc:has_creator"><a href="/users/shimnasuresh" class="username">Shimna Suresh</a> on 22 Nov 2018</span>    <a href="/comment/167161#comment-167161" class="permalink" rel="bookmark">Permalink</a>      </div>
+
+  <div class="content">
+    <span rel="sioc:reply_of" resource="/article/18/11/failure-option-perl-6" class="rdf-meta element-hidden"></span><div class="field field-name-comment-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even" property="content:encoded"><p>Very informative post...Thanks for sharing...</p>
+</div></div></div>      </div>
+
+  <div class="comment__meta">
+          </div>
+</div>
+<a id="comment-167236"></a>
+<div class="comment comment-by-anonymous even clearfix" about="/comment/167236#comment-167236" typeof="sioc:Post sioct:Comment">
+
+  <div class="user-picture-badges">
+    <img class="comment-avatar" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/comment_avatar/public/osdc_default_avatar.png?itok=pk-4pxZV" width="50" height="50" alt="quest" title="quest" />      </div>
+
+  
+  <div class="submitted">
+    <span property="dc:date dc:created" content="2018-11-23T10:25:09-05:00" datatype="xsd:dateTime" rel="sioc:has_creator">quest on 23 Nov 2018</span>    <a href="/comment/167236#comment-167236" class="permalink" rel="bookmark">Permalink</a>      </div>
+
+  <div class="content">
+    <span rel="sioc:reply_of" resource="/article/18/11/failure-option-perl-6" class="rdf-meta element-hidden"></span><div class="field field-name-comment-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even" property="content:encoded"><p>i like python try catch. In perl 6 difficult to understand what is happening. Maybe over time I will understand how it works.</p>
+</div></div></div>      </div>
+
+  <div class="comment__meta">
+          </div>
+</div>
+
+<div class="indented"><a id="comment-167361"></a>
+<div class="comment comment-by-node-author last odd clearfix" about="/comment/167361#comment-167361" typeof="sioc:Post sioct:Comment">
+
+  <div class="user-picture-badges">
+    <img class="comment-avatar" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/comment_avatar/public/pictures/liz.jpg?itok=PpgHHUls" width="50" height="50" alt="lizmat" title="lizmat" />      </div>
+
+  
+  <div class="submitted">
+    <span property="dc:date dc:created" content="2018-11-26T05:17:18-05:00" datatype="xsd:dateTime" rel="sioc:has_creator"><a href="/users/lizmat" class="username">Elizabeth Mattijsen</a> on 26 Nov 2018</span>    <a href="/comment/167361#comment-167361" class="permalink" rel="bookmark">Permalink</a>      </div>
+
+  <div class="content">
+    <span rel="sioc:reply_of" resource="/article/18/11/failure-option-perl-6" class="rdf-meta element-hidden"></span><span rel="sioc:reply_of" resource="/comment/167236#comment-167236" class="rdf-meta element-hidden"></span><div class="field field-name-comment-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even" property="content:encoded"><p>Thank you for continuing to try!</p>
+</div></div></div>      </div>
+
+  <div class="comment__meta">
+          </div>
+</div>
+</div>
+
+
+  </div>
+<div class="panel-pane pane-entity-field pane-node-field-default-license"  >
+  
+      
+  
+  <div class="field field-name-field-default-license field-type-text field-label-hidden"><div class="field-items"><div class="field-item even" property="schema:license"><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+        <img alt="Creative Commons License" style="border-width:0" src="/sites/all/themes/opensource/images/cc-by-sa-4.png" title="This work is licensed under a Creative Commons Attribution-Share Alike 4.0 International License." /></a></div></div></div>
+  
+  </div>
+    </div>
+  
+</div>
+                  </div>
+
+
+        
+        
+      </div>
+
+        <div class="region region-pre-footer">
+    <div id="block-os-common-components-footer-call-to-action" class="block block-os-common-components first last odd">
+
+      
+  
+<div class="fieldable-panels-pane cta cta--green-on-blue cta--no-link">
+
+  <div class="cta__content cta__content--no-link">
+            <h2 class="cta__title">Subscribe to our weekly newsletter</h2>
+<div class="field field-name-field-cta-content field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p><iframe class="eloqua-embedded-bottom" frameborder="0" height="50" id="fkfkx" scrolling="no" src="/eloqua-embedded-subscribe.html?offer_id=70160000000QzXNAA0" style="max-width:600px;margin:0 auto;" width="100%"></iframe></p>
+
+<p>Get the highlights in your inbox every week.</p>
+</div></div></div>  </div>
+
+</div>
+
+
+</div>
+  </div>
+
+        <div class="region region-footer-nav">
+    <div id="block-bean-social-media" class="block block-bean first odd">
+
+      
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/social-media" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p><span>Find us:</span> 
+</p>
+<ul>
+<li><a class="footer-twitter" href="https://twitter.com/OpenSourceWay" title="Twitter">Twitter</a></li>
+<li><a class="footer-facebook" href="https://www.facebook.com/opensourceway" title="Facebook">Facebook</a></li>
+<li><a class="footer-youtube" href="http://www.youtube.com/opensourceway" title="Youtube">Youtube</a></li>
+<li><a class="footer-mastodon" href="https://fosstodon.org/@osdc" title="">Mastodon</a></li>
+<li><a class="footer-feed" href="/feed" title="RSS">RSS</a></li>
+</ul>
+</div></div></div>  </div>
+</div>
+
+</div>
+<div id="block-menu-menu-footer" class="block block-menu last even" role="navigation">
+
+        <h2 class="block__title block-title">Footer</h2>
+    
+  <ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/privacy-policy" class="menu__link">Privacy Policy</a></li>
+<li class="menu__item is-leaf leaf"><a href="/legal" class="menu__link">Terms of Use</a></li>
+<li class="menu__item is-leaf leaf"><a href="/contact" class="menu__link">Contact</a></li>
+<li class="menu__item is-leaf leaf"><a href="/opensourcecom-team" title="" class="menu__link">Meet the Team</a></li>
+<li class="menu__item is-leaf last leaf"><a href="http://opensource.org/" title="" class="menu__link">Visit opensource.org</a></li>
+</ul>
+</div>
+  </div>
+
+        <footer id="footer" class="region region-footer">
+    <div id="block-bean-copyrigt-block" class="block block-bean first odd">
+
+      
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/copyrigt-block" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p>For more discussion on open source and the role of the CIO in the enterprise, join us at <a href="https://enterprisersproject.com">The EnterprisersProject.com</a>.</p>
+
+<p>The opinions expressed on this website are those of each author, not of the author's employer or of Red Hat.</p>
+
+<p>Opensource.com aspires to publish all content under a <a href="http://creativecommons.org/licenses/">Creative Commons license</a> but may not be able to do so in all cases. You are responsible for ensuring that you have the necessary permission to reuse any work on this site. Red Hat and the Red Hat logo are trademarks of Red Hat, Inc., registered in the United States and other countries.</p>
+
+<p>Copyright ©2021 Red Hat, Inc.</p>
+</div></div></div>  </div>
+</div>
+
+</div>
+<div id="block-bean-footer-logo" class="block block-bean last even">
+
+      
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/footer-logo" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p><img src="/sites/all/themes/opensource/images/footer_logo.svg" /></p>
+</div></div></div>  </div>
+</div>
+
+</div>
+  </footer>
+
+    </div>
+
+    
+      <div class="region region-os-social">
+    <div id="block-os-social-os-social-share" class="block block-os-social first last odd">
+
+      
+  <div class="a2a_kit a2a_kit_size_32 a2a_floating_style a2a_vertical_style" data-a2a-url="https://opensource.com/article/18/11/failure-option-perl-6">
+  <a class="a2a_button_twitter a2a_counter"></a>
+  <a class="a2a_button_facebook a2a_counter"></a>
+  <a class="a2a_button_linkedin a2a_counter"></a>
+  <a class="a2a_button_reddit a2a_counter"></a>
+  <a class="a2a_button_email a2a_counter"></a>
+  <a class="a2a_button_mastodon a2a_counter"></a>
+  <!--a class="a2a_dd" href="https://www.addtoany.com/share"></a-->
+  </div><div class="a2a_kit a2a_kit_size_32 a2a_floating_style a2a_default_style">
+  <a class="a2a_button_twitter a2a_counter"></a>
+  <a class="a2a_button_facebook a2a_counter"></a>
+  <a class="a2a_button_linkedin a2a_counter"></a>
+  <a class="a2a_button_reddit a2a_counter"></a>
+  <a class="a2a_button_email a2a_counter"></a>
+  <a class="a2a_button_mastodon a2a_counter"></a>
+  <!--a class="a2a_dd" href="https://www.addtoany.com/share"></a-->
+  </div>
+</div>
+  </div>
+    <div class="region region-page-bottom">
+    <!-- begin Google Remarketing --><img height="1" width="1" style="border-style:none;display:block;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/990030321/?value=0&amp;label=rxV4CN_35QQQ8dOK2AM&amp;guid=ON&amp;script=0" onerror="this.src='/sites/all/themes/opensource/images/1x1.png';this.onerror=null" /><!-- end Google Remarketing -->  </div>
+<script src="https://opensource.com/sites/default/files/js/js_29qYXJz8NLGg8Aomg-RZPjJcj9yEdEst1BMZ9gZbs-4.js"></script>
+<script>if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {_satellite.pageBottom();}</script>
+<script>var a2a_config = a2a_config || {};
+              a2a_config.callbacks = a2a_config.callbacks || [];
+a2a_config.templates = {
+    twitter: "Failure is an option in Perl 6 https://red.ht/2JF070f via @opensourceway"
+};</script>
+  <!-- This was a triumph! I'm making a note here, huge success. -->
+</body>
+</html>

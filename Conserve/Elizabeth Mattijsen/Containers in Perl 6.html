@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7]><html class="no-js iem7"  lang="en" dir="ltr"><![endif]-->
+<!--[if lte IE 6]><html class="no-js lt-ie9 lt-ie8 lt-ie7"  lang="en" dir="ltr"><![endif]-->
+<!--[if (IE 7)&(!IEMobile)]><html class="no-js lt-ie9 lt-ie8"  lang="en" dir="ltr"><![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"  lang="en" dir="ltr"><![endif]-->
+<!--[if (gte IE 9)|(gt IEMobile 7)]><!--><html class="no-js"  lang="en" dir="ltr" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# book: http://ogp.me/ns/book# profile: http://ogp.me/ns/profile# video: http://ogp.me/ns/video# product: http://ogp.me/ns/product# content: http://purl.org/rss/1.0/modules/content/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ rdfs: http://www.w3.org/2000/01/rdf-schema# sioc: http://rdfs.org/sioc/ns# sioct: http://rdfs.org/sioc/types# skos: http://www.w3.org/2004/02/skos/core# xsd: http://www.w3.org/2001/XMLSchema# schema: http://schema.org/"><!--<![endif]-->
+
+<head>
+  <!-- Adobe Digital Data integration -->
+  <script type="text/javascript">
+    var digitalData = {};
+  </script>
+    <script id="adobe_dtm" src="https://www.redhat.com/dtm.js" type="text/javascript"></script>
+  <meta charset="utf-8" />
+<link href="https://opensource.com/rss.xml" rel="alternate" type="application/rss+xml" title="Opensource.com RSS" />
+<link rel="shortcut icon" href="https://opensource.com/sites/all/themes/opensource/favicon.ico" type="image/vnd.microsoft.icon" />
+<meta name="description" content="In the third article in this series comparing Perl 5 to Perl 6, learn how to handle references, bindings, and containers in Perl 6." />
+<meta name="rating" content="general" />
+<meta name="referrer" content="no-referrer" />
+<meta name="generator" content="Drupal 7 (http://drupal.org)" />
+<link rel="canonical" href="https://opensource.com/article/18/8/containers-perl-6" />
+<link rel="shortlink" href="https://opensource.com/node/46821" />
+<meta name="revisit-after" content="1 day" />
+<meta property="og:site_name" content="Opensource.com" />
+<meta property="og:url" content="https://opensource.com/article/18/8/containers-perl-6" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Containers in Perl 6" />
+<meta property="og:description" content="In the third article in this series comparing Perl 5 to Perl 6, learn how to handle references, bindings, and containers in Perl 6." />
+<meta property="og:image" content="https://opensource.com/sites/default/files/lead-images/data_container_block.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@opensourceway" />
+<meta name="twitter:creator" content="@" />
+<meta name="twitter:title" content="Containers in Perl 6" />
+<meta name="twitter:description" content="In the third article in this series comparing Perl 5 to Perl 6, learn how to handle references, bindings, and containers in Perl 6." />
+<meta name="twitter:image" content="https://opensource.com/sites/default/files/lead-images/data_container_block.png" />
+  <title>Containers in Perl 6 | Opensource.com</title>
+
+      <meta name="MobileOptimized" content="width">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="cleartype" content="on">
+
+  <link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_lQaZfjVpwP_oGNqdtWCSpJT1EMqXdMiU84ekLLxQnc4.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_ntCz7udh66prM85dlibL5cSl16uR5mFkmPYLsA2b56k.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_jxFjYlNIEjGhl1ZDngmG5vPMTzM4jP3dwxQjHLkTN_A.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_w8R-13eJnEJsif2OQPrWkKVVN4AuZJxI-s925NcYARQ.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_BRqtvNISSHnd_wBpEelIr145xd7L9bSKvGZhL6iKJw8.css" media="all" />
+<link type="text/css" rel="stylesheet" href="https://opensource.com/sites/default/files/css/css_PxsPpITToy8ZnO0bJDA1TEC6bbFpGTfSWr2ZP8LuFYo.css" media="all" />
+  <script src="/sites/all/themes/opensource/js/use-typekit.js"></script>
+  <script>try{Typekit.load({ async: true });}catch(e){}</script>
+  <script src="https://opensource.com/sites/default/files/js/js_bHixdNqIm_fGV7c3IlqVJl-OQXz4T0rdcigI0kCjuGg.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_CwA9uD2kYGc1ubylea-Ul8iN5PWYS40GWBA4ue9Bo4w.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_tBWHhFjU_NjWsmd07Hrx5ScmFu-4-PJD_GwzNMH3UwA.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_1-nvUqaL5esR8x8JM30KpLqEPQEF6IzjWV9p7GgYQVY.js"></script>
+<script>(function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,"script","https://www.google-analytics.com/analytics.js","ga");ga("create", "UA-33294138-1", {"cookieDomain":".opensource.com"});ga("send", "pageview");</script>
+<script src="https://opensource.com/sites/default/files/js/js_rVcPYhZ5_LfvT-dWbCnRngMcccEhwUaw2iNYx0yXj_Q.js"></script>
+<script src="https://opensource.com/sites/default/files/js/js_KbByFnBctcQt9juhHXNabaQDr4mJAc1OExQYJ-HcyXk.js"></script>
+<script>jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"opensource","theme_token":"swvgvVIrJRKmwMrXE6Mxk_BSURh1fXN4y_QvM9MmIbw","js":{"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets-spotlight.js":1,"0":1,"1":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/jquery\/1.10\/jquery.min.js":1,"misc\/jquery-extend-3.4.0.js":1,"misc\/jquery-html-prefilter-3.5.0-backport.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.core.min.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.widget.min.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.tabs.min.js":1,"profiles\/panopoly\/modules\/contrib\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.accordion.min.js":1,"sites\/all\/modules\/contrib\/comment_notify\/comment_notify.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_images\/panopoly-images.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_admin\/panopoly-admin.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_magic\/panopoly-magic.js":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/js\/panopoly-accordion.js":1,"profiles\/panopoly\/modules\/contrib\/caption_filter\/js\/caption-filter.js":1,"sites\/all\/modules\/contrib\/loginlogout\/loginlogout.js":1,"profiles\/panopoly\/libraries\/jquery.imagesloaded\/jquery.imagesloaded.min.js":1,"sites\/all\/modules\/contrib\/rate\/rate.js":1,"sites\/all\/libraries\/waypoints\/lib\/noframework.waypoints.min.js":1,"sites\/all\/themes\/opensource\/js\/os_waypoints.js":1,"sites\/all\/modules\/contrib\/google_analytics\/googleanalytics.js":1,"2":1,"file":1,"sites\/all\/themes\/opensource\/js\/addtoany-page.js":1,"sites\/all\/libraries\/superfish\/jquery.hoverIntent.minified.js":1,"sites\/all\/libraries\/superfish\/sftouchscreen.js":1,"sites\/all\/libraries\/superfish\/supposition.js":1,"sites\/all\/libraries\/superfish\/superfish.js":1,"sites\/all\/libraries\/superfish\/supersubs.js":1,"sites\/all\/modules\/contrib\/superfish\/superfish.js":1,"sites\/all\/themes\/opensource\/js\/script.js":1,"sites\/all\/themes\/opensource\/js\/cookie-banner.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"misc\/ui\/jquery.ui.theme.css":1,"misc\/ui\/jquery.ui.accordion.css":1,"sites\/all\/modules\/contrib\/comment_notify\/comment_notify.css":1,"sites\/all\/modules\/contrib\/calendar\/css\/calendar_multiday.css":1,"profiles\/panopoly\/modules\/contrib\/date\/date_api\/date.css":1,"profiles\/panopoly\/modules\/contrib\/date\/date_popup\/themes\/datepicker.1.7.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_admin\/panopoly-admin.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_admin\/panopoly-admin-navbar.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_core\/css\/panopoly-dropbutton.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_magic\/css\/panopoly-magic.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_magic\/css\/panopoly-modal.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/css\/panopoly-featured.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/css\/panopoly-accordian.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_theme\/css\/panopoly-layouts.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_widgets\/panopoly-widgets-spotlight.css":1,"modules\/poll\/poll.css":1,"profiles\/panopoly\/modules\/contrib\/radix_layouts\/radix_layouts.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/workflow\/workflow_admin_ui\/workflow_admin_ui.css":1,"profiles\/panopoly\/modules\/contrib\/views\/css\/views.css":1,"profiles\/panopoly\/modules\/contrib\/caption_filter\/caption-filter.css":1,"sites\/all\/modules\/contrib\/ckeditor\/css\/ckeditor.css":1,"profiles\/panopoly\/modules\/contrib\/media\/modules\/media_wysiwyg\/css\/media_wysiwyg.base.css":1,"profiles\/panopoly\/modules\/contrib\/ctools\/css\/ctools.css":1,"public:\/\/geshi\/geshifilter-languages.css":1,"sites\/all\/modules\/contrib\/geshifilter\/geshifilter.css":1,"sites\/all\/modules\/features\/os_common_components\/css\/os_common_components.css":1,"profiles\/panopoly\/modules\/contrib\/panels\/css\/panels.css":1,"sites\/all\/modules\/contrib\/rate\/rate.css":1,"sites\/all\/modules\/features\/os_common_components\/plugins\/layouts\/opensource_article\/opensource-article.css":1,"modules\/comment\/comment.css":1,"sites\/all\/modules\/contrib\/rate\/templates\/thumbs-up\/thumbs-up.css":1,"sites\/all\/libraries\/superfish\/css\/superfish.css":1,"sites\/all\/themes\/opensource\/system.menus.css":1,"sites\/all\/themes\/opensource\/system.messages.css":1,"sites\/all\/themes\/opensource\/system.theme.css":1,"sites\/all\/themes\/opensource\/panels.css":1,"sites\/all\/themes\/opensource\/css\/styles.css":1,"sites\/all\/themes\/opensource\/css\/geshifilter.css":1,"sites\/all\/themes\/opensource\/fonts\/css\/fontello.css":1,"sites\/all\/themes\/opensource\/css\/cookie-banner.css":1,"sites\/all\/themes\/opensource\/calendar_multiday.css":1,"sites\/all\/themes\/opensource\/date_views.css":1,"sites\/all\/themes\/opensource\/quicktabs.css":1,"profiles\/panopoly\/modules\/panopoly\/panopoly_images\/panopoly-images.css":1}},"loginlogout":{"urls":{"\/user\/login":"\/user\/login?destination=node\/46821","\/user":"\/user?destination=node\/46821"}},"CToolsModal":{"modalSize":{"type":"scale","width":".9","height":".9","addWidth":0,"addHeight":0,"contentRight":25,"contentBottom":75},"modalOptions":{"opacity":".55","background-color":"#FFF"},"animationSpeed":"fast","modalTheme":"CToolsModalDialog","throbberTheme":"CToolsModalThrobber"},"panopoly_magic":{"pane_add_preview_mode":"automatic"},"rate":{"basePath":"\/rate\/vote\/js","destination":"node\/46821"},"googleanalytics":{"trackOutbound":1,"trackMailto":1,"trackDownload":1,"trackDownloadExtensions":"7z|aac|arc|arj|asf|asx|avi|bin|csv|doc(x|m)?|dot(x|m)?|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt(x|m)?|pot(x|m)?|pps(x|m)?|ppam|sld(x|m)?|thmx|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls(x|m|b)?|xlt(x|m)|xlam|xml|z|zip","trackDomainMode":1},"urlIsAjaxTrusted":{"\/article\/18\/8\/containers-perl-6":true},"superfish":{"1":{"id":"1","sf":{"delay":"0","animation":{"opacity":"show","height":"show"},"speed":"\u0027fast\u0027","autoArrows":false,"dropShadows":false,"disableHI":false},"plugins":{"touchscreen":{"mode":"window_width","breakpoint":1070},"supposition":true,"bgiframe":false,"supersubs":{"minWidth":"12","maxWidth":"27","extraWidth":1}}}}});</script>
+      <!--[if lt IE 9]>
+    <script src="/sites/all/themes/zen/js/html5-respond.js"></script>
+    <![endif]-->
+  </head>
+<body class="html not-front not-logged-in no-sidebars page-node page-node- page-node-46821 node-type-article region-content section-article page-panels" >
+      <p id="skip-link">
+      <a href="#main-menu" class="element-invisible element-focusable">Jump to navigation</a>
+    </p>
+      
+<header class="header" id="header" role="banner">
+
+    
+    <div class="header-banner">
+      <div class="header-banner__inner">
+                  <div class="header__name-and-slogan" id="name-and-slogan">
+                          <div class="header__site-name" id="site-name">
+                <a href="/" title="Home" class="header__site-link" rel="home"><img alt="Opensource.com" src="/sites/all/themes/opensource/logo.svg" onerror="this.src='/sites/all/themes/opensource/logo.png';this.onerror=null;" /></a>
+                <a href="https://www.redhat.com/en?intcmp=701600000011l7VAAQ" title="Home" class="header__sponsor-link" rel="home"><img alt="RedHat" src="/sites/all/themes/opensource/images/redhat-logo.svg" onerror="this.src='/sites/all/themes/opensource/images/redhat-logo.png';this.onerror=null;"/></a>
+              </div>
+            
+                      </div>
+                <nav class="desktop-user-links">
+            <div class="header__region region region-header">
+    <div id="block-menu-block-1" class="block block-menu-block first last odd" role="navigation">
+
+      
+  <div class="menu-block-wrapper menu-block-1 menu-name-user-menu parent-mlid-0 menu-level-1">
+  <ul class="menu"><li class="menu__item is-leaf first leaf menu-mlid-195"><a href="/user/login" class="menu__link">Log in</a></li>
+<li class="menu__item is-leaf last leaf menu-mlid-1179"><a href="/user/register" title="Sign Up" class="menu__link">Sign Up</a></li>
+</ul></div>
+
+</div>
+  </div>
+        </nav>
+      </div>
+    </div>
+
+    <div class="sf-nav">
+      <div class="sf-nav__inner">
+          <div class="js-mobile-header-buttons region region-navigation-top">
+    <div id="block-os-solr-search-form" class="block block-os-solr-search first odd">
+
+      
+  <form action="/article/18/8/containers-perl-6" method="post" id="os-search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
+      <h2 class="element-invisible">Search form</h2>
+    <div class="form-item form-type-textfield form-item-search">
+  <label class="element-invisible" for="edit-search">Search </label>
+ <input title="Enter the terms you wish to search for." placeholder="Search opensource.com" type="text" id="edit-search" name="search" value="" size="15" maxlength="128" class="form-text" />
+</div>
+<div class="form-actions form-wrapper" id="edit-actions"><input type="submit" id="edit-submit" name="op" value="GO" class="form-submit" /></div><input type="hidden" name="form_build_id" value="form-8crZ-rcM7tcf09T58KJTRSgtmMgZpvdmf1Zn27puRRM" />
+<input type="hidden" name="form_id" value="os_search_block_form" />
+</div>
+</div></form>
+</div>
+<div id="block-superfish-1" class="block block-superfish even">
+
+        <h2 class="block__title block-title">Main menu</h2>
+    
+  <ul id="superfish-1" class="menu sf-menu sf-main-menu sf-horizontal sf-style-default sf-total-items-5 sf-parent-items-5 sf-single-items-0"><li id="menu-1906-1" class="first odd sf-item-1 sf-depth-1 sf-total-children-11 sf-parent-children-4 sf-single-children-7 menuparent"><a href="/" title="" class="sf-depth-1 menuparent">Articles</a><ul><li id="menu-12341-1" class="first odd sf-item-1 sf-depth-2 sf-no-children"><a href="/tags/containers" title="" class="sf-depth-2">Containers</a></li><li id="menu-12416-1" class="middle even sf-item-2 sf-depth-2 sf-no-children"><a href="/tags/devops" title="" class="sf-depth-2">DevOps</a></li><li id="menu-12346-1" class="middle odd sf-item-3 sf-depth-2 sf-no-children"><a href="/tags/gaming" title="" class="sf-depth-2">Gaming</a></li><li id="menu-17776-1" class="middle even sf-item-4 sf-depth-2 sf-no-children"><a href="/tags/government" title="" class="sf-depth-2">Government</a></li><li id="menu-12351-1" class="middle odd sf-item-5 sf-depth-2 sf-total-children-3 sf-parent-children-0 sf-single-children-3 menuparent"><a href="/tags/hardware" title="" class="sf-depth-2 menuparent">Hardware</a><ul><li id="menu-12376-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/3d-printing" title="" class="sf-depth-3">3D printing</a></li><li id="menu-12386-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/tags/arduino" title="" class="sf-depth-3">Arduino</a></li><li id="menu-12381-1" class="last odd sf-item-3 sf-depth-3 sf-no-children"><a href="/tags/raspberry-pi" title="" class="sf-depth-3">Raspberry Pi</a></li></ul></li><li id="menu-27341-1" class="middle even sf-item-6 sf-depth-2 sf-no-children"><a href="https://opensource.com/tags/kubernetes" title="" class="sf-depth-2">Kubernetes</a></li><li id="menu-1946-1" class="middle odd sf-item-7 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/tags/law" title="" class="sf-depth-2 menuparent">Law</a><ul><li id="menu-12391-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/licensing" title="" class="sf-depth-3">Licensing</a></li><li id="menu-12396-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/tags/patents" title="" class="sf-depth-3">Patents</a></li></ul></li><li id="menu-12356-1" class="middle even sf-item-8 sf-depth-2 sf-total-children-1 sf-parent-children-0 sf-single-children-1 menuparent"><a href="/tags/linux" title="" class="sf-depth-2 menuparent">Linux</a><ul><li id="menu-19831-1" class="firstandlast odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/command-line" title="" class="sf-depth-3">Command line</a></li></ul></li><li id="menu-12361-1" class="middle odd sf-item-9 sf-depth-2 sf-no-children"><a href="/tags/openstack" title="" class="sf-depth-2">OpenStack</a></li><li id="menu-12366-1" class="middle even sf-item-10 sf-depth-2 sf-total-children-3 sf-parent-children-0 sf-single-children-3 menuparent"><a href="/tags/programming" title="" class="sf-depth-2 menuparent">Programming</a><ul><li id="menu-17771-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/tags/go" title="" class="sf-depth-3">Go</a></li><li id="menu-12411-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/tags/javascript" title="" class="sf-depth-3">JavaScript</a></li><li id="menu-12406-1" class="last odd sf-item-3 sf-depth-3 sf-no-children"><a href="/tags/python" title="" class="sf-depth-3">Python</a></li></ul></li><li id="menu-12371-1" class="last odd sf-item-11 sf-depth-2 sf-no-children"><a href="/tags/sysadmin" title="" class="sf-depth-2">Sysadmin</a></li></ul></li><li id="menu-1921-1" class="middle even sf-item-2 sf-depth-1 sf-total-children-6 sf-parent-children-3 sf-single-children-3 menuparent"><a href="/resources" title="" class="sf-depth-1 menuparent">Resources</a><ul><li id="menu-19841-1" class="first odd sf-item-1 sf-depth-2 sf-total-children-1 sf-parent-children-0 sf-single-children-1 menuparent"><a href="/resources/what-open-source" title="" class="sf-depth-2 menuparent">What is open source?</a><ul><li id="menu-1991-1" class="firstandlast odd sf-item-1 sf-depth-3 sf-no-children"><a href="/open-source-way" class="sf-depth-3">The open source way</a></li></ul></li><li id="menu-2016-1" class="middle even sf-item-2 sf-depth-2 sf-no-children"><a href="/resources/projects-and-applications" title="" class="sf-depth-2">Projects and applications</a></li><li id="menu-2021-1" class="middle odd sf-item-3 sf-depth-2 sf-no-children"><a href="/resources/organizations" title="" class="sf-depth-2">Organizations</a></li><li id="menu-5556-1" class="middle even sf-item-4 sf-depth-2 sf-total-children-14 sf-parent-children-1 sf-single-children-13 menuparent"><a href="/resources/cloud" title="" class="sf-depth-2 menuparent">Cloud technology</a><ul><li id="menu-27201-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/resources/what-ansible" title="" class="sf-depth-3">Ansible</a></li><li id="menu-5576-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/resources/big-data" title="" class="sf-depth-3">Big data</a></li><li id="menu-19861-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/resources/data-science" title="" class="sf-depth-3">Data science</a></li><li id="menu-5566-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/resources/what-docker" title="" class="sf-depth-3">Docker</a></li><li id="menu-19926-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/resources/what-is-git" class="sf-depth-3">Git</a></li><li id="menu-5591-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="/resources/internet-of-things" title="" class="sf-depth-3">Internet of things</a></li><li id="menu-19921-1" class="middle odd sf-item-7 sf-depth-3 sf-no-children"><a href="/resources/java" title="" class="sf-depth-3">Java</a></li><li id="menu-5596-1" class="middle even sf-item-8 sf-depth-3 sf-no-children"><a href="/resources/what-is-kubernetes" title="" class="sf-depth-3">Kubernetes</a></li><li id="menu-5571-1" class="middle odd sf-item-9 sf-depth-3 sf-no-children"><a href="/resources/what-are-linux-containers" title="" class="sf-depth-3">Linux containers</a></li><li id="menu-5586-1" class="middle even sf-item-10 sf-depth-3 sf-no-children"><a href="/resources/what-are-microservices" title="" class="sf-depth-3">Microservices</a></li><li id="menu-5561-1" class="middle odd sf-item-11 sf-depth-3 sf-no-children"><a href="/resources/what-is-openstack" title="" class="sf-depth-3">OpenStack</a></li><li id="menu-19836-1" class="middle even sf-item-12 sf-depth-3 sf-total-children-4 sf-parent-children-0 sf-single-children-4 menuparent"><a href="/resources/python" title="" class="sf-depth-3 menuparent">Python</a><ul><li id="menu-19866-1" class="first odd sf-item-1 sf-depth-4 sf-no-children"><a href="/resources/python/gui-frameworks" class="sf-depth-4">Python GUI frameworks</a></li><li id="menu-19871-1" class="middle even sf-item-2 sf-depth-4 sf-no-children"><a href="/resources/python/ides" class="sf-depth-4">Python IDEs</a></li><li id="menu-19881-1" class="middle odd sf-item-3 sf-depth-4 sf-no-children"><a href="/resources/python/template-libraries" title="" class="sf-depth-4">Python template libraries</a></li><li id="menu-19876-1" class="last even sf-item-4 sf-depth-4 sf-no-children"><a href="/resources/python/web-scraper-crawler" title="" class="sf-depth-4">Python web scrapers</a></li></ul></li><li id="menu-5581-1" class="middle odd sf-item-13 sf-depth-3 sf-no-children"><a href="/resources/what-is-software-defined-networking" title="" class="sf-depth-3">Software defined networking</a></li><li id="menu-12601-1" class="last even sf-item-14 sf-depth-3 sf-no-children"><a href="/resources/virtualization" title="" class="sf-depth-3">Virtualization</a></li></ul></li><li id="menu-2036-1" class="middle odd sf-item-5 sf-depth-2 sf-total-children-13 sf-parent-children-0 sf-single-children-13 menuparent"><a href="/alternatives" title="" class="sf-depth-2 menuparent">Open source alternatives</a><ul><li id="menu-4646-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/alternatives/adobe-acrobat" class="sf-depth-3">Alternatives to Acrobat</a></li><li id="menu-4656-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/alternatives/autocad" class="sf-depth-3">Alternatives to AutoCAD</a></li><li id="menu-4636-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/alternatives/dreamweaver" class="sf-depth-3">Alternatives to Dreamweaver</a></li><li id="menu-5506-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/alternatives/gmail" class="sf-depth-3">Alternatives to Gmail</a></li><li id="menu-5551-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/alternatives/matlab" class="sf-depth-3">Alternatives to MATLAB</a></li><li id="menu-5501-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="/alternatives/minecraft" class="sf-depth-3">Alternatives to Minecraft</a></li><li id="menu-4651-1" class="middle odd sf-item-7 sf-depth-3 sf-no-children"><a href="/alternatives/google-photos" class="sf-depth-3">Alternatives to Google Photos</a></li><li id="menu-27351-1" class="middle even sf-item-8 sf-depth-3 sf-no-children"><a href="/life/12/6/design-without-debt-five-tools-for-designers" title="" class="sf-depth-3">Alternatives to Photoshop</a></li><li id="menu-4661-1" class="middle odd sf-item-9 sf-depth-3 sf-no-children"><a href="/alternatives/microsoft-publisher" class="sf-depth-3">Alternatives to Publisher</a></li><li id="menu-27371-1" class="middle even sf-item-10 sf-depth-3 sf-no-children"><a href="/alternatives/skype" class="sf-depth-3">Alternatives to Skype</a></li><li id="menu-5511-1" class="middle odd sf-item-11 sf-depth-3 sf-no-children"><a href="/alternatives/slack" class="sf-depth-3">Alternatives to Slack</a></li><li id="menu-4641-1" class="middle even sf-item-12 sf-depth-3 sf-no-children"><a href="/alternatives/trello" class="sf-depth-3">Alternatives to Trello</a></li><li id="menu-5546-1" class="last odd sf-item-13 sf-depth-3 sf-no-children"><a href="/alternatives" title="" class="sf-depth-3">More...</a></li></ul></li><li id="menu-19886-1" class="last even sf-item-6 sf-depth-2 sf-no-children"><a href="/resources/linux" title="" class="sf-depth-2">Linux</a></li></ul></li><li id="menu-19666-1" class="middle odd sf-item-3 sf-depth-1 sf-total-children-6 sf-parent-children-6 sf-single-children-0 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-1 menuparent">Downloads</a><ul><li id="menu-19406-1" class="first odd sf-item-1 sf-depth-2 sf-total-children-28 sf-parent-children-0 sf-single-children-28 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">Cheat sheets</a><ul><li id="menu-27711-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/ansible-cheat-sheet" class="sf-depth-3">Ansible cheat sheet</a></li><li id="menu-27476-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/ansible-k8s-cheat-sheet" class="sf-depth-3">Ansible k8s cheat sheet</a></li><li id="menu-19651-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-awk-features" class="sf-depth-3">AWK cheat sheet</a></li><li id="menu-27241-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/downloads/bash-cheat-sheet" class="sf-depth-3">Bash cheat sheet</a></li><li id="menu-18641-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/blender-hotkey-cheat-sheet" class="sf-depth-3">Blender cheat sheet</a></li><li id="menu-27466-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="https://opensource.com/downloads/c-programming-cheat-sheet" title="" class="sf-depth-3">C cheat sheet</a></li><li id="menu-27336-1" class="middle odd sf-item-7 sf-depth-3 sf-no-children"><a href="/downloads/emacs-cheat-sheet" class="sf-depth-3">Emacs cheat sheet</a></li><li id="menu-27356-1" class="middle even sf-item-8 sf-depth-3 sf-no-children"><a href="/downloads/firewall-cheat-sheet" class="sf-depth-3">Firewall Cheat Sheet</a></li><li id="menu-18856-1" class="middle odd sf-item-9 sf-depth-3 sf-no-children"><a href="/downloads/freedos-commands-cheat-sheet" class="sf-depth-3">FreeDOS cheat sheet</a></li><li id="menu-19721-1" class="middle even sf-item-10 sf-depth-3 sf-no-children"><a href="/content/cheat-sheet-gimp" class="sf-depth-3">GIMP cheat sheet</a></li><li id="menu-19696-1" class="middle odd sf-item-11 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-gnome-3" class="sf-depth-3">GNOME cheat sheet</a></li><li id="menu-18661-1" class="middle even sf-item-12 sf-depth-3 sf-no-children"><a href="/downloads/groff-macros-cheat-sheet" class="sf-depth-3">Groff macros cheat sheet</a></li><li id="menu-19731-1" class="middle odd sf-item-13 sf-depth-3 sf-no-children"><a href="/downloads/go-cheat-sheet" class="sf-depth-3">Go cheat sheet</a></li><li id="menu-19716-1" class="middle even sf-item-14 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-i3-window-manager-keybinding" class="sf-depth-3">i3 window manager cheat sheet</a></li><li id="menu-19781-1" class="middle odd sf-item-15 sf-depth-3 sf-no-children"><a href="/downloads/inkscape-cheat-sheet" class="sf-depth-3">Inkscape Cheat Sheet</a></li><li id="menu-16886-1" class="middle even sf-item-16 sf-depth-3 sf-no-children"><a href="/irc-cheat-sheet" class="sf-depth-3">IRC cheat sheet</a></li><li id="menu-27271-1" class="middle odd sf-item-17 sf-depth-3 sf-no-children"><a href="/downloads/java-cheat-sheet" class="sf-depth-3">Java cheat sheet</a></li><li id="menu-27471-1" class="middle even sf-item-18 sf-depth-3 sf-no-children"><a href="https://opensource.com/downloads/kubectl-cheat-sheet" title="" class="sf-depth-3">Kubectl cheat sheet</a></li><li id="menu-27246-1" class="middle odd sf-item-19 sf-depth-3 sf-no-children"><a href="/downloads/linux-common-commands-cheat-sheet" class="sf-depth-3">Linux common commands cheat sheet</a></li><li id="menu-27216-1" class="middle even sf-item-20 sf-depth-3 sf-no-children"><a href="/downloads/linux-permissions-cheat-sheet" class="sf-depth-3">Linux user permissions cheat sheet</a></li><li id="menu-27256-1" class="middle odd sf-item-21 sf-depth-3 sf-no-children"><a href="/downloads/microservices-cheat-sheet" class="sf-depth-3">Microservices cheat sheet</a></li><li id="menu-19301-1" class="middle even sf-item-22 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-networking" class="sf-depth-3">Networking cheat sheet</a></li><li id="menu-18636-1" class="middle odd sf-item-23 sf-depth-3 sf-no-children"><a href="/downloads/pandoc-cheat-sheet" class="sf-depth-3">Pandoc cheat sheet</a></li><li id="menu-27261-1" class="middle even sf-item-24 sf-depth-3 sf-no-children"><a href="/downloads/pip-cheat-sheet" class="sf-depth-3">pip cheat sheet</a></li><li id="menu-19711-1" class="middle odd sf-item-25 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-python-37-beginners" class="sf-depth-3">Python 3.7 cheat sheet</a></li><li id="menu-19726-1" class="middle even sf-item-26 sf-depth-3 sf-no-children"><a href="/downloads/getting-started-raspberry-pi-cheat-sheet" class="sf-depth-3">Raspberry Pi cheat sheet</a></li><li id="menu-19691-1" class="middle odd sf-item-27 sf-depth-3 sf-no-children"><a href="/downloads/cheat-sheet-selinux" class="sf-depth-3">SELinux cheat sheet</a></li><li id="menu-18591-1" class="last even sf-item-28 sf-depth-3 sf-no-children"><a href="/downloads/advanced-ssh-cheat-sheet" class="sf-depth-3">SSH cheat sheet</a></li></ul></li><li id="menu-12466-1" class="middle even sf-item-2 sf-depth-2 sf-total-children-5 sf-parent-children-0 sf-single-children-5 menuparent"><a href="/yearbook/2017" title="" class="sf-depth-2 menuparent">Open Source Yearbook</a><ul><li id="menu-19681-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/yearbook/2015" title="" class="sf-depth-3">2015</a></li><li id="menu-19676-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/yearbook/2016" title="" class="sf-depth-3">2016</a></li><li id="menu-19671-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/yearbook/2017" title="" class="sf-depth-3">2017</a></li><li id="menu-19786-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/yearbook/2018" title="" class="sf-depth-3">2018</a></li><li id="menu-27346-1" class="last odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/2019-yearbook-special-edition" title="" class="sf-depth-3">2019 Special Edition</a></li></ul></li><li id="menu-19906-1" class="middle odd sf-item-3 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">Programming guides</a><ul><li id="menu-19891-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/7-essential-pypi-libraries" title="" class="sf-depth-3">7 essential PyPI libraries</a></li><li id="menu-27706-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/jupyter-guide" class="sf-depth-3">6 surprising ways to use Jupyter</a></li></ul></li><li id="menu-19911-1" class="middle even sf-item-4 sf-depth-2 sf-total-children-5 sf-parent-children-0 sf-single-children-5 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">DevOps guides</a><ul><li id="menu-19806-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/devops-transformation" class="sf-depth-3">Starting a DevOps transformation</a></li><li id="menu-19776-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/small-scale-scrum" class="sf-depth-3">Introduction to Small Scale Scrum</a></li><li id="menu-19771-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/downloads/devsecops" class="sf-depth-3">Getting started with DevSecOps</a></li><li id="menu-19701-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/downloads/devops-monitoring-guide" class="sf-depth-3">DevOps monitoring tools guide</a></li><li id="menu-19686-1" class="last odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/devops-hiring-guide" class="sf-depth-3">DevOps hiring guide</a></li></ul></li><li id="menu-19916-1" class="middle odd sf-item-5 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">Sysadmin guides</a><ul><li id="menu-19801-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="https://opensource.com/downloads/ansible-quickstart" title="" class="sf-depth-3">Ansible Automation for Sysadmins</a></li><li id="menu-19706-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/containers-primer" class="sf-depth-3">Containers primer</a></li></ul></li><li id="menu-19901-1" class="last even sf-item-6 sf-depth-2 sf-total-children-7 sf-parent-children-0 sf-single-children-7 menuparent"><a href="/downloads/cheat-sheets" title="" class="sf-depth-2 menuparent">eBooks</a><ul><li id="menu-19896-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/downloads/getting-started-kubernetes-ebook" class="sf-depth-3">Getting started with Kubernetes</a></li><li id="menu-27276-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/downloads/guide-inter-process-communication-linux" class="sf-depth-3">Inter-process communication in Linux</a></li><li id="menu-27321-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/downloads/collaboration-tools-ebook" class="sf-depth-3">5 open source collaboration tools</a></li><li id="menu-27311-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/downloads/organization-tools" class="sf-depth-3">6 open source tools for staying organized</a></li><li id="menu-27316-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/downloads/desktop-tools" class="sf-depth-3">7 open source desktop tools</a></li><li id="menu-27366-1" class="middle even sf-item-6 sf-depth-3 sf-no-children"><a href="/downloads/raspberry-pi-guide" class="sf-depth-3">Raspberry Pi: How to get started</a></li><li id="menu-27451-1" class="last odd sf-item-7 sf-depth-3 sf-no-children"><a href="/downloads/kubernetes-raspberry-pi" title="" class="sf-depth-3">Running Kubernetes on your Raspberry Pi</a></li></ul></li></ul></li><li id="menu-4691-1" class="middle even sf-item-4 sf-depth-1 sf-total-children-3 sf-parent-children-2 sf-single-children-1 menuparent"><a href="/about" class="sf-depth-1 menuparent">About</a><ul><li id="menu-27381-1" class="first odd sf-item-1 sf-depth-2 sf-total-children-6 sf-parent-children-0 sf-single-children-6 menuparent"><a href="/about" title="" class="sf-depth-2 menuparent">About Opensource.com</a><ul><li id="menu-12516-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/participate" class="sf-depth-3">Welcome to the Opensource.com community</a></li><li id="menu-1971-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/opensourcecom-team" class="sf-depth-3">Meet the team</a></li><li id="menu-27386-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/user/register" title="" class="sf-depth-3">Create an account</a></li><li id="menu-12526-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/rules-comments-and-discussions" class="sf-depth-3">Rules for comments and discussions</a></li><li id="menu-12531-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/correspondent-program" class="sf-depth-3">Correspondent Program</a></li><li id="menu-27391-1" class="last even sf-item-6 sf-depth-3 sf-no-children"><a href="/faq" class="sf-depth-3">Frequently Asked Questions</a></li></ul></li><li id="menu-17761-1" class="middle even sf-item-2 sf-depth-2 sf-total-children-2 sf-parent-children-0 sf-single-children-2 menuparent"><a href="/how-submit-article" title="" class="sf-depth-2 menuparent">Contribute to Opensource.com</a><ul><li id="menu-2041-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/submission-style-guide" title="" class="sf-depth-3">Opensource.com style guide</a></li><li id="menu-12586-1" class="last even sf-item-2 sf-depth-3 sf-no-children"><a href="/article/20/1/write-for-us" class="sf-depth-3">Writing topics</a></li></ul></li><li id="menu-2001-1" class="last odd sf-item-3 sf-depth-2 sf-no-children"><a href="/contact" title="" class="sf-depth-2">Contact us</a></li></ul></li><li id="menu-2136-1" class="last odd sf-item-5 sf-depth-1 sf-total-children-3 sf-parent-children-2 sf-single-children-1 menuparent"><a href="/open-organization" title="" class="sf-depth-1 menuparent">Open Organization</a><ul><li id="menu-27251-1" class="first odd sf-item-1 sf-depth-2 sf-no-children"><a href="https://opensource.com/open-organization/start" title="" class="sf-depth-2">Get started</a></li><li id="menu-15051-1" class="middle even sf-item-2 sf-depth-2 sf-total-children-6 sf-parent-children-0 sf-single-children-6 menuparent"><a href="/open-organization/resources/book-series" title="" class="sf-depth-2 menuparent">Book series</a><ul><li id="menu-16906-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/open-organization/resources/field-guide" title="" class="sf-depth-3">Field Guide</a></li><li id="menu-16891-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/open-organization/resources/leaders-manual" class="sf-depth-3">Leaders Manual</a></li><li id="menu-16896-1" class="middle odd sf-item-3 sf-depth-3 sf-no-children"><a href="/open-organization/resources/culture-change" title="" class="sf-depth-3">Guide to IT Culture Change</a></li><li id="menu-19856-1" class="middle even sf-item-4 sf-depth-3 sf-no-children"><a href="/open-organization/resources/educators-guide" class="sf-depth-3">Guide for Educators</a></li><li id="menu-17796-1" class="middle odd sf-item-5 sf-depth-3 sf-no-children"><a href="/open-organization/resources/workbook" title="" class="sf-depth-3">Workbook</a></li><li id="menu-18656-1" class="last even sf-item-6 sf-depth-3 sf-no-children"><a href="/open-organization/resources/organize-innovation" class="sf-depth-3">Organize for Innovation</a></li></ul></li><li id="menu-2146-1" class="last odd sf-item-3 sf-depth-2 sf-total-children-3 sf-parent-children-0 sf-single-children-3 menuparent"><a href="/open-organization/resources" title="" class="sf-depth-2 menuparent">Resources</a><ul><li id="menu-12471-1" class="first odd sf-item-1 sf-depth-3 sf-no-children"><a href="/open-organization/resources/open-org-definition" title="What is an open organization?" class="sf-depth-3">What is an open organization?</a></li><li id="menu-15056-1" class="middle even sf-item-2 sf-depth-3 sf-no-children"><a href="/open-organization/resources/open-org-maturity-model" title="" class="sf-depth-3">How open is your organization?</a></li><li id="menu-12421-1" class="last odd sf-item-3 sf-depth-3 sf-no-children"><a href="/open-organization/resources/open-decision-framework" title="" class="sf-depth-3">What is an open decision?</a></li></ul></li></ul></li></ul>
+</div>
+<div id="block-system-user-menu" class="block block-system block-menu odd" role="navigation">
+
+      
+  <ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/user/login" class="menu__link">Log in</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/user/register" title="Sign Up" class="menu__link">Sign Up</a></li>
+</ul>
+</div>
+<div id="block-menu-block-2" class="block block-menu-block last even" role="navigation">
+
+      
+  <div class="menu-block-wrapper menu-block-2 menu-name-menu-social-links parent-mlid-0 menu-level-1">
+  <ul class="menu"><li class="menu__item is-leaf first leaf menu-mlid-13171"><a href="http://twitter.com/opensourceway" title="twitter" class="menu__link">Twitter</a></li>
+<li class="menu__item is-leaf leaf menu-mlid-13176"><a href="https://www.facebook.com/opensourceway" title="facebook" class="menu__link">Facebook</a></li>
+<li class="menu__item is-leaf last leaf menu-mlid-13166"><a href="/feed" title="feed" class="menu__link">Feed</a></li>
+</ul></div>
+
+</div>
+  </div>
+
+        <div class="mobile--menu-region">
+            <div class="region region-navigation">
+    <div id="block-system-main-menu" class="block block-system block-menu first last odd" role="navigation">
+
+        <h2 class="block__title block-title">Main menu</h2>
+    
+  <ul class="menu"><li class="menu__item is-expanded first expanded"><a href="/" title="" class="menu__link">Articles</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/tags/containers" title="" class="menu__link">Containers</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/devops" title="" class="menu__link">DevOps</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/gaming" title="" class="menu__link">Gaming</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/government" title="" class="menu__link">Government</a></li>
+<li class="menu__item is-expanded expanded"><a href="/tags/hardware" title="" class="menu__link">Hardware</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/tags/3d-printing" title="" class="menu__link">3D printing</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/arduino" title="" class="menu__link">Arduino</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/tags/raspberry-pi" title="" class="menu__link">Raspberry Pi</a></li>
+</ul></li>
+<li class="menu__item is-leaf leaf"><a href="https://opensource.com/tags/kubernetes" title="" class="menu__link">Kubernetes</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/tags/law" title="" class="menu__link">Law</a></li>
+<li class="menu__item is-expanded expanded"><a href="/tags/linux" title="" class="menu__link">Linux</a><ul class="menu"><li class="menu__item is-leaf first last leaf"><a href="/tags/command-line" title="" class="menu__link">Command line</a></li>
+</ul></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/openstack" title="" class="menu__link">OpenStack</a></li>
+<li class="menu__item is-expanded expanded"><a href="/tags/programming" title="" class="menu__link">Programming</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/tags/go" title="" class="menu__link">Go</a></li>
+<li class="menu__item is-leaf leaf"><a href="/tags/javascript" title="" class="menu__link">JavaScript</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/tags/python" title="" class="menu__link">Python</a></li>
+</ul></li>
+<li class="menu__item is-collapsed last collapsed"><a href="/tags/sysadmin" title="" class="menu__link">Sysadmin</a></li>
+</ul></li>
+<li class="menu__item is-expanded expanded"><a href="/resources" title="" class="menu__link">Resources</a><ul class="menu"><li class="menu__item is-collapsed first collapsed"><a href="/resources/what-open-source" title="" class="menu__link">What is open source?</a></li>
+<li class="menu__item is-leaf leaf"><a href="/resources/projects-and-applications" title="" class="menu__link">Projects and applications</a></li>
+<li class="menu__item is-leaf leaf"><a href="/resources/organizations" title="" class="menu__link">Organizations</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/resources/cloud" title="" class="menu__link">Cloud technology</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/alternatives" title="" class="menu__link">Open source alternatives</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/resources/linux" title="" class="menu__link">Linux</a></li>
+</ul></li>
+<li class="menu__item is-collapsed collapsed"><a href="/downloads/cheat-sheets" title="" class="menu__link">Downloads</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/about" class="menu__link">About</a></li>
+<li class="menu__item is-expanded last expanded"><a href="/open-organization" title="" class="menu__link">Open Organization</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="https://opensource.com/open-organization/start" title="" class="menu__link">Get started</a></li>
+<li class="menu__item is-collapsed collapsed"><a href="/open-organization/resources/book-series" title="" class="menu__link">Book series</a></li>
+<li class="menu__item is-expanded last expanded"><a href="/open-organization/resources" title="" class="menu__link">Resources</a><ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/open-organization/resources/open-org-definition" title="What is an open organization?" class="menu__link">What is an open organization?</a></li>
+<li class="menu__item is-leaf leaf"><a href="/open-organization/resources/open-org-maturity-model" title="" class="menu__link">How open is your organization?</a></li>
+<li class="menu__item is-leaf last leaf"><a href="/open-organization/resources/open-decision-framework" title="" class="menu__link">What is an open decision?</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+  </div>
+        </div>
+      </div>
+    </div>
+
+</header>
+
+<div id="page">
+
+      <div id="main">
+        <div class="pre-content">
+                                                </div>
+        <div id="content" class="column" role="main">
+                              <a id="main-content"></a>
+                                <h1 class="page__title title" id="page-title">Containers in Perl 6</h1>
+                              
+
+
+
+<div class="panel-display os-article clearfix os-article--with-image " id="article-template">
+
+      <div class="os-article__top">
+      <div class="os-article__top-inner">
+        <div class="panel-pane pane-node-title"  >
+  
+      
+  
+  <h1>Containers in Perl 6</h1>
+
+  
+  </div>
+<div class="panel-pane pane-entity-field pane-node-field-article-subhead"  >
+  
+      
+  
+  <div class="field field-name-field-article-subhead field-type-text-long field-label-hidden">
+    <div class="field-items">
+          <h2>In the third article in this series comparing Perl 5 to Perl 6, learn how to handle references, bindings, and containers in Perl 6.</h2>
+      </div>
+</div>
+
+  
+  </div>
+<div class="panel-pane pane-os-content-article-byline"  >
+  
+      
+  
+  <div class="byline"><span class="byline__date">29 Aug 2018</span>
+<span class="byline__author-name"><a href="/users/lizmat" title="View user profile." class="username" xml:lang="" about="/users/lizmat" typeof="sioc:UserAccount" property="foaf:name" datatype="">Elizabeth Mattijsen</a>&nbsp;<span class="byline__feed"><a href="/user/238941/feed">Feed</a></span>
+</span>
+<span class="byline__social"><span class="byline__voting-widget"><div class="rate-widget-1 rate-widget clear-block rate-average rate-widget-thumbs_up rate-f454fc408b22bb45dbea401e6d14037b rate-node-46821-1-1" id="rate-node-46821-1-1"><div class="rate-info">181</div><a class="rate-button rate-thumbs-up-btn-up" id="rate-button-1" rel="nofollow" href="/article/18/8/containers-perl-6?rate=kMPijTjPOISersPf_wWQdBDO4h3D3lX9rnvpJJqA7Og" title="up">up</a></div></span>
+</span>
+<span class="byline__comment-count"><a href="#comments">1 comment</a></span>
+</div>
+  
+  </div>
+      </div>
+    </div>
+  
+      <div class="os-article__image">
+      <div class="panel-pane pane-entity-field pane-node-field-lead-image"  >
+  
+      
+  
+  <div class="field field-name-field-lead-image field-type-image field-label-hidden"><div class="field-items"><div class="field-item even" rel="schema:contentUrl" resource="https://opensource.com/sites/default/files/styles/image-full-size/public/lead-images/data_container_block.png?itok=S8MbXEYw"><img class="image-full-size" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/image-full-size/public/lead-images/data_container_block.png?itok=S8MbXEYw" width="520" height="292" alt="Data container block with hexagons" title="Data container block with hexagons" /></div></div></div>
+  
+  </div>
+<div class="panel-pane pane-entity-field pane-file-field-file-image-caption"  >
+  
+      
+  
+  <div class="field field-name-field-file-image-caption field-type-text-long field-label-inline clearfix"><div class="field-label">Image by :&nbsp;</div><div class="field-items"><div class="field-item even">Opensource.com
+</div></div></div>
+  
+  </div>
+    </div>
+  
+      <div class="os-article__left">
+      <div class="panel-pane pane-block pane-bean-email-capture widget-block widget-block__left"  >
+      <div class="target-band-never-show-button">x</div>
+        <h2 class="pane-title">
+      Subscribe now    </h2>
+    
+  
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/email-capture" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p class="eloqua-email-capture-text">Get the highlights in your inbox every week.</p>
+
+<!-- <p class="eloqua-email-capture-text"><a href="https://opensource.com/email-newsletter" target="_blank">Subscribe today.</a></p> -->
+<p><iframe id="fkfkx" scrolling="no" src="/eloqua-embedded-email-capture-block.html?offer_id=70160000000QzXNAA0" style="max-width:600px;margin:0 auto;" width="250" height="100" frameborder="0"></iframe></p></div></div></div>  </div>
+</div>
+
+  
+  </div>
+    </div>
+  
+  
+      <div class="os-article__middle">
+      <div class="panel-pane pane-entity-field pane-node-body"  >
+  
+      
+  
+  <div class="field field-name-body field-type-text-with-summary field-label-hidden"><div class="field-items"><div class="field-item even" property="schema:articleBody content:encoded"><p>In the <a href="https://opensource.com/article/18/7/migrating-perl-5-perl-6">first article</a> in this series comparing Perl 5 to Perl 6, we looked into some of the issues you might encounter when migrating code into Perl 6. In the <a href="https://opensource.com/article/18/7/garbage-collection-perl-6">second article</a>, we examined how garbage collection works in Perl 6. Here, in the third article, we'll focus on Perl 5's references and how they're handled in Perl 6, and introduce the concepts of binding and containers.</p>
+
+<h2 id="references">References</h2>
+
+<p>There are <em>no</em> references in Perl 6, which is surprising to many people used to Perl 5's semantics. But worry not: because there are no references, you don't have to worry about whether something should be de-referenced or not.</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="co1"># Perl 5</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> <span class="re0">\@bar</span><span class="sy0">;</span> &nbsp; <span class="co1"># must add reference \ to make $foo a reference to @bar</span><br />
+say <span class="re0">@bar</span><span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># no dereference needed</span><br />
+say <span class="re0">$foo</span><span class="sy0">-&gt;</span><span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span><span class="sy0">;</span> &nbsp; &nbsp; <span class="co1"># must add dereference -&gt;</span><br />
+<br />
+<span class="co1"># Perl 6</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> <span class="re0">@bar</span><span class="sy0">;</span> &nbsp; &nbsp;<span class="co1"># $foo now contains @bar</span><br />
+say <span class="re0">@bar</span><span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># no dereference needed, note: sigil does not change</span><br />
+say <span class="re0">$foo</span><span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># no dereference needed either</span></div></div></pre>
+
+<p>One could argue that <em>everything</em> in Perl 6 is a reference. Coming from Perl 5 (where an object is a blessed reference), this would be a logical conclusion about Perl 6 where <em>everything</em> is an object (or can be considered one). But that wouldn't do justice to the situation in Perl 6 and would hinder you in understanding how things work in Perl 6. Beware of <a href="https://en.wikipedia.org/wiki/False_friend" target="_blank">false friends</a>!</p>
+
+<h2 id="binding">Binding</h2>
+
+<p>Before we get to assignment, it is important to understand the concept of binding in Perl 6. You can bind something explicitly to something else using the <code>:=</code> operator. When you define a lexical variable, you can bind a value to it:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">:=</span> <span class="nu0">42</span><span class="sy0">;</span> &nbsp;<span class="co1"># note: := instead of =</span></code></span></pre>
+
+<p>Simply put, this creates a key with the name "<code>$foo</code>" in the lexical pad (lexpad) (which you could consider a compile-time hash that contains information about things that are visible in that lexical scope) and makes <code>42</code> its <em>literal</em> value. Because this is a literal constant, you can't change it. Trying to do so will cause an exception. So don't do that!</p>
+
+<p>This binding operation is used under the hood in many situations, for instance when iterating:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="kw1">my</span> <span class="re0">@a</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">..</span><span class="nu0">9</span><span class="sy0">;</span> &nbsp; &nbsp;<span class="co1"># can also be written as ^10</span><br />
+say <span class="re0">@a</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1"># [0 1 2 3 4 5 6 7 8 9]</span><br />
+<span class="kw1">for</span> <span class="re0">@a</span> <span class="br0">&#123;</span> <span class="co5">$_</span><span class="sy0">++</span> <span class="br0">&#125;</span> &nbsp;<span class="co1"># $_ is bound to each array element and incremented</span><br />
+say <span class="re0">@a</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="co1"># [1 2 3 4 5 6 7 8 9 10]</span></div></div></pre>
+
+<p>If you try to iterate over a constant list, then <code>$_</code> is bound to the literal <em>values</em>, which you can <em>not</em> increment:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="kw1">for</span> <span class="nu0">0</span><span class="sy0">..</span><span class="nu0">9</span> <span class="br0">&#123;</span> <span class="co5">$_</span><span class="sy0">++</span> <span class="br0">&#125;</span> &nbsp;<span class="co1"># error: requires mutable arguments</span></code></span></pre>
+
+<h2 id="assignment">Assignment</h2>
+
+<p>If you compare "create a lexical variable and <em>assign</em> to it" in Perl 5 and Perl 6, it looks the same on the outside:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="kw1">my</span> <span class="re0">$bar</span> <span class="sy0">=</span> <span class="nu0">56</span><span class="sy0">;</span> &nbsp;<span class="co1"># both Perl 5 and Perl 6</span></code></span></pre>
+
+<p>In Perl 6, this <em>also</em> creates a key with the name "<code>$bar</code>" in the lexpad. But instead of directly binding the value to that lexpad entry, a <em>container</em> (a <code>Scalar</code> object) is created for you and <em>that</em> is bound to the lexpad entry of "<code>$bar</code>". Then, <code>56</code> is stored as the value in that container. In pseudo-code, you can think of this as:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="kw1">my</span> <span class="re0">$bar</span> <span class="sy0">:=</span> Scalar<span class="sy0">.</span><span class="kw2">new</span><span class="br0">&#40;</span> value <span class="sy0">=&gt;</span> <span class="nu0">56</span> <span class="br0">&#41;</span><span class="sy0">;</span></code></span></pre>
+
+<p>Notice that the <code>Scalar</code> object is <em>bound</em>, not assigned. The closest thing to this in Perl 5 is a <a href="https://metacpan.org/pod/distribution/perl/pod/perltie.pod#Tying-Scalars" target="_blank">tied scalar</a>. But of course "<code>= 56</code>" is much less to type!</p>
+
+<p>Data structures such as <code>Array</code> and <code>Hash</code> also automatically put values in containers bound to the structure.</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="kw1">my</span> <span class="re0">@a</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># empty Array</span><br />
+<span class="re0">@a</span><span class="br0">&#91;</span><span class="nu0">5</span><span class="br0">&#93;</span> <span class="sy0">=</span> <span class="nu0">42</span><span class="sy0">;</span> &nbsp;<span class="co1"># bind a Scalar container to 6th element and put 42 in it</span></div></div></pre>
+
+<h2 id="containers">Containers</h2>
+
+<p>The <code>Scalar</code> container object is invisible for most operations in Perl 6, so most of the time you don't have to think about it. For instance, whenever you call a subroutine (or a method) with a variable as an argument, it will bind to the value <em>in</em> the container. And because you cannot assign to a value, you get:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="kw2">sub</span> frobnicate<span class="br0">&#40;</span><span class="re0">$this</span><span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <span class="re0">$this</span> <span class="sy0">=</span> <span class="nu0">42</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> <span class="nu0">666</span><span class="sy0">;</span><br />
+frobnicate<span class="br0">&#40;</span><span class="re0">$foo</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1"># Cannot assign to a readonly variable or a value</span></div></div></pre>
+
+<p>If you want to allow assigning to the outer value, you can add the <code>is rw</code> trait to the variable in the signature. This will bind the variable in the signature to the <em>container</em> of the variable specified, thus allowing assignment:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="kw2">sub</span> oknicate<span class="br0">&#40;</span><span class="re0">$this</span> is rw<span class="br0">&#41;</span> <span class="br0">&#123;</span><br />
+&nbsp; &nbsp; <span class="re0">$this</span> <span class="sy0">=</span> <span class="nu0">42</span><span class="sy0">;</span><br />
+<span class="br0">&#125;</span><br />
+<span class="kw1">my</span> <span class="re0">$foo</span> <span class="sy0">=</span> <span class="nu0">666</span><span class="sy0">;</span><br />
+oknicate<span class="br0">&#40;</span><span class="re0">$foo</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1"># no problem</span><br />
+say <span class="re0">$foo</span><span class="sy0">;</span> &nbsp; &nbsp; &nbsp; <span class="co1"># 42</span></div></div></pre>
+
+<h2 id="proxy">Proxy</h2>
+
+<p>Conceptually, the <code>Scalar</code> object in Perl 6 has a <code>FETCH</code> method (for producing the value in the object) and a <code>STORE</code> method (for changing the value in the object), just like a tied scalar in Perl 5.</p>
+
+<p>Suppose you later assign the value <code>768</code> to the <code>$bar</code> variable:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="re0">$bar</span> <span class="sy0">=</span> <span class="nu0">768</span><span class="sy0">;</span></code></span></pre>
+
+<p>What happens is conceptually the equivalent of:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="re0">$bar</span><span class="sy0">.</span>STORE<span class="br0">&#40;</span><span class="nu0">768</span><span class="br0">&#41;</span><span class="sy0">;</span></code></span></pre>
+
+<p>Suppose you want to add <code>20</code> to the value in <code>$bar</code>:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="re0">$bar</span> <span class="sy0">=</span> <span class="re0">$bar</span> <span class="sy0">+</span> <span class="nu0">20</span><span class="sy0">;</span></code></span></pre>
+
+<p>What happens conceptually is:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="re0">$bar</span><span class="sy0">.</span>STORE<span class="br0">&#40;</span> <span class="re0">$bar</span><span class="sy0">.</span>FETCH <span class="sy0">+</span> <span class="nu0">20</span> <span class="br0">&#41;</span><span class="sy0">;</span></code></span></pre>
+
+<p>If you like to specify your own <code>FETCH</code> and <code>STORE</code> methods on a container, you can do that by <em>binding</em> to a <a href="https://docs.perl6.org/type/Proxy" target="_blank">Proxy</a> object. For example, to create a variable that will always report twice the value that was assigned to it:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="kw1">my</span> <span class="re0">$double</span> <span class="sy0">:=</span> <span class="kw1">do</span> <span class="br0">&#123;</span> &nbsp;<span class="co1"># $double now a Proxy, rather than a Scalar container</span><br />
+&nbsp; &nbsp; <span class="kw1">my</span> <span class="re0">$value</span><span class="sy0">;</span><br />
+&nbsp; &nbsp; Proxy<span class="sy0">.</span><span class="kw2">new</span><span class="br0">&#40;</span><br />
+&nbsp; &nbsp; &nbsp; FETCH <span class="sy0">=&gt;</span> method <span class="br0">&#40;</span><span class="br0">&#41;</span> &nbsp; &nbsp; <span class="br0">&#123;</span> <span class="re0">$value</span> <span class="sy0">+</span> <span class="re0">$value</span> <span class="br0">&#125;</span><span class="sy0">,</span><br />
+&nbsp; &nbsp; &nbsp; STORE <span class="sy0">=&gt;</span> method <span class="br0">&#40;</span><span class="re0">$new</span><span class="br0">&#41;</span> <span class="br0">&#123;</span> <span class="re0">$value</span> <span class="sy0">=</span> <span class="re0">$new</span> <span class="br0">&#125;</span><br />
+&nbsp; &nbsp; <span class="br0">&#41;</span><br />
+<span class="br0">&#125;</span></div></div></pre>
+
+<p>Note that you will need an extra variable to keep the value stored in such a container.</p>
+
+<h2 id="constraints-and-default">Constraints and default</h2>
+
+<p>Apart from the value, a <a href="https://docs.perl6.org/type/Scalar" target="_blank">Scalar</a> also contains extra information such as the type constraint and default value. Take this definition:</p>
+
+<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="kw1">my</span> Int <span class="re0">$baz</span> is default<span class="br0">&#40;</span><span class="nu0">42</span><span class="br0">&#41;</span> <span class="sy0">=</span> <span class="nu0">666</span><span class="sy0">;</span></code></span></pre>
+
+<p>It creates a Scalar bound with the name "<code>$baz</code>" to the lexpad, constrains the values in that container to types that successfully smartmatch with <code>Int</code>, sets the default value of the container to <code>42</code>, and puts the value <code>666</code> in the container.</p>
+
+<p>Assigning a string to that variable will fail because of the type constraint:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl"><span class="re0">$baz</span> <span class="sy0">=</span> <span class="st0">&quot;foo&quot;</span><span class="sy0">;</span><br />
+<span class="co1"># Type check failed in assignment to $baz; expected Int but got Str (&quot;foo&quot;)</span></div></div></pre>
+
+<p>If you do not give a type constraint when you define a variable, then the <code>Any</code> type will be assumed. If you do not specify a default value, then the type constraint will be assumed.</p>
+
+<p>Assigning <code>Nil</code> (the Perl 6 equivalent of Perl 5's <code>undef</code>) to that variable will reset it to the default value:</p>
+
+<pre><div class="geshifilter"><div class="perl geshifilter-perl">say <span class="re0">$baz</span><span class="sy0">;</span> &nbsp; <span class="co1"># 666</span><br />
+<span class="re0">$baz</span> <span class="sy0">=</span> Nil<span class="sy0">;</span><br />
+say <span class="re0">$baz</span><span class="sy0">;</span> &nbsp; <span class="co1"># 42</span></div></div></pre>
+
+<h2 id="summary">Summary</h2>
+
+<p><div id="linux-containers" class="embedded-callout-menu callout-float-right"><div class="view view-related-content-callout view-id-related_content_callout view-display-id-article_block view-dom-id-08f716c4e3a99b8efcbca9f14b601733">
+            <div class="view-header">
+      Linux Containers    </div>
+  
+  
+  
+      <div class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first views-row-last">      
+  <div class="views-field views-field-field-related-content-link">        <div class="field-content"><div class="item-list"><ul><li class="first"><a href="https://www.redhat.com/en/topics/containers/whats-a-linux-container?utm_campaign=containers&amp;intcmp=70160000000h1s6AAA">What are Linux containers?</a></li>
+<li><a href="https://developers.redhat.com/blog/2016/01/13/a-practical-introduction-to-docker-container-terminology/?utm_campaign=containers&amp;intcmp=70160000000h1s6AAA">An introduction to container terminology</a></li>
+<li><a href="https://opensource.com/downloads/containers-primer?utm_campaign=containers&amp;intcmp=70160000000h1s6AAA">Download: Containers Primer</a></li>
+<li><a href="https://www.redhat.com/en/resources/oreilly-kubernetes-operators-automation-ebook?utm_campaign=containers&amp;intcmp=70160000000h1s6AAA">Kubernetes Operators: Automating the container orchestration platform</a></li>
+<li class="last"><a href="https://www.redhat.com/en/topics/containers/what-is-kubernetes?utm_campaign=containers&amp;intcmp=70160000000h1s6AAA">What is Kubernetes?</a></li>
+</ul></div></div>  </div>  </div>    </div>
+  
+  
+  
+  
+  
+  
+</div></div>Perl 5 has values and references to values. Perl 6 has no references, but it has values and containers. There are two types of containers in Perl 6: <a href="https://docs.perl6.org/type/Proxy" target="_blank">Proxy</a> (which is much like a tied scalar in Perl 5) and <a href="https://docs.perl6.org/type/Scalar" target="_blank">Scalar</a>. Simply stated, a variable, as well as an element of a <a href="https://docs.perl6.org/type/List" target="_blank">List</a>, <a href="https://docs.perl6.org/type/Array" target="_blank">Array</a>, or <a href="https://docs.perl6.org/type/Hash" target="_blank">Hash</a>, is either a value (if it is <em>bound</em>), or a container (if it is <em>assigned</em>). Whenever a subroutine (or method) is called, the given arguments are de-containerized and <em>bound</em> to the parameters of the subroutine (unless told to do otherwise). A container also keeps information such as type constraints and a default value. Assigning <code>Nil</code> to a variable will return it to its default value, which is <code>Any</code> if you do not specify a type constraint.</p>
+</div></div></div>
+  
+  </div>
+<div class="panel-pane pane-views-panes pane-listacles-panel-pane-1"  >
+  
+      
+  
+  <div class="view view-listacles view-id-listacles view-display-id-panel_pane_1 view-dom-id-88a1baed72ac0641528eef02a2289bf9">
+        
+  
+  
+      <div class="view-content">
+              
+  <div class="views-field views-field-field-listacles">        <div class="field-content"></div>  </div>      </div>
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+<div class="panel-pane pane-entity-field pane-node-field-tags"  >
+  
+        <h2 class="pane-title">
+      Topics    </h2>
+    
+  
+  <div class="field field-name-field-tags field-type-taxonomy-term-reference field-label-hidden"><div class="field-items"><div class="field-item even" rel="schema:keywords"><a href="/tags/perl" typeof="skos:Concept" property="rdfs:label skos:prefLabel" datatype="">Perl</a></div><div class="field-item odd" rel="schema:keywords"><a href="/tags/perl-column" typeof="skos:Concept" property="rdfs:label skos:prefLabel" datatype="">Perl column</a></div><div class="field-item even" rel="schema:keywords"><a href="/tags/programming" typeof="skos:Concept" property="rdfs:label skos:prefLabel" datatype="">Programming</a></div><div class="field-item odd" rel="schema:keywords"><a href="/tags/containers" typeof="skos:Concept" property="rdfs:label skos:prefLabel" datatype="">Containers</a></div></div></div>
+  
+  </div>
+<div class="panel-pane pane-views-panes pane-author-info-panel-pane-1"  >
+  
+      
+  
+  <div class="view view-author-info view-id-author_info view-display-id-panel_pane_1 view-dom-id-ad15c7c1c4e9a993e110d9efc7d88df4">
+        
+  
+  
+      <div class="view-content">
+              
+  <div class="authorbio">        <h2 class="authorbio__pane-title pane-title">About the author</h2>
+<div class="authorbio__thumbnail"><a href="/users/lizmat"><img class="profile-pictures" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/profile_pictures/public/pictures/liz.jpg?itok=9e20o5mx" width="100" height="100" alt="Elizabeth Mattijsen" /></a></div>
+<div class="authorbio__content">
+  <span class="authorbio__name">Elizabeth Mattijsen</span> - <span class="authorbio__about">Elizabeth Mattijsen has been programming for a living since 1978 in various (mostly now defunct) programming languages before she started programming in Perl 4.  In 1994 she started the first commercial web site development company in the Netherlands, using Perl 5 as the main programming language.  From 2003 onwards, she was involved in the rapid growth of an online Hotel Reservation service.  In 2012 she got more directly involved in the development of Rakudo Perl 6.  From 2015 she has also...</span>
+  <div class="authorbio__more-link"><a href="/users/lizmat">More about me</a></div>
+</div>  </div>      </div>
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+<div class="panel-pane pane-block pane-bean-article-promo-block"  >
+  
+      
+  
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/article-promo-block" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"></div></div></div>  </div>
+</div>
+
+  
+  </div>
+    </div>
+  
+      <div class="os-article__bottom">
+      <div class="panel-pane pane-views-panes pane-related-articles-panel-pane-1"  >
+  
+        <h2 class="pane-title">
+      Recommended reading    </h2>
+    
+  
+  <div class="view view-related-articles view-id-related_articles view-display-id-panel_pane_1 related-content view-dom-id-66541299af78f3f742a1d81706e75fc1">
+        
+  
+  
+      <div id="related-content-footer" class="view-content">
+        <div class="views-row views-row-1 views-row-odd views-row-first">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/21/2/boundaries-interfaces"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/career_journey_road_gps_path_map_520.png?itok=hdhLGttM" width="315" height="177" alt="Looking at a map for career journey" title="Looking at a map for career journey" /><br />
+Defining boundaries and interfaces in software development</a></span>  </div>  </div>  <div class="views-row views-row-2 views-row-even">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/21/1/racket-guess-number"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/laptop_screen_desk_work_chat_text.png?itok=hBYci--3" width="315" height="177" alt="Person using a laptop" title="Person using a laptop" /><br />
+Start programming in Racket by writing a &quot;guess the number&quot; game</a></span>  </div>  </div>  <div class="views-row views-row-3 views-row-odd">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/21/1/d-scripting"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/lenovo-thinkpad-laptop-concentration-focus-windows-office.png?itok=4jeMBEDh" width="315" height="176" alt="Business woman on laptop sitting in front of window" title="Woman using laptop concentrating" /><br />
+Why I use the D programming language for scripting</a></span>  </div>  </div>  <div class="views-row views-row-4 views-row-even">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/21/1/gimp-scripting"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/painting_computer_screen_art_design_creative.png?itok=cENjazIj" width="315" height="177" alt="Painting art on a computer screen" title="Painting art on a computer screen" /><br />
+Write GIMP scripts to make image processing faster</a></span>  </div>  </div>  <div class="views-row views-row-5 views-row-odd">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/21/1/learn-javascript"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/code_javascript.jpg?itok=kNl5Fzi8" width="315" height="177" alt="Javascript code close-up with neon graphic overlay" title="Javascript code close-up with neon graphic overlay" /><br />
+Learn JavaScript by writing a guessing game</a></span>  </div>  </div>  <div class="views-row views-row-6 views-row-even views-row-last">      
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/article/21/1/learn-awk"><img class="related-content-lead-thumbnail" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/related-content-lead-thumbnail/public/lead-images/question-mark_chalkboard.jpg?itok=0hO5MzLF" width="315" height="177" alt="question mark in chalk" title="question mark in chalk" /><br />
+Learn awk by coding a &quot;guess the number&quot; game</a></span>  </div>  </div>    </div>
+  
+  
+  
+  
+  
+  
+</div>
+  
+  </div>
+    </div>
+  
+      <div class="os-article__footer">
+      <div class="panel-pane pane-node-comments"  id="comments" >
+  
+          <h2 class="pane-title">
+      1 Comment, <a href="/user/register">Register</a> or <a href="/user/login">Log in</a> to post a comment.    </h2>
+    
+  
+  <a id="comment-163846"></a>
+<div class="comment comment-by-node-author first last odd clearfix" about="/comment/163846#comment-163846" typeof="sioc:Post sioct:Comment">
+
+  <div class="user-picture-badges">
+    <img class="comment-avatar" typeof="foaf:Image" src="https://opensource.com/sites/default/files/styles/comment_avatar/public/pictures/liz.jpg?itok=PpgHHUls" width="50" height="50" alt="lizmat" title="lizmat" />      </div>
+
+  
+  <div class="submitted">
+    <span property="dc:date dc:created" content="2018-09-20T03:56:01-04:00" datatype="xsd:dateTime" rel="sioc:has_creator"><a href="/users/lizmat" class="username">Elizabeth Mattijsen</a> on 20 Sep 2018</span>    <a href="/comment/163846#comment-163846" class="permalink" rel="bookmark">Permalink</a>      </div>
+
+  <div class="content">
+    <span rel="sioc:reply_of" resource="/article/18/8/containers-perl-6" class="rdf-meta element-hidden"></span><div class="field field-name-comment-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even" property="content:encoded"><p>Alas, an error has crept in: in the first Perl 5 example, it should say</p>
+<p>     say $bar[1];       # no dereference needed</p>
+</div></div></div>      </div>
+
+  <div class="comment__meta">
+          </div>
+</div>
+
+
+
+  </div>
+<div class="panel-pane pane-entity-field pane-node-field-default-license"  >
+  
+      
+  
+  <div class="field field-name-field-default-license field-type-text field-label-hidden"><div class="field-items"><div class="field-item even" property="schema:license"><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+        <img alt="Creative Commons License" style="border-width:0" src="/sites/all/themes/opensource/images/cc-by-sa-4.png" title="This work is licensed under a Creative Commons Attribution-Share Alike 4.0 International License." /></a></div></div></div>
+  
+  </div>
+    </div>
+  
+</div>
+                  </div>
+
+
+        
+        
+      </div>
+
+        <div class="region region-pre-footer">
+    <div id="block-os-common-components-footer-call-to-action" class="block block-os-common-components first last odd">
+
+      
+  
+<div class="fieldable-panels-pane cta cta--green-on-blue cta--with-link">
+
+  <div class="cta__content cta__content--with-link">
+                <h2 class="cta__title">Share your sysadmin tricks</h2>
+<div class="field field-name-field-cta-content field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p>Send us home-grown sysadmin scripts. Submit an article proposal today.</p>
+</div></div></div>  </div>
+
+  <div class="cta__link">
+    <div class="field field-name-field-cta-link field-type-link-field field-label-hidden"><div class="field-items"><div class="field-item even"><a href="https://opensource.com/how-submit-article?utm_source=intcta">Learn more</a></div></div></div>  </div>
+</div>
+
+
+</div>
+  </div>
+
+        <div class="region region-footer-nav">
+    <div id="block-bean-social-media" class="block block-bean first odd">
+
+      
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/social-media" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p><span>Find us:</span> 
+</p>
+<ul>
+<li><a class="footer-twitter" href="https://twitter.com/OpenSourceWay" title="Twitter">Twitter</a></li>
+<li><a class="footer-facebook" href="https://www.facebook.com/opensourceway" title="Facebook">Facebook</a></li>
+<li><a class="footer-youtube" href="http://www.youtube.com/opensourceway" title="Youtube">Youtube</a></li>
+<li><a class="footer-mastodon" href="https://fosstodon.org/@osdc" title="">Mastodon</a></li>
+<li><a class="footer-feed" href="/feed" title="RSS">RSS</a></li>
+</ul>
+</div></div></div>  </div>
+</div>
+
+</div>
+<div id="block-menu-menu-footer" class="block block-menu last even" role="navigation">
+
+        <h2 class="block__title block-title">Footer</h2>
+    
+  <ul class="menu"><li class="menu__item is-leaf first leaf"><a href="/privacy-policy" class="menu__link">Privacy Policy</a></li>
+<li class="menu__item is-leaf leaf"><a href="/legal" class="menu__link">Terms of Use</a></li>
+<li class="menu__item is-leaf leaf"><a href="/contact" class="menu__link">Contact</a></li>
+<li class="menu__item is-leaf leaf"><a href="/opensourcecom-team" title="" class="menu__link">Meet the Team</a></li>
+<li class="menu__item is-leaf last leaf"><a href="http://opensource.org/" title="" class="menu__link">Visit opensource.org</a></li>
+</ul>
+</div>
+  </div>
+
+        <footer id="footer" class="region region-footer">
+    <div id="block-bean-copyrigt-block" class="block block-bean first odd">
+
+      
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/copyrigt-block" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p>For more discussion on open source and the role of the CIO in the enterprise, join us at <a href="https://enterprisersproject.com">The EnterprisersProject.com</a>.</p>
+
+<p>The opinions expressed on this website are those of each author, not of the author's employer or of Red Hat.</p>
+
+<p>Opensource.com aspires to publish all content under a <a href="http://creativecommons.org/licenses/">Creative Commons license</a> but may not be able to do so in all cases. You are responsible for ensuring that you have the necessary permission to reuse any work on this site. Red Hat and the Red Hat logo are trademarks of Red Hat, Inc., registered in the United States and other countries.</p>
+
+<p>Copyright ©2021 Red Hat, Inc.</p>
+</div></div></div>  </div>
+</div>
+
+</div>
+<div id="block-bean-footer-logo" class="block block-bean last even">
+
+      
+  <div class="entity entity-bean bean-generic-block clearfix" about="/block/footer-logo" typeof="">
+
+  <div class="content">
+    <div class="field field-name-field-body field-type-text-long field-label-hidden"><div class="field-items"><div class="field-item even"><p><img src="/sites/all/themes/opensource/images/footer_logo.svg" /></p>
+</div></div></div>  </div>
+</div>
+
+</div>
+  </footer>
+
+    </div>
+
+    
+      <div class="region region-os-social">
+    <div id="block-os-social-os-social-share" class="block block-os-social first last odd">
+
+      
+  <div class="a2a_kit a2a_kit_size_32 a2a_floating_style a2a_vertical_style" data-a2a-url="https://opensource.com/article/18/8/containers-perl-6">
+  <a class="a2a_button_twitter a2a_counter"></a>
+  <a class="a2a_button_facebook a2a_counter"></a>
+  <a class="a2a_button_linkedin a2a_counter"></a>
+  <a class="a2a_button_reddit a2a_counter"></a>
+  <a class="a2a_button_email a2a_counter"></a>
+  <a class="a2a_button_mastodon a2a_counter"></a>
+  <!--a class="a2a_dd" href="https://www.addtoany.com/share"></a-->
+  </div><div class="a2a_kit a2a_kit_size_32 a2a_floating_style a2a_default_style">
+  <a class="a2a_button_twitter a2a_counter"></a>
+  <a class="a2a_button_facebook a2a_counter"></a>
+  <a class="a2a_button_linkedin a2a_counter"></a>
+  <a class="a2a_button_reddit a2a_counter"></a>
+  <a class="a2a_button_email a2a_counter"></a>
+  <a class="a2a_button_mastodon a2a_counter"></a>
+  <!--a class="a2a_dd" href="https://www.addtoany.com/share"></a-->
+  </div>
+</div>
+  </div>
+    <div class="region region-page-bottom">
+    <!-- begin Google Remarketing --><img height="1" width="1" style="border-style:none;display:block;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/990030321/?value=0&amp;label=rxV4CN_35QQQ8dOK2AM&amp;guid=ON&amp;script=0" onerror="this.src='/sites/all/themes/opensource/images/1x1.png';this.onerror=null" /><!-- end Google Remarketing -->  </div>
+<script src="https://opensource.com/sites/default/files/js/js_29qYXJz8NLGg8Aomg-RZPjJcj9yEdEst1BMZ9gZbs-4.js"></script>
+<script>if (("undefined" !== typeof _satellite) && ("function" === typeof _satellite.pageBottom)) {_satellite.pageBottom();}</script>
+<script>var a2a_config = a2a_config || {};
+              a2a_config.callbacks = a2a_config.callbacks || [];
+a2a_config.templates = {
+    twitter: "Containers in Perl 6 https://red.ht/2PdhiYp via @opensourceway"
+};</script>
+  <!-- This was a triumph! I'm making a note here, huge success. -->
+</body>
+</html>

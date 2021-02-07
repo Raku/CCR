@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 13 &#8211; String Interpolation and the Zen Slice | Raku Advent Calendar</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://perl6advent.wordpress.com/xmlrpc.php">
+
+<script type="text/javascript">
+  WebFontConfig = {"google":{"families":["Merriweather:r:latin,latin-ext","Merriweather:r,i,b,bi:latin,latin-ext"]}};
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = 'https://s0.wp.com/wp-content/plugins/custom-fonts/js/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+	})();
+</script><style id="jetpack-custom-fonts-css">.wf-active body, .wf-active button, .wf-active input, .wf-active select, .wf-active textarea{font-family:"Merriweather",serif}.wf-active blockquote{font-family:"Merriweather",serif}.wf-active .archive .format-quote blockquote, .wf-active .blog .format-quote blockquote{font-family:"Merriweather",serif}.wf-active .blog .format-quote blockquote cite, .wf-active .archive .format-quote blockquote cite{font-family:"Merriweather",serif}.wf-active #infinite-handle span{font-family:"Merriweather",serif}.wf-active h1{font-family:"Merriweather",serif;font-size:25.9px;font-weight:400;font-style:normal}.wf-active h2{font-family:"Merriweather",serif;font-size:22.4px;font-weight:400;font-style:normal}.wf-active h3{font-family:"Merriweather",serif;font-size:18.9px;font-weight:400;font-style:normal}.wf-active h4{font-family:"Merriweather",serif;font-size:16.1px;font-style:normal;font-weight:400}.wf-active h5{font-family:"Merriweather",serif;font-size:14px;font-style:normal;font-weight:400}.wf-active h6{font-family:"Merriweather",serif;font-size:11.2px;font-weight:400;font-style:normal}.wf-active .widget-area .widget-title{font-size:9.1px;font-family:"Merriweather",serif;font-weight:400;font-style:normal}.wf-active .page-header .page-title{font-family:"Merriweather",serif;font-size:10.5px;font-weight:400;font-style:normal}.wf-active .page-header .title-accent{font-family:"Merriweather",serif;font-size:0.875em;font-weight:400;font-style:normal}.wf-active .entry-title{font-family:"Merriweather",serif;font-size:18.2px;font-weight:400;font-style:normal}.wf-active .comments-title{font-family:"Merriweather",serif;font-size:1.82px;font-weight:400;font-style:normal}.wf-active .comment-reply-title{font-family:"Merriweather",serif;font-size:21px;font-weight:400;font-style:normal}.wf-active .site-title{font-family:"Merriweather",serif;font-size:18.2px;font-weight:400;font-style:normal}.wf-active .site-description{font-family:"Merriweather",serif;font-size:10.5px;font-weight:400;font-style:normal}@media screen and ( min-width: 789px ){.wf-active .site-title{font-size:21px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active .site-description{font-size:11.9px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active .entry-title{font-size:27.3px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active .widget-area .widget-title{font-size:9.1px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active comments-title{font-size:21px;font-style:normal;font-weight:400}}</style>
+<meta name="google-site-verification" content="YPNxtMSK3Jj7JR2XCK-hDqmF9xDIeBEyvYm3aT1s71Y" />
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel="alternate" type="application/rss+xml" title="Raku Advent Calendar &raquo; Feed" href="https://perl6advent.wordpress.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Raku Advent Calendar &raquo; Comments Feed" href="https://perl6advent.wordpress.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Raku Advent Calendar &raquo; Day 13 &#8211; String Interpolation and the Zen&nbsp;Slice Comments Feed" href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/feed/" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+			<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1612197847h&ver=5.6.1"}};
+			!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([55357,56424,8205,55356,57212],[55357,56424,8203,55356,57212])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='all-css-0-1' href='https://s0.wp.com/_static/??-eJydkOsKwjAMhV/ILlSclx/is7RbqN3arTSpY29vVxCGN8Q/gZOcL+EEpiCacWAcGHwSwSVjB4KITjG2IozET6pqiDbwHnO2R4IOOaimF0W92B9ek7LUGE2eRITbqTpWO9DJuha0Gwuvo4ozEM8Of9hTqNV5NY+JhYm2/XdFVGwHQx/wVfAlQu77oHhxeGytQoc+275hU8iM0DpEJBK5epu84GsGy+Mu/iz3clvLg6xldwfYwaC5?cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<link crossorigin="anonymous" rel='stylesheet' id='wilson-raleway-css'  href='https://fonts.googleapis.com/css?family=Raleway%3A400%2C700&#038;ver=5.6.1' media='all' />
+<link crossorigin="anonymous" rel='stylesheet' id='wilson-latos-css'  href='https://fonts.googleapis.com/css?family=Lato%3A400%2C700%2C400italic%2C700italic&#038;subset=latin%2Clatin-ext&#038;ver=5.6.1' media='all' />
+<link rel='stylesheet' id='all-css-4-1' href='https://s0.wp.com/_static/??-eJyNjlELwjAMhP+QNU6YzAfxt3Q11mjalDWl7N9b8WUwHL7dcXf5AjUZJ1ExKugDA2ZIZYRKnCVC1plx73LewaIXiklcPMUMHiNO1IIfcrVdMyi6L8fU5CRs0SrdPGoGLC2VF6FhW0ExJLbarv7xrhgWZ5UaeGnMnS1NW9MJRxbfpIfWWtjP6BouXX8+dKf+OAzPN2zjf80=?cssminify=yes' type='text/css' media='all' />
+<link rel='stylesheet' id='print-css-5-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h&cssminify=yes' type='text/css' media='print' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link rel='stylesheet' id='all-css-8-1' href='https://s0.wp.com/_static/??-eJxti8sKgCAQAH8oW6KHdoi+xcTUWF1pjX4/OnSIOg0DM3BmYSgVmwrEQ2Q8XEgMmbiIFXXYgb3eQ3IPa8Ncwf/FZIJGgeToLZ+peBstg+/AIS0a72COU9OPUg69atV2AWWKN+I=?cssminify=yes' type='text/css' media='all' />
+<script id='jetpack_related-posts-js-extra'>
+var related_posts_js_options = {"post_heading":"h4"};
+</script>
+<script id='wpcom-actionbar-placeholder-js-extra'>
+var actionbardata = {"siteID":"10740073","siteName":"Raku Advent Calendar","siteURL":"http:\/\/perl6advent.wordpress.com","icon":"<img alt='' src='https:\/\/s0.wp.com\/i\/logo\/wpcom-gray-white.png' class='avatar avatar-50' height='50' width='50' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/wilson","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/wordpress.com\/log-in?redirect_to=https%3A%2F%2Fperl6advent.wordpress.com%2F2014%2F12%2F13%2Fday-13-string-interpolation-and-the-zen-slice%2F&signup_flow=account","themeURL":"https:\/\/wordpress.com\/theme\/wilson\/","xhrURL":"https:\/\/perl6advent.wordpress.com\/wp-admin\/admin-ajax.php","nonce":"bc56af8463","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"c7d710434e\" \/>","referer":"https:\/\/perl6advent.wordpress.com\/2014\/12\/13\/day-13-string-interpolation-and-the-zen-slice\/","canFollow":"1","feedID":"150402","statusMessage":"","customizeLink":"https:\/\/perl6advent.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fperl6advent.wordpress.com%2F2014%2F12%2F13%2Fday-13-string-interpolation-and-the-zen-slice%2F","postID":"2414","shortlink":"https:\/\/wp.me\/pJ3YZ-CW","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/perl6advent.wordpress.com\/2414","statsLink":"https:\/\/wordpress.com\/stats\/post\/2414\/perl6advent.wordpress.com","i18n":{"view":"View site","follow":"Follow","following":"Following","edit":"Edit","login":"Log in","signup":"Sign up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Wilson","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editSubs":"Manage subscriptions","viewReader":"View site in Reader","viewReadPost":"View post in Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"Join 128 other followers","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/wordpress.com\/log-in?redirect_to=https%3A%2F%2Fperl6advent.wordpress.com%2F2014%2F12%2F13%2Fday-13-string-interpolation-and-the-zen-slice%2F&signup_flow=account\">Log in now.<\/a>","stats":"Stats"}};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJydUEkOgkAQ/JBDBzQIB+NbhGnGHmfBWVB+b5tIQgxePHVqS6oaHqMg15ssMYKOICkmmNBJH4Cl0Zt5IGMKS67Qcffmeu8SugSjyYpcBJUZdhgUKwFhaoumOECXyUigsnFATuLzn/TV+1vcjnNV6zsyKHLEcFHM8Y7BL771Jn3PGObPWS/5aRKWVLgk3Jpts1i6BzRskvylmL4Qp872VNZltT9WbV3pFwhPhE8='></script>
+<script type='text/javascript'>
+( 'fetch' in window ) || document.write( '<script src="https://s0.wp.com/wp-includes/js/dist/vendor/wp-polyfill-fetch.min.js?m=1612197847h&#038;ver=3.0.0"></scr' + 'ipt>' );( document.contains ) || document.write( '<script src="https://s0.wp.com/wp-includes/js/dist/vendor/wp-polyfill-node-contains.min.js?m=1540208548h&#038;ver=3.42.0"></scr' + 'ipt>' );( window.DOMRect ) || document.write( '<script src="https://s0.wp.com/wp-includes/js/dist/vendor/wp-polyfill-dom-rect.min.js?m=1612197847h&#038;ver=3.42.0"></scr' + 'ipt>' );( window.URL && window.URL.prototype && window.URLSearchParams ) || document.write( '<script src="https://s0.wp.com/wp-includes/js/dist/vendor/wp-polyfill-url.min.js?m=1585663916h&#038;ver=3.6.4"></scr' + 'ipt>' );( window.FormData && window.FormData.prototype.keys ) || document.write( '<script src="https://s0.wp.com/wp-includes/js/dist/vendor/wp-polyfill-formdata.min.js?m=1550600082h&#038;ver=3.0.12"></scr' + 'ipt>' );( Element.prototype.matches && Element.prototype.closest ) || document.write( '<script src="https://s0.wp.com/wp-includes/js/dist/vendor/wp-polyfill-element-closest.min.js?m=1540208548h&#038;ver=2.0.2"></scr' + 'ipt>' );
+( "objectFit" in document.documentElement.style ) || document.write( '<script src="https://s0.wp.com/wp-content/plugins/gutenberg-core/v9.8.4/vendor/object-fit-polyfill.min.f68d8b8b.js?m=1611569426h&#038;ver=2.3.0"></scr' + 'ipt>' );
+</script>
+<script type='text/javascript'>
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] }, 'default' );
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] }, 'default' );
+</script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1530132353h&cssminify=yes' type='text/css' media='all' />
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://perl6advent.wordpress.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/" />
+<link rel='shortlink' href='https://wp.me/pJ3YZ-CW' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fperl6advent.wordpress.com%2F2014%2F12%2F13%2Fday-13-string-interpolation-and-the-zen-slice%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fperl6advent.wordpress.com%2F2014%2F12%2F13%2Fday-13-string-interpolation-and-the-zen-slice%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Day 13 &#8211; String Interpolation and the Zen Slice" />
+<meta property="og:url" content="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/" />
+<meta property="og:description" content="So you think you know all about string interpolation in Perl 6? Well, especially coming from Perl 5, you may find some things that do not work exactly as you’re used to. The simple examples all wor…" />
+<meta property="article:published_time" content="2014-12-13T00:01:00+00:00" />
+<meta property="article:modified_time" content="2014-12-19T11:44:54+00:00" />
+<meta property="og:site_name" content="Raku Advent Calendar" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:site" content="@wordpressdotcom" />
+<meta name="twitter:text:title" content="Day 13 &#8211; String Interpolation and the Zen&nbsp;Slice" />
+<meta name="twitter:image" content="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png" />
+<meta name="twitter:card" content="summary" />
+<meta property="fb:app_id" content="249643311490" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s0.wp.com/i/webclip.png" />
+<link rel='openid.server' href='https://perl6advent.wordpress.com/?openidserver=1' />
+<link rel='openid.delegate' href='https://perl6advent.wordpress.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="https://perl6advent.wordpress.com/osd.xml" title="Raku Advent Calendar" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+<meta name="application-name" content="Raku Advent Calendar" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Something cool about Raku (formerly known as Perl 6) every day" /><meta name="msapplication-task" content="name=Subscribe;action-uri=https://perl6advent.wordpress.com/feed/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="description" content="So you think you know all about string interpolation in Perl 6? Well, especially coming from Perl 5, you may find some things that do not work exactly as you’re used to. The simple examples all work, as it seems: my $a = 42; say &#039;value = $a&#039;; # value = $a say &quot;value =&hellip;" />
+<link rel="amphtml" href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/amp/"></head>
+
+<body class="post-template-default single single-post postid-2414 single-format-standard customizer-styles-applied group-blog has-site-logo highlander-enabled highlander-light">
+<div id="page" class="hfeed site">
+
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+	<header id="masthead" class="site-header" role="banner">
+		<div class="site-branding">
+							<a href="https://perl6advent.wordpress.com/" class="site-logo-link" rel="home" itemprop="url"><img width="274" height="197" src="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=274" class="site-logo attachment-wilson-site-logo" alt="" loading="lazy" data-size="wilson-site-logo" itemprop="logo" srcset="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png 274w, https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=150 150w" sizes="(max-width: 274px) 100vw, 274px" data-attachment-id="2913" data-permalink="https://perl6advent.wordpress.com/cropped-camelia-small-santa1-png/" data-orig-file="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png" data-orig-size="274,197" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="cropped-camelia-small-santa1.png" data-image-description="" data-medium-file="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=274" data-large-file="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=274" /></a>						<h1 class="site-title"><a href="https://perl6advent.wordpress.com/" rel="home">Raku Advent Calendar</a></h1>
+			<h2 class="site-description">Something cool about Raku (formerly known as Perl 6) every day</h2>
+		</div>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<h1><span class="screen-reader-text">Primary Menu</span></h1>
+			<button class="menu-toggle"><span class="genericon genericon-menu"></span><span class="screen-reader-text">Menu</span></button>
+
+			<div class="menu"><ul>
+<li ><a href="https://perl6advent.wordpress.com/">Home</a></li><li class="page_item page-item-2"><a href="https://perl6advent.wordpress.com/about/">About</a></li>
+</ul></div>
+		</nav><!-- #site-navigation -->
+	</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-2414" class="post-2414 post type-post status-publish format-standard hentry category-1173184">
+	<header class="entry-header">
+					<h1 class="entry-title">Day 13 &#8211; String Interpolation and the Zen&nbsp;Slice</h1>				<div class="entry-meta">
+			<span class="posted-on"><a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/" rel="bookmark"><time class="entry-date published" datetime="2014-12-13T00:01:00+00:00">December 13, 2014</time><time class="updated" datetime="2014-12-19T11:44:54+00:00">December 19, 2014</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://perl6advent.wordpress.com/author/liztormato/">liztormato</a></span></span>					</div><!-- .entry-meta -->
+	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>So you think you know all about string interpolation in Perl 6?</p>
+<p>Well, especially coming from Perl 5, you may find some things that do not work exactly as you’re used to.  The simple examples all work, as it seems:<br />
+<code><br />
+  my $a = 42;<br />
+  say 'value = $a';   # value = $a<br />
+  say "value = $a";   # value = 42</p>
+<p>  my @a = ^10;<br />
+  say 'value = @a';   # value = @a<br />
+  say "value = @a";   # value = @a    HUH??<br />
+</code></p>
+<p>In earlier versions of Perl 5 (or was it Perl 4?), this gave the same result.  At one point, it was decided that arrays would be interpolated in double quoted strings as well.  However, this caused quite a few problems with double quoted texts with email addresses in them: you would need to escape each <b>@</b> (if you were using <i>strict</i>, which you of course should have).  And if you forgot, and there was an array that just happened to have the same name as the user part of an email address, you would be in for a surprise.  Or if you didn’t use <i>strict</i>, you would suddenly have the text <b>without</b> the email address.  But then again, you got what you asked for.</p>
+<p>So how can we make this work in Perl 6?</p>
+<h3>Introducing the Zen slice</h3>
+<p>The Zen slice on an object, returns the object.  It’s like you specify nothing, and get everything.  So what does that look like?<br />
+<code><br />
+  my @a = ^10;<br />
+  say "value = @a[]";   # value = 0 1 2 3 4 5 6 7 8 9<br />
+</code></p>
+<p>You will have to make sure that you use the right indexers for the type of variable that you’re interpolating.<br />
+<code><br />
+  my %h = a =&gt; 42, b =&gt; 666;<br />
+  say "value = %h{}";   # value = a 42 b 666<br />
+</code></p>
+<p>Note that the Zen slice on a hash returns both keys and values, whereas the Zen slice on an array only returns the values.  This seems inconsistent, until you realize that you can think of a hash as a list of Pairs.</p>
+<p>The Zen slice only really exists at compile time.  So you will not get everything if your slice specification is an empty list at runtime:<br />
+<code><br />
+  my @a;<br />
+  my %h = a =&gt; 42, b =&gt; 666;<br />
+  # a slice, but not a Zen slice:<br />
+  say "value = %h{@a}";   # value =<br />
+</code></p>
+<p>So the only way you can specify a Zen slice, is if there is nothing (but whitespace) between the slice delimiters.</p>
+<h3>The Whatever slice</h3>
+<p>The <b>*</b> ( <i>Whatever</i> ) slice is different.  The Whatever will just fill in all <i>keys</i> that exist in the object, and thus only return the values of a hash.<br />
+<code><br />
+  my %h = a =&gt; 42, b =&gt; 666;<br />
+  say "value = %h{*}";   # value = 42 666<br />
+</code></p>
+<p>For arrays, there isn’t really any difference at the moment (although that may change in the future when multi-dimensional arrays are fleshed out more).</p>
+<h3>Interpolating results from subs and methods</h3>
+<p>In double quoted strings, you can also interpolate subroutine calls, as long as they start with an &#8216;<i>&amp;</i>&#8216; and have a set of parentheses (even if you don’t want to pass any arguments):<br />
+<code><br />
+  sub a { 42 }<br />
+  say "value = &amp;a()";   # value = 42<br />
+</code></p>
+<p>But it doesn’t stop at calling subs: you can also call a method on a variable as long as they have parentheses at the end:<br />
+<code><br />
+  my %h = a =&gt; 42, b =&gt; 666;<br />
+  say "value = %h.keys()";  # value = b a<br />
+</code></p>
+<p>And it doesn’t stay limited to a single method call: you can have as many as you want, provided the last one has parentheses:<br />
+<code><br />
+  my %h = a =&gt; 42, b =&gt; 666;<br />
+  say "value = %h.perl.EVAL.perl.EVAL.perl()";  # value = ("b" =&gt; 666, "a" =&gt; 42).hash<br />
+</code></p>
+<h3>Interpolating expressions</h3>
+<p>If you want to interpolate an expression in a double quoted string, you can also do that by providing an executable block inside the string:<br />
+<code><br />
+  say "6 * 7 = { 6 * 7 }";   # 6 * 7 = 42<br />
+</code></p>
+<p>The result of the execution of the block, is what will be interpolated in the string.  Well, what really is interpolated in a string, is the result of calling the <i>.Str</i> method on the value.  This is different from just <i>say</i>ing a value, in which case the <i>.gist</i> method is called.  Suppose we have our own class with its own .gist and .Str methods:<br />
+<code><br />
+  class A {<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;method Str { "foo" }<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;method gist { "bar" }<br />
+  }<br />
+  say "value = { A }"; # value = foo<br />
+  say "value = ", A;&nbsp;&nbsp;&nbsp;# value = bar<br />
+</code></p>
+<h3>Conclusion</h3>
+<p>String interpolation in Perl 6 is very powerful.  As you can see, the Zen slice makes it easy to interpolate whole arrays and hashes in a string.</p>
+<p>In this post I have only scratched the surface of string interpolation.  Please check out <a href="https://perl6advent.wordpress.com/2014/12/16/quoting-on-steroids/">Quoting on Steroids</a> in a few days for more about quoting constructs.</p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-10740073-2414-602015dbdebc4' data-src='//widgets.wp.com/likes/index.html?ver=20200826#blog_id=10740073&amp;post_id=2414&amp;origin=perl6advent.wordpress.com&amp;obj_id=10740073-2414-602015dbdebc4' data-name='like-post-frame-10740073-2414-602015dbdebc4'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+				<span class="cat-links">
+			Categories: <a href="https://perl6advent.wordpress.com/category/2014/" rel="category tag">2014</a>		</span>
+		
+			</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+
+				<nav class="navigation post-navigation" role="navigation">
+		<h1 class="screen-reader-text">Post navigation</h1>
+		<div class="nav-links">
+			<div class="nav-previous"><a href="https://perl6advent.wordpress.com/2014/12/12/day-12-towards-cleaner-jvm-interoperability/" rel="prev"><span class="meta-nav">&larr;</span> Day 12 &#8211; Towards cleaner JVM-Interoperability</a></div><div class="nav-next"><a href="https://perl6advent.wordpress.com/2014/12/13/day-14-a-perl-6-timer-ready-set-go/" rel="next">Day 14 &#8211; A Perl 6 Timer: Ready, Set,&nbsp;Go! <span class="meta-nav">&rarr;</span></a></div>		</div><!-- .nav-links -->
+	</nav><!-- .navigation -->
+	
+			
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			6 thoughts on &ldquo;<span>Day 13 &#8211; String Interpolation and the Zen&nbsp;Slice</span>&rdquo;		</h2>
+
+		
+		<ol class="comment-list">
+					<li id="comment-9910" class="comment byuser comment-author-swuecho even thread-even depth-1 parent highlander-comment">
+			<article id="div-comment-9910" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://0.gravatar.com/avatar/694d53039b1ff43bdfcd2033c90a1647?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='http://swuecho.wordpress.com' rel='external nofollow ugc' class='url'>swuecho</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#comment-9910"><time datetime="2014-12-13T00:19:16+00:00">December 13, 2014 at 00:19</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>in The Whatever slice part</p>
+<p>say &#8220;value = %h{*}&#8221;; # value = a 42 b 666</p>
+<p>that is a typo.</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/?replytocom=9910#respond' data-commentid="9910" data-postid="2414" data-belowelement="div-comment-9910" data-respondelement="respond" data-replyto="Reply to swuecho" aria-label='Reply to swuecho'>Reply</a></div>			</article><!-- .comment-body -->
+		<ol class="children">
+		<li id="comment-9923" class="comment byuser comment-author-liztormato bypostauthor odd alt depth-2 highlander-comment">
+			<article id="div-comment-9923" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://2.gravatar.com/avatar/8b34ca1d3ea6820d42f0682cd824a3b0?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn">liztormato</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#comment-9923"><time datetime="2014-12-13T09:00:14+00:00">December 13, 2014 at 09:00</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Thank you!  Fixed!</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/?replytocom=9923#respond' data-commentid="9923" data-postid="2414" data-belowelement="div-comment-9923" data-respondelement="respond" data-replyto="Reply to liztormato" aria-label='Reply to liztormato'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li id="comment-9918" class="comment even thread-odd thread-alt depth-1 parent highlander-comment">
+			<article id="div-comment-9918" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://2.gravatar.com/avatar/2fb3eb6dd18900523e1b40335156be43?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn">Johnny</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#comment-9918"><time datetime="2014-12-13T04:19:36+00:00">December 13, 2014 at 04:19</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>In Interpolating results from subs and methods section:</p>
+<p>my %h = a =&gt; 42, b =&gt; 666;<br />
+say &#8220;value = %h.keys()&#8221;; # value = (&#8220;b&#8221; =&gt; 666, &#8220;a&#8221; =&gt; 42).hash</p>
+<p>should be</p>
+<p>say &#8220;value = %h.keys()&#8221;; # value = a b</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/?replytocom=9918#respond' data-commentid="9918" data-postid="2414" data-belowelement="div-comment-9918" data-respondelement="respond" data-replyto="Reply to Johnny" aria-label='Reply to Johnny'>Reply</a></div>			</article><!-- .comment-body -->
+		<ol class="children">
+		<li id="comment-9924" class="comment byuser comment-author-liztormato bypostauthor odd alt depth-2 highlander-comment">
+			<article id="div-comment-9924" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://2.gravatar.com/avatar/8b34ca1d3ea6820d42f0682cd824a3b0?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn">liztormato</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#comment-9924"><time datetime="2014-12-13T09:07:06+00:00">December 13, 2014 at 09:07</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Thank you!  Also fixed!</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/?replytocom=9924#respond' data-commentid="9924" data-postid="2414" data-belowelement="div-comment-9924" data-respondelement="respond" data-replyto="Reply to liztormato" aria-label='Reply to liztormato'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li id="comment-9944" class="comment byuser comment-author-raiph even thread-even depth-1 parent highlander-comment">
+			<article id="div-comment-9944" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://0.gravatar.com/avatar/f00f8b55b0ade2c4748e94fb73a40662?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='http://raiph.wordpress.com' rel='external nofollow ugc' class='url'>raiph</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#comment-9944"><time datetime="2014-12-13T20:31:59+00:00">December 13, 2014 at 20:31</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>s/pass any parameters/pass any arguments/</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/?replytocom=9944#respond' data-commentid="9944" data-postid="2414" data-belowelement="div-comment-9944" data-respondelement="respond" data-replyto="Reply to raiph" aria-label='Reply to raiph'>Reply</a></div>			</article><!-- .comment-body -->
+		<ol class="children">
+		<li id="comment-10085" class="comment byuser comment-author-liztormato bypostauthor odd alt depth-2 highlander-comment">
+			<article id="div-comment-10085" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://2.gravatar.com/avatar/8b34ca1d3ea6820d42f0682cd824a3b0?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn">liztormato</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#comment-10085"><time datetime="2014-12-16T13:08:29+00:00">December 16, 2014 at 13:08</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Thanks for the nudge.  Also fixed.</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2014/12/13/day-13-string-interpolation-and-the-zen-slice/?replytocom=10085#respond' data-commentid="10085" data-postid="2414" data-belowelement="div-comment-10085" data-respondelement="respond" data-replyto="Reply to liztormato" aria-label='Reply to liztormato'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .comment-list -->
+
+		
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2014/12/13/day-13-string-interpolation-and-the-zen-slice/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://perl6advent.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate><input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="f39133c459" /><input type="hidden" name="_wp_http_referer" value="/2014/12/13/day-13-string-interpolation-and-the-zen-slice/" />
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest" />
+
+<div class="comment-form-field comment-textarea">
+	<label for="comment">Enter your comment here...</label>
+	<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+
+<div id="comment-form-identity">
+	<div id="comment-form-nascar">
+		<p>Fill in your details below or click an icon to log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="#comment-form-guest" id="postas-guest" class="nascar-signin-link"
+                   title="Login via Guest">
+									</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" class="nascar-signin-link"
+                   title="Login via WordPress.com">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></g></svg>				</a>
+			</li>
+			<li>
+			<iframe id="googleplus-sign-in" name="googleplus-sign-in" src="https://public-api.wordpress.com/connect/?googleplus-sign-in=https%3A%2F%2Fperl6advent.wordpress.com&#038;color_scheme=light" width="24" height="24" scrolling="no" allowtransparency="true" seamless="seamless" frameborder="0"></iframe>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Twitter" id="postas-twitter" class="nascar-signin-link"
+                   title="Login via Twitter">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"/></g></svg>				</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Facebook" id="postas-facebook" class="nascar-signin-link"
+                   title="Login via Facebook">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"/></g></svg>				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Gravatar" width="25" class="no-grav" />
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Name <span class="required">(required)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Website</label>
+					<div class="comment-form-input"><input id="url" name="url" type="url" value="" /></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="WordPress.com Logo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="" />
+						<p class="comment-form-posting-as pa-wordpress">
+			<strong></strong>
+			You are commenting using your WordPress.com account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-googleplus" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Google photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value="" />
+				<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value="" />
+				<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value="" />
+						<p class="comment-form-posting-as pa-googleplus">
+			<strong></strong>
+			You are commenting using your Google account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" x="0px" y="0px" viewBox="0 0 60 60" ><path fill="#519bf7" d="M56.3,30c0,-1.6 -0.2,-3.4 -0.6,-5h-3.1H42.2H30v10.6h14.8C44,39.3 42,42 39.1,43.9l8.8,6.8C53,46 56.3,39 56.3,30z" /><path fill="#3db366" d="M30,57.5c6.7,0 13.1,-2.4 17.9,-6.8l-8.8,-6.8c-2.5,1.6 -5.6,2.4 -9.1,2.4c-7.2,0 -13.3,-4.7 -15.4,-11.2l-9.3,7.1C9.8,51.3 19.1,57.5 30,57.5z" /><path fill="#fdc600" d="M5.3,42.2l9.3,-7.1c-0.5,-1.6 -0.8,-3.3 -0.8,-5.1s0.3,-3.5 0.8,-5.1l-9.3,-7.1C3.5,21.5 2.5,25.6 2.5,30S3.5,38.5 5.3,42.2z" /><path fill="#f15b44" d="M40.1,17.4l8,-8C43.3,5.1 37,2.5 30,2.5C19.1,2.5 9.8,8.7 5.3,17.8l9.3,7.1c2.1,-6.5 8.2,-11.1 15.4,-11.1C33.9,13.7 37.4,15.1 40.1,17.4z" /></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Twitter picture" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="" />
+						<p class="comment-form-posting-as pa-twitter">
+			<strong></strong>
+			You are commenting using your Twitter account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Facebook photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="" />
+						<p class="comment-form-posting-as pa-facebook">
+			<strong></strong>
+			You are commenting using your Facebook account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var highlander_expando_javascript = function () {
+
+	function hide( sel ) {
+		var el = document.querySelector( sel );
+		if ( el ) {
+			el.style.setProperty( 'display', 'none' );
+		}
+	}
+
+	function show( sel ) {
+		var el = document.querySelector( sel );
+		if ( el ) {
+			el.style.removeProperty( 'display' );
+		}
+	}
+
+	var input = document.createElement( 'input' );
+	var comment = document.querySelector( '#comment' );
+
+	if ( input && comment && 'placeholder' in input ) {
+		var label = document.querySelector( '.comment-textarea label' );
+		if ( label ) {
+			var text = label.textContent;
+			label.parentNode.removeChild( label );
+			comment.setAttribute( 'placeholder', text );
+		}
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	hide( '#comment-form-identity' );
+	hide( '#comment-form-subscribe' );
+	hide( '#commentform .form-submit' );
+
+	if ( comment ) {
+		comment.style.height = '10px';
+
+		var handler = function () {
+			comment.style.height = HighlanderComments.initialHeight + 'px';
+			show( '#comment-form-identity' );
+			show( '#comment-form-subscribe' );
+			show( '#commentform .form-submit' );
+			HighlanderComments.resizeCallback();
+
+			comment.removeEventListener( 'focus', handler );
+		};
+
+		comment.addEventListener( 'focus', handler );
+	}
+}
+
+if ( document.readyState !== 'loading' ) {
+	highlander_expando_javascript();
+} else {
+	if ( typeof window.jQuery === 'function' ) {
+		// Use jQuery's `ready` if available.
+		// This solves some scheduling issues between this script and the main highlander script.
+		jQuery( document ).ready( highlander_expando_javascript );
+	} else {
+		// If not available, add a vanilla event listener.
+		document.addEventListener( 'DOMContentLoaded', highlander_expando_javascript );
+	}
+}
+
+</script>
+
+<div id="comment-form-subscribe">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog"  style="display: inline;">Notify me of new posts via email.</label></p></div>
+
+
+
+
+<p class="form-submit"><input name="submit" type="submit" id="comment-submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='2414' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="6b8a915081" /></p>
+<input type="hidden" name="genseq" value="1612715483" />
+<input type="hidden" id="ak_js" name="ak_js" value="62"/><textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100" style="display: none !important;"></textarea></form>	</div><!-- #respond -->
+	<div style="clear: both"></div><p class="akismet_comment_form_privacy_notice">This site uses Akismet to reduce spam. <a href="https://akismet.com/privacy/" target="_blank" rel="nofollow noopener">Learn how your comment data is processed</a>.</p>
+</div><!-- #comments -->
+
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+	<div id="secondary" class="widget-area" role="complementary">
+		
+					<aside id="calendar-10" class="widget widget_calendar"><div id="calendar_wrap" class="calendar_wrap"><table id="wp-calendar" class="wp-calendar-table">
+	<caption>December 2014</caption>
+	<thead>
+	<tr>
+		<th scope="col" title="Monday">M</th>
+		<th scope="col" title="Tuesday">T</th>
+		<th scope="col" title="Wednesday">W</th>
+		<th scope="col" title="Thursday">T</th>
+		<th scope="col" title="Friday">F</th>
+		<th scope="col" title="Saturday">S</th>
+		<th scope="col" title="Sunday">S</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr><td><a href="https://perl6advent.wordpress.com/2014/12/01/" aria-label="Posts published on December 1, 2014">1</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/02/" aria-label="Posts published on December 2, 2014">2</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/03/" aria-label="Posts published on December 3, 2014">3</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/04/" aria-label="Posts published on December 4, 2014">4</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/05/" aria-label="Posts published on December 5, 2014">5</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/06/" aria-label="Posts published on December 6, 2014">6</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/07/" aria-label="Posts published on December 7, 2014">7</a></td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2014/12/08/" aria-label="Posts published on December 8, 2014">8</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/09/" aria-label="Posts published on December 9, 2014">9</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/10/" aria-label="Posts published on December 10, 2014">10</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/11/" aria-label="Posts published on December 11, 2014">11</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/12/" aria-label="Posts published on December 12, 2014">12</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/13/" aria-label="Posts published on December 13, 2014">13</a></td><td>14</td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2014/12/15/" aria-label="Posts published on December 15, 2014">15</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/16/" aria-label="Posts published on December 16, 2014">16</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/17/" aria-label="Posts published on December 17, 2014">17</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/18/" aria-label="Posts published on December 18, 2014">18</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/19/" aria-label="Posts published on December 19, 2014">19</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/20/" aria-label="Posts published on December 20, 2014">20</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/21/" aria-label="Posts published on December 21, 2014">21</a></td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2014/12/22/" aria-label="Posts published on December 22, 2014">22</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/23/" aria-label="Posts published on December 23, 2014">23</a></td><td><a href="https://perl6advent.wordpress.com/2014/12/24/" aria-label="Posts published on December 24, 2014">24</a></td><td>25</td><td>26</td><td>27</td><td>28</td>
+	</tr>
+	<tr>
+		<td>29</td><td>30</td><td>31</td>
+		<td class="pad" colspan="4">&nbsp;</td>
+	</tr>
+	</tbody>
+	</table><nav aria-label="Previous and next months" class="wp-calendar-nav">
+		<span class="wp-calendar-nav-prev"><a href="https://perl6advent.wordpress.com/2013/12/">&laquo; Dec</a></span>
+		<span class="pad">&nbsp;</span>
+		<span class="wp-calendar-nav-next"><a href="https://perl6advent.wordpress.com/2015/11/">Nov &raquo;</a></span>
+	</nav></div></aside><aside id="archives-8" class="widget widget_archive"><h1 class="widget-title">Archives</h1>
+			<ul>
+					<li><a href='https://perl6advent.wordpress.com/2019/12/'>December 2019</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2018/12/'>December 2018</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2017/12/'>December 2017</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2016/12/'>December 2016</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2016/02/'>February 2016</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2015/12/'>December 2015</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2015/11/'>November 2015</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2014/12/'>December 2014</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2013/12/'>December 2013</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2013/11/'>November 2013</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2012/12/'>December 2012</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2011/12/'>December 2011</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2010/12/'>December 2010</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2009/12/'>December 2009</a></li>
+			</ul>
+
+			</aside><aside id="search-4" class="widget widget_search"><form role="search" method="get" class="search-form" action="https://perl6advent.wordpress.com/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s">
+	</label>
+	<input type="submit" class="search-submit" value="Search">
+	<span class="genericon genericon-search"></span>
+</form>
+</aside>			</div><!-- #secondary -->
+
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+				<div class="site-info">
+			<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			
+					</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!--  -->
+<script src='//0.gravatar.com/js/gprofiles.js?ver=202105y' id='grofiles-cards-js'></script>
+<script id='wpgroho-js-extra'>
+var WPGroHo = {"my_hash":""};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-694d53039b1ff43bdfcd2033c90a1647">
+	</div>
+	<div class="grofile-hash-map-8b34ca1d3ea6820d42f0682cd824a3b0">
+	</div>
+	<div class="grofile-hash-map-2fb3eb6dd18900523e1b40335156be43">
+	</div>
+	<div class="grofile-hash-map-f00f8b55b0ade2c4748e94fb73a40662">
+	</div>
+	</div>
+<script id='highlander-comments-js-extra'>
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/perl6advent.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/perl6advent.wordpress.com\/wp-login.php?action=logout&_wpnonce=879484c120","homeURL":"https:\/\/perl6advent.wordpress.com\/","postID":"2414","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"","userIsLoggedIn":"","isJetpack":"","text_direction":"ltr"};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1573483029j'></script>
+
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20201002";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20201002";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	<div class="widget widget_eu_cookie_law_widget">
+<div
+	class="hide-on-button ads-active"
+	data-hide-timeout="30"
+	data-consent-expiration="180"
+	id="eu-cookie-law"
+>
+	<form method="post">
+		<input type="submit" value="Close and accept" class="accept" />
+
+		Privacy &amp; Cookies: This site uses cookies. By continuing to use this website, you agree to their use. <br />
+To find out more, including how to control cookies, see here:
+				<a href="https://automattic.com/cookies" rel="nofollow">
+			Cookie Policy		</a>
+ </form>
+</div>
+</div><script type='text/javascript' src='https://s0.wp.com/_static/??-eJyNkNtOwzAMhl+I1AwQgwvEo6AsdTu3OS12GsbT40oIiYHKrhLlP/iLoWXjUhSMAhNDjws5zO/dxDfwU8qJJSCzHfEPdTpVLOevo6O4ELZ/bRNKtm42BZk+frWGarKvI0UGTzMyaKji0cbeY7k0yxEVDnI9QCPPKa7Tol1otEIpXmXnmbLxFGczJFfZDPS9B4rO114TanMpBO1Q6uzPXaAryjUO7AplMS1rfuOrjfoRhQGrqmkmNN42EAzZW8GL940e2yuZOdgCwbJg0ZuRotvmrdBMHFDMfXcLbyv0kMoK+xpedo+7u93z/ulhP30CTwDSYg=='></script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<iframe src='https://widgets.wp.com/likes/master.html?ver=20200826#ver=20200826' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+		<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script src="//stats.wp.com/w.js?61" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'10740073','blog_tz':'0','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'10740073','v':'wpcom','tz':'0','user_id':'0','post':'2414','subd':'perl6advent'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1oV0pFNEwueXFaVXlyMGwvVFs4ODlRZi15ODdZbV9dUVlqL1VfcEREP1s4TjU5Yn4/Uk5vakJXb2lxQ3V4N0tka0c5dzFQTDVfYltkY3ZwbmxQQWYtVH5fLE8uc3wtQnB3UUJLL1JQdVRaK0EraklWTDFoL212XVc2WGhEJjNrckpFTEJhZzJIUzkufnkzZFRLVjNHR2NjOEktUmgySzlJWUZkeVQmQm92aTZNZHZ4V2hVT183T2lOUn5wOEtqX0Ztbl9CQzEmUS42T3VbNXxsMD01XXhWWDdwLUI/WXktYTg4VlJORmNMZDQzNV04UHF5SWFXLnAsZmlqZUp6RDB1NE5oRWs1OUhmLUE2QWZNK18='}]);
+_stq.push([ 'clickTrackerInit', '10740073', '2414' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+</body>
+</html>

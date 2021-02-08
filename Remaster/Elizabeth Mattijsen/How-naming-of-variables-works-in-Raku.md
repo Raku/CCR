@@ -18,6 +18,9 @@ Let's start with an overview of sigils in Perl and Raku:
 |   $   | Scalar     | Item        |
 |   *   | Typeglob   | n/a         |
 
+@ (Array vs. Positional)
+------------------------
+
 When you define an array in Perl, you create an expandable list of scalar values and give it a name with the sigil **@**:
 
 ```` perl

@@ -1,4 +1,4 @@
-#How phasers work in Raku
+# How phasers work in Raku
 
 *Originally published on [26 October 2018](https://opensource.com/article/18/10/how-phasers-work-perl-6) by Elizabeth Mattijsen.*
   
@@ -8,7 +8,7 @@ Raku has generalized some Perl features as phasers that weren't covered by speci
 
 One important feature to remember about phasers is that they are *not* part of the normal flow of a program's execution. The runtime executor decides when a phaser is being run depending on the type of phaser and context. Therefore, all phasers in Raku are spelled in uppercase characters to make them stand out.
 
-##An overview
+## An overview
 
 Let's start with an overview of Perl's special blocks and their Raku counterparts in the order they are executed in Perl:
 
@@ -22,7 +22,7 @@ Let's start with an overview of Perl's special blocks and their Raku counterpart
 
 These phasers in Raku are usually called [program execution phasers](https://docs.raku.org/language/phasers#Program_execution_phasers) because they are related to the execution of a complete program, regardless of where they are located in a program.
 
-##BEGIN
+## BEGIN
 
 The semantics of the **BEGIN** special block in Perl and the **[BEGIN]https://docs.raku.org/language/phasers#BEGIN)** phaser in Raku are the same. It specifies a piece of code to be executed *immediately*, as soon as it has been parsed (so *before* the program, aka the compilation unit, as a whole has been parsed).
 
@@ -35,7 +35,7 @@ This means that the **BEGIN** block is executed only when the pre-compilation oc
 This may cause some unpleasant surprises when porting code from Perl to Raku, because pre-compilation may have happened a long time ago or even on a different machine (if it was installed from an OS-distributed package). Consider the case of using the value of an environment variable to enable debugging. In Perl you could write this as:
 
 ```` perl
-# Perl 5
+# Perl
 my $DEBUG;
 BEGIN { $DEBUG = $ENV{DEBUG} // 0 }
 ````
@@ -45,7 +45,7 @@ This would work fine in Perl, as the module is compiled every time it is loaded,
 An easy workaround would be to inhibit pre-compilation of a module in Raku:
 
 ```` raku
-# Perl 6
+# Raku
 no precompilation;  # this code should not be pre-compiled
 ````
 
@@ -57,57 +57,57 @@ However, pre-compilation has several advantages that you don't want to dismiss e
 Some other features of Perl *and* Raku that implicitly use **BEGIN** functionality have the same caveat. Take this example where we want a constant **DEBUG** to have either the value of the environment variable **DEBUG** or, if that is not available, the value **0**:
 
 ```` perl
-# Perl 5
+# Perl
 use constant DEBUG => $ENV{DEBUG} // 0;
 ````
 
 ```` raku
-# Perl 6
+# Raku
 my constant DEBUG = %*ENV<DEBUG> // 0;
 ````
 
 The best equivalent in Raku is probably an **INIT** phaser:
 
 ```` raku
-# Perl 6
+# Raku
 INIT my \DEBUG = %*ENV<DEBUG> // 0;  # sigilless variable bound to value
 ````
 
 As in Perl, the **INIT** phaser is run just before execution starts. You can also use Raku's module pre-compilation behavior as a feature:
 
 ```` raku
-# Perl 6
+# Raku
 say "This module was compiled at { BEGIN DateTime.now }";
 # This module was compiled at 2018-10-04T22:18:39.598087+02:00
 ````
 
 But more about that syntax later.
 
-##UNITCHECK
+## UNITCHECK
 
 The **UNITCHECK** special block's functionality in Perl is performed by the **[CHECK](https://docs.raku.org/language/phasers#CHECK)** phaser in Raku. Otherwise, it is the same; it specifies a piece of code to be executed when *compilation* of the current compilation unit is done.
 
-##CHECK
+## CHECK
 
 There is *no* *equivalent* in Raku of the Perl **CHECK** special block. The main reason is you probably shouldn't be using the **CHECK** special block in Perl anymore; use **UNITCHECK** instead because its semantics are much saner. (It's been available since [version 5.10](https://metacpan.org/pod/perl5100delta#UNITCHECK-blocks).)
 
-##INIT
+## INIT
 
 The functionality of the **[INIT](https://docs.raku.org/language/phasers#INIT)** phaser in Raku is the same as the **INIT** special block in Perl. It specifies a piece of code to be executed *just before* the code in the compilation unit is executed.
 
 In pre-compiled modules in Raku, the **INIT** phaser can serve as an alternative to the **BEGIN** phaser.
 
-##END
+## END
 
 The **[END](https://docs.raku.org/language/phasers#END)** phaser's functionality in Raku is the same as the **END** special block's in Perl. It specifies a piece of code to be executed *after* all the code in the compilation unit has been executed or when the code decides to exit (either intended or unintended because an exception is thrown).
 
-##An example
+## An example
 
 Here's an example using all four program execution phasers and their Perl special block counterparts
 
 ```` perl
-# Perl 5
-say "running in Perl 5";
+# Perl
+say "running in Perl";
 END       { say "END"   }
 INIT      { say "INIT"  }
 UNITCHECK { say "CHECK" }
@@ -115,13 +115,13 @@ BEGIN     { say "BEGIN" }
 # BEGIN
 # CHECK
 # INIT
-# running in Perl 5
+# running in Perl
 # END
 ````
 
 ```` raku
-# Perl 6
-say "running in Perl 6";
+# Raku
+say "running in Raku";
 END   { say "END"   }
 INIT  { say "INIT"  }
 CHECK { say "CHECK" }
@@ -129,20 +129,20 @@ BEGIN { say "BEGIN" }
 # BEGIN
 # CHECK
 # INIT
-# running in Perl 6
+# running in Raku
 # END
 ````
 
-##More than special blocks
+## More than special blocks
 
 Phasers in Raku have additional features that make them much more than just special blocks.
 
-###No need for a Block
+### No need for a Block
 
 Most phasers in Raku do not have to be a [Block](https://docs.raku.org/type/Block) (i.e., followed by code between curly braces). They can also consist of a single statement *without* any curly braces. This means that if you've written this in Perl:
 
 ```` perl
-# Perl 5
+# Perl
 # need to define lexical outside of BEGIN scope
 my $foo;
 # otherwise it won't be known in the rest of the code
@@ -152,17 +152,17 @@ BEGIN { $foo = %*ENV<FOO> // 42 };
 you can write it in Raku as:
 
 ```` raku
-# Perl 6
+# Raku
 # share scope with surrounding code
 BEGIN my $foo = %*ENV<FOO> // 42;
 ````
 
-###May return a value
+### May return a value
 
 All program execution phasers *return* the last value of their code so that you can use them in an expression. The above example using **BEGIN** can also be written as:
 
 ```` raku
-# Perl 6
+# Raku
 my $foo = BEGIN %*ENV<FOO> // 42;
 ````
 
@@ -171,17 +171,17 @@ When used like that with a **BEGIN** phaser, you are creating a nameless constan
 Because of module pre-compilation, if you want this type of initialization in a module, you would probably be better of using the **INIT** phaser:
 
 ````
-# Perl 6
+# Raku
 my $foo = INIT %*ENV<FOO> // 42;
 ````
 
 This ensures that the value will be determined when the module is *loaded* rather than when it is pre-compiled (which typically happens once during the module's installation).
 
-##Other phasers in Raku
+## Other phasers in Raku
 
 If you are only interested in learning how Perl special blocks work in Raku, you can skip the rest of the article. But you will be missing out on quite a few nice and useful features people have implemented.
 
-###Block and Loop phasers
+### Block and Loop phasers
 
 Block and Loop phasers are always associated with the surrounding Block, regardless of where they are located in the Block. Except you are not limited to having just one of each—although you could argue that having more than one doesn't improve maintainability.
 
@@ -196,12 +196,12 @@ Note that any **sub** or **method** is *also* considered a Block with regards to
 | KEEP    | Run every tkme a Block is left successfully       |
 | UNDO    | Run every time a Block is left **un**successfully |
 
-###ENTER & LEAVE
+### ENTER & LEAVE
 
 The [ENTER](https://docs.raku.org/language/phasers#ENTER) and [LEAVE](https://docs.raku.org/language/phasers#LEAVE) phasers are pretty self-explanatory: the **ENTER** phaser is called whenever a Block is entered. The **LEAVE** phaser is called whenever a Block is left (either gracefully or through an exception). A simple example:
 
 ```` raku
-# Perl 6
+# Raku
 say "outside";
 {
     LEAVE say "left";
@@ -219,7 +219,7 @@ say "outside again";
 The last value of an **ENTER** phaser is returned so that it can be used in an expression. Here's a bit of a contrived example:
 
 ```` raku
-# Perl 6
+# Raku
 {
     LEAVE say "stayed " ~ (now - ENTER now) ~ " seconds";
     sleep 2;
@@ -229,14 +229,14 @@ The last value of an **ENTER** phaser is returned so that it can be used in an
 
 The **LEAVE** phaser corresponds to the **DEFER** functionality in many other modern programming languages.
 
-###KEEP & UNDO
+### KEEP & UNDO
 
 The **[KEEP](https://docs.raku.org/language/phasers#KEEP)** and **[UNDO](https://docs.raku.org/language/phasers#UNDO)** phasers are special cases of the **LEAVE** phaser. They are called depending on the return value of the surrounding Block. If the result of calling the [defined](https://docs.raku.org/type/Mu#index-entry-method_defined) method on the return value is **True**, then any **KEEP** phasers will be called. If the result of calling **defined** is not **True**, then any **UNDO** phaser will be called. The actual value of the Block will be available in the topic (i.e., **$_**).
 
 A contrived example may clarify:
 
 ```` raku
-# Perl 6
+# Raku
 for 42, Nil {
     KEEP { say "Keeping because of $_" }
     UNDO { say "Undoing because of $_.perl()" }
@@ -249,7 +249,7 @@ for 42, Nil {
 As may a real-life example:
 
 ```` raku
-# Perl 6
+# Raku
 {
     KEEP $dbh.commit;
     UNDO $dbh.rollback;
@@ -262,7 +262,7 @@ So, if anything goes wrong with setting up the big transaction in the database, 
 
 The **KEEP** and **UNDO** phasers give you the building blocks for a poor person's [software transactional memory](https://en.wikipedia.org/wiki/Software_transactional_memory).
 
-###PRE & POST
+### PRE & POST
 
 The **[PRE](https://docs.raku.org/language/phasers#PRE)** phaser is a special version of the **ENTER** phaser. The **[POST](https://docs.raku.org/language/phasers#POST)** phaser is a special case of the **LEAVE** phaser.
 
@@ -271,7 +271,7 @@ The **PRE** phaser is expected to return a true value if it is OK to enter the B
 Some examples:
 
 ```` raku
-# Perl 6
+# Raku
 {
     PRE { say "called PRE"; False }    # throws exception
     ...
@@ -280,7 +280,7 @@ say "we made it!";                     # never makes it here
 # called PRE
 # Precondition '{ say "called PRE"; False }' failed
 
-# Perl 6
+# Raku
 {
     PRE  { say "called PRE"; True   }  # does NOT throw exception
     POST { say "called POST"; False }  # throws exception
@@ -296,7 +296,7 @@ say "we made it!";                     # never makes it here
 If you just want to check if a Block returns a specific value or type, you are probably better off specifying a return signature for the Block. Note that:
 
 ```` raku
-# Perl 6
+# Raku
 {
     POST { $_ ~~ Int }   # check if the return value is an Int
     ...                  # calculate result
@@ -307,7 +307,7 @@ If you just want to check if a Block returns a specific value or type, you are p
 is just a very roundabout way of saying:
 
 ```` raku
-# Perl 6
+# Raku
 --> Int {                # return value should be an Int
     ...                  # calculate result
     $result;
@@ -316,7 +316,7 @@ is just a very roundabout way of saying:
 
 In general, you would use a **POST** phaser only if the necessary checks would be very involved and not reducible to a simple type check.
 
-###Loop phasers
+### Loop phasers
 
 Loop phasers are a special type of Block phaser specific to loop constructs. One is run before the first iteration (**[FIRST](https://docs.raku.org/language/phasers#FIRST)**), one is run after each iteration (**[NEXT](https://docs.raku.org/language/phasers#NEXT)**), and one is run after the last iteration (**[LAST](https://docs.raku.org/language/phasers#LAST)**).
 
@@ -329,7 +329,7 @@ Loop phasers are a special type of Block phaser specific to loop constructs. One
 The names speak for themselves. A bit of a contrived example:
 
 ```` raku
-# Perl 6
+# Raku
 my $total = 0;
 for 1..5 {
     $total += $_;

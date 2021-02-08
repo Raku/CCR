@@ -241,7 +241,7 @@ Sigilless variables
 
 Perl does not support sigilless variables out of the box (apart from maybe left-value subroutines, but that would be very clunky indeed).
 
-Raku does not directly support sigilless variables either, but it does support binding to sigilless names by prefixing a backslash (**\**) to the name in a definition:
+Raku does not directly support sigilless variables either, but it does support binding to sigilless names by prefixing a backslash (**\\**) to the name in a definition:
 
 ```` raku
 # Raku

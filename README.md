@@ -31,4 +31,4 @@ This should become a community project.  Hopefully some authors of blog posts wi
 
 Naming
 ======
-Yes, the name is a reference to [https://en.wikipedia.org/wiki/Creedence_Clearwater_Revival](Creedence Clearwater Revival), one of yours truly favourite bands.
+Yes, the name is a reference to [Creedence Clearwater Revival](https://en.wikipedia.org/wiki/Creedence_Clearwater_Revival), one of yours truly favourite bands.

@@ -227,7 +227,7 @@ But maybe this brings us too far into line-noise land. Fortunately, there are al
 .say for $bar.list;  # 1␤2␤3␤  , consider the scalar as a list
 ````
 
- * (Typeglobs)
+\* (Typeglobs)
 --------------
 
 As you may have noticed, Raku does not have a ***** sigil nor the concept of <a href="https://en.wikipedia.org/wiki/Perl_language_structure#Typeglob_values">typeglobs</a>. If you don't know what typeglobs are, you don't have to worry about this. You can get by very well without having to know the intricacies of symbol tables in Perl (and you can skip the next paragraph).

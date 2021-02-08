@@ -230,11 +230,11 @@ But maybe this brings us too far into line-noise land. Fortunately, there are al
 \* (Typeglobs)
 --------------
 
-As you may have noticed, Raku does not have a ***** sigil nor the concept of <a href="https://en.wikipedia.org/wiki/Perl_language_structure#Typeglob_values">typeglobs</a>. If you don't know what typeglobs are, you don't have to worry about this. You can get by very well without having to know the intricacies of symbol tables in Perl (and you can skip the next paragraph).
+As you may have noticed, Raku does not have a **\*** sigil nor the concept of <a href="https://en.wikipedia.org/wiki/Perl_language_structure#Typeglob_values">typeglobs</a>. If you don't know what typeglobs are, you don't have to worry about this. You can get by very well without having to know the intricacies of symbol tables in Perl (and you can skip the next paragraph).
 
 > In Raku, the sigil is part of the name stored in a [symbol table](https://en.wikipedia.org/wiki/Symbol_table), whereas in Perl the name is stored *without* the sigil. For example, in Perl, if you reference **$foo** in your program, the compiler will look up **foo** (without sigil), then fetch the associated information (which is an array), and look up what it needs at the index for the **$** sigil. In Raku, if you reference **$foo**, the compiler will look up **$foo** and directly use the information associated with that key.
 
-Please do *not* confuse the ***** used to indicate slurpiness of parameters in Raku with the typeglob sigil in Perl — they have nothing to do with each other.
+Please do *not* confuse the **\*** used to indicate slurpiness of parameters in Raku with the typeglob sigil in Perl — they have nothing to do with each other.
 
 Sigilless variables
 -------------------

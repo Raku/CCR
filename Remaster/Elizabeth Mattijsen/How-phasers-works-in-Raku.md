@@ -24,7 +24,7 @@ These phasers in Raku are usually called [program execution phasers](https://do
 
 ## BEGIN
 
-The semantics of the **BEGIN** special block in Perl and the **[BEGIN]https://docs.raku.org/language/phasers#BEGIN)** phaser in Raku are the same. It specifies a piece of code to be executed *immediately*, as soon as it has been parsed (so *before* the program, aka the compilation unit, as a whole has been parsed).
+The semantics of the **BEGIN** special block in Perl and the **[BEGIN](https://docs.raku.org/language/phasers#BEGIN)** phaser in Raku are the same. It specifies a piece of code to be executed *immediately*, as soon as it has been parsed (so *before* the program, aka the compilation unit, as a whole has been parsed).
 
 There is, however, a caveat with the use of **BEGIN** in Raku: Modules in Raku are pre-compiled by default, as opposed to Perl which does not have any pre-compilation of modules or scripts.
 
@@ -183,7 +183,7 @@ If you are only interested in learning how Perl special blocks work in Raku, you
 
 ### Block and Loop phasers
 
-Block and Loop phasers are always associated with the surrounding Block, regardless of where they are located in the Block. Except you are not limited to having just one of each—although you could argue that having more than one doesn't improve maintainability.
+Block and Loop phasers are always associated with the surrounding Block, regardless of where they are located in the Block. Except you are not limited to having just one of each — although you could argue that having more than one doesn't improve maintainability.
 
 Note that any **sub** or **method** is *also* considered a Block with regards to these phasers.
 
@@ -352,6 +352,6 @@ Loop constructs include **[loop](https://docs.raku.org/language/control#loop)**,
 
 You can use Loop phasers with other Block phasers if you want, but this is usually unnecessary.
 
-##Summary
+## Summary
 
 In addition to the Perl special blocks that have counterparts in Raku (called phasers), Raku has a number of special-purpose phasers related to blocks of code and looping constructs. Raku also has phasers related to exception handling and warnings, event-driven programming, and document (pod) parsing; these will be covered in future articles in this series.

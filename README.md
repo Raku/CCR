@@ -28,3 +28,7 @@ If a permission for remastering is (implicitly) obtained, then a blog post can b
 Participation
 =============
 This should become a community project.  Hopefully some authors of blog posts will take the opportunity to update their blog posts in this format, or decide to redo them in their own way.  Pull Requests for changes, particularly for the Collect and Remaster phase will be greatly appreciated.  Hopefully, the Conserve phase can be largely automated taking the URLs from the Collect phase.  Pull Requests for creating / maintaining that process, will also be greatly appreciated.
+
+Naming
+======
+Yes, the name is a reference to [https://en.wikipedia.org/wiki/Creedence_Clearwater_Revival](Creedence Clearwater Revival), one of yours truly favourite bands.

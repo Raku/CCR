@@ -3,7 +3,7 @@ Garbage collection in Raku
 
 *Originally published on [16 August 2018](https://opensource.com/article/18/8/garbage-collection-perl-6) by Elizabeth Mattijsen.*
 
-In the [first article]('Migrating Perl code to Raku.md') in this series on migrating Perl code to Raku, we looked into some of the issues you might encounter when porting your code. In this second article, we’ll get into how garbage collection differs in Raku.
+In the [first article](Migrating-Perl-code-to-Raku.md) in this series on migrating Perl code to Raku, we looked into some of the issues you might encounter when porting your code. In this second article, we’ll get into how garbage collection differs in Raku.
 
 There is *no* timely destruction of objects in Raku. This revelation usually comes as quite a shock to people used to the semantics of object destruction in Perl. But worry not, there are other ways in Raku to get the same behavior, albeit requiring a little more thought by the developer. Let’s first examine a little background on the situation in Perl.
 

@@ -10,10 +10,31 @@ An overview
 
 Let's start with an overview of sigils in Perl and Raku:
 
-**Sigil** |  **Perl**  | **Raku**
-  **@**   |  Array     | Positional
-  **%**   |  Hash      | Associative
-  **&**   | Subroutine | Callable
-  **$**   |  Scalar    | Item
-  **\***  | Typeglob   | n/a
+| Sigil | Perl       | Raku        |
+| :---: | :--------: | :---------: |
+|   @   | Array      | Positional  |
+|   %   | Hash       | Associative |
+|   &   | Subroutine | Callable    |
+|   $   | Scalar     | Item        |
+|   *   | Typeglob   | n/a         |
+| ----- | ---------- | ----------- |
 
+When you define an array in Perl, you create an expandable list of scalar values and give it a name with the sigil **@**:
+
+```` perl
+# Perl 5
+my @foo = (1,2,3);
+push @foo, 42;
+say for @foo;  # 1␤2␤3␤42␤
+````
+
+When you define an array in Raku, you create a new [**Array**](https://docs.raku.org/type/Array) object and *bind* it to the entry by that name in the lexical pad. So:
+
+```` raku
+# Perl 6
+my @foo = 1,2,3;
+push @foo, 42;
+.say for @foo;  # 1␤2␤3␤42␤
+````
+
+is functionally the same as in Perl. However, the first line is syntactic sugar for:

@@ -5,7 +5,7 @@ Containers in Raku
 
 In the third article in this series comparing Perl to Raku, learn how to handle references, bindings, and containers in Raku.
   
-In the [first article](Migrating Perl code to Raku.md) in this series comparing Perl to Raku, we looked into some of the issues you might encounter when migrating code into Raku. In the [second article](Garbage-Collection-in-Raku.md), we examined how garbage collection works in Raku. Here, in the third article, we'll focus on Perl's references and how they're handled in Raku, and introduce the concepts of binding and containers.
+In the [first article](Migrating-Perl-code-to-Raku.md) in this series comparing Perl to Raku, we looked into some of the issues you might encounter when migrating code into Raku. In the [second article](Garbage-Collection-in-Raku.md), we examined how garbage collection works in Raku. Here, in the third article, we'll focus on Perl's references and how they're handled in Raku, and introduce the concepts of binding and containers.
 
 References
 ----------
@@ -103,12 +103,15 @@ say $foo;       # 42
 ````
 
 Proxy
+-----
 
 Conceptually, the `Scalar` object in Raku has a `FETCH` method (for producing the value in the object) and a `STORE` method (for changing the value in the object), just like a tied scalar in Perl.
 
 Suppose you later assign the value `768` to the `$bar` variable:
 
-<pre><span class="geshifilter"><code class="perl geshifilter-perl"><span class="re0">$bar</span> <span class="sy0">=</span> <span class="nu0">768</span><span class="sy0">;</span>`</span></pre>
+```` raku
+$bar = 768;
+````
 
 What happens is conceptually the equivalent of:
 

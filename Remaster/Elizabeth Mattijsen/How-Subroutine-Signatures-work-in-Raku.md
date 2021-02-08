@@ -256,6 +256,7 @@ sub frobnicate(:$bar) {
 The difference between an ordinary (positional) parameter and a named parameter is the colon, which precedes the <a href="https://www.perl.com/article/on-sigils/" style="outline: 1px dotted; outline-offset: 0px;">sigil</a><span style="color:#e74c3c;"> </span>and the variable name in the definition:
 
 ```` raku
+# Raku
 $foo      # positional parameter, receives in $foo
 :$bar     # named parameter "bar", receives in $bar
 ````
@@ -277,6 +278,7 @@ As with the slurpy array, there can be only one slurpy hash in a signature, and 
 Often you want to pass a named argument to a subroutine from a variable with the same name. In Perl this looks like: `do_something(bar => $bar)`. In Raku, you can specify this in the same way: `do-something(bar => $bar)`. But you can also use a shortcut: `do-something(:$bar)`. This means less typing–and less chance of typos.
 
 Default values in Raku
+----------------------
 
 Perl has the following idiom for making parameters optional with a default value:
 

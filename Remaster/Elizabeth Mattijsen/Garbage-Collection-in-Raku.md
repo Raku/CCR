@@ -13,6 +13,7 @@ Reference counting
 In Perl, timely destruction of objects “going out of scope” is achieved by [reference counting](https://en.wikipedia.org/wiki/Reference_counting). When something is created in Perl, it has a reference count of 1 or more, which keeps it alive. In its simplest case it looks like this:
 
 ```` perl
+# Perl
 {
     my $a = 42;  # reference count of $a = 1, because lives in lexical pad
 }
@@ -22,6 +23,7 @@ In Perl, timely destruction of objects “going out of scope” is achieved by [
 In Perl, if the value is an object (aka blessed), the `DESTROY` method will be called on it.
 
 ```` perl
+# Perl
 {
     my $a = Foo->new;
 }
@@ -56,6 +58,7 @@ If you always need an orderly shutdown of external resources used by your progra
 For example, you can use the `END` phaser (known as an `END` block in Perl) to disconnect properly from a database when the program exits (for whatever reason):
 
 ```` raku
+# Raku
 my $dbh = DBIish.connect( ... ) or die "Couldn't connect";
 END $dbh.disconnect;
 ````
@@ -65,6 +68,7 @@ Note that the `END` phaser does not need to have a block (like `{ ... }`) in Ra
 There is one flaw in the code above: If the program exits *before* the database connection is made or if the database connection failed for whatever reason, it will *still* attempt to call the `.disconnect` method on whatever is in `$dbh`, which will result in an execution error.  There *is* however a simple idiom to circumvent this situation in Raku [using `with`](https://docs.raku.org/syntax/with%20orwith%20without).
 
 ```` raku
+# Raku
 END .disconnect with $dbh;
 ````
 
@@ -73,6 +77,7 @@ The postfix `with` matches only if the given value is defined (generally, an ins
 If you would like to have an external resource clean up whenever a specific *scope* is exited, you can use the `LEAVE` phaser inside that scope.
 
 ```` raku
+# Raku
 if DBIish.connect( >.. ) -> $dbh {
     LEAVE $dbh.disconnect;  # no need for "with" here
     # do your stuff with the database

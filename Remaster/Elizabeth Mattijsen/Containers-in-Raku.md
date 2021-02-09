@@ -3,7 +3,7 @@ Containers in Raku
 
 *Originally published on [29 August 2018](https://opensource.com/article/18/8/containers-perl-6) by Elizabeth Mattijsen.*
 
-In the third article in this series comparing Perl to Raku, learn how to handle references, bindings, and containers in Raku.
+In the third article in this [series comparing Perl to Raku](Migrating-to-Raku-Series.md), learn how to handle references, bindings, and containers in Raku.
   
 In the [first article](Migrating-Perl-code-to-Raku.md) in this series comparing Perl to Raku, we looked into some of the issues you might encounter when migrating code into Raku. In the [second article](Garbage-Collection-in-Raku.md), we examined how garbage collection works in Raku. Here, in the third article, we'll focus on Perl's references and how they're handled in Raku, and introduce the concepts of binding and containers.
 

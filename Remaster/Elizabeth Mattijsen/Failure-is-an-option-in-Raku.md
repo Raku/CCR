@@ -3,7 +3,7 @@
 *Originally published on [22 November 2018](https://opensource.com/article/18/11/failure-option-perl-6) by Elizabeth Mattijsen.*
 
   
-This is the eighth in a series of articles about migrating code from Perl to Raku. This article looks at the differences in creating and handling exceptions between Perl and Raku.
+This is the eighth in a [series of articles about migrating code from Perl to Raku](Migrating-to-Raku-Series.md). This article looks at the differences in creating and handling exceptions between Perl and Raku.
 
 The first part of this article describes working with exceptions in Raku, and the second part explains how you can create your own exceptions and how failure *is* an option in Raku.
 

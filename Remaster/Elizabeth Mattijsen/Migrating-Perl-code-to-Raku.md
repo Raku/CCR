@@ -3,9 +3,6 @@ Migrating Perl code to Raku
 
 *Originally published on [1 August 2018](https://opensource.com/article/18/8/migrating-perl-5-perl-6) by Elizabeth Mattijsen.*
   
-Examine the issues you may encounter when porting Perl programs to Raku
------------------------------------------------------------------------
-
 Whether you are a programmer who is taking the first steps to convert your Perl code to Raku and encountering some issues or you're just interested in learning about what might happen if you try to port Perl programs to Raku, this article should answer your questions.
 
 The [Raku documentation](https://docs.raku.org) already contains most (if not all) the [documentation you need](https://docs.raku.org/language/5to6-overview) to deal with the issues you will confront in migrating Perl code to Raku.  But, as documentation goes, the focus is on the factual differences. I will try to go a little more in-depth about specific issues and provide a little more hands-on information based on my experience porting quite a lot of Perl code to Raku.

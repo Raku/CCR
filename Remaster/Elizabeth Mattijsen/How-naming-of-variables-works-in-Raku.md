@@ -4,7 +4,7 @@ How naming of variables works in Raku
 *Originally published on [27 September 2018](https://opensource.com/article/18/9/using-sigils-perl-6) by Elizabeth Mattijsen.*
 
 
-In the first four articles in this series comparing Perl to Raku, we looked into some of the issues you might encounter [when migrating code](Migrating-Perl-code-to-Raku.md), how [garbage collection works](Garbage-Collection-in-Raku.md), why [containers replaced references](Containers-in-Raku.md), and using [(subroutine) signatures](How-Subroutine-Signatures-work-in-Raku.md) in Raku and how these things differ from Perl.
+In the first four articles in this [series comparing Perl to Raku](Migrating-to-Raku-Series.md), we looked into some of the issues you might encounter [when migrating code](Migrating-Perl-code-to-Raku.md), how [garbage collection works](Garbage-Collection-in-Raku.md), why [containers replaced references](Containers-in-Raku.md), and using [(subroutine) signatures](How-Subroutine-Signatures-work-in-Raku.md) in Raku and how these things differ from Perl.
 
 Here, in the fifth article, we will look at the subtle differences in [sigils](https://www.perl.com/article/on-sigils/) (the symbols at the start of a variable name) between Perl and Raku.
 

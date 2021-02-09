@@ -3,7 +3,7 @@ How subroutine signatures work in Raku
 
 *Originally published on [12 September 2018](https://opensource.com/article/18/9/signatures-perl-6) by Elizabeth Mattijsen.*
 
-In the [first article](Migrating-Perl-code-to-Raku.md) in this series comparing Perl to Raku, we looked into some of the issues you might encounter when migrating code into Raku. In the [second article](Garbage-Collection-in-Raku.md), we examined how garbage collection works in Raku, and in the [third article](Containers-in-Raku.md), we looked at how containers replaced references in Raku. Here in the fourth article, we will focus on (subroutine) signatures in Raku and how they differ from those in Perl.
+In the [first article](Migrating-Perl-code-to-Raku.md) in this [series comparing Perl to Raku](Migrating-to-Raku-Series.md), we looked into some of the issues you might encounter when migrating code into Raku. In the [second article](Garbage-Collection-in-Raku.md), we examined how garbage collection works in Raku, and in the [third article](Containers-in-Raku.md), we looked at how containers replaced references in Raku. Here in the fourth article, we will focus on (subroutine) signatures in Raku and how they differ from those in Perl.
 
 Experimental signatures in Perl
 -------------------------------

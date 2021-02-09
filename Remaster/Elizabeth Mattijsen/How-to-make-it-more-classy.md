@@ -2,7 +2,7 @@
 
 *Originally published on [8 November 2018](https://opensource.com/article/18/11/how-make-perl-more-classy) by Elizabeth Mattijsen.*
 
-This is the seventh in a series of articles about migrating code from Perl to Raku. This article looks at how to create classes (objects) in Raku and how it differs from Perl.
+This is the seventh in a [series of articles about migrating code from Perl to Raku](Migrating-to-Raku-Series.md). This article looks at how to create classes (objects) in Raku and how it differs from Perl.
 
 Perl has a very basic form of object orientation, which you could argue has been bolted on as an afterthought. Several attempts have been made to improve that situation, most notably [Moose](https://metacpan.org/pod/distribution/Moose/lib/Moose/Manual.pod), which "is based in large part on the Raku object system, as well as drawing on the best ideas from CLOS, Smalltalk, and many other languages." And, in turn, the Raku object creation logic has taken a few lessons from Moose.
 

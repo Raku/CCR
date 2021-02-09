@@ -2,7 +2,7 @@
 
 *Originally published on [26 October 2018](https://opensource.com/article/18/10/how-phasers-work-perl-6) by Elizabeth Mattijsen.*
   
-This is the sixth in a series of articles about migrating code from Perl to Raku. This article looks at the [special blocks in Perl](https://perldoc.pl/perlmod#BEGIN,-UNITCHECK,-CHECK,-INIT-and-END), such as **BEGIN** and **END**, and the possibly subtle change in semantics with so-called [phasers](https://docs.raku.org/language/phasers) in Raku.
+This is the sixth in a [series of articles about migrating code from Perl to Raku](Migrating-to-Raku-Series.md). This article looks at the [special blocks in Perl](https://perldoc.pl/perlmod#BEGIN,-UNITCHECK,-CHECK,-INIT-and-END), such as **BEGIN** and **END**, and the possibly subtle change in semantics with so-called [phasers](https://docs.raku.org/language/phasers) in Raku.
 
 Raku has generalized some Perl features as phasers that weren't covered by special blocks in Perl. And it has added other phasers that are not covered by any (standard) Perl functionality at all.
 

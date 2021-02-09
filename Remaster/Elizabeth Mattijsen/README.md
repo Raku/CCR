@@ -9,3 +9,4 @@ This directory contains remastered versions of blog posts by Elizabeth Mattijsen
 - 20181108 [How to make it more classy](How-to-make-it-more-classy.md)
 - 20181122 [Failure is an option in Raku](Failure-is-an-option-in-Raku.md)
 - 20181206 [Lazy and Industrious Elves](Lazy-and-Industrious-Elves.md)
+- 20181228 [Calling subs and typing in Raku](Calling-subs-and-typing-in-Raku.md)

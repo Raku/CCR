@@ -7,4 +7,5 @@ This directory contains remastered versions of blog posts by Elizabeth Mattijsen
 - 20180927 [How naming of variables works in Raku](How-naming-of-variables-works-in-Raku.md)
 - 20181026 [How phasers work in Raku](How-phasers-work-in-Raku.md)
 - 20181108 [How to make it more classy](How-to-make-it-more-classy.md)
+- 20181122 [Failure is an option in Raku](Failure-is-an-option-in-Raku.md)
 - 20181206 [Lazy and Industrious Elves](Lazy-and-Industrious-Elves.md)

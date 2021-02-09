@@ -12,7 +12,7 @@ For simplicity, this article will describe the general differences between basic
 
 ## How to make a 'Point'
 
-A picture is worth more than a thousand words. So, let's start with defining a **Point** class with two immutable attributes, **x** and **y**, and a constructor that takes named parameters. Here's how it would look in Perl:
+A picture is worth more than a thousand words. So, let's start with defining a `Point` class with two immutable attributes, `x` and `y`, and a constructor that takes named parameters. Here's how it would look in Perl:
 
 ```` perl
 # Perl
@@ -37,9 +37,9 @@ class Point {
 }
 ````
 
-As you can see, the Raku syntax is much more declarative; there is no need to write code to have a **new** method, nor is code needed to create the accessors for **x** and **y**. Also note that instead of **package**, you need to specify **class** in Raku.
+As you can see, the Raku syntax is much more declarative; there is no need to write code to have a `new` method, nor is code needed to create the accessors for `x` and `y`. Also note that instead of `package`, you need to specify `class` in Raku.
 
-After this, creating a **Point** object is remarkably similar in Perl and Raku:
+After this, creating a `Point` object is remarkably similar in Perl and Raku:
 
 ```` perl
 # Perl
@@ -51,11 +51,11 @@ my $point = Point->new( x => 42, y = 666 );
 my $point = Point.new( x => 42, y => 666 );
 ````
 
-The only difference is Raku uses **.** (a period) to call a method instead of **->** (Hyphen+Greater-than symbol).
+The only difference is Raku uses `.` (a period) to call a method instead of `->` (Hyphen+Greater-than symbol).
 
 ## Error checking
 
-In an ideal world, all parameters to methods would always be correctly specified. Unfortunately, we don't live in an ideal world, so it is wise to add error checking to your object creation. Suppose you want to make sure that both **x** and **y** are specified and are integer values. In Perl, you could do it like this:
+In an ideal world, all parameters to methods would always be correctly specified. Unfortunately, we don't live in an ideal world, so it is wise to add error checking to your object creation. Suppose you want to make sure that both `x` and `y` are specified and are integer values. In Perl, you could do it like this:
 
 ```` perl
 # Perl
@@ -73,9 +73,9 @@ package Point {
 }
 ````
 
-> Pardon the **/^-?\d+\z/** line noise. This is a regular expression checking for an optional (**?**) hyphen (**-**) at the start of a string (**^**) consisting of one or more decimal digits (**\d+**) until the end of the string **(\z)**.
+> Pardon the `/^-?\d+\z/` line noise. This is a regular expression checking for an optional (`?`) hyphen (`-`) at the start of a string (`^`) consisting of one or more decimal digits (`\d+`) until the end of the string `(\z)`.
 
-That's quite a bit of extra boilerplate. Of course, you can abstract that into an **is_valid** subroutine, like this:
+That's quite a bit of extra boilerplate. Of course, you can abstract that into an `is_valid` subroutine, like this:
 
 ```` perl
 # Perl
@@ -89,7 +89,7 @@ sub is_valid {
 }
 ````
 
-Or you can use one of the many parameter-validation modules on CPAN, such as **[Params::Validate](https://metacpan.org/pod/Params::Validate#DESCRIPTION)**. In any case, your code would look something like this:
+Or you can use one of the many parameter-validation modules on CPAN, such as `[Params::Validate](https://metacpan.org/pod/Params::Validate#DESCRIPTION)`. In any case, your code would look something like this:
 
 ```` perl
 # Perl
@@ -121,9 +121,9 @@ Point->new( x => 42 );               # 'y' missing
 Point->new( x => "foo", y => 666 );  # 'x' is not an integer
 ````
 
-Note that with an object system like Moose, you don't need to create a **new** subroutine, like in Raku.
+Note that with an object system like Moose, you don't need to create a `new` subroutine, like in Raku.
 
-In Raku, however, this is all is built-in. The **is required** attribute trait indicates that an attribute *must* be specified. And specifying a type (e.g., **Int**) automatically throws a type-check exception if the provided value is not an acceptable type:
+In Raku, however, this is all is built-in. The `is required` attribute trait indicates that an attribute *must* be specified. And specifying a type (e.g., `Int`) automatically throws a type-check exception if the provided value is not an acceptable type:
 
 ```` raku
 # Raku
@@ -138,7 +138,7 @@ Point.new( x => "foo", y => 666 );  # 'x' is not an integer
 
 ## Providing defaults
 
-Alternately, you might want to make the attributes optional and have them initialized to **0** if they are not specified. In Perl, that could look like this:
+Alternately, you might want to make the attributes optional and have them initialized to `0` if they are not specified. In Perl, that could look like this:
 
 ```` perl
 # Perl
@@ -246,7 +246,7 @@ my $point = Point->new( x => 42, y => 666 );
 $point->x = 314;  # just as if $point->x is a variable
 ````
 
-In Raku, allowing an accessor to be used as a mutator is also done in a declarative way by using the **is rw** trait on the attribute declaration, just like with the **is required** trait:
+In Raku, allowing an accessor to be used as a mutator is also done in a declarative way by using the `is rw` trait on the attribute declaration, just like with the `is required` trait:
 
 ```` raku
 # Raku
@@ -264,7 +264,7 @@ my $point = Point.new( x => 42, y => 666 );
 $point.x = 314;  # just as if $point.x is a variable
 ````
 
-If you don't like the way mutators work in Raku, you can create your own mutators by adding a method for them. For example, the **set_x** case from Perl could look like this in Raku:
+If you don't like the way mutators work in Raku, you can create your own mutators by adding a method for them. For example, the `set_x` case from Perl could look like this in Raku:
 
 ```` raku
 # Raku
@@ -276,13 +276,13 @@ class Point {
 }
 ````
 
-But *wait*: What's that exclamation point doing in **$!x** ???
+But *wait*: What's that exclamation point doing in `$!x` ???
 
-The **!** indicates the *real* name of the attribute in the class; it gives direct access to the attribute in the object. Let's take a step back and see what the attribute's so-called [twigil](https://docs.raku.org/language/variables#index-entry-Twigil) (i.e., the secondary sigil) means.
+The `!` indicates the *real* name of the attribute in the class; it gives direct access to the attribute in the object. Let's take a step back and see what the attribute's so-called [twigil](https://docs.raku.org/language/variables#index-entry-Twigil) (i.e., the secondary sigil) means.
 
 ## The '!' twigil
 
-A **!** in a declaration of an attribute like **$!x** designates that the attribute is *private*. This means you can't access that attribute from the outside unless the class' developer has provided a means to do so. This *also* means that it can *not* be initialized with a call to **.new**.
+A `!` in a declaration of an attribute like `$!x` designates that the attribute is *private*. This means you can't access that attribute from the outside unless the class' developer has provided a means to do so. This *also* means that it can *not* be initialized with a call to `.new`.
 
 A method for accessing the private attribute value can be very simple:
 
@@ -296,13 +296,13 @@ class Point {
 }
 ````
 
-This is, in fact, pretty much what happens automatically if you declare the attribute with the **.** twigil:
+This is, in fact, pretty much what happens automatically if you declare the attribute with the `.` twigil:
 
 ## The '.' twigil
 
-A **.** in a declaration of an attribute like **$.x** designates that the attribute is *public*. This means that an accessor method is created for it (much like the example above with the method for the private attribute). This also means the attribute can be initialized with a call to **.new**.
+A `.` in a declaration of an attribute like `$.x` designates that the attribute is *public*. This means that an accessor method is created for it (much like the example above with the method for the private attribute). This also means the attribute can be initialized with a call to `.new`.
 
-If you otherwise use the attribute form **$.x**, you are not referring to the attribute, rather to its *accessor*. It is syntactic sugar for **self.x**. But the **$.x** form has the advantage that you can easily interpolate inside a string. Furthermore, the accessor can be overridden by a subclass:
+If you otherwise use the attribute form `$.x`, you are not referring to the attribute, rather to its *accessor*. It is syntactic sugar for `self.x`. But the `$.x` form has the advantage that you can easily interpolate inside a string. Furthermore, the accessor can be overridden by a subclass:
 
 ```` raku
 # Raku
@@ -319,7 +319,7 @@ say Fake.new.message;    # The answer is 666 (even though $!x is 42)
 
 ## Tweaking object creation
 
-Sometimes you need to perform extra checks or tweaks to an object before it is ready for consumption. Without getting into the [nitty-gritty of creating objects in Raku](https://docs.raku.org/language/classtut), you can usually do all the tweaking that you need by supplying a **TWEAK** method. Suppose you also want to allow the value **314** to be considered as an alternative to **666**:
+Sometimes you need to perform extra checks or tweaks to an object before it is ready for consumption. Without getting into the [nitty-gritty of creating objects in Raku](https://docs.raku.org/language/classtut), you can usually do all the tweaking that you need by supplying a `TWEAK` method. Suppose you also want to allow the value `314` to be considered as an alternative to `666`:
 
 ```` raku
 # Raku
@@ -331,9 +331,9 @@ class Answer {
 }
 ````
 
-If a class has a **TWEAK** method, it will be called *after* all arguments have been processed and assigned to attributes, as appropriate (including assigning any default values and any processing of traits such as **is rw** and **is required**). Inside the method, you can do whatever you want to the attributes in the object.
+If a class has a `TWEAK` method, it will be called *after* all arguments have been processed and assigned to attributes, as appropriate (including assigning any default values and any processing of traits such as `is rw` and `is required`). Inside the method, you can do whatever you want to the attributes in the object.
 
-> Note that the **TWEAK** method is best implemented as a so-called **submethod**. A **submethod** is a special type of method that can be executed only on the class itself and *not* on any subclass. In other words, this method has the visibility of a *subroutine*.
+> Note that the `TWEAK` method is best implemented as a so-called `submethod`. A `submethod` is a special type of method that can be executed only on the class itself and *not* on any subclass. In other words, this method has the visibility of a *subroutine*.
 
 ## Positional parameters
 
@@ -351,7 +351,7 @@ package Point {
 }
 ````
 
-Even though object creation in Raku is optimized for using named parameters, you *can* use positional parameters if you want to. In this case, you'll have to create your own "**new**" method. By the way, there is nothing special about the **new** method in Raku. You can create your own, or you can create a method with another name to act as an object constructor:
+Even though object creation in Raku is optimized for using named parameters, you *can* use positional parameters if you want to. In this case, you'll have to create your own "`new`" method. By the way, there is nothing special about the `new` method in Raku. You can create your own, or you can create a method with another name to act as an object constructor:
 
 ```` raku
 # Raku
@@ -364,7 +364,7 @@ class Point {
 }
 ````
 
-This looks very similar to Perl, but there are subtle differences. In Raku, positional arguments are obligatory (unless they're declared to be optional). Making them optional with a default value works pretty much the same as with attribute declaration, as does indicating a type: you specify those in the signature of the **new** method:
+This looks very similar to Perl, but there are subtle differences. In Raku, positional arguments are obligatory (unless they're declared to be optional). Making them optional with a default value works pretty much the same as with attribute declaration, as does indicating a type: you specify those in the signature of the `new` method:
 
 ```` raku
 # Raku
@@ -374,9 +374,9 @@ method new( Int $x = 0, Int $y = 0 ) {
 }
 ````
 
-The [bless](https://docs.raku.org/routine/bless) method provides the logic of object creation with given named parameters in Raku: its interface is the same as the default implementation of the **new** method. You can call it whenever you want to create an instantiated object of a class.
+The [bless](https://docs.raku.org/routine/bless) method provides the logic of object creation with given named parameters in Raku: its interface is the same as the default implementation of the `new` method. You can call it whenever you want to create an instantiated object of a class.
 
-Don't repeat yourself ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)) is a principle you should always use. One example of making it easier to DRY in Raku is the syntactic sugar for **x => $x** (a [Pair](https://docs.raku.org/type/Pair) in which the key has the same name as the variable for the value). In Raku, this can be expressed as **:$x**. That would make the above **new** method look like the following:
+Don't repeat yourself ([DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)) is a principle you should always use. One example of making it easier to DRY in Raku is the syntactic sugar for `x => $x` (a [Pair](https://docs.raku.org/type/Pair) in which the key has the same name as the variable for the value). In Raku, this can be expressed as `:$x`. That would make the above `new` method look like the following:
 
 ```` raku
 $ Raku
@@ -384,7 +384,7 @@ $ Raku
 method new( Int $x = 0, Int $y = 0 ) { self.bless( :$x, :$y ) }
 ````
 
-After this, creating a **Point** object is remarkably similar between Perl and Raku:
+After this, creating a `Point` object is remarkably similar between Perl and Raku:
 
 ```` perl
 # Perl

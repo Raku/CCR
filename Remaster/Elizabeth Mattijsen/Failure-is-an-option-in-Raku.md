@@ -9,7 +9,7 @@ The first part of this article describes working with exceptions in Raku, and t
 
 ## Exception-handling phasers
 
-In Perl, you can use [eval](https://perldoc.perl.org/functions/eval.html) to catch exceptions in a piece of code. In Raku, this functionality is covered by `[try](https://docs.raku.org/language/exceptions#index-entry-try_blocks)`:
+In Perl, you can use [eval](https://perldoc.perl.org/functions/eval.html) to catch exceptions in a piece of code. In Raku, this functionality is covered by [`try`](https://docs.raku.org/language/exceptions#index-entry-try_blocks):
 
 ```` perl
 # Perl
@@ -122,7 +122,7 @@ In this example, only `X::NYI` exceptions will resume; all the others will be th
 
 ## Catching warnings
 
-If you do not want any warnings to emanate when a piece of code executes, you can use the `no warnings` pragma in Perl:
+If you do *not* want any warnings to emanate when a piece of code executes, you can use the `no warnings` pragma in Perl:
 
 ```` perl
 # Perl

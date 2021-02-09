@@ -89,7 +89,7 @@ sub is_valid {
 }
 ````
 
-Or you can use one of the many parameter-validation modules on CPAN, such as `[Params::Validate](https://metacpan.org/pod/Params::Validate#DESCRIPTION)`. In any case, your code would look something like this:
+Or you can use one of the many parameter-validation modules on CPAN, such as [`Params::Validate`](https://metacpan.org/pod/Params::Validate#DESCRIPTION). In any case, your code would look something like this:
 
 ```` perl
 # Perl

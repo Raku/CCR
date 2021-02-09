@@ -145,8 +145,8 @@ Alternately, you might want to make the attributes optional and have them initia
 package Point {
     sub new {
         my ( $class, %args ) = @_;
-        $args{x} = 0 unless exists $args{x};  # initialize to 0 is not given
-        $args{y} = 0 unless exists $args{y};
+        $args{x} //= 0;  # initialize to 0 is not given
+        $args{y} //= 0;
         bless \%args, $class if is_valid( \%args, 'x', 'y' );
     }
     sub x { shift->{x} }

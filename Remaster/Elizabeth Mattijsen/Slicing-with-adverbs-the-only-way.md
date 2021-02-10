@@ -65,7 +65,7 @@ This is the only adverb that actually can make changes to the hash or array it i
 ```` raku
 $ raku -e 'my %h = a=>1, b=>2; say %h<a>:delete; say %h.raku'
 1
-("b" => 2).hash
+{"b" => 2}
 ````
 
 Of course, you can also delete slices:
@@ -73,7 +73,7 @@ Of course, you can also delete slices:
 ```` raku
 $ raku -e 'my %h = a=>1, b=>2; say %h<a b c>:delete; say %h.raku'
 1 2 (Any)
-().hash
+{}
 ````
 
 Note that the **(Any)** is the value returned for the non-existing key.  If you happened to have given the hash a *default* value, it would have looked like this:
@@ -81,7 +81,7 @@ Note that the **(Any)** is the value returned for the non-existing key.  If you 
 ```` raku
 $ raku -e 'my %h is default(42) = a=>1, b=>2; say %h<a b c>:delete; say %h.raku'
 1 2 42
-().hash
+{}
 ````
 
 But the behaviour of the *is default* maybe warrants a blog post of itself, so I won’t go into it now.
@@ -91,7 +91,7 @@ Like with `:exists`, you can negate the :delete adverb.  But there wouldn’t be
 ```` raku
 $ raku -e 'my $really = True; my %h = a=>1, b=>2; say %h<a b c>:delete($really); say %h.raku'
 1 2 (Any)
-().hash
+{}
 ````
 
 Because the value passed to the adverb was true, the deletion actually took place.  However, if we pass a false value:
@@ -99,7 +99,7 @@ Because the value passed to the adverb was true, the deletion actually took plac
 ```` raku
 $ raku -e ‘my $really; my %h = a=>1, b=>2; say %h<a b c>:delete($really); say %h.raku'
 1 2 (Any)
-("a" => 1, "b" => 2).hash
+{"a" => 1, "b" => 2}
 ````
 
 It doesn’t.  Note that the return value did not change: the deletion was simply **not** performed.  This can e.g. be very handy if you have a subroutine or method doing some kind of custom slice, and you want to have an optional parameter indicating whether the slice should be deleted as well: simply pass that parameter as the adverb’s value!
@@ -111,7 +111,7 @@ These 4 attributes modify the returned values from any hash / array slice.  The 
 ```` raku
 $ raku
 > my %h = a => 1, b => 2;
-("a” => 1, "b” => 2).hash
+{"a" => 1, "b" => 2}
 > %h<a>:kv
 a 1
 > %h<a>:p
@@ -146,8 +146,8 @@ You can also combine adverbs on hash / array slices.  The most useful combinatio
 
 ```` raku
 $ raku -e 'my %h = a=>1, b=>2; my %i = (%h<a c>:delete:p).list; say %h.raku; say %i.raku'
-("b” => 2).hash
-("a” => 1).hash
+{"b" => 2}
+{"a" => 1}
 ````
 
 Or the keys that were actually deleted:
@@ -161,7 +161,7 @@ We actually [have a spec](http://design.raku.org/syn/S02.html#Combining_subscrip
 
 ## Arrays are not Hashes
 
-Apart from hashes using {} for slices, and arrays [] for slices, the adverbial syntax for hash and array slices are the same. But there are some subtle differences.  First of all, the “key” of an element in an array, is its **index**.  So, to show the indexes of elements in an array that have a defined value, one can use the `:k` adverb:
+Apart from hashes using {} for slices, and arrays [] for slices, the adverbial syntax for hash and array slices are the same. But there are some subtle differences.  First of all, the "key" of an element in an array, is its **index**.  So, to show the indexes of elements in an array that have a defined value, one can use the `:k` adverb:
 
 ```` raku
 $ raku -e 'my @a; @a[3] = 1; say @a[]:k'
@@ -191,7 +191,7 @@ $ raku -e 'my @a is default(42) = ^10; @a[3]:delete; say @a[2,3,4]; say @a[2,3,4
 True False True
 ````
 
-So, even though the element “does not exist”, it can return a defined value!  As said earlier, that may become a blog post for another day!
+So, even though the element "does not exist", it can return a defined value!  As said earlier, that may become a blog post for another day!
 
 ## Conclusion
 

@@ -18,6 +18,8 @@ sub MAIN(
 
     sub cleanup(\content) {
         content = content
+          .subst('”',       '"'              , :global)
+          .subst('“',       '"'              , :global)
           .subst('<p>',     "\n"             , :global)
           .subst('</p>'                      , :global)
           .subst('<em>',    '*'              , :global)

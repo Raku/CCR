@@ -79,8 +79,9 @@ HEADER
     my $destination = $source;
     cleanup $destination;
     $destination = $destination
-      .subst(' ',   '-', :global)
-      .subst('---', '-', :global)
+      .subst( / ^ 'Day ' \d+ ' - ' /, :global)
+      .subst(' ',   '-',              :global)
+      .subst('---', '-',              :global)
     ;
     $destination = "Remaster/$author/$destination.md".IO;
     if $force or !$destination.f {

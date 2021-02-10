@@ -32,6 +32,7 @@ sub MAIN(
           .subst('</h3>'                     , :global)
           .subst('Perl 6',  'Raku'           , :global)
           .subst('Perl 5',  'Perl'           , :global)
+          .subst('Parcel',  'List'           , :global)
           .subst("\n<pre>", "\n\n```` raku\n", :global)
           .subst("</pre>\n", "\n````\n"      , :global)
           .subst('&nbsp;',   ' '             , :global)
@@ -79,6 +80,9 @@ HEADER
 
     my $destination = $title;
     $destination = $destination
+      .subst(',',      :global)
+      .subst('.',      :global)
+      .subst('!',      :global)
       .subst(' ', '-', :global)
     ;
     $destination = "Remaster/$author/$destination.md".IO;

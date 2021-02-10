@@ -49,6 +49,7 @@ sub MAIN(
             :global)
           .subst(/ (\w+) '++' /,        { "*$0*++" }           , :global)
           .subst(/ (\w+) '()' /,        { "`$0`" }             , :global)
+          .subst( / ^ 'Day ' \d+ ' – ' /                       , :global)
         ;
     }
 
@@ -76,12 +77,9 @@ sub MAIN(
 $content
 HEADER
 
-    my $destination = $source;
-    cleanup $destination;
+    my $destination = $title;
     $destination = $destination
-      .subst( / ^ 'Day ' \d+ ' - ' /, :global)
-      .subst(' ',   '-',              :global)
-      .subst('---', '-',              :global)
+      .subst(' ', '-', :global)
     ;
     $destination = "Remaster/$author/$destination.md".IO;
     if $force or !$destination.f {

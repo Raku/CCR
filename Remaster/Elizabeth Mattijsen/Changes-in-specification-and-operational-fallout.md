@@ -1,4 +1,4 @@
-# Day 05 – Changes in specification and operational fallout
+# Changes in specification and operational fallout
     
 *Originally published on [4 December 2013](https://perl6advent.wordpress.com/2013/12/04/spec-changes-and-operational-fallout/) by Elizabeth Mattijsen.*
 

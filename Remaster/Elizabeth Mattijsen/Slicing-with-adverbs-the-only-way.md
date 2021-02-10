@@ -46,9 +46,9 @@ If it is clear that we ask for multiple keys, or not clear at compile time that 
 
 ```` raku
 $ raku -e 'my %h = a=>1, b=>2; say (%h<a b c>:exists).WHAT’
-(`List`)
+(List)
 $ raku -e 'my @a="a"; my %h = a=>1, b=>2; say (%h{@a}:exists).WHAT'
-(`List`)
+(List)
 ````
 
 Sometimes it is handier to know if something does **not** exist.  You can easily do this by negating the adverb by prefixing it with **!**: they’re really just like named parameters anyway!
@@ -63,7 +63,7 @@ True
 This is the only adverb that actually can make changes to the hash or array it is (indirectly) applied to.  It replaces the now deprecated *.delete* method.
 
 ```` raku
-$ raku -e 'my %h = a=>1, b=>2; say %h<a>:delete; say %h.perl'
+$ raku -e 'my %h = a=>1, b=>2; say %h<a>:delete; say %h.raku'
 1
 ("b" => 2).hash
 ````
@@ -71,7 +71,7 @@ $ raku -e 'my %h = a=>1, b=>2; say %h<a>:delete; say %h.perl'
 Of course, you can also delete slices:
 
 ```` raku
-$ raku -e 'my %h = a=>1, b=>2; say %h<a b c>:delete; say %h.perl'
+$ raku -e 'my %h = a=>1, b=>2; say %h<a b c>:delete; say %h.raku'
 1 2 (Any)
 ().hash
 ````
@@ -79,7 +79,7 @@ $ raku -e 'my %h = a=>1, b=>2; say %h<a b c>:delete; say %h.perl'
 Note that the **(Any)** is the value returned for the non-existing key.  If you happened to have given the hash a *default* value, it would have looked like this:
 
 ```` raku
-$ raku -e 'my %h is default(42) = a=>1, b=>2; say %h<a b c>:delete; say %h.perl'
+$ raku -e 'my %h is default(42) = a=>1, b=>2; say %h<a b c>:delete; say %h.raku'
 1 2 42
 ().hash
 ````
@@ -89,7 +89,7 @@ But the behaviour of the *is default* maybe warrants a blog post of itself, so I
 Like with `:exists`, you can negate the :delete adverb.  But there wouldn’t be much point, as you might have well not specified it at all.  However, since adverbs are basically just named parameters, you **can** make the :delete attribute conditional:
 
 ```` raku
-$ raku -e 'my $really = True; my %h = a=>1, b=>2; say %h<a b c>:delete($really); say %h.perl'
+$ raku -e 'my $really = True; my %h = a=>1, b=>2; say %h<a b c>:delete($really); say %h.raku'
 1 2 (Any)
 ().hash
 ````
@@ -97,7 +97,7 @@ $ raku -e 'my $really = True; my %h = a=>1, b=>2; say %h<a b c>:delete($really);
 Because the value passed to the adverb was true, the deletion actually took place.  However, if we pass a false value:
 
 ```` raku
-$ raku -e ‘my $really; my %h = a=>1, b=>2; say %h<a b c>:delete($really); say %h.perl'
+$ raku -e ‘my $really; my %h = a=>1, b=>2; say %h<a b c>:delete($really); say %h.raku'
 1 2 (Any)
 ("a" => 1, "b" => 2).hash
 ````
@@ -145,7 +145,7 @@ a b c
 You can also combine adverbs on hash / array slices.  The most useful combinations are with one or two of `:exists` and `:delete`, with zero or one of `:kv, :p, :k, :v`.  Some examples, like putting a slice out of one hash into a new hash:
 
 ```` raku
-$ raku -e 'my %h = a=>1, b=>2; my %i = (%h<a c>:delete:p).list; say %h.perl; say %i.perl'
+$ raku -e 'my %h = a=>1, b=>2; my %i = (%h<a c>:delete:p).list; say %h.raku; say %i.raku'
 ("b” => 2).hash
 ("a” => 1).hash
 ````

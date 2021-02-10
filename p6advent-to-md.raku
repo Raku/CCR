@@ -38,6 +38,7 @@ sub MAIN(
           .subst('&gt;',     '>'             , :global)
           .subst('&lt;',     '<'             , :global)
           .subst('&amp;',    '&'             , :global)
+          .subst('–',        '-'             , :global)
           .subst('TimToady', '*TimToady*'    , :global)
           
           .subst(/ perl6 ['-' \w]? /, 'raku'                   , :global)
@@ -65,8 +66,8 @@ sub MAIN(
     $header ~~ / '"entry-date published" datetime="' (<-["]>+) /;
     my $date  = .day ~ " @month[.month] " ~ .year given $0.substr(0,10).Date;
 
-    cleanup($content);
-    cleanup($title);
+    cleanup $content;
+    cleanup $title;
 
     $content = qq:to/HEADER/;
 # $title
@@ -75,7 +76,13 @@ sub MAIN(
 $content
 HEADER
 
-    my $destination = "Remaster/$author/$source.subst('Perl 6','Raku').md".IO;
+    my $destination = $source;
+    cleanup $destination;
+    $destination = $destination
+      .subst(' ',   '-', :global)
+      .subst('---', '-', :global)
+    ;
+    $destination = "Remaster/$author/$destination.md".IO;
     if $force or !$destination.f {
         $destination.IO.spurt($content);
     }

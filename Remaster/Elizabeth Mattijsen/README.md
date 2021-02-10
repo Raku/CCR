@@ -2,6 +2,7 @@ This directory contains remastered versions of blog posts by Elizabeth Mattijsen
 
 - 20131205 [Changes in specification and operational fallout](Changes-in-specification-and-operational-fallout.md)
 - 20131207 [Bagging the changes in the Set specification](Bagging-the-changes-in-the-Set-specification.md)
+- 20131212 [Slicing with adverbs the only way](Slicing-with-adverbs-the-only-way.md)
 - 20180801 [Migrating Perl code to Raku](Migrating-Perl-code-to-Raku.md)
 - 20180816 [Garbage Collection in Raku](Garbage-Collection-in-Raku.md)
 - 20180829 [Containers in Raku](Containers-in-Raku.md)

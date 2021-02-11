@@ -10,11 +10,9 @@ my @month = <NaM
   July    August   September October November December
 >;
 
-sub MAIN(
-  $author where "Conserve/$author".IO.d,
-  $source where "Conserve/$author/$source.html".IO.f,
-  :$force
-) {
+sub MAIN(IO() $source where .starts-with('Conserve/') && .IO.f, :$force) {
+
+    my $author = $source.Str.split('/').skip.head;
 
     sub cleanup(\content) {
         content = content
@@ -22,6 +20,7 @@ sub MAIN(
           .subst('“',       '"'              , :global)
           .subst('<p>',     "\n"             , :global)
           .subst('</p>'                      , :global)
+          .subst('<br />'                    , :global)
           .subst('<em>',    '*'              , :global)
           .subst('</em>',   '*'              , :global)
           .subst('<i>',     '*'              , :global)
@@ -35,6 +34,8 @@ sub MAIN(
           .subst('Perl 6',  'Raku'           , :global)
           .subst('Perl 5',  'Perl'           , :global)
           .subst('Parcel',  'List'           , :global)
+          .subst("\n<code>", "\n\n```` raku" , :global)
+          .subst("</code>\n", "````\n"       , :global)
           .subst("\n<pre>", "\n\n```` raku\n", :global)
           .subst("</pre>\n", "\n````\n"      , :global)
           .subst('&nbsp;',   ' '             , :global)
@@ -56,7 +57,7 @@ sub MAIN(
         ;
     }
 
-    my $content = "Conserve/$author/$source.html".IO.slurp;
+    my $content = $source.slurp;
     my $header;
     my $footer;
 

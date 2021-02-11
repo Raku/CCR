@@ -91,8 +91,10 @@ All that for simply doing a double quoted string with interpolation?  Well, beca
 What about a double quoted string that has double quotes in it?  For those cases, the `Q:qq* form is available, but that is still quite verbose.  Synopsis 2 therefore specifies:
 
 > In fact, all quote-like forms derive from `Q` with adverbs:
-         q//         Q:q//
-        qq//        Q:qq//
+```` raku
+ q//         Q:q//
+qq//        Q:qq//
+````
 
 Which means we can shorten the `Q:qq` in that last example to `qq` (and have double quotes in the double quoted string without any problems):
 
@@ -176,9 +178,11 @@ Raku has a very powerful basic quoting construct in `Q[…]`, from which all oth
 Finally, the Synopsis also indicates that there will be a way out of this alphabet soup:
 
 > If you want to abbreviate further, just define a macro:
-     macro qx { 'qq:x ' }          # equivalent to Perl's qx//
-     macro qTO { 'qq:x:w:to ' }    # qq:x:w:to//
-     macro quote:<❰ ❱> ($text) { quasi { {{{$text}}}.quoteharder } }
+```` raku
+macro qx { 'qq:x ' }          # equivalent to Perl's qx//
+macro qTO { 'qq:x:w:to ' }    # qq:x:w:to//
+macro quote:<❰ ❱> ($text) { quasi { {{{$text}}}.quoteharder } }
+````
 
 We can only hope that someone will find enough quality tuits soon to implement this.
 

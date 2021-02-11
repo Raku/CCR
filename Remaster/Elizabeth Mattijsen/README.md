@@ -6,6 +6,7 @@ This directory contains remastered versions of blog posts by Elizabeth Mattijsen
 - 20131220 [How to mangle the initial state](How-to-mangle-the-initial-state.md)
 - 20141213 [String Interpolation and the Zen Slice.md](String-Interpolation-and-the-Zen-Slice.md)
 - 20141216 [Quoting on Steroids.md](Quoting-on-Steroids.md)
+- 20171222 [Features of version 6d.md](Features-of-version-6d.md)
 - 20180801 [Migrating Perl code to Raku](Migrating-Perl-code-to-Raku.md)
 - 20180816 [Garbage Collection in Raku](Garbage-Collection-in-Raku.md)
 - 20180829 [Containers in Raku](Containers-in-Raku.md)

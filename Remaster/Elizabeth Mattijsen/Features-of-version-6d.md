@@ -1,4 +1,4 @@
-# Features of Perl 6.d
+# Features of version 6.d
     
 *Originally published on [22 December 2017](https://perl6advent.wordpress.com/2017/12/22/day-22-features-of-perl-6-d/) by Elizabeth Mattijsen.*
 

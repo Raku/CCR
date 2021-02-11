@@ -106,5 +106,5 @@ say "value = ", A;   # value = bar
 
 String interpolation in Raku is very powerful.  As you can see, the Zen slice makes it easy to interpolate whole arrays and hashes in a string.
 
-In this post I have only scratched the surface of string interpolation.  Please check out [Quoting on Steroids](https://rakuadvent.wordpress.com/2014/12/16/quoting-on-steroids/) in a few days for more about quoting constructs.
+In this post I have only scratched the surface of string interpolation.  Please check out [Quoting on Steroids](Quoting-on-Steroids.md ) in a few days for more about quoting constructs.
 

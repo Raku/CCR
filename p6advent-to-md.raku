@@ -42,6 +42,7 @@ sub MAIN(IO() $source where .starts-with('Conserve/') && .IO.f, :$force) {
           .subst('&gt;',     '>'             , :global)
           .subst('&lt;',     '<'             , :global)
           .subst('&amp;',    '&'             , :global)
+          .subst('&trade;',  '™'             , :global)
           .subst('–',        '-'             , :global)
           .subst('TimToady', '*TimToady*'    , :global)
           

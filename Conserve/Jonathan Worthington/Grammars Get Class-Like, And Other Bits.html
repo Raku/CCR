@@ -1,0 +1,208 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36343/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Grammars Get Class-Like, And Other Bits</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Grammars Get Class-Like, And Other Bits</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-06T22:10:55</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I started out the day by looking through the RT queue for Rakudo. Two tickets were already dealt with, so I just closed those. Another was a bug report concerning assigning undef to typed variables. Doing:</p>
+
+<code>my Int $x = undef;<br></code>
+
+<p>Would give a type check failure. This is now resolved. Furthermore, if your type is a class name, then assigning undef at any point to it will result in it holding the protoobject for that class again. I also took a moment to post to Perl 6 Language to get some clarifications on what "my TypeName $x;" left $x being when $x was a role, subset type or a junction of types.</p>
+
+<p>Last week I started getting grammars in place. I got so far as having the regex live in the correct namespaces, but that didn't make grammars at all class-like, which is how they should be. This week I set out to fix that. Grammars now get protoobjects too, which you can call .WHAT and so forth on. Furthermore, I got inheritance working and also smart-matching against a grammar, which runs it's TOP rule. Therefore you can now run the following example in Rakudo.</p>
+
+<code>grammar Loads { regex Lots { \d+s } };<br>
+grammar Many is Loads { rule TOP { &lt;Lots&gt; of &lt;Lots&gt; } };<br>
+if "100s of 1000s" ~~ Many {<br>
+&nbsp; &nbsp; say $/; # 100s of 1000s<br>
+}<br></code>
+
+<p>Having closed four RT tickets so far, I took a look through there to see what else there was. There was one that did most of what was needed to implement the .perl method on Junctions (which you can call, in theory anyway, on anything to get a Perl representation of it). I did the required fixes and applied it, but realized in the process that we were missing .perl for any of the really fundamental types, so I added it for Num, Int and Str.</p>
+
+<p>With that done, I spent a little time on the S12 tests. I added fudge directives to get one of the that failed to parse to do so, and added an extra test. I plan to add much more here and flesh out the tests quite a bit over time.</p>
+
+<p>Turning back to the OO support, I did some updates to the grammar that both brought us closer to STD.pm - the official grammar - and added the ability to parse a range of extra things. The first grammar changes were related to method calling. Normally you call a method just with ".", but private methods are called with "!". Additionally, there are ways to call sets of methods with quantifiers (.?, .+ and .*, with meanings analogous to those in regexes). Finally, I added the ability to scope declarations of routines too, so we can now parse lexical subs and private methods. I stubbed in conditionals for all of these cases that throw unimplemented exceptions, so people didn't use them expecting that because they parse, they will also work.</p>
+
+<p>So, now there's a bunch of stubs in there for another bunch of OO features and, if nobody beats me to it, I'll be filling some of those out on my next Rakudo day, or maybe before then if time allows (though I'm moving apartment - and country - over the coming week, so I'm not expecting to have much time). A big thanks to Vienna.pm for funding today's work.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Grammar example not working</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-05-07T03:32:46</h3>
+Odd, just tried the grammar example using r27368 and it isn't working (Mac OS X).  Maybe additional commits broke it?
+
+
+
+<blockquote>
+
+<h2>Re:Grammar example not working</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-07T17:13:58</h3>
+Did you try it in interactive mode, or by putting it into a file (test.p6 or some such) and running it?<br>
+<br>
+In interactive mode, if you try and do that it won't work out, since it doesn't recognize that an opening { means that it should wait for more input before attempting to parse. You need to change the last three lines to be on one, like:<br>
+<br>
+if "100s of 1000s" ~~ Many { say $/ }<br>
+<br>
+Otherwise, not sure why it isn't working for you - I've just svn up'd and it runs here (tried it in interactive mode and as a file).<br>
+<br>
+Thanks,<br>
+<br>
+Jonathan
+
+
+
+<blockquote>
+
+<h2>Re:Grammar example not working</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-05-07T21:56:26</h3>
+I ran it both ways as well and still am having problems (ran a clean svn co); not sure why just yet.  I'm running a normal 'perl Configure.pl' w/o optimization nor ICU; OS is Mac OS X 10.5.<br/><br/>The other examples seem to work fine, including assigning undef to typed variables.
+
+
+
+<blockquote>
+
+<h2>Re:Grammar example not working</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-07T22:25:59</h3>
+Well, oops. I asked for people to reproduce this on IRC, and Tene++ spotted that I'd managed to mess up the HTML. Thus the second line of that example was incorrect. Updated the post - please try it again with the updated example (second line was missing the calls to the inherited rules).<br>
+<br>
+Sorry 'bout that. Seems HTML is harder than compiler writing...<br>
+
+
+
+<blockquote>
+
+<h2>Re:Grammar example not working</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-05-08T00:08:22</h3>
+That fixed it!  Thanks!
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>BTW...</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-05-07T03:51:16</h3>
+Great work Jonathan!  I'm playing around a bit with a Perl6-ish implementation of BioPerl classes, maybe to kick-start some interest in the BioPerl community.
+
+
+
+<blockquote>
+
+<h2>Re:BTW...</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-07T17:16:53</h3>
+Great to hear you're working on that! If there's any specific things that you'd like to have working in Rakudo that currently don't but would help you a lot with this work, please do mention them. There's a roadmap that we're generally following, but we also try to get stuff done that helps people too.<nobr> <wbr></nobr>:-)
+
+
+
+<blockquote>
+
+<h2>Re:BTW...</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-05-07T22:01:38</h3>
+The main part will be implementing the various classes and roles, then setting up parsers for various file formats (so maybe IO/grammars).  Most of that appears to be on the TODO list already, judging by the features list pmichaud posted recently.<br/><br/>Again, thanks for all the hard work (and thanks to Vienna.pm for funding you!)
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>Thanks You!</h2>
+<h3><a href="/user/domm/">domm</a> on 2008-05-07T08:56:13</h3>
+IMO, we (Vienna.pm and the Perl community in general) have to thank you the huge amount of work you put into Rakudo! And I really love to be able to do stuff like <p><blockquote> <div><tt>perl6 -e 'say "hello world"'</tt></div> </blockquote>  Now I only need to learn a bit more complex Perl 6<nobr> <wbr></nobr>:-)
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

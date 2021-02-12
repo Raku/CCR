@@ -1,0 +1,112 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38017/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Better Diagnostics On Ambiguous Dispatch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Better Diagnostics On Ambiguous Dispatch</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-04T01:03:37</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>My first task tonight was to fix up multi methods after some changes in Parrot broke them. They were good changes, I think, but left me with half an hour's tracking down of the problem and fixing to do. It also gave me opportunity to fill out a couple more missing VTABLE methods in the Perl6MultiSub PMC.</p>
+
+<p>Now, onto the more interesting stuff. In Perl 6 you can call the .perl method on stuff to get a Perlish representation of it. We have this implemented for quite a few things. Tonight I did a first cut of this method on signatures. So this now works (example with single dispatch sub as we don't have a way to get a multi variant yet):</p>
+
+<code>sub foo(Int $a, Num $b?, *@xs) { 1 }<br>
+say &foo.signature.perl; # :(Int $a, Num $b?, Any *@xs)<br></code>
+
+<p>Having made this work (making .perl on any proto-object work along the way - Any.perl doesn't fail any more), I put it to use in Perl6MultiSub. Now if we write two ambiguous multis and try to call them, it will tell you the conflicting signatures. Here is a blatantly boring and obvious example.</p>
+
+<code>multi foo(Int $a) { 1 }<br>
+multi foo(Int $a) { 2 }<br>
+foo(42);<br></code>
+
+<p>This will now produce:</p>
+
+<code>Ambiguous dispatch to multi 'foo'. Ambiguous candidates had signatures:<br>
+:(Int $a)<br>
+:(Int $a)<br></code>
+
+<p>Which is more helpful, especially in the case when it's not obvious (e.g. when you have two variants looking for different roles, and your parameter happens to do both of them).</p>
+
+<p>Of course, this is an improvement, but it still isn't what we really want. What should follow this is the file and line number where the multi variants were declared, so you can quickly track them down. This will be especially useful once we have lexical multis and imports in effect. But you'll have to wait for that for a little while (though I am working on some of what will make this possible, along with line numbers for errors in general - but that's another blog post).</p>
+
+<p>Thanks go to <a href="http://www.deeptext.ru/">DeepText</a> for sponsoring my work on multiple dispatch in Rakudo.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

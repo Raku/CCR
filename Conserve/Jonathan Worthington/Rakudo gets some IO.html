@@ -1,0 +1,168 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36013/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo gets some IO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo gets some IO</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-03-31T22:03:45</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Reading through the transcript of the Perl 6 call last week, I noticed that I/O was mentioned as something that Rakudo was lacking and that people were really missing. I flew to the UK on Friday, was at a wedding on the Saturday weekend and meeting up with a friend in London on the Sunday and flew back today. However, I managed to grab a few spare hours on the train on the way there, and on the Sunday evening while Normal People slept and the morning before my flight on the Monday to get some Rakudo hacking done. As a result, we now have the beginings of IO in Rakudo.</p>
+
+<p>Here's a quickly hacked up random number game.</p>
+
+<code>my $answer = int(rand(100)) + 1;<br>
+my $guesses = 0;<br>
+<br>
+say "Guess the number (between 1 and 100)";<br>
+<br>
+for =$*IN -> $guess {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;$guesses++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if $guess == $answer {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say "You got it right in $guesses guesses!";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elsif $guess &lt; $answer {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say "Too low";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say "Too high";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}</code>
+
+<p>Here's an example run of the game.</p>
+
+<code>C:\Hacking\parrot\languages\perl6>..\..\parrot perl6.pbc guess.p6<br>
+Guess the number (between 1 and 100)<br>
+50<br>
+Too low<br>
+75<br>
+Too low<br>
+87<br>
+Too low<br>
+95<br>
+Too high<br>
+91<br>
+Too low<br>
+93<br>
+Too high<br>
+92<br>
+You got it right in 7 guesses!</code>
+
+<p>You'll note that here I'm using $*IN. This is an instance of the IO class, so you can do:</p>
+
+<code>say $*IN.WHAT;</code>
+
+<p>And it will report "IO". Writing =$*IN means "get me the iterator to read from $*IN", which reads a line at a time. $*OUT and $*ERR are also available, so we can output to STDERR now by doing:</p>
+
+<code>$*ERR.say("OH NOES! IT DID EXPLOSHUN!");</code>
+
+<p>So we have those three file handles, but what about getting one to a file itself? That's what open is for. Here's a program that takes a file name and then prints each line in that file with the line number at the start of it.</p>
+
+<code>my $fh = open(@*ARGS[0], :r); # :r = read mode<br>
+my $line = 1;<br>
+for =$fh {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $line++ ~ " $_";<br>
+}<br>
+$fh.close();</code>
+
+<p>I ran it on the readme; I'll just quote the top bit of the output.</p>
+
+<code>C:\Hacking\parrot\languages\perl6>..\..\parrot perl6.pbc ln.p6 README<br>
+1 ## $Id: README 25155 2008-01-22 19:25:25Z pmichaud $<br>
+2<br>
+3 =head1 Rakudo Perl 6<br>
+4<br>
+5 This is the Perl 6 compiler for Parrot, called "Rakudo Perl 6,"</code>
+
+<p>You'll notice the use of the new pair syntax for specifying the mode to open the file in, which I talked about in my last post. So already we're building stuff on top of that syntax. :-)</p>
+
+<p>I'm not sure how busy the coming week will be, but I do know that next weekend and Monday are set aside for doing Perl 6 related things: I will be joining the Oslo QA Hackathon. So I look forward to seeing any of you that will be attending there, and hopefully bringing us another few steps closer to Perl 6 on Parrot.</p></p>
+
+
+<hr/>
+
+
+
+<h2>You know what this means :)</h2>
+<h3><a href="/user/Juerd/">Juerd</a> on 2008-04-02T01:41:03</h3>
+It's now possible to implement brainfuck in Rakudo!<nobr> <wbr></nobr>:)
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

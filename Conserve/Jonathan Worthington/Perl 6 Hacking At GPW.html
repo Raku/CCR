@@ -1,0 +1,310 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/35664/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Perl 6 Hacking At GPW</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Perl 6 Hacking At GPW</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-02-15T14:37:24</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I've been at the German Perl Workshop for the last few days. While I was sat in a bunch of talks being presented in a language I don't understand, I had some free time to hack on Rakudo. That means there's been a few fixes and some new features.</p>
+
+<p>First, I set about doing some re-factoring to the objects work I had done so far. It had wound up with a lot of inline PIR in actions.pm, and that in turn fixed us to one class system, which was fine for a first-cut implementation to get a few things working, but far from what S12 calls for. Now all the inline PIR I added is gone, replaced by calls to methods written in PIR.</p>
+
+<p>With the refactoring done, it was then far easier to add what is needed to have methods in classes resolving conflicts and taking precedence during role composition. Of course, exactly how well the roles implementation matches S12 is yet to be seen, and that calls for lots of tests. I'll be drawing on the Moose ones for that.</p>
+
+<p>With some basic OO support in and ready for people to play with, I moved on to looking at the regex support. There was already some there, but I've put in a bit more. $/ (the match variable) wasn't being passed into inner scopes, so if you did a pattern match in the condition of an if block then $/ would not be set inside the block. That is now fixed. Additionally, I implemented $0, $1, $2, etc numbered captures, as well as $<foo> and $<bar> named captures. There is also the "regex" keyword for introducing named regexes, so you can say stuff like:</p>
+<code>regex Year {\d\d\d\d};<br>
+regex Location {German|French|Italian|London|Dutch|Ukrainian};<br>
+regex PerlConference {&lt;Location&gt;\sPerl\sWorkshop[\s&lt;Year&gt;]?};<br></code>
+<p>I've got rule and token parsing, but they don't pass along the :ratchet and :sigspace modifiers yet. I hope to have that resolved soon.</p>
+
+<p>A natural fall-out of adding support for $<foo> is that %hash<key> is now also supported for using constant hash keys. It's not much, but it's another small bit done.</p>
+
+<p>It's been something of a mixed bag being at the GPW. While many people are interested and supportive of the work that is being done on Perl 6, others seem to prefer to use me as their latest target for snipey comments about how it will never be completed. And one person, after making a series of comments about code and papers he'd never read, decided to make an uncomplimentary comment about what I do with my wife in bed (by the way, I'm single). While I can put up with people being ignorant, I find personal attacks completely unacceptable, and not what I've experienced anywhere else in the Perl community. And now I'm left wondering whether I really want to spend any more of my time - which it costs me to take away from $DAYJOB - coming to GPW again.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Disgusting</h2>
+<h3><a href="/user/LaPerla/">LaPerla</a> on 2008-02-16T10:05:49</h3>
+Jonathan, your story makes me very sad especially because I was once again so very happy to have you here at the workshop.<br><br>Sexist attacks of any kind are unacceptable and must be outlawed and banned not only in the perl community.<br><br>Thank you for being with us Jonathan. I'm sorry for what has happened and I hope that the offender will be available for an apology which is what is called for.<br>
+
+
+
+<h2>Unacceptable Behaviour</h2>
+<h3><a href="/user/cynix/">cynix</a> on 2008-02-16T15:55:22</h3>
+<p>I'm really sorry to hear that, Jonathan!</p>
+
+<p>While I myself will continue to argue that Perl6 ist vaporware until it is actually released, I will kick people from the Workshop if they attack other people personally.</p>
+
+<p>I hope the guy will have the balls to publicly apologize to you without any <em>wenn und aber</em> or else I'll try to track him down and refuse to let him attend any further German Perl Workshops.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/chromatic/">chromatic</a> on 2008-02-16T19:42:06</h3>
+<p><blockquote> <div><em>While I myself will continue to argue that [Perl6] ist vaporware until it is actually released...</em></div> </blockquote>
+
+<p>Seriously?  New <a href="http://www.rakudo.org/" title="rakudo.org">Rakudo</a rakudo.org> release next Wednesday, just like every month.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/Corion/">Corion</a> on 2008-02-16T22:06:41</h3>
+<p>You <a href="http://perlmonks.org/node_id=666927" title="perlmonks.org">keep saying that</a perlmonks.org>, but I guess what people mean by "Perl6" is not "Something that somebody decided to slap the label 'Perl6' on", or "Some executable named <tt>perl6</tt>", but something that lives up to the promises made by Damian and others, and the venture into Science Fiction, published by O'Reilly. I guess you will have to put up with telling people that Rakudo <i>is</i> Perl6 even after the release of Duke Nukem Forever.</p>
+<p>I'm still waiting for my flying car.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/chromatic/">chromatic</a> on 2008-02-16T23:24:24</h3>
+<p><blockquote> <div><em>I'm still waiting for my flying car.</em></div> </blockquote>
+
+<p>You're no dummy.  I <em>know</em> familiar with how community-driven software works.  I can't understand where the feeling of entitlement comes from that drives you to complain continually that we haven't somehow magically pooled all of our volunteer time to produce everything what you want on precisely your schedule for exactly the budget you've given us to work with.</p>
+
+<p>On behalf of every volunteer (such as Allison, Jonathan, Patrick, Larry, Damian, Audrey, and Jerry) who's actually <em>done</em> something to make Perl 6 happen, including taking time off from work to volunteer, I offer you this "OH NOES PELR SIXX IS LATEZ!" official raspberry:  thpppt.</p>
+
+<p>You can redeem it for a Full Official Blessed Final Version of Perl 6.0 <em>when it's done</em>.</p>
+
+<p>Or, you know, you could actually <em>help</em>.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/Corion/">Corion</a> on 2008-02-17T10:34:52</h3>
+<p>You misunderstand me. I'm not complaining about that Perl6 is not here. The only thing I'm pointing at is your constant railing against such claims as:</p> <p><blockquote> <div><i>[Perl6] ist vaporware until it is actually released...</i></div> </blockquote>
+<p>You claim that</p> <p><blockquote> <div><i>Seriously? New Rakudo release next Wednesday, just like every month.</i></div> </blockquote>
+<p>as if that were any indication to that Perl6 were actually "done" in any way.</p>
+<p>The progress that has been made in the last few years is amazing, but Perl6 is in no way "done" or "ready". Rakudo has a long way to go to come near the promises that were made for Perl6. Until it comes close to them, you will have to live with people saying that Perl6 is Not There even though you put out a binary named <tt>perl6</tt> every month.
+Of course, you are free to release a new vision statement that restates that the current release of Rakudo is what Perl6 is all about, and that all the hopes that people
+put into Perl6 are just projections and never were backed by any substance. And in many ways, I think that Perl6 is/was too many things to too many people, and the imaginary feature set has grown too big for reality and Rakudo to sustain. In that sense, it is very good that the team is releasing alpha builds for the interested to inspect. But again, claiming that these releases were anything like the mental image the people have dreamed up and the machinery has created over the years is misleading or misunderstanding the people. The term "Rakudo" is a good way to differentiate the two, the feature set of Perl6 and the current beta release, available as a binary. But still, that doesn't offer you any way to bridge the disconnect between the hype/ideas of Perl6 in other people's minds and your image of Rakudo-reality.</p>
+<p>I think you also misunderstood my closing comment</p> <p><blockquote> <div><i>I'm still waiting for my flying car</i></div> </blockquote>
+<p>It was meant as a reminiscence on how the future, as depicted in silly science fiction novels, did not live up to its hype, or rather, turned out vastly different from what the authors envisioned and wrote down.</p>
+<p>I'm trying to communicate to you the disconnect people perceive between Rakudo and Perl6, and that I get the feeling that you see the two as identical. Having Rakudo is a step <i>towards</i> Perl6, but having Rakudo does in no way change the vaporware of Perl6, until the promised feature set of Perl6 (wherever that lives nowadays, maybe still in the exegeses, apocalypses and whatnot?) is implemented in it.</p>
+<p>On the topic of helping, I'll make you an offer - you stop claiming that The Emperor's New Perl6 is "here now", and I stop pointing out how I don't see it.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/chromatic/">chromatic</a> on 2008-02-17T18:21:23</h3>
+<p><blockquote> <div><em>Rakudo does in no way change the vaporware of [Perl 6]...</em></div> </blockquote>
+
+<p>The fact that multiple implementations exist and people can use them (hey, I wrote working Perl 6 code two and a half year ago) doesn't mean that the software actually exists outside of a hidden code repository that no one outside of the company can see or even outside the minds of the marketing department?</p>
+
+<p>If you downloaded and build Rakudo right now, you might see that it supports features natively that Perl 5 doesn't have.</p>
+
+<p>If you want to redefine the word <em>vaporware</em> to mean "software that doesn't yet do everything that someone said it would in a final version with a printed manual illuminated by eighth century Irish monks and hand installed by nubile young cherubs at the direction of Steve Jobs", yeah, Perl 6 is vaporware, just like Python 3000, Ruby 2, PHP 6,<nobr> <wbr></nobr>.NET 3, Java 7, and just about every software project I can imagine.</p>
+
+<p>As such, I find <em>that</em> definition of vaporware exceedingly difficult to believe.</p>
+
+<p>Now you do have a point in that the first several years of Perl 6 had way too many press releases trumpeting great things that didn't exist... but several of those things are starting to exist in usable form now.  If you get all sorts of righteous indignation knotted up inside when the people actually doing the work to make all of these lovely features exist start saying "Hey, this part works now, and we release a new stable version every month in case you don't want to check out trunk continually," well, that's one sort of hobby I suppose.  You might want to quote me very carefully if you think I've <em>ever</em> said that any Perl 6 implementation is currently complete, however.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/Corion/">Corion</a> on 2008-02-17T19:31:54</h3>
+<p>I wrote working Perl6 code <a href="http://use.perl.org/user/autrijus/journal/24207" title="perl.org">two years and 10 months ago myself</a perl.org>, thank you. But that does not mean that the then implementation of Perl6 included any features that differentiated Perl6 from Perl5.</p> <p><blockquote> <div><i>
+If you get all sorts of righteous indignation knotted up inside when the people actually doing the work to make all of these lovely features exist start saying "Hey, this part works now, and we release a new stable version every month in case you don't want to check out trunk continually," well, that's one sort of hobby I suppose.
+</i></div> </blockquote>
+<p>I haven't seen you saying "Hey, this part works now", I've only seen you claiming that "You can have <tt>perl6</tt> today", as if a binary named <tt>perl6</tt> were what the people doubting Perl6 cared about.</p> <p><blockquote> <div><i>You might want to quote me very carefully if you think I've ever said that any Perl 6 implementation is currently complete, however.</i></div> </blockquote>
+<p>... which actually is the benchmark by which I go - before the Perl6 team hasn't said "This is worthy of a 1.0 release" and has released a "press release" claiming that "We are satisfied with it", all your "You can use it already (except, it's not done yet and we might shuffle around the operators three times while you download)" just means that, "it's not done yet". Which is why I find it misleading when you equate Perl6 releases with Rakudo releases. You can have as many Rakudo releases as there are months in the year, but that doesn't mean anything in the progress of Perl6. </p>
+<p>Feel free to replace "It's not done yet" with the more positive "We're working on it", if that makes you feel better. It also might create a more positive level of communication between you and the people doubting Perl6 if instead of pointing them to Rakudo as if it were Perl6, you pointed them to Rakudo and told them what features it already has, or even better, that the features they were missing in Perl5 it are already implemented in Rakudo.</p>
+<p> Representing Rakudo as the answer to "When Perl6 is released" is, again, misleading. Representing Rakudo as "This is where we're currently at" might not give you the vindicative feel of "PREL SIX IZ HERE OMGZ", but it might also be a more direct contribution to the discussion of where Perl6, as currently implemented, stands on the vaporware scale.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/chromatic/">chromatic</a> on 2008-02-17T21:16:08</h3>
+<p><blockquote> <div><em>You can have as many Rakudo releases as there are months in the year, but that doesn't mean anything in the progress of [Perl 6].</em></div> </blockquote>
+
+<p>I only responded to quote that sentence.  You, sir, left me speechless.  Few people do.</p>
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>Re:Unacceptable Behaviour</h2>
+<h3><a href="/user/cynix/">cynix</a> on 2008-02-22T21:06:45</h3>
+I have to admit that my last sentence was unfair, because I still haven't learned from either side yet what really happened. I should have asked for both sides of the story first. So much for posting such tings without having a good night's sleep first.
+
+
+
+
+
+</blockquote>
+
+
+<h2>Wow.</h2>
+<h3><a href="/user/Aristotle/">Aristotle</a> on 2008-02-16T22:54:04</h3>
+<p>That&#8217;s all I can say. Wow.</p>
+
+<p>Well, the next workshop is in a year; and the one after that, in two years. I would <em>hope</em> that by that point, the tune of the naysayers would have to change from &#8220;it&#8217;s never gonna be done&#8221; to &#8220;that took longer than any other project&#8221; or however else they&#8217;re going to translate it to the past tense&#8230; n&#8217;est-&ccedil;e pas?<nobr> <wbr></nobr><tt>;-)</tt> </p>
+
+
+
+<h2>Apologies</h2>
+<h3><a href="/user/schwigon/">schwigon</a> on 2008-02-19T08:52:26</h3>
+Jonathan,<br><br>please take our apologies from the organizers for such rude behaviour of one of our attendees.<br><br>If we had knew that earlier, we had for sure immediately banished him from further attendance.<br><br>Your talk and earlier ones too were such a pleasure for a lot of people that I would deeply regret not seeing you on our workshops again.<br><br>If you give us some hints about the person, we will take actions against that person, at least to not allow him access to future workshops.<br><br>If we don't find out who it was, be sure that we will be more careful in future about what happens to our guests.<br><br>Again, much apologies.<br><br>Steffen Schwigon,<br>wsorga<br><br>
+
+
+
+<blockquote>
+
+<h2>Re:Apologies</h2>
+<h3><a href="/user/schwigon/">schwigon</a> on 2008-02-25T13:12:22</h3>
+It seems, my posting needs clarification. Please read my apology posting in a personal way, e.g., substitute "we" with "I", "our" with "my", "wsorga" with "a member of wsorga", etc.
+
+
+
+
+
+</blockquote>
+
+
+<h2>really, wow</h2>
+<h3><a href="/user/loader/">loader</a> on 2008-02-21T09:05:44</h3>
+as apparently the only other person here that actually witnessed the event, I think a few comments are in order:<br><br>that person actually tried to make a compliment to jonathan because jonathan was quite agitated by the amount of perl6 criticism that was mentioned on the GPW. unfortunately, jonathan must have completely misunderstood that comment, and despite multiple attempts to calm him down (or to even find out what his problem was) and apologies by the person making the comment, he simply refused to talk about it and help clear up the problem.<br><br>jonathan actually reacted with such force and venom that it was scary to look at the whole thing, his reaction certainly was completely out of proportion.<br><br>the real sad thing is that so many people here actually jumped at that person without knowing him , his side of the story, or having heard any other evidence by attendents, even going so far as to refusing him access to the workshop or threatening with "actions", whatever that means.<br><br>thats not a good behaviour from workshop organisers, who should be interested in calming down people over such an tiny problem as it was, instead of escalating the issue by uttering pointless threats.<br><br>thats just as scary as jonathans overreaction: people, calm down, and jonathan, calm down as well, that guy didn't even intend to make you angry, all he wanted to do was to compliment you, however flawed his attempt might have been.<br><br>
+
+
+
+<blockquote>
+
+<h2>Re:really, wow</h2>
+<h3><a href="/user/slanning/">slanning</a> on 2008-02-21T16:46:10</h3>
+FWIW, this is actually close to what I'd guessed had happened when I heard about the story: that someone had made a joke, that that someone was German, and of course who understands <a href="http://en.wikipedia.org/wiki/German_humour" title="wikipedia.org">German humor</a wikipedia.org> besides Germans? (Relax, I'm only joking.)
+
+
+
+<h2>Re:really, wow</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-02-22T22:37:25</h3>
+<p> <em>jonathan actually reacted with such force and venom</em> </p>
+
+<p>Erm, huh? When the guy left technical topics and instead decided to make a comment about how he could just imagine me in bed with my (non-existent) wife and so forth, I just walked away and went back into the talks.</p>
+
+<p>I find it really, really hard to see how the remark could be taken as a compliment given the negativity of the rest of the conversation. But anyway, I'd rather just put the whole thing behind me, and would rather everyone else does the same. One person's remark which offended and upset me shouldn't make me stay away from GPW in the future, so if I'm still able to keep attending conferences next time around, and can think of something to talk about, I'll be happy to submit a talk next time around. And I certainly don't want to hold a grudge against the person who made the remark either; I vastly prefer to get on with people.</p>
+
+<p>But whatever. I've felt mistreated. I've had my rant. People have expressed their opinions. Let's all get on with doing Useful Stuff.</p>
+
+<p>Thanks,</p>
+
+<p>Jonathan</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>this discussion makes me sad</h2>
+<h3><a href="/user/tinita/">tinita</a> on 2008-02-21T13:35:16</h3>
+i hear two versions of the story without any precise information of what was said.<br><br>the sad thing is, that out of a personal attack a discussion about perl 6 and the german perl workshop community starts.<br>i love the perl community, and i love the individualism. but i don't like if such discussions get personal. we're all grown up after all, so please resolve the misconception if possible and discuss any personal things privately.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,158 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/37807/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: The first day back on Rakudo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>The first day back on Rakudo</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-04T23:14:01</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>So, back from my vacation, it was time to dive back into Rakudo. I spent the day mostly dealing with tickets people have been filing - fixing a range of smaller problems felt like a good way of getting back into, and caught up with, the codebase. Here are the things that I've got done today.</p>
+
+<ul>
+  <li>A while ago I wrote a patch that made it possible to use classes defined 
+
+in other modules. However, this in turn broke some uses of pre-compiled 
+
+modules. Today, with a fix to a Parrot segfault along the way, I did a 
+
+different patch that gets us the best of both worlds for now - pre-compiled 
+
+modules work again, and using modules with classes in them still works 
+
+(including pre-compiled modules with classes).</li>
+  <li>Applied a patch from Chris Dolan to make modules that recursively use 
+
+each other not lead to infinite recursion in Rakudo. Thanks, Chris!</li>
+  <li>If you match a regex against an array in Perl 6, it tests each element of 
+
+the array and is true when at least one of them matches. For hashes, it tests 
+
+each of the keys. Getting this functionality into Rakudo was requested in a 
+
+ticket; I implemented it, plus added some tests.</li>
+  <li>Fixed bug that led to exception when you tried to create an enum with 
+
+just a single element in it. Added tests for this. Also noticed there weren't 
+
+any tests for anonymous enumerations, so added a few (including the one-value 
+
+case).</li>
+  <li>Got classes declared with a namespace (class Foo::Bar { }) working - 
+
+before the methods weren't stored properly. Put the test for this into 
+
+spectest_regression too.</li>
+  <li>Tweaked the fudging a bit inside one test so we could add it to 
+
+spectest_regression, and added another one that we were already fully passing 
+
+but hadn't got in spectest_regression. Both related to OO, which needs more 
+
+tests, so it's good to get a few more.</li>
+  <li>Enhanced "does" and "but" so they will work with instances of PMCs. This 
+
+was what meant you could not do "'Today' but Monday" style things before now. 
+
+Also fixed a couple of other things in but with enums (regression). This got at 
+
+least one more test passing (so we can track any further regression on that 
+
+issue now).</li>
+  <li>Closed another use related ticket; the supplied example code to show the 
+
+problem now worked. It may have started working in use fixes done earlier on 
+
+today, in my patch or in the patch from Chris.</li>
+  <li>Looked through another couple of tickets; commented on one of them on what problem it actually exposed, though don't have a fix yet, and discussed another one on #perl6 to try and understand the ticket more.</li>
+</ul>
+
+<p>Before I went away, I was rather behind on doing my Rakudo Day reports - I'll get the couple of missing ones written up and posted soon; I'm going to try and keep to posting them on the day now as I did at the start, and write them as I do stuff, rather than hacking until beyond midnight and then falling asleep before I get around to writing anything up! :-) Thanks to Vienna.pm for funding today's hacking, and to everyone who has been playing with Rakudo and sending in bugs and patches.</p></p>
+
+
+<hr/>
+
+
+
+<h2>O! Thank you very much!</h2>
+<h3><a href="/user/ihrd/">ihrd</a> on 2008-11-05T07:42:03</h3>
+It`s great to see so many bugs fixed!
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

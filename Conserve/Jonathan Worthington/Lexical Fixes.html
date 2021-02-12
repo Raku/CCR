@@ -1,0 +1,106 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36844/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Lexical Fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Lexical Fixes</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-07-02T23:47:30</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>First of all, sorry that it has taken me so long to write up last week's Rakudo day. Normally I write the report at the end of the day, but I stayed up debugging and fixing stuff until I was too tired to do anything, but sleep. I'd also been having some insomnia over that week, and had been down with some virus (as in, me personally, not my computer) around the start of last week, so by the time the weekend arrived I just wanted to rest. I'm happy to say that I'm now in much better shape, so there's nothing to worry about. The last couple of days have just been full of catching up with $DAYJOB stuff I couldn't do at the start of last week.</p>
+
+<p>Second, I'm sorry to have nothing much exciting to speak of. Thursday was one of those days spent doing needed stuff rather than fun stuff. Patrick had discovered various issues with Parrot's lexicals implementation that were in the way of making progress on various things in Rakudo. Since getting that right was important in getting some fairly fundemental stuff fixed, and given I have Parrot internals knowledge, I took the day away from doing the cool stuff and focused on these issues. Along the way I fixed at least one other long-standing issue. With some additional contributions from chromatic++ and NotFound++, I think we are now free of the issues that were blocking things.</p>
+
+<p>One of the issues I solved was that methods were unable to see lexicals in enclosing scopes. That is now resolved at a Parrot level, and Patrick did the changes in PCT too and thus it should be resolved in Rakudo. The more serious issue was that outer scopes weren't being identified uniquely enough in the emitted code. This was mostly seriously an issue for multi-subs, but also could be exposed when multiple namespaces were used in one file (a common occurence). This is now resolved.</p>
+
+<p>I also started laying the foundations for getting us to be able to identify Subs, Blocks and Methods as different types, and having somewhere to attach signatures. I'm not completely there with this just yet, and have an uncommitted patch that does some work on this (there is checked in some initial work on it too that sort of works, but not entirely). Getting signatures attached is working towards mutli-method dispatch, which I will be working on this month.</p>
+
+<p>This week I'm overseeing the launch of a fairly big project for one of my clients, and won't get a good day's peace this week for Rakudo hacking. So, rather than having a Rakudo day this week where I keep getting distracted, I'll push it to next week and have two then. I will also be working on the MMD grant this month, so after the slow start to the month this week I will be working on Rakudo two days a week throughout the rest of the month and probably into August too. I will also be at YAPC::Europe::2008.</p></p>
+
+
+<hr/>
+
+
+
+<h2>jonathan++</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-07-04T04:41:07</h3>
+I'm not fretting about the fun stuff, just glad to see that Rakudo and Parrot are both coming to fruition.  Great work!
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

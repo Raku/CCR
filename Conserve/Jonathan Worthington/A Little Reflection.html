@@ -1,0 +1,213 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39455/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: A Little Reflection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>A Little Reflection</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-08-13T12:28:22</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><blockquote>
+I still remember the sunlight on your face that warm November day,<br>
+And I still remember my heartbeat quickened by desire, unaware of prices I would pay<br>
+I still remember the closing door the night we said goodbye,<br>
+And I still remember losing you for good and knowing that a part of me had died<br>
+<em>Memory - Redemption</em>
+</blockquote>
+
+<p>Sorry it's been a while since I last posted - YAPC::Europe and preparing for it were something of a distraction, as has been visiting some family and friends, though the real killer has been that in the last month I've managed to have myself a couple of colds/flu-ish things that left me without a great deal of energy during a lot of the time I've been here at home and working. Anyway, I think I've almost shaken off the current infection, and amongst it all I've been able to keep my Hague Grant moving along - in so far as the code, if not the blogging.</p>
+
+<p>One of the big pieces of my grant that I've been working on is improving Rakudo's support for introspecting classes and roles. Before I started working on this, Rakudo didn't really have any such support. Of course, Parrot provided all of the primitives. But there was some work to be done in building up an implementation of the Perl 6 introspection interface around it.</p>
+
+<p>To introspect an object, first you need to get hold of its metaclass. This class actually provides the various introspection-related methods. The metaclass can be obtained by using the .HOW macro (actually in Rakudo, implemented as a method, but we'll fix that in the future). All metaclass methods take as a first parameter the thing that you want to introspect. So for example, if I want to find the parents of the built-in List class, I would do (showing this using the REPL):</p>
+
+<code>&gt; say List.HOW.parents(List).perl<br>
+[Any, Object]<br></code>
+
+<p>Where .perl gets a Perlish representation of a data structure (think Data::Dumper built into the language). At this point you may be thinking, gee, this sucks, I have to say List twice. Which is why there's a .^ operator, that evaluates what is on its left hand side once, calls .HOW on it, then calls the method you specify on the metaclass, fudging what was evaluated on the LHS in as the first argument to the call. Thus instead of the above you can just do:</p>
+
+<code>&gt; say List.^parents.perl<br>
+[Any, Object]<br></code>
+
+<p>Which is much better. .^parents takes a few options too.</p>
+
+<code>&gt; class A { }<br>
+&gt; class B { }<br>
+&gt; class C is A is B { }<br>
+&gt; say C.^parents.perl; # all, flat list<br>
+[A, B, Any, Object]<br>
+&gt; say C.^parents(:local).perl; # immediate only<br>
+[A, B]<br>
+&gt; say C.^parents(:tree).perl; # all, tree<br>
+[[A, [Any, [Object]]], [B, [Any, [Object]]]]<br></code>
+
+<p>Of course, it's not just parents that can be introspected, but also methods and attributes - both on your own classes and built-in ones. For example, here we look at the methods defined in the Num class. Note the use of the parallel dispatch operator - implemented earlier on in this grant - to get the name property of each of the methods returned in the list from the methods method; we then join the list.</p>
+
+<code>&gt; say Num.^methods(:local)&gt;&gt;.name.join(", ");<br>
+tan, cos, sin, pred, acosec, sinh, asinh, cosech, acosech,<br>
+acotan, Str, asec, cotanh, acotanh, sech, ACCEPTS, asech, atan,<br>
+acos, tanh, asin, atanh, cosh, cosec, acosh, succ, WHICH, perl,<br>
+cotan, atan2, Scalar, sec<br></code>
+
+<p>Here is a very similar example for introspecting attributes.</p>
+
+<code>&gt; say Pair.^attributes(:local)&gt;&gt;.name.join(", ");<br>
+$!key, $!value<br></code>
+
+<p>While I have been using these with :local, they also support being called parameterless to get all attributes up the hierarchy, as well as :tree to build something similar to what you saw earlier for .^parents.</p>
+
+<p>At this point you may have realized that all of this means that you can use a module at the REPL and then explore its classes using the introspection interface.</p>
+
+<p>Anyway, for my final trick, here's some code that walks a class hierarchy and prints out an ASCII tree-ish thing depicting the class hierarchy. To stop it going and printing all the stuff in Any and Object - classes inherit from Any by default - I've put in a little check for that. It makes the output shorter and probably more useful.</p>
+
+<code>multi describe($c, $prefix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;take "$prefix " ~ $c.perl ~ "\n";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for $c.^attributes(:local) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;take "$prefix + Attribute: " ~ .name ~ "\n";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for $c.^methods(:local) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;take "$prefix + Method: " ~ .name ~ "\n";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+<br>
+multi describe(@list, $prefix) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for @list -> $item {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unless $item eq Any|Object {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;describe($item, $prefix ~ "&nbsp;&nbsp;&nbsp;&nbsp;");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+<br>
+multi describe($start) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return [~] gather {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;describe($start, "");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;describe($start.^parents(:tree)[0], "");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br></code>
+
+<p>This code demonstrates not only introspection, but also multiple dispatch by sigil, gather/take, the reduce meta-operator (which combined with gather/take lets us build up a string from a bunch of recursive routines without having to worry about building up and passing along a return value all the way up), junctions and a bunch of more basic features. Here's an example program using this.</p>
+
+<code>class A {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $.a;<br>
+}<br>
+class B is A {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $!b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method foo() { }<br>
+}<br>
+class C is B {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $.c;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method bar() { }<br>
+}<br>
+say describe(C);<br></code>
+
+<p>And the output:</p>
+
+<code> C<br>
+ + Attribute: $!c<br>
+ + Method: bar<br>
+ + Method: c<br>
+&nbsp;&nbsp;&nbsp;&nbsp; B<br>
+&nbsp;&nbsp;&nbsp;&nbsp; + Attribute: $!b<br>
+&nbsp;&nbsp;&nbsp;&nbsp; + Method: foo<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + Attribute: $!a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + Method: a<br></code>
+
+<p>Notice how it shows the auto-generated accessor methods for the non-private attributes too.</p>
+
+<p>So, that's introspection. Have fun, send bug reports. :-)</p></p>
+
+
+<hr/>
+
+
+
+<h2>gatherless take?</h2>
+<h3><a href="/user/aufrank/">aufrank</a> on 2009-08-18T18:12:59</h3>
+I don't quite understand the idiom that uses take without a corresponding gather.  Would you mind describing how and why it works, and
+(if relevant) what common pattern it's a shorthand for?<br/><br/>Is there a takeless gather?
+
+
+
+<h2>Not so gatherless... :-)</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-08-19T23:37:48</h3>
+<p>Hi,</p><p>Thanks for the question. There actually is a corresponding gather - it's in the final multi-method in the program (which is actually the one we always invoke initially - the other variants are just "helpers" - if we were writing this as a module we'd probably call those something else and not export them).</p><p>The thing to take note of is that we look at the dynamic scope when finding the gather handler. The multi-variant we call first calls out to the other candidates from within the gather block, and thus when they take it is the gather in there that collects the values.</p><p>A truly gatherless take - without a gather block locatable to give the elements to - would be a warning and not do anything, and thus is probably useless.<nobr> <wbr></nobr>:-)</p><p>Hope this helps,</p><p>Jonathan</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

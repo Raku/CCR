@@ -1,0 +1,136 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38741/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Lexical Subs In Rakudo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Lexical Subs In Rakudo</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-04-02T21:53:24</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>The big bit of progress today was that I got lexical subs working.</p>
+
+<code>{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;my sub foo() { say "pes" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;foo(); # pes<br>
+}<br>
+foo(); # An error; sub is lexically scoped in the block<br></code>
+
+<p>Actually, getting that far was the easy bit. The harder bit was making leixcally scoped multi subs work, which is a good deal more interesting. That's because rather than a wholesale replacement, you have to clone the set of outer candidates and then add the new ones. That is:</p>
+<code>my multi bar() { say 1 }<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;my multi bar($x) { say 2 }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bar(); # 1 - from the outer candidate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bar('man'); # 2 - from the inner candidate<br>
+}<br>
+bar(); # 1 - from the outer candidate, which is still visible here<br>
+bar('girl'); # error - inner candidate out of scope<br></code>
+
+<p>Of course, if that block was a closure or something we'd invoke many times (e.g. a sub with many lexically scoped inner multi subs), we really don't want to have to do all of the copying and augmenting of the outer candidate list per call (that'd be a bit of a performance killer). So some of the effort went into making sure we persist those. Plus while we had tests for single-dispatch lexical subs, we hadn't any for multi-dispatch lexical subs, so I wrote a bunch.</p>
+
+<p>I probably mentioned recently that I've been working on import stuff, and that actually we're not doing it right just yet because we import into the package by default and not the lexpad. This bit of work on lexical subs is one step towards being able to do it right. However, there are other issues. Another big blocker that Rakudo users may be familiar with is that this:</p>
+
+<code>my $x = 5; class A { method x { say $x } }; A.new.x<br></code>
+
+<p>Doesn't work. The main reason we couldn't get it to work was due to a fairly long-standing Parrot bug. Today I got out my trusty C debugger and set about hunting the pesky thing down. Eventually I did and committed a fix to Parrot and a test, which was great apart from it only revealed another separate problem somewhere else that got in the way. After a long discussion with Patrick, we're not at a solution for that one yet. We understand it just fine, but the solution (and making sure it's a good one) will take a bit more thought. But anyway, I'm hopeful that we will nail this bug in the near future.</p>
+
+<p>I also did a few other more minor things.</p>
+
+<ul>
+  <li>Found we were passing half of unlink.t, so fudged those we failed and added it to the list of spectests that Rakudo runs.</li>
+  <li>Made print, say, printf and so forth use $*OUT, so re-binding it to something else works. Added a spectest for that.</li>
+  <li>I got START statements working recently. We almost passed all of the tests, but had to skip those that required START blocks to be usable as terms as well as statements. Today I did that final step, and un-fudged four more tests.</li>
+</ul>
+
+<p>Much thanks to Vienna.pm for funding today's Rakudo work.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Love your work.</h2>
+<h3><a href="/user/thickas/">thickas</a> on 2009-04-04T00:24:56</h3>
+Great job, Jonathan.
+<p>
+I hope you continue to have fun and help create 'a thing of beauty' that is 'a joy forever'.
+</p><p>
+Now I think you understand the work of the sculptor.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

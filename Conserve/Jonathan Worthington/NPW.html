@@ -1,0 +1,108 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38875/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: NPW</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>NPW</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-04-26T14:24:52</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I'm still feeling a little tired from NPW and the following hackathon, but finally I've found time - at long last - to write about a little of what I got up to there, for all who are curious. Before I dig in to that, I'd like to say a massive thanks to the organizers of the Nordic Perl Workshop and Hackathon. It was a wonderful event to attend and to speak at, and the venue for the workshop - central and complete with a roof terrace offering gorgeous views over Oslo - was The Awesome. The views from the Redpill-Linpro office where the hackathon was hosted were really rather nice too. So, I got my eye-candy for the trip. :-)</p>
+
+<p>I've been working on topics relating to parametric roles for a while, and a little before the hackathon had got typed arrays and hashes working. I had a few remaining small design issues to get fleshed out before I could wrap up the work and call my Hague Grant finished, and was happy to be able to spend time with Larry working out the answers to them. I then whipped up the code to implement parametric sub-typing, such that if you have a role R and two types T1 and T2 such that T1 is narrower than T2, then R[T1] will also be narrower than R[T2]. I then got S14 to be in line with the various design decisions that were made, and tidied it up again.</p>
+
+<p>Another big design topic for the conference was on the subject of laziness. Fittingly, despite a bunch of us moving into a room on the Sunday morning to have the discussion, we actually managed to put it off until late afternoon. The most visible outcome of the discussion is that the prefix:&lt;=&gt; operator is now dead. We had some nasty hacks in Rakudo to try and make it work, but none of them really had ever flown too well and not knowing how to deal with it has been part of why we haven't yet got further with laziness in Rakudo just yet. So, now it's out the way; to read a single element from an iterator, use .get, and there are various other ways to get an iterator for where you need one, depending on the context. $fh.lines is one such way for file handles. Overall, we came away with a feeling that we now had something implementable, anyway.</p>
+
+<p>One of the evenings, Patrick and I sat down to work on the Rakudo roadmap. We started by going through the existing one, from last summer, and were very happy to be able to rip many things out of it, because they had now been completed mostly or entirely. We then set about trying to get a grip on the things that were left to do, and came up with the list of tasks that will make up the roadmap from here. Patrick is in the process of prioritizing/sorting/tidying up what we came up with, and hopefully it'll be committed to the repository soon.</p>
+
+<p>Elsewhere in the hackathon, cosimo, masak, and mberends worked to get socket IO in place in Rakudo, another nice step forward. This allowed for a HTTP server written entirely in Perl 6, and I saw an early cut of LWP::Simple too. Also, Gabor got syntax highlighting working in Padre based off Rakudo/PGE.</p>
+
+<p>There were lots of other little bits too, but I think this is the bulk of it. Overall, I came away exhausted, but very encouraged by the progress the Perl 6 project and Rakudo are making. It was also great to have the latest Rakudo released named for my local Perl Mongers group, <a href="http://bratislava.pm.org/">Bratislava.pm</a>. We had a Perl 6-themed meeting on Thursday, with plenty of pizza and beer. Na zdravie! :-)</p></p>
+
+
+<hr/>
+
+
+
+<h2>Thanks.</h2>
+<h3><a href="/user/azawawi/">azawawi</a> on 2009-04-26T17:29:14</h3>
+<tt>That was really informative.</tt>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

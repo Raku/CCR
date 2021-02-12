@@ -1,0 +1,125 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38056/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Hyper/cross/reduction operators, IO tweaks and more</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Hyper/cross/reduction operators, IO tweaks and more</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-09T23:36:03</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>It's been an exciting few days in the Rakudo world. Patrick has landed some great stuff, which I'm sure he'll blog about soon. We're approaching the 5,000 passing spectests mark, and I'd not be surprised if we passed it before the next Parrot/Rakudo release on Tuesday.</p>
+
+<p>First I spent some time on IO. I'd done a few bits before, but there were various issues and, as we'd made other bits of Rakudo better, IO hadn't always caught up. Then, last night, some Parrot IO improvements landed that meant a couple of things needed tweaking. Also, the state of IO testing is far from great. First I applied a couple of patches from bacek++. One fixed readline so it met up with the Parrot changes; at this point, I realized we must have no tests for it. The other implemented the lines method on an IO handle, which gets an array of all lines in the file.</p>
+<code>my $fh = open("README", :r);<br>
+my @lines = $fh.lines; # or lines($fh) - it's exported<br></code>
+
+<p>Then I set about fixing up using =$fh in a loop, which I think we may have had working for a short time at one point before, but other muchly needed list handling refactors broke it. You can now write things like:</p>
+<code>my $fh = open("README", :r);<br>
+my $count = 1;<br>
+for =$fh -&gt; $line { print "$count $line"; $count++ }<br></code>
+<p>And unlike before, it should give the correct number of lines back too, rather than one too many. While I was fixing this, I also made chomp Win32 aware, and implemented auto-chomping, as specified in S29. I also added another S16 test that we now pass fully, so we won't regress unknowingly on this again.</p>
+
+<p>One of the things pmichaud++ had done was some work on reduction operators. These are awesome - you can write factorial $n as just:</p>
+<code>my $fact = [*] 1..$n;<br></code>
+<p>It's just like taking every value in the list after the reduction operator and sticking the * operator between it, e.g. 1 * 2 * 3 * ... * $n. However, it only worked for some infix operators. The biggest missing ones were comparrision operators, which I have now implemented. For example, you can check if a list is sorted with:</p>
+<code>if [&lt;=] @list { say "Sorted, like!" }<br></code>
+<p>Which is just like doing a &lt;= between each element of the array @a.</p>
+
+<p>Now we'd got one sort of meta-operator, I wanted more! So, I went on and did a first cut of hyper operators. Some examples of what you can do now.</p>
+<code>say ((1,2,3) &gt;&gt;+&lt;&lt; (3,2,1)).perl; # [4, 4, 4]<br>
+say ((1,2,3) &gt;&gt;*&lt;&lt; (3,2,1)).perl; # [3, 4, 3]<br>
+say ((1,2,3) &gt;&gt;+&gt;&gt; 1).perl; # [2, 3, 4]<br>
+say ((1,[2,3]) &gt;&gt;+&lt;&lt; (1,[2,3])).perl; # [2, [4, 6]]<br>
+say (10 &lt;&lt;*&lt;&lt; (1,[2,3])).perl; # [10, [20, 30]]<br></code>
+<p>Note that if you want a side to auto-upgrade, you point the angle brackets towards it. Not doing so will give an exception. There are also unicode variants of the hyper operators, which in theory are implemented, but in practice fail to parse because of a Parrot bug (happily, Patrick was able to quickly narrow it down and produce a very short test case to pass on to Parrot folks who might be able to help fix it up).</p>
+
+<p>For a while people have wanted to be able to set initial values for attributes at the point of declaration. Tonight I've put in some basic support for this (just for constants so far - there are some issues with lexicals declared outside of a class not being visible inside the class, plus there is also the "is build" trait to do to implement for more complex initialization). You can now write at least:</p>
+<code>class Universe {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $.answer = 42;<br>
+}<br></code>
+<p>And have it work, though.</p>
+
+<p>For my final trick, realizing that we now had reduction and hyper ops, that left cross operators. These produce each permutation of the lists and then combine them using the operator between them. It turns out that since they can be expressed in terms of infix:X - which we already had - and reduction operators, which we also have - it was trivial to implement also. So, I did it, and unfudged some more tests. So we now have:</p>
+<code>say (&lt;a b&gt; X~X &lt;1 2&gt;).perl; # ['a1', 'a2', 'b1', 'b2']<br>
+say (1,2 X*X 3,4).perl; # [3, 4, 6, 8]<br></code>
+
+<p>While there's more to do on all of the things I've been working on here today - IO, OO, and meta-operators - hopefully there's some nice things in here that will make hacking on Rakudo a better experience. Thanks to Vienna.pm for funding my work today.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,97 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39997/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Attribute sub-protocol and other role bits</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Attribute sub-protocol and other role bits</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-12-10T10:15:23</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Work in the ng branch continues; this post is an update on some of the work I've done on a slightly broken-up Rakudo Day (things have been a tad disrupted while I've come over to England for the month).</p>
+
+<p>Perhaps the most exciting bit of news is that I've done an implementation of the attribute meta-protocol. The main upshot of this is that we now don't hard-code the creation of accessors, but rather call a "compose" routine on the Attribute object - the meta-object that represents an attribute - and it does the accessor creation. Amongst other things, this opens the door for custom accessor generation, which I believe is something that many Moose extensions do, and so will be useful for Perl 6 meta-programmers. As a bonus, the Attribute class is implemented in NQP, not PIR.</p>
+
+<p>I've also continued working on roles. I'm happy to say that, unlike in master, we implement the does and but operators - which do runtime mix-ins of roles - in Perl 6 now. They don't actually do much - the heavy lifting is done by the RoleToObjectApplicator class. That one is implemented in NQP, with only one small Parrot-specific bit. It feels great to be writing these bits in something higher level, and - importantly - means they're all building on a fairly small set of primitives rather than having deep magic everywhere.</p>
+
+<p>In other smaller bits of news, I got the dotty form of .= working, and also implemented the .^ dotty operator too (which makes metaclass calls prettier).</p>
+
+<p>All in all, I'm fairly happy with how things are shaping up. I'm hoping another Rakudo-day sized push and we'll be able to run many of the roles related tests again, but this time atop a much cleaner and more correct implementation, a large part of which is in Perl 6 (or NQP, which is a subset of Perl 6). Thanks to Vienna.pm for sponsoring this work.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,116 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/37140/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Lots of Rakudo fixes/enhancements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Lots of Rakudo fixes/enhancements</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-08-09T16:15:39</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>So, I'm on my way to YAPC::Europe! I'm writing this for posting next time I have net access, from Bratislava airport, which is busier than I've seen it before. Even so, I arrived an hour and a quarter before my flight was due to leave and found only two people in the queue to check in, then found a seat in departures to wait for boarding. I'm flying to Sweden, and will take a few days of holiday and seeing Swedish friends before heading over to Copenhagen to join the pre-conference hackathon on Tuesday.</p>
+
+<p>Thursday was this week's Rakudo day. I planned to start on lazy lists, but didn't get to it. I did do many fixes, however, that will make a lot of things that you expect to Just Work actually, well, work.</p>
+
+<p>Maybe the biggest thing is that the anonymous hash composer { ... } now works. It's a tad subtle because of course this syntax could be a block too. The heuristics used to determine it's a hash are as follows:</p>
+
+<ul>
+  <li>It's empty, e.g. {}</li>
+  <li>It contains just a single pair, e.g. { x =&gt; 42 } or { :x&lt;42&gt; }</li>
+  <li>It contains a list, and that list starts with a pair OR a hash, e.g. { x =&gt; 42, y =&gt; 99 } or { %h, foo =&gt; 'bar' }</li>
+</ul>
+
+<p>If it matches one of these, you get an anonymous hash. Otherwise, you get a block. Of course, any keyword introducing a routine, or the lambda syntax, means that you always get a block.</p>
+
+<p>There are numerous other fixes and enhancements too:</p>
+
+<ul>
+  <li>unlink is implemented, to allow deleting of files</li>
+  <li>$!foo syntax for accessing an attribute works in nested scopes in a method now, not just the outermost one (fixing this involved implementing a missing but spec'd bit of PCT, so this should help others implementing OO bits in PCT)</li>
+  <li>Attributes with the @ and % sigils are now properly initialized to an Array and a Hash respectively, so work as expected</li>
+  <li>Adding two Ints would, before now, always lead to a Num instead. This was also the case for many other operators. This is now fixed, but took some care to do, in order to upgrade to a Num on divisions, say. This also fixes the bug where trying to write something like factorial with an Int type constraint now works, 'cus you get Ints back, as expected.</li>
+  <li>Classes with namespaces now work, so you can now write class Foo::Bar { ... }</li>
+  <li>The does and but operators could run into issues when you mixed in multiple roles to one object one at a time; this is now resolved and has a spectest</li>
+  <li>There was a regression in the handles trait adverb when used with a pair. I fixed it and made sure we have tests for the handles trait verb so it doesn't get broken again</li>
+  <li>Fudged and added a few more spectests to cover things that weren't being tested properly before, and un-fudged stuff we could now to, so we're passing tens of extra spectests now</li>
+</ul>
+
+<p>Thanks for Vienna.pm for funding this work.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

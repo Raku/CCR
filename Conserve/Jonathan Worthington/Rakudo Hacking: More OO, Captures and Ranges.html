@@ -1,0 +1,175 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36451/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Hacking: More OO, Captures and Ranges</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Hacking: More OO, Captures and Ranges</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-17T12:00:52</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>After yesterday's day of Rakudo hacking, I was too tired to write up what had happened coherently, so I left it until today. I did quite a few different things throughout the day, so rather than taking them in order I'll group them in a way that makes it a bit easier to follow.</p>
+
+<p>First, I dealt with some things from the perl6-compilers list. There was a patch from Moritz to factor out a large chunk of one of the methods in the parser actions file to help make it more readable, which I applied. There was also a bug report from Chris Fields, pointing out that typed variables had stopped working. After trying to work out why from some debugging, I then started working out which check-in had caused the problem, which soon led to a fix. So, type annotations will now work again.</p>
+
+<p>I had tried to get some basic capture support in place before, but it was based upon the Capture PMC. For some reason, this didn't work out so well, and I was keen to have captures for something else I was going to implement later on. Therefore, I did a quick PIR version. I also implemented the $( ), @( ) and %( ) contextualizers (which put whatever is inside the brackets into item, list and hash context respectively). Therefore, you can now do things like:</p>
+
+<code>my $x = \(1, 2, 3, foo =&gt; 42);<br>
+say $x[1];    # 2<br>
+say $x&lt;foo&gt;;  # 42<br>
+for @($x) -&gt; $val {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $val; # 1\n2\n3\n<br>
+}<br></code>
+
+<p>There's plenty more to do on captures, but you have the basics now. And of course, the contextualizers work much more generally than just with captures, but we've some work to do in order to make these useful in the general case.</p>
+
+<p>Each week I'm implementing a little more of S12 (the objects specification). This week was no exception. We now have basic support in for declaring and calling private methods.</p>
+
+<code>class A {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;my method private {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method public {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self!private<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+say A.new().public; # 12<br></code>
+
+<p>Notice how they are called with an entirely different syntax, so its obvious when looking at the code that you're calling something private. Talking of different calling syntaxes, there are some other variations to just writing "." to call a method. .? will call a method of that given name if there is one, or just return an undef (rather than throwing an exception) if there is no such method. .* will call all methods in the class hierarchy with that name, including inherited ones, and return a list of captures containing the values that were returned, and if there are no methods you will just get an empty list. .+ is like .*, but if it can't find at least one method to call it throws an exception. Think of them like quantifiers on regexes, but relating to method calls instead.</p>
+
+<code>class Dog {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method bark { say "WOOF" }<br>
+}<br>
+class Puppy is Dog {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method bark { say "woof" }<br>
+}<br>
+my Puppy $x .= new();<br>
+$x.?bark(); # woof\n<br>
+$x.?doesnotexist(); # no exception<br>
+$x.+bark(); # woof\nWOOF\n<br></code>
+
+<p>I haven't collected return values into captures in these examples, but it works too.</p>
+
+<p>Something else that had been on the want list for a while was allowing explicit specification on a variable to hold the invocant of a method. This turned out to be trivial to implement, so rather than just having the self keyword you can now say:</p>
+
+<code>class Foo {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method test($inv: $x, $y) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say $inv.WHAT();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say $x + $y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+my $x = Foo.new();<br>
+$x.test(14, 28); # Foo\n42\n<br></code>
+
+<p>As a slightly ad-hoc thing, I implemented the prefix ^ operator. On the name of a class, this gets the meta-class. On a number, it generates a range from 0 up to that value minus one. So the following prints the numbers 0 through 4, each on a line of their own.</p>
+
+<code>for ^5 -> $n {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $n<br>
+}<br></code>
+
+<p>This was actually just a trivial task I spotted while persuing the specification for ranges. We just fake them up in Rakudo at the moment to produce a list, but they are supposed to be lazy and have a whole load of other semantics. I stubbed in a Range class to get us started in that direction, but it needs quite a bit more work before we're ready to actually get Rakudo's ".." operator to construct it. For now it just stores its start and end points and knows how to give a Perl representation of itself.</p>
+
+<p>Once again, thanks for Vienna.pm for sponsoring this work. Also, thanks to everyone else contributing to Rakudo, be it with patches, bug reports or general feedback. :-)</p></p>
+
+
+<hr/>
+
+
+
+<h2>^5</h2>
+<h3><a href="/user/ChrisDolan/">ChrisDolan</a> on 2008-05-17T18:00:13</h3>
+I haven't been following the language development too closely, but "^5" as sugar for "0..4" seems a little too ad-hoc for me.  For consistency, I would expect that if ^class gets me the metaclass, then ^instance should get the class.  So ^5 == Int or something like that.<br>
+
+
+
+<blockquote>
+
+<h2>Re:^5</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-17T19:19:20</h3>
+<p>For the ranges, it'll probably seem less strange if I add that $x...^$y means "the range from $x up to but excluding $y" - without the ^ it'd be up to and including $y. You can stick a ^ on either side of the<nobr> <wbr></nobr>.., or both, though that's not yet implemented. So ^$y is just shorthand for 0..^$y.</p>
+
+<p>So it's actually the ^TypeName case that is the more weird one. The spec (S03) mentions that both get the "domain" of the thing to the right of them in an abstract-y kinda way. Also, ^ is used to mean "meta-class" in other a number of other cases.</p>
+
+<p>It's a tad odd, but I think you'd have to be doing something pretty contrived to get into a situation where it was unclear which you're doing from just looking at the code. And while ranges are something you play with often, I doubt most everyday programmers will be caring about the metaclass so often, if at all.</p>
+
+<p>Hope this helps you understand it, even if not like it.<nobr> <wbr></nobr>:-)</p>
+
+<p>Jonathan</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

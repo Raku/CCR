@@ -1,0 +1,101 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38233/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Stuff I've been doing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Stuff I've been doing</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-01-07T23:54:07</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>It's been a while since I scribbled anything here. That's mostly because I was taking a break from things over the Christmas and New Year's break. That mostly meant not writing code, though I couldn't resist a little hacking on my <a href="http://travel.jnthn.net/">photos and travel</a> site. Anyway, now I'm back and refreshed and looking forward to being part of what should be a year of great progress in Rakudo and Parrot.</p>
+
+<p>My first big bit of progress has been getting bytecode annotations support finished up in Parrot. This is the thing that is going to let us give error messages at runtime with the correct line number and file name in, which is something Rakudo doesn't do now. Well, in fact, it's just one piece: as well as this support from Parrot, PGE also needs some work to get it able to keep hold of line numbers, and then PCT will want some tweaks to emit the ".annotate" directives. I've also got the Parrot level stuff in that we'll need for custom backtraces, so once the previous bunch of tasks are done, we will then be ready to start emitting better backtraces, with only the stuff relevant to the Perl 6 code that is being run in it and with sub and file names and line numbers. I'm very hopeful we'll see all of this before January is out.</p>
+
+<p>Patrick has been using the break to do some big refactors and tidy-ups, as well as reviewing lots of code. The results are still in a branch, which I've also dug into contributing a few fixes too. I'm blocking on it being merged before I can dig back into my Hague grant tasks, so I'm keen to get it in shape ASAP. It really is a great bit of work: actions.pm is now much tidier, not to mention two thirds of the length it used to be. pmichaud++</p>
+
+<p>I've also started preparing for conferences. My <a href="http://www.jnthn.net/articles.shtml">talks page</a> is updated with details of what talks I expect to be giving where. The workshops I'm going to this spring nicely span Europe: western Europe at the Belgian Perl Workshop, northern Europe at the Nordic Perl Workshop, north-eastern Europe at the Ukrainian Perl Workshop and south-eastern Europe at the Bulgarian Perl Workshop.</p>
+
+<p>I'm excited to be making it to the first Perl workshop ever held in Bulgaria. I have never attended a Perl workshop in Belgium either, though there has been one before, so it's nice to be going there. I was invited to attend the Nordic one all the way back at YAPC::Europe::2008, and managed to suppress the "beer price analysis" part of my brain long enough to say yes. Despite the beer prices, Oslo is a gorgeous city, so it'll be nice to be back there. And I just couldn't resist the excuse for another trip to Ukraine. There's just something about those countries that write with the Cyrillic alphabet... ;-)</p>
+
+<p>I'm looking forward to giving the talks (though I've got some quite some preparation to do first). At some of the workshops I'll be talking about multiple dispatch in Perl 6, something I've done quite a lot of work on recently. I will be giving a Perl 6 tutorial at a couple of them, also. As always, it will be nice to meet lots of other Perl programmers from around Europe.</P
+
+<p>I will be missing some Perl events in Europe this winter/spring: the Dutch and German Perl Workshops both butt up date-wise against other ones that I am attending (plus I need to watch finances and my health a bit this year, so trying to make every workshop was never really going to happen). So I'll be missing out on vlaai and wurst this year. Well, gotta at least let <a href="http://use.perl.org/user/andy.sh/journal/">andy.sh</a> have a chance to beat me on workshop attendance this year. ;-)</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

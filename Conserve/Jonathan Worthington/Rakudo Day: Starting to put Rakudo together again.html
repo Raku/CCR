@@ -1,0 +1,98 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39821/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Day: Starting to put Rakudo together again</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Day: Starting to put Rakudo together again</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-10-31T01:29:06</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Recently Patrick wrote about some <a href="http://use.perl.org/user/pmichaud/journal/39779">major upcoming changes to Rakudo</a>, which will be a huge step along the way towards Rakudo *. If you didn't read Patrick's post, I suggest you do so first and then come back to mine - it gives a lot of detail on why we're doing what we're doing at the moment. Anyway, after much hard work - on Patrick's part getting nqp-rx ready and on my part getting us building and running on top of the updated Parrot Calling Conventions - today we were finally ready to start on step 7 of the plan. Essentially, that involves a complete re-do of Rakudo's grammar and actions.</p>
+
+<p>nqp-rx was already in a pretty awesome state at the start of the day. It was missing a make install target, which is the first thing I worked on. With that in place, I was curious to see if it could build the current Rakudo NQP files. Given that it was a ground-up re-implementation of NQP on top of a new implementation of the regex engine, which had changed in many ways, I was really quite impressed how little effort it took to build Rakudo's NQP parts on top of it and have us make it through the test suite mostly passing. This wasn't actually the goal - it was well beyond what Patrick and I had guessed we would manage - but it did shake out a couple of missing features in nqp-rx, which we were able to add quickly between us, as well as a bug, which I fixed. It was nice to have them out of the way early on, before we dug into really using nqp-rx to re-build Rakudo on top of.</p>
+
+<p>With those fixes in place, Patrick then ripped a bunch of stuff out of the Rakudo makefile and added the NQP grammar and actions as a base for us to start building up from again. This means we've gone back to having something that won't even run the sanity tests completely yet. However, what's there so far is also far, far closer to STD than we were before, using protoregexes in various places as well as contextual variable declarations inside regexes and an operator precedence parser alike the one from STD. Certainly, the bits that I have put back in so far have gone in far, far cleaner than they appear in current Rakudo.</p>
+
+<p>Unlike NQP, which just uses Parrot's default signature binder, Rakudo running on the new grammar just from today's efforts is already switched over to building Perl 6 signatures and is using the signature binder I've been developing as part of my current Hague Grant. Multi-dispatch and operator parsing should hopefully be landing tomorrow - since this is just a re-write of the way we parse and build up the AST, rather than all of the other guts and the setting - we're being able to put back major features in a short time-frame. All of that said, we're not shying away from using this as an opportunity to deal with other a couple of other refactors we've been wanting to do for a while along the way. Generally, they are fairly fundemental things that would have been quite a pain to deal with individually, and are easy to get in as assumptions from early on as we build things up again.</p>
+
+<p>This is the first Rakudo day I've done in a while - I was wandering around Asia for a month, and then have been focused on my grant. That means I've got a nice little stash of Rakudo days to spend during the next couple of weeks, which will be great in getting Rakudo back on its feet, more featureful and stable than before, and with a grammar much closer to STD. Thanks to Vienna.pm for funding Rakudo Days, and I'll keep you posted on how things are progressing in the <a href="http://github.com/rakudo/rakudo/commits/ng">ng branch</a>. :-)</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

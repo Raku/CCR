@@ -1,0 +1,157 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/37859/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo: Assorted improvements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo: Assorted improvements</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-11T22:59:34</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Today was this week's Rakudo day, but between this and the previous post I'd got a bit of hacking done too. During a mini-hackathon at my apartment after the excellent Twin City Perl Workshop, I got a first cut of the 'is also' trait for classes implemented. This means that you can add extra methods to an existing class (you will be able to do this with attributes in the future, but that's harder to implement).</p>
+<code>class Foo {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method test1 { say 1 }<br>
+}<br>
+my $x = Foo.new;<br>
+class Foo is also {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method test2 { say 2 }<br>
+}<br>
+$x.test2; # 2<br></code>
+<p>The thing that prompted me to implement this is that we want to start writing many built-ins in Perl 6, but will also want to keep some bits in PIR. We should only define the class in one place, and then add to it in another. This change will allow us to do this. Hopefully it's the last blocker to getting a Perl 6 prelude - Patrick is, I believe, going to be trying this out pretty soon. Today I made sure we had a regression test running for this feature.</p>
+
+<p>Afterwards, I looked at sorting out one of our other long-standing issues: you could not write:</p>
+<code>my Num $x = 42;<br></code>
+<p>Because it would fail with a type check error. Num was supposed to accept Int values. I fixed this, but the regression tests then started failing for multiple dispatch - an area I'm still actively working on. I boiled the problem down to being the same issue with candidate sorting that was plaguing other code, and dug in to taking a look at what was going on. Some stepping through with the debugger late, I soon found what was going on: we were removing edges from the type narrowness graph too early, and depending on the order in which multis were defined could end up considering two candidates as tied when producing the dispatch order when in fact the type narrowness analysis had determined otherwise. A fix to this later, and that (and no doubt other issues) were resolved. Tests passed, and the patch went it.</p>
+
+<p>I checked on another multiple dispatch ticket quickly, to see if that one too was now resolved. The issue mentioned in the ticket was fixed - at least, it was when I ran it in the REPL, so I marked the ticket resolved. Then I realized the applicable spectest was still failing. A little digging later, I noticed that we were creating subset types a bit too late, moved them to the same time we created classes (which isn't right yet, but that's a harder problem to tackle). I found another incomplete bit of the multi dispatch stuff along the way, but decided to leave that for another time (it's still something of a work in progress). Anyway, long story short, this much now works (and is spectested):</p>
+<code>subset Even of Int where { $_ % 2 == 0 };<br>
+subset Odd  of Int where { $_ % 2 == 1 };<br>
+multi sub test_subtypes(Even $y){ 'Even' }<br>
+multi sub test_subtypes(Odd  $y){ 'Odd'  }<br>
+say test_subtypes(3); # 'Odd'<br>
+say test_subtypes(4); # 'Even'<br></code>
+
+<p>I was happy to have another patch from Chris Dolan, which fixed up another place where we had a problem with nested namespaces. Applying the patch, however, caused a bunch of spec tests to fail. I was surprised, since it looked good to me. Digging deeper, it turned out to be a code generation issue in PCT. I resolved that, and then the patch worked just great. :-) While doing that, I noticed that there had been some partial breakage to grammars during some other changes. I fixed that too, then made sure we had test coverage for both of these issues, so they don't come back again.</p>
+
+<p>It's always nice to see people playing with Rakudo and doing stuff. japhb has now got some OpenGL things working in Rakudo, and was interested in having the MAIN sub supported. The idea of MAIN is that, if the program is run from the command line, this is the entry point. There's some really cool stuff that happens in terms of parsing command line arguments and turning them into named parameters - indeed, Jerry Gay aka particle has got a grant to work on this, so I didn't dig into that. Instead I just pass them as positionals to MAIN. It's a start, and you should have all of the goodies as Jerry reaches that part of his grant in the next couple of months. :-) As a taster:</p>
+<code>sub MAIN($first, $second) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $first + $second;<br>
+}<br></code>
+<p>When invoked as "perl6 test.p6 7 35" outputs 42.</p>
+
+<p>Finally, I did a first cut of $?PACKAGE, a variable that tells you what package you are currently in.</p>
+
+<p>Thanks to Vienna.pm for sponsoring today's work.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Some weirdness in MAIN</h2>
+<h3><a href="/user/rooneg/">rooneg</a> on 2008-11-12T03:00:57</h3>
+Was playing around, and it looks like there are some problems with MAIN if you don't pass the required arguments.  Looks like it tries to mem_sys_free something inside of Parrot_really_destroy that wasn't actually allocated by the mem_sys functions.
+
+
+
+<blockquote>
+
+<h2>Re:Some weirdness in MAIN</h2>
+<h3><a href="/user/chromatic/">chromatic</a> on 2008-11-12T07:48:03</h3>
+<p>Was this from running <code>parrot perl6.pbc</code> or <code>perl6</code>?  There's an important (if subtle) difference.  You probably won't see these errors from the former, if I'm right.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Some weirdness in MAIN</h2>
+<h3><a href="/user/rooneg/">rooneg</a> on 2008-11-12T12:04:22</h3>
+This was running it as perl6.  I haven't tried it as perl6.pbc.
+
+
+
+<blockquote>
+
+<h2>Re:Some weirdness in MAIN</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-12T20:52:48</h3>
+I suspect chromatic's guess is right - when exiting with an exception we often tend to get a double free like this.<nobr> <wbr></nobr>:-( It seems that it's a bug in Parrot rather than Rakudo and it shows up in other cases too (we've been seeing it for a little while now). So it's a problem that certainly needs tracking down and fixing (the first part really being the challenge here), but not specific to MAIN.<br>
+Thanks for reporting,<br>
+Jonathan
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

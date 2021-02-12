@@ -1,0 +1,139 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39196/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Lots of little improvements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Lots of little improvements</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-06-30T21:09:56</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I'm back from a nice break in Italy and have been digging back in to Perl 6 stuff again. Today I've been doing a Vienna.pm-funded Rakudo day, and here's what I got up to.</p>
+
+<p>First off, I went for a look through our RT queue. We now have over 400 tickets that are either new or open. While on the one hand that means we've a lot of work to do, it's also a sign that people, more and more, are playing with and exercising Rakudo. In just browsing through it, I found a bunch of things I could work on and hopefully resolve fairly easily during the day, and also another bunch of things that were already resolved. Just spotting the latter allowed me to mark 3 tickets resolved.</p>
+
+<p>A couple of the things I worked on related to subtyping. Of note, the standard grammar accepted:</p>
+
+<code>subset Foo of Int;<br></code>
+
+<p>Without requiring a where clause. Rakudo now also accepts this, and our parsing is a little closer to STD.pm too (we parse traits on subtypes, but we don't do anything with them just yet). Next, I got Rakudo to support a neater syntax for declaring anonymous subtypes in signatures. If you just want to match a specific value, you can write the value in the signature, and that's it. For example, here is yet another way to do factorial (a recursive version).</p>
+
+<code>multi factorial(0) { 1 }<br>
+multi factorial(Int $n) { $n * factorial($n - 1) }<br>
+say factorial(5); # 120<br></code>
+
+<p>A signature :(0) is equivalent to :(Int $ where 0). This means that it will sort in the candidate list with Int. More generally, any literal value in where will get a nominal type based on the .WHAT of the value and have the value made into an anonymous subtype, so the signature :("tava") is just like :(Str $ where "tava"). I added some tests for all of this too.</p>
+
+<p>Lyle++ had sent in a patch a while back for $*CWD and chdir. I took a look at these today. The $*CWD one looked pretty good, so I applied that with just a minor tweak. The chdir one needed some more attention and fixing up first, but I got that applied and extended the tests to better exercise it. Then I got both test files added to spectest.data. So now chdir and $*CWD are both functional. Here's some play with them in the REPL.</p>
+
+<code>&gt; my $fh = open("spectest.data", :r);<br>
+Unable to open filehandle from path 'spectest.data'<br>
+in Main (<unknown>:1)<br>
+&gt; say $*CWD;<br>
+C:\Consulting\parrot\trunk\languages\rakudo<br>
+&gt; chdir "t";<br>
+&gt; say $*CWD;<br>
+C:\Consulting\parrot\trunk\languages\rakudo\t<br>
+&gt; my $fh = open("spectest.data", :r);<br>
+&gt;<br></code>
+
+<p>We had a couple of tickets relating to the interaction of //= and state variables. A little investigation, some discussion on #parrot and a fix later, I was able to unfudge tests and mark those resolved. A small inheritance bug was a similar story.</p>
+
+<p>Finally, in preparation to improve type check failure error reporting and resolve at least one ticket in that area, I factored all type check error generation out to one routine, which we now call consistently. That means errors that previously missed out mentioning the expected and received types now do so, and the other issues I can fix - on some future Rakudo day - in one place, and everywhere that reports such errors will benefit.</p>
+
+<p>In the course of the day, I also discovered a couple of other tickets that I had opened up to investigate at the start of the day were also already-fixed issues, so I made sure we had proper test coverage and got them closed up.</p>
+
+<p>So, a pretty productive day. Thanks to Vienna.pm for funding!</p></p>
+
+
+<hr/>
+
+
+
+<h2>Pattern matching for Perl!</h2>
+<h3><a href="/user/autarch/">autarch</a> on 2009-07-01T02:57:31</h3>
+<p>It looks like with that sort of auto-type inference for literals you could do something like Haskell's pattern matching. That's very exciting, since it's something about Haskell that makes for very expressive code.</p>
+
+
+
+<h2>keep it up!</h2>
+<h3><a href="/user/rjbs/">rjbs</a> on 2009-07-01T13:22:16</h3>
+<p>So, I hardly use Rakudo at all.  Once in a while I have a look for fun.  I don't know when I'll have time to really use it for more.  Despite this, I always find your updates really exciting -- it seems like you're just plowing through barrier after barrier.</p><p>Good luck, and keep it up!</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

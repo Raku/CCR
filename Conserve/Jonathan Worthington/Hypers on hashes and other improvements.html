@@ -1,0 +1,111 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38949/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Hypers on hashes and other improvements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Hypers on hashes and other improvements</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-05-10T16:46:27</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Rakudo day was a little but non-day-ish this week, and instead ended up spread over a couple of days. This was mostly as a result of me accidentally scheduling it on a national holiday, then being unable to resist the temptation of going and enjoying some nice food and beer, sat outside enjoying the evening warmth. Anyway, between the work yesterday and today, we've some new stuff. :-)</p>
+
+<p>We've had hyper-operators for a while on lists/arrays, but now I've implemented the extra bit of the hyper operator specification that makes them work on hashes too. The dwim-ness relates to the keys of the hashes; the fat end pointing at a hash means "I want its keys". However, the operations are performed on the values. Thus if you had a hash mapping names of candidates to the number of votes they got, and wanted to total the votes of two groups (or use this to make a running total over many hashes) you could write:</p>
+
+<code>my %total_votes = %group_a_votes &gt;&gt;+&lt;&lt; %group_b_votes;<br></code>
+
+<p>Which gives you the set union of the two keys, so if one group didn't vote for a certain candidate at all we still get their votes included. You could also use it to combine the data from, say, two different monitoring stations, but ignore readings that both of them didn't supply a value for.</p>
+
+<code>my %max_readings = %station_a &lt;&lt;max&gt;&gt; %station_b;</code>
+
+<p>The asymmetric cases work too. I didn't find any tests for the hash hyper operator cases, so I wrote a bunch of them to exercise it.</p>
+
+<p>In other matters, I did a refactor to handle roles made up of other roles and bring us more in line with the Perl 6 specification. It states that the composition of a role made up of other roles is not evaluated until the point we compose it into a class, and we were being a bit too eager about that. The upshot was that if you ended up with a diamond hierarchy of role compositions and tried to compose the bottom of the diamond into a class, Rakudo would complain about a composition conflict. I fixed this, and expected it would fix another issue that I was quite sure was due to the same underlying bug. It didn't; some hunting later I found that actually Parrot had a bug when you tried to inherit from two anonymous classes. A one-line Parrot patch later, that bug was fixed too. Both already had test cases that I could unfudge.</p>
+
+<p>I also did a couple of other small tasks.</p>
+
+<ul>
+  <li>For a while, the spec said that default parameter type of a block was always Any. In a change a little while back, this was changed for pointy blocks and closures (but not routines) to Object. This means that such blocks will not auto-thread. The upshot is that you can now iterate over an array of junctions without the loop boddy getting evaluated for every element in the junction (you could before by writing an explicit type in the signature). Since auto-threading is meant to avoid junctions giving surprising non-local effects, and such blocks are normally much more local in nature, the change should make things less surprising (I've seen folks caught out by the old behavior). And of course, your methods and subs will still auto-thread. I unfudged some tests related to this too.</li>
+  <li>I added some basic support for detecting re-defiend subs (not methods yet). It's quite simplistic, but handles some common cases and was enough to pass some more tests.</li>
+  <li>jhorwitz++ reported that there was a built-in we defined twice, and it was causing him some issues. I removed one of the copies of it.</li>
+</ul>
+
+<p>Thanks to Vienna.pm for funding this Rakudo Day.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

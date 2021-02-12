@@ -1,0 +1,124 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/40190/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: The first release from ng is coming!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>The first release from ng is coming!</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2010-02-18T01:18:33</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Tomorrow's regularly scheduled Rakudo release is the first one since the long-running "ng" branch became master. It represents both a huge step forward and at the same time a fairly major regression. Internally, the changes are enormous; some of the biggest include:</p>
+
+<ul>
+  <li>We're parsing using a new implementation of Perl 6 regexes by pmichaud++. It is a huge improvement, supporting amongst other things protoregexes, a basic form of LTM, variable declarations - including contextuals - inside regexes and more. The AST it generates is part of the PAST tree rather than having a distinct AST, which is a neater, more hackable approach. The issues with lexical scopes and regexes are resolved. Closures in regexes work.</li>
+  <li>NQP is also re-built atop of this. It incorporates regex and grammar support, so now we run both grammar and actions through the one compiler. It's bootstrapped.</li>
+  <li>In light of those major changes, we started putting the grammar back together from scratch. A large part of this was copy and paste - from STD.pm. The grammar we have now is far, far closer to STD than what we had before. Operator precedence parsing is handled in the same kind of way. We've started to incorporate some of the nice STD error detection bits, and catch and nicely report some Perl 5-isms.</li>
+  <li>Since the grammar got re-done, we've been taking the same approach with the actions (the methods that take parse tree nodes and make AST nodes). Thanks to contextual variable support and other improvements, a lot of stuff got WAY cleaner.</li>
+  <li>The list/array implementation has been done over, and this time it's lazy. There's certainly rough edges, but it's getting better every day. The work to implement laziness has led to many areas of the spec getting fleshed out, too - a consequence of being the first implementation on the scene I guess.</li>
+  <li>All class and role construction is done through a meta-model rather than "magic". The Parrot role composition algorithm is no longer relied upon, instead we have our own implementation mostly written in NQP.</li>
+  <li>The assignment model was improved to do much less copying, so we should potentially perform a bit better there.</li>
+  <li>Lexical handling was refactored somewhat, and the changes should eliminate a common source of those pesky Null PMC Access errors.</li>
+</ul>
+
+<p>Every one of these - and some others I didn't mention - are important for getting us towards the Rakudo * release. The downside is that since we've essentially taken Rakudo apart and put it back together again - albeit on far, far better foundations - we're still some way from getting all of the language constructs, built-in types and functions back in place that we had before. It's often not just a case of copy-paste; many of the list related things now have to be written with laziness in mind, for example.</p>
+
+<p>So anyway, if you download tomorrow's release and your code doesn't compile or run, this post should explain - at least at a higher level - why. After a slower December and January, Rakudo development has now once again picked up an incredible pace, and the last couple of week's efforts by many Rakudo hackers have made this release far better than I had feared it was going to be. If we can keep this up, the March release should be a very exciting one.</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Almost excited ...</h2>
+<h3><a href="/user/thickas/">thickas</a> on 2010-02-18T07:35:46</h3>
+Thank you for another excellent Rakudo report.
+<p>
+It is perhaps a bit hard for a non-implementor and wannabe coder to understand the significance of some of this stuff, but it sounds good and exciting.
+</p><p>
+It is good to see the energy level rising.</p>
+
+
+
+<h2>Thanks</h2>
+<h3><a href="/user/schwigon/">schwigon</a> on 2010-02-19T08:14:06</h3>
+I don't really do much more than regularly follow your Rakudo journal entries but I like them. And this progress report is a particularly exciting one. Thanks.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,106 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38700/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Fixes and the start of import</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Fixes and the start of import</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-03-25T22:33:28</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>This is a report for my Rakudo day last week, which finished up pretty late and thus I didn't get around to writing up and posting a report. Much of the day saw me headachey and not really feeling up to working on big stuff, so I did small stuff instead - mostly bug fixes. Those were:</p>
+
+<ul>
+  <li>Fixing a regression that was introduced by recent work to make outer lexicals visible inside of eval, and adding a test to make sure we don't regress on it in the future. (I got this patch in before the month's Rakudo release, so the regression wasn't present in that).</li>
+  <li>Doing a use of one module from within another could end up in the non-precompiled case with the module ending up nested inside the namespace of the one that used it, due to re-entrancy issues. A similar re-entrancy fix dealt with another bug where we should have flagged something up as an error, but failed to do so due to lingering state.</li>
+  <li>prompt could be a little bit too lazy. If you call it in void context and never assigned its return value, then it would never actually prompt the user for input! Well, glad we caught it now rather than it living on as an unintended feature. :-)</li>
+  <li>Implemented renaming of named parameters, so you can expose an external name for it and then store it in a variable of a different name. For example:<br>
+    <code>sub foo(:t($temperature)) { ... }<br></code>
+    Expects to be passed a named parameter t, but stores it in the scalar $temperature.</li>
+  <li>Fixed $*IN, $*OUT and $*ERR as part of some work to generally improve interaction with things from outside of Rakudo in Parrot.</li>
+</ul>
+
+<p>I also during the day started moving bits of Rakudo's I/O into the Perl 6 setting. There are some bits of embedded PIR, but very little, since the handle we store is a Parrot I/O object which we are able to call methods on anyway. I'm hopeful that we can have all of I/O moved into the setting and written mostly in Perl 6 in the near future.</p>
+
+<p>Finally, in the evening and once my headache had gone, I worked out a very first cut of importing. It only imported things set to be exported by default, and didn't have handling of multis quite right, but it laid the foundations for further work in the area.</p>
+
+<p>Thanks to Vienna.pm for sponsoring this work.</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

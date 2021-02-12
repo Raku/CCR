@@ -1,0 +1,143 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38073/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Planning for my Hague Grant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Planning for my Hague Grant</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-11T16:58:05</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Yesterday I was delighted to hear that my request for a Hague Grant to work on various aspsects of Rakudo has been <a href="http://news.perlfoundation.org/2008/12/jonathan_worthingtons_hague_gr.html">accepted</a>. Jesse asked me to blog a project plan, and this post is my attempt at that. It's not going to be exhaustive and detailed everywhere, especially because some parts of this involve me working out how to do things rather than just doing them, and thus I don't know the exact details of all that has to be done yet. I'm going to break this down into what I hope to achieve over the three months this grant is scheduled for - this one and the next two.</p>
+
+<p><strong>December</strong><br>
+This month from an implementation angle will be mostly about getting us registering symbols in the namespace at compile time and then reaping the various benefits of doing so. Thus a (probably quite complete) list of the implementation tasks will be:</p>
+
+<ul>
+  <li>Modifications to Rakudo actions/guts so that we registering classes, roles, subset types and routines in the namespace as we are compiling. These will be stub insertions that will be replaced by the Real Thing once we have it.</li>
+  <li>Switching us to really do "use" at compile time; last time I tried this, it broke things in pre-compiled modules, but now this needs to be figured out properly.</li>
+  <li>Elimination of the hack that restricts us to using only type names that start with an uppercase character.</li>
+  <li>Fix up nested classes and namespaces - this isn't really needed here, but I'd rather do it now to make sure we get the things that follow correct.</p>
+  <li>Detection at compile-time of re-declaration of symbols and giving of errors in such situations.</li>
+  <li>Make a proto being in scope make all other subs/methods without a plurality declarator be multis.</li>
+  <li>Make a proto in a class turn any non-multis on roles that the class does also be multis if they were not declared that way (but see below for "only" caveat).</li>
+  <li>Detection of "only" conflicting with "multi" and reporting of such errors.</li>
+</ul>
+
+<p>I will also be spending some time thinking through various issues and doing some design work, to see how I'm going to do various things. Of note I want to spend time pondering:</p>
+
+<ul>
+  <li>How dispatch is going to look. I have a lot of ideas here, many discussed with Patrick already. But we need to be in line with the metaclass interface too (which needs to make it into S12). Basically I just need to spend some time working out all of the requirements and then trying to come up with the Right Solution.</li>
+  <li>Class construction/build things.</li>
+  <li>Representation of parametric types, in signatures and elsewhere. We will want to be able to introspect them, enforce them, and so on.</li>
+</ul>
+
+<p><strong>January</strong><br>
+In this month I plan to do two of the big changes/refactors and start building some stuff around them. The first will be changes to the dispatcher. The second will be refactoring roles to handle parameters, and the selection of what role to do based upon a multiple dispatch on the provided parameters. Since the design work this month will determine exactly what tasks will be needed, I'll instead list the things that I will expect to work by the end of the month.</p>
+
+<ul>
+  <li>Working submethod dispatch.</li>
+  <li>Junctions are handled in the dispatcher for both single and multiple dispatch (built-ins by this stage will be done in the Perl 6 prelude, so the special-case code that makes Junctions kinda work for operators now can be removed).</li>
+  <li>Declaration of roles with parameters.</li>
+  <li>Ability to specify values for those parameters when doing the role and ending up with the correct role being done, both for compile time composition and runtime mix-in.</li>
+</ul>
+
+<p>And some nice-to-haves that can slip to February if needed will be:</p>
+
+<ul>
+  <li>Complete filling out the various other cases of the handles trait verb.</li>
+  <li>Test cases for writing a different dispatcher in a meta-class, to check that we've done it right (note that this means implementing knowhow, which isn't really part of this grant, but I do hope to have done this by January).</li>
+</ul>
+
+<p><strong>February</strong><br>
+This month the nice-to-haves from January must be completed if they weren't already. The rest of the work will focus on parametric roles. Of note, by the end of this month, and thus the grant, I expect the following to work.</p>
+
+<ul>
+  <li>Ability to and use parameters passed to a role when deciding to do it in the role body.</li>
+  <li>The 'of' keyword for declaring parametric types, e.g. List of Int.</p>
+  <li>Typed arrays and hashes implemented using parametric roles, usable and working.</li>
+  <li>Declaring an "of" type for subroutines.</li>
+</ul>
+
+<p><strong>Extra Notes</strong><br>
+There is a plan to create a Synopsis 14 that focuses on generics/type parameterization. Since I will be reviewing all of this material and will probably have some clarifications to seek/make and various things to flesh out, I plan to talk with Larry about me producing a draft of this as I am working on the grant.</p>
+
+<p>So, to work I go!</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

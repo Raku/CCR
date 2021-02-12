@@ -1,0 +1,133 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39810/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Signature introspection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Signature introspection</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-10-27T17:45:55</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>One of my Hague Grant tasks was to get a signature introspection interface into the specification and get Rakudo conforming to it. While there may still be some minor tweaks to come, this part is essentially done now. You can read the spec additions in <a href="http://svn.pugscode.org/pugs/docs/Perl6/Spec/S06-routines.pod">S06</a>.</p>
+
+<p>First off, you can call .signature on any block to get hold of its signature object - an instance of the Signature classs. Calling .params on a Signature object will in turn give you a List of Parameter objects, which describe each of the parameters specified in the signature. We are able to introspect the types, the names, whether the parameter is optional, get a closure that returns any default value and more. Here's an example.</p>
+
+<code>
+sub example(Int $x, Str $y?) { }<br>
+my $sig = &example.signature;<br>
+for $sig.params -> $param {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say "Name: {$param.name}, Type: {$param.type}, Optional: {$param.optional}";<br>
+}<br>
+</code>
+
+<p>This gives the output:</p>
+
+<code>Name: $x, Type: Int(), Optional: 0<br>
+Name: $y, Type: Str(), Optional: 1</code>
+
+<p>To make sure that all of the information was really there and accessible, I then went and re-implemented the .perl method on a Signature in Perl 6 in the setting, using the Parameter objects. The new version lacked several of the bugs that the previous version had, which cleared up a few RT tickets. And finally, moritz++ wrote a bunch of spectests for signature introspection, following the new spec.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Cool!</h2>
+<h3><a href="/user/davegaramond/">davegaramond</a> on 2009-10-28T02:33:32</h3>
+This opens up many possibilities like generating codes for form validation/processing,  command line "usage", etc all from signatures. Btw, is it possible (or are there plans to make it possible) to embed a description/note to each parameter?
+
+
+
+<h2>Parameter traits</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-10-29T00:32:22</h3>
+<p>Hi!</p><p>Yes, I think people will be able to use this to build some pretty cool stuff, and I look forward to seeing that.<nobr> <wbr></nobr>:-)</p><p>Being able to attach some extra data would be done through parameter traits. I've got all of the pieces to do those, pretty much; just need to plug them together. But it'll look something like...</p><p>
+
+<code>role note { has $.note }<br>
+multi trait_mod:&lt;is&gt;(Parameter $p, note, $message) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;$p does note($message);<br>
+}<br> </code>
+
+</p><p>After which you'll be able to write:</p><p>
+
+<code>sub drink($beverage is note('beer is best')) {<nobr> <wbr></nobr>... }<br>
+say &amp;sub.signature.params[0].note;<br> </code>
+
+</p><p>Essentially, just mixing a role into the Parameter object. Probably will be working in a couple of weeks or so.</p><p>Thanks,</p><p>Jonathan</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

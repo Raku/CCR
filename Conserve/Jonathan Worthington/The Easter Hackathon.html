@@ -1,0 +1,112 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/40303/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: The Easter Hackathon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>The Easter Hackathon</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2010-04-08T23:59:06</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I spent my Easter up in Uppsala with masak++, who it turns out is not only awesome at breaking Rakudo, but also a great host. Amongst a lot of memes, bad puns, wonderful noms (I learned how to make kÃÂ¶tbullar!) and even a Czech beer, we got quite a bit of Perl 6 hacking done too. :-)</p>
+
+<p>On the first evening, we managed to fix up a bunch of issues with various escape sequences in regexes and strings, and also the fact that "\$x" was failing to escape the $ since we made ng the new master! I fixed a longstanding bug that <a href="http://use.perl.org/user/masak/journal/40167">annoyed masak so much that he dedicated a whole blogpost to it</a>, did some work on enforcing zone constraints in signatures and, in an awesome bit of collaborative development along with colomon++ and moritz++ wired up their new reduction implementation to the reduction meta-operator parsing stuff. That means that you now have triangle forms of the meta-ops, chaining meta-ops work and right-associative ones do the right thing too. We never had any of these right before.</p>
+
+<p>Spurred on by the interpolation work on the previous night, on the next day I started looking at what it would take to implement more of the interpolation bits, and after a bunch of hacking I accidentally the whole lot of it. You can now interpolate indexes into both arrays and hashes, calls to subroutines and method calls on all of these. The way this works in Perl 6 parsing-wise is really neat: we just call from the quote parser back into the standard expression parser, but giving it a few constraints so it knows only to parse the things that are allowed to be interpolated into strings. It's a fairly directly following of STD - we differ in a couple of minor ways for now, but the approach is the same.</p>
+
+<p>Along the way, I used the regex tracer that pmichaud++ had implemented while developing the new grammar engine, and noticed that we seemed to be dropping into a lot of protoregexes we shouldn't have been. A little more exploration and I realized that we were failing to calculate a bunch of constant prefixes for regexes. Fixing that gave a 5% saving on parse times.</p>
+
+<p>The day after that, I worked on something I'd really been putting off because it's hard and painful: making the setting the outer lexical scope of user programs. While some languages define a prelude, Perl 6 essentially defines a "circumlude" - it's as if your program was running as an inner lexical scope inside the built-ins. That means that you find just about everything through lexical scoping. I got the first difficult 80% done and committed, but I suspect I've now got another really difficult 80% left to go, and probably another really really difficult 80% after that. Along the way, I fixed some bugs to do with scope modifiers "leaking". Anyway, to prove it helped somewhat, I tossed a whole bunch of "our"s that had been in as hacks while we didn't have the setting as an outer lexical scope. I suspect that perfecting this is going to be a large chunk of my work on Rakudo over the next couple of weeks.</p>
+
+<p>The last day, I did the (relatively easy, thanks to all the groundwork I had laid during my signatures grant) bits of work to get us able to do smart-matching against signatures. This deserves an entire post of its own, and I'll write one for you soonish, but essentially you can use it to write a given/when that dives into a hash/array/object and looks at whats in it, just using declarative signature syntax. It's just like having a sub-signature on a parameter passed to a block or routine, apart from the signature object stands alone. By the way, I do plan to submit a talk on signatures for YAPC::EU - I'm really quite excited about the declarative power they offer that goes far, far beyond a better way to do parameters than Perl 5's @_. Especially in combination with multi-dispatch.</p>
+
+<p>masak++ spent a good portion of the time working on Temporal/DateTime spec and starting an implementation to back it up. It has to be one of the most bikeshedded areas in the Perl 6 spec, with plenty of "let's do something SO clever" thinking along with the much more sensible "we want something minimal but useful in the language itself, and the clever stuff belongs in modules". Anyway, masak++ and mberends++ for having the patience and diligence to take on something that we really need a finalish answer on, amongst all the various opinions people have on how it should be done. I'm hopeful that we're now approaching the point where we have something that works for the vast majority of use cases, and the answer to anyone who it doesn't work for is simply, "go write a module".</p>
+
+<p>Anyway, that was The Easter Hackathon! For those not following the commits, I'm happy to report that others are also committing bits here and there, and we're steadily working towards brining you Rakudo *. :-)</p></p>
+
+
+<hr/>
+
+
+
+<h2>Thanks!</h2>
+<h3><a href="/user/sjn/">sjn</a> on 2010-04-12T22:47:24</h3>
+<p>Thanks for the recap; I love reading them!<nobr> <wbr></nobr>:)</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

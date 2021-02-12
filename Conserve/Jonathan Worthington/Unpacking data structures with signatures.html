@@ -1,0 +1,155 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/40196/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Unpacking data structures with signatures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Unpacking data structures with signatures</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2010-02-20T00:21:50</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>My signature improvements Hague Grant is pretty much wrapped up. I wrote a couple of posts already about the new signature binder and also about signature introspection. In this post I want to talk about some of the other cool stuff I've been working on as part of it.</p>
+
+<p>First, a little background. When you make a call in Perl 6, the arguments are packaged up into a data structure called a capture. A capture contains an arrayish part (for positional parameters) and a hashish part (for smok^Wnamed parameters). The thing you're calling has a signature, which essentially describes where we want the data from a capture to end up. The signature binder is the chunk of code that takes a capture and a signature as inputs, and maps things in the capture to - most of the time, anyway - variables in the lexpad, according to the names given in the signature.</p>
+
+<p>Where things get interesting is that if you take a parameter and coerce it to a Capture, then you can bind that too against a signature. And it so turns out that Perl 6 allows you to write a signature within another signature just for this very purpose. Let's take a look.</p>
+
+<code>multi quicksort([$pivot, *@values]) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;my @before = @values.grep({ $^n &lt; $pivot });<br>
+&nbsp;&nbsp;&nbsp;&nbsp;my @after = @values.grep({ $^n &gt;= $pivot });<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(quicksort(@before), $pivot, quicksort(@after))<br>
+}<br>
+multi quicksort( [] ) { () }<br></code>
+
+<p>Here, instead of writing an array in the signature, we use [...] to specify we want a sub-signature. The binder takes the incoming array and coerces it into a Capture, which essentially flattens it out. We then bind the sub-signature against it, which puts the first item in the incoming array into $pivot and the rest into @values. We then just partition the values and recurse.</p>
+
+<p>The second multi candidate has a nested empty signature, which binds only if the capture is empty. Thus when we have an empty list, we end up there, since the first candidate requires at least one item to bind to $pivot. Multi-dispatch is smart enough to know about sub-signatures and treat them like constraints, which means that you can now use multi-dispatch to distinguish between the deeper structure of your incoming parameters. So, to try it out...</p>
+
+<code>my @unsorted = 1, 9, 28, 3, -9, 10;<br>
+my @sorted = quicksort(@unsorted);<br>
+say @sorted.perl; # [-9, 1, 3, 9, 10, 28]<br></code>
+
+<p>It's not just for lists either. An incoming hash can be unpacked as if it had named parameters; for that write the nested signature in (...) rather than [...] (we could have use (...) above too, but [...] implies we expect to be passed a Positional). For any other object, we coerce to a capture by looking at all of the public attributes (things declared has $.foo) up the class hierarchy and making those available as named parameters. Here's an example.</p>
+
+<code>class TreeNode { has $.left; has $.right; }<br>
+sub unpack(TreeNode $node (:$left, :$right)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say "Node has L: $left, R: $right";<br>
+}<br>
+unpack(TreeNode.new(left =&gt; 42, right =&gt; 99));<br></code>
+
+<p>This outputs:</p>
+
+<code>Node has L: 42, R: 99<br></code>
+
+<p>You can probably imagine that a multi and some constraints on the branches gives you some interesting possibilities in writing tree transversals. Also fun is that you can also unpack return values. When you write things like:</p>
+
+<code>my ($a, $b) = foo();<br></code>
+
+<p>Then you get list assignment. No surprises there. What maybe will surprise you a bit is that Perl 6 actually parses a signature after the my, not just a list of variables. There's a few reasons for that, not least that you can put different type constraints on the variables too. I've referred to signature binding a lot, and it turns out that if instead of writing the assignment operator you write the binding operator, you get signature binding semantics. Which means...you can do unpacks on return values too. So assuming the same TreeNode class:</p>
+
+<code>sub foo() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return TreeNode.new(left =&gt; 'lol', right =&gt; 'rofl');<br>
+}<br>
+my ($node (:$left, :$right)) := foo();<br>
+say "Node has L: $left, R: $right";<br></code>
+
+<p>This, as you might have guessed, outputs:</p>
+
+<code>Node has L: lol, R: rofl<br></code>
+
+<p>Note that if you didn't need the $node, you could just omit it (put keep the things that follow nested in another level of parentheses). This works with some built-in classes too, by the way.</p>
+
+<p>It works for some built-in types with accessors too:</p>
+
+<code>sub frac() { return 2/3; }<br>
+my ((:$numerator, :$denominator)) := frac();<br>
+say "$numerator, $denominator";<br></code>
+
+<p>Have fun, be creative, submit bugs. :-)</p></p>
+
+
+<hr/>
+
+
+
+<h2>Fun!</h2>
+<h3><a href="/user/bart/">bart</a> on 2010-02-24T10:05:41</h3>
+Wow, this looks incredibly fun. Things like this make me actually want to play with Perl6 &#8212; which, admittedly, is something that does not happen too often.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

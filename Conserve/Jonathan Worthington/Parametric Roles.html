@@ -1,0 +1,173 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38308/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Parametric Roles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Parametric Roles</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-01-17T18:09:28</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I meant to blog about what I was working on a bit more this week, but have ended up with my head in the code all week instead. The end result of this "codeathon" is that I'm now much further forward on my Hague grant. While some of the smaller tasks scheduled for December remain to be done, I have taken parametric roles from non-existent to doing everything I aimed to get them to do during January and some of the February aspects of them now work too. I've also done some work on the dispatcher refactor, got us distinguishing different routine types and have also used the end result to get submethod dispatch working as it should too. So, some details on the parametric roles.</p>
+
+<p>In Perl 6, roles can take parameters. Roles exist to enable greater re-use of code than we could get through having plain old classes, and by allowing them to be parameterized we open the door to even more re-use. Taking a simple example, imagine we wanted to factor out a "greet" method into a role, which takes somebody's name and greets them. We want to parameterize it on the greeting.</p>
+<code>role Greet[Str $greeting] {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method greet() { say "$greeting!"; }<br>
+}<br>
+class EnglishMan does Greet["Hello"] { }<br>
+class Slovak does Greet["Ahoj"] { }<br>
+class Lolcat does Greet["OH HAI"] { }<br>
+EnglishMan.new.greet(); # Hello<br>
+Slovak.new.greet(); # Ahoj<br>
+Lolcat.new.greet(); # OH HAI<br></code>
+<p>Similarly, we could do a role for requests.</p>
+<code>role Request[Str $statement] {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method request($object) { say "$statement $object?"; }<br>
+}<br>
+class EnglishMan does Request["Please can I have a"] { }<br>
+class Slovak does Request["Prosim si"] { }<br>
+class Lolcat does Request["I CAN HAZ"] { }<br>
+EnglishMan.new.request("yorkshire pudding");<br>
+Slovak.new.request("borovicka");<br>
+Lolcat.new.request("CHEEZEBURGER");<br></code>
+<p>Sadly, the Slovak output sucks here. Borovicka is the nominative form of the word, and we need to decline it into the accusative case. But some languages don't care about that, and we don't want to have to make them all supply a transform. Thankfully, you can write many roles with the same short name, and a different signature, and multi-dispatch will pick the right one for you. So we write something to produce the accusative case in Slovak and pass it in. Here's the new code.</p>
+<code>role Request[Str $statement] {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method request($object) { say "$statement $object?"; }<br>
+}<br>
+role Request[Str $statement, &transform] {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method request($object) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say "$statement " ~ transform($object) ~ "?";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+module Language::Slovak {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sub accusative($nom) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# ...and before some smartass points it out, I know<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# I'm missing some of the masculine animate declension...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return $nom.subst(/a$/, 'u');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+class EnglishMan does Request["Please can I have a"] { }<br>
+class Slovak does Request["Prosim si", &Language::Slovak::accusative] { }<br>
+class Lolcat does Request["I CAN HAZ"] { }<br>
+EnglishMan.new.request("yorkshire pudding");<br>
+Slovak.new.request("borovicka");<br>
+Lolcat.new.request("CHEEZEBURGER");<br></code>
+<p>Which means we can now properly order our borovicka in Slovakia, which is awesome. Until you do it in a loop and find the Headache['very bad'] role got mixed into yourself overnight, anyway...</p>
+
+<p>I'll post more on the other bits I'm working on, or have worked on, soon. But parametric roles are the biggy. I'm not at all finished with them yet, but all of the code examples I gave here today now work. :-)</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Very Nice!</h2>
+<h3><a href="/user/Stevan/">Stevan</a> on 2009-01-17T18:52:58</h3>
+<p>
+Excellent, nice to see progress on this feature, it is one I have been very much looking forward too.
+</p><p>
+Did you give Sartak's <a href="http://search.cpan.org/user/sartak/MooseX-Role-Parameterized-0.02/lib/MooseX/Role/Parameterized.pm" title="cpan.org">MooseX::Roles::Parameterized</a cpan.org> a look? It of course does not have the nice syntax, but it is very nice.
+</p><p>
+- Stevan
+</p>
+
+
+
+<blockquote>
+
+<h2>Re:Very Nice!</h2>
+<h3><a href="/user/sartak/">sartak</a> on 2009-01-17T20:22:48</h3>
+<p>I <a href="http://use.perl.org/user/sartak/journal/38309" title="perl.org">ported these examples</a perl.org> to MooseX-Role-Parameterized.<nobr> <wbr></nobr>:)</p>
+
+
+
+<blockquote>
+
+<h2>Re:Very Nice!</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-01-18T13:36:51</h3>
+Nice! I didn't notice this module before now, but it appears to capture the concept, just - as you say - without the more compact syntax Perl 6 offers.<br>
+<br>
+It's certainly nice that these abstractions are available for Perl 5 programmers, not least because Perl 5 is useful for doing Real Work now and Perl 6 ain't quite there yet, but also because anyone using them who might look at Perl 6 in the future will have one less thing to learn.<nobr> <wbr></nobr>:-)<br>
+<br>
+Thanks!<br>
+<br>
+Jonathan
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

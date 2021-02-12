@@ -1,0 +1,114 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/37019/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Class attributes and many fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Class attributes and many fixes</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-07-26T21:59:15</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I took Friday off this week, so that I could work Saturday on Rakudo, matching up my Rakudo day with the post-OSCON Parrot/Rakudo hackathon. I started off the day by going through the Rakudo RT queue and trying to resolve some of the tickets in there. Rather than doing any big new thing today, I instead went to the RT queue for Rakudo and addressed some of the tickets in there, to resolve a range of bugs that people had reported.</p>
+
+<ul>
+<li>Applied patch from Carl Masak that avoids a NULL PMC Exception if the return value of sleep was evaluated.</li>
+<li>You can now (as per the spec) write just "multi foo { }" rather than "multi sub foo" to introduce a multi-sub.</li>
+<li>Writing "multi sub foo { }" (note there is no signature) now works the same as "multi sub foo() { }" rather than giving a Null PMC access.</li>
+<li>Fixed a bug in Parrot that caused an assertion failure when trying to write to a closed file-handle; now it throws an exception, so we can implement the correct Perl 6 semantics in Rakudo.</li>
+<li>Trying to inherit from a non-existent class now gives a meaningful error message, rather than a rather less informative null PMC access exception.</li>
+<li>Fixed a bug in PCT which could cause an exception to get lost in the return_pir control handler. This allowed at least one ticket to be closed out, and will likely help people working on other compilers written in NQP too.</li>
+</ul>
+
+<p>I then turned to another ticket with a bigger task: getting class attributes to work. While there will be more bits to do on this, the basics are working. Here's what I've just put into the regression tests.</p>
+
+<code>class Foo {<br>
+&nbsp; &nbsp; my $.x is rw;<br>
+}<br>
+my $x = Foo.new();<br>
+$x.x = 42;<br>
+is($x.x, 42, "class attribute accessors work");<br>
+my $y = Foo.new();<br>
+is($y.x, 42, "class attributes shared by all instances");<br></code>
+
+<p>So essentially, you're introducing a lexically scoped variable and getting an accessor method generated for it.</p>
+
+<p>During the day, I've also had various chats about other little bits of Perl 6 stuff on IRC, and been re-reading bits of the spec as food for thought on implementing some more bits in the future. So, that's this week's Rakudo day. Thanks as usual goes to Vienna.pm for funding!</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

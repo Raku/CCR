@@ -1,0 +1,125 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39011/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Meta-ops for user defined ops, and various Rakudo fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Meta-ops for user defined ops, and various Rakudo fixes</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-05-20T22:58:52</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I scheduled this week's Rakudo day to take place just before this month's release, and used most of it for fixing bugs. Before I dug into that, I spent some time looking over the change log and adding a few things that it was missing. As in April, we're going to have a really quite impressive release this month with lots of new features and improvements. It's great to be part of such a productive team, and I'm quite proud of what we're achieving together.</p>
+
+<p>My first fix was to typed attributes. They worked for the scalar case, but not for the array and hash cases (just about all the pieces were there, just the very final bit to apply the constraint to the attribute was missing). moritz++ had already written a bunch of tests, so after the fix I was able to unfudge them, giving us another 19 passing tests and resolving an RT ticket. Not a bad start to the day's bug fixing.</p>
+
+<p>Next up, I wanted to sort out attribute initializers. If you write:</p>
+
+<code>class Foo { has $.r = rand }<br></code>
+
+<p>Then you should (probably ;-)) get a different value per instantiation, since the rand is meant to be called per instantiation. We were getting this wrong in Rakudo to date, so I fixed that. In the process of changing things, I also did the fixes required so you can now write things like:</p>
+
+<code>class Foo { has $.a = 1; has $.b = 2; has $.c = $.a + $.b;}<br>
+&gt; say Foo.new.c # output 3<br></code>
+
+<p>That is, initializing one attribute based upon the already initialized values of those that appear before it.</p>
+
+<p>The Rakudo multi-dispatcher is pretty stable, but there have been a couple of issues that have come up where it doesn't get things right. Today I dug into solving a couple of bug reports that turned out to boil down to the same fix in the end, which affected multi-variants that had a slurpy positional parameter and named parameters.</p>
+
+<p>There were a couple of tickets about attributes declared with the & sigil not working as expected. These have now been fixed, so you can declare attributes with this sigil and expect them to work, or mostly work anyway.</p>
+
+<p>As I mentioned last time around, pmichaud++ has got operator overloading and user-defined operators in place. This is great, but we weren't generating the various meta-operator forms (so you couldn't use your user-defined operators in a reduction, assignment, hyper, cross or reverse meta-operator). After some hacking tonight, you now can. Thus, taking a pointless but easy to understand example operator, we now can do things like this:</p>
+
+<code>sub infix:&lt;wtf&gt;($a, $b) { $a ~ "WTF" ~ $b }<br>
+<br>
+say 'OMG' wtf 'BBQ'; # OMGWTFBBQ - this already worked<br>
+<br>
+my $a = 'OMG';<br>
+$a wtf= 'BBQ';<br>
+say $a; # OMGWTFBBQ<br>
+<br>
+say [wtf] &lt;OMG BBQ PONIES&gt;; # OMGWTFBBQWTFPONIES<br>
+<br>
+say 'BBQ' Rwtf 'OMG'; # OMGWTFBBQ<br>
+<br>
+say ~('OMG','BBQ' Xwtf 'OMG','BBQ'); # OMGWTFOMG OMGWTFBBQ BBQWTFOMG BBQWTFBBQ<br></code>
+
+<p>Finding a better use for this new power is left as an exercise for the reader. :-) Thanks to Vienna.pm for funding this Rakudo Day, and enjoy the release, which will no doubt be with us within the next 24 hours.</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,177 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/35993/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Hacking: Pairs and Refinement Types</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Hacking: Pairs and Refinement Types</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-03-28T00:16:23</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>First off, sorry it's been a while since I last posted. It's mostly been that I've just not done a lot between the Ukrainian and Dutch Perl Workshops and now, which was thanks to being busy with $REAL_LIFE and lacking either time or brain cycles for hacking Rakudo. Thankfully, I'm back into the swing of things now, and it's time to catch up on the blogging.</p>
+
+<p>I'd like to give a belated thanks to everyone at the UPW and DPW for such a good time. I greatly enjoyed attending, meeting people and speaking at both workshops, and Kiev was a more beautiful city than I had imagined it being. The cathedrals and churches there are incredible - I'll surely be coming back to Ukraine to explore some more!</p>
+
+<p>At UPW, some deficiencies in smart matching of arrays was discovered in Rakudo and I promised a fix. I also said I'd write a note about it here "soon", which I failed to do - sorry. I thought I had fixed array comparison with smart match, but that appears not to be working right now. :-( Also, the Perl 5 and Perl 6 way of checking if a list contains an element are different, and the Perl 6 way was dependent on something else that wasn't implemented (though I've started work on it now, so hopefully we have that soon too). Anyway, it's on the horizon.</p>
+
+<p>I'm hazy on exactly what I got done at DPW and around there, but I know I started on pairs. Thanks to some extra contributions from cognominal++, quite a lot of this is now implemented. As specifying named parameters in a sub was already done, happily it means you can now do things like:</p>
+
+<code>sub sayit (:$what) { say $what; }<br>
+sayit(what => "Oo minya pivo!");<br>
+Oo minya pivo!</code>
+
+<p>It also works with object instantiation too.</p>
+
+<code>class Foo { has $.a }<br>
+my $x = Foo.new(a => 42); say $x.a;<br>
+42</code>
+
+<p>As well as the fat arrow syntax, there's also the colon pair syntax, in various forms (we ain't got 'em all yet, but the most useful ones are there).</p>
+
+<code>sayit(:what);<br>
+1<br>
+sayit(:!what);<br>
+0<br>
+sayit(:what('privyet'));<br>
+privyet<br>
+my $what = 'nyam'; sayit(:$what);<br>
+nyam</code>
+
+<p>Another thing I've hacked in some basic support for is the subset keyword, which allows you to write refinement types. You can smart-match against the type name to test if the variable meets that type.</p>
+
+<code>subset Guess where { $_ &gt;= 1 && $_ &lt;= 100 }; <br>
+if 42 ~~ Guess { say "yes" } else { say "no" }<br>
+yes<br>
+if 142 ~~ Guess { say "yes" } else { say "no" }<br>
+no<br>
+if 97 ~~ Guess { say "yes" } else { say "no" }<br>
+yes<br>
+subset LowGuess of Guess where { $_ &lt;= 50; }; <br>
+if 42 ~~ LowGuess  { say "yes" } else { say "no" }<br>
+yes<br>
+if 97 ~~ LowGuess  { say "yes" } else { say "no" }<br>
+no<br>
+if 0 ~~ LowGuess  { say "yes" } else { say "no" }<br>
+no</code>
+
+<p>Hopefully more types related stuff coming soon, amongst various other things. I'll be at the Oslo QA Hackathon, and hope to get plenty of free time there, as well as generally while traveling over the coming weekends.</p></p>
+
+
+<hr/>
+
+
+
+<h2>typo?</h2>
+<h3><a href="/user/fireartist/">fireartist</a> on 2008-03-28T11:56:53</h3>
+subset Guess where { $_ &gt;= 1 &amp;&amp; $_ if 42 ~~ Guess { say "yes" } else { say "no" }<br>yes<br>if 142 ~~ Guess { say "yes" } else { say "no" }<br>no<br>if 97 ~~ Guess { say "yes" } else { say "no" }<br>yes<br>subset LowGuess of Guess where { $_ if 42 ~~ LowGuess { say "yes" } else { say "no" }<br>yes<br>if 97 ~~ LowGuess { say "yes" } else { say "no" }<br>no<br>if 0 ~~ LowGuess { say "yes" } else { say "no" }<br>no<br><br>Are there some curlies/newlines missing here? I'm having difficulty parsing it. (particularly as I've never come across the subset keyword before<nobr> <wbr></nobr>:)<br><br>Other than that, though - it's nice to see what's happening - thanks!
+
+
+
+<blockquote>
+
+<h2>Re:typo?</h2>
+<h3><a href="/user/tron/">tron</a> on 2008-03-28T13:50:53</h3>
+AFAIK the parentheses around the condition are optional in Perl6. So the lines starting with "if" should be ok.<br>On the other hand me also thinks that the lines starting with "subset" got mixed up...
+
+
+
+<h2>Re:typo?</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-03-28T19:31:58</h3>
+I'd not written some angle brackets as HTML entities, which resulted in mangled output. Sorry, and fixed now - thanks for pointing it out!
+
+
+
+
+
+</blockquote>
+
+
+<h2>too much TIMTOWTDI</h2>
+<h3><a href="/user/mpeters/">mpeters</a> on 2008-03-28T15:40:49</h3>
+I'm generally excited about Perl 6 and what it will be able to do, but I do have one concern. I understand and appreciate TIMTOWTDI because it means I can attack the same problem from different directions which is good. But why so many different ways to pass named parameters to subroutines? Maybe I'm missing something and should go back and read the synopsis (I admit it has been some time) but why so many different syntaxes for the same thing? You're not solving the problem in a different way, you're just using different syntax.
+
+
+
+<blockquote>
+
+<h2>Re:too much TIMTOWTDI</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-03-28T19:36:59</h3>
+There's only really two syntxes: the fat arrow and the colon pair. I think that everyone is familiar with fat arrow so it's good to keep that, but it's not so easily extensible as colon pair to do some of the common special cases. Like, if you have a variable with the same name as the named parameter you want to pass it as, or if you just want to pass a true or false value. For example, when opening a file you can write<nobr> <wbr></nobr>:r to mean "read access" and it's as if you'd done r =&gt; 1, but neater. It would appear that Perl 6 will make quite heavy use of named parameters, so it's just the "common case should have a convenient short representation" thingy, I guess.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

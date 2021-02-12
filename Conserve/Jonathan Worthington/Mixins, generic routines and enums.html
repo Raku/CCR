@@ -1,0 +1,170 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36731/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Mixins, generic routines and enums</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Mixins, generic routines and enums</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-06-19T23:11:56</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Rakudo day came around again, and I pushed everything else that is keeping me busy these days aside and focused on getting more of Perl 6 implemented. This week there are a handful of new features; as is the norm of late, I have been continuing my focus on the object model and the type system.</p>
+
+<p>I started off the day with some refactoring. I wanted to bring us more in line with STD.pm - the standard Perl 6 grammar - as well as parse some additional bits of syntax that we didn't parse before for some new things that are coming in the not too distant future. Getting us closer to STD.pm's grammar rules could have been done without that much shuffling around, but there was an action method that was more than long enough already lying behind it all. I didn't like the thought of making it even longer and harder to follow when I came to add to it in a week or two, and the re-arrangement of the grammar presented an obvious way to break the action method up into several methods. So, I did that and that bit of the codebase is now a bit cleaner, and ready for when I and others need to build more on top of it.</p>
+
+<p>So, what's new? Probably the most major new feature this week is that you can now compose roles into an object at runtime, mix-in style. Here is an example from the tests to illustrate some of the semantics.</p>
+
+<code>role R { method test { say 42 } }<br>
+class C { has $.x }<br>
+my $y = C.new(x => 100);<br>
+$y does R;<br>
+$y.test; # 42 (called method from role)<br>
+say $y.x; # 100 - we didn't destroy old attribute values</code>
+
+<p>There is also some special syntax, implemented too, for initializing values of a role that have a single attribute. For example, imagine we wrote an Answer role:</p>
+
+<code>role Answer { has $.answer is rw }<br></code>
+
+<p>Then we can do the following:</p>
+
+<code>role Answer { has $.answer is rw }<br>
+my $x = 100;<br>
+$x does Answer(42);<br>
+say $x; # 100<br>
+say $x.answer; # 42<br></code>
+
+<p>If you're thinking now, "is this the return 0 but True thingy I once saw", the the answer is almost, yes. However, unlike "does", the "but" operator creates, operates on and returns a copy of the value rather than the original. It also does some special handling of values from enumerations. It is defined in terms of "does", so we're part of the way to "but". Getting the enumerations right is the harder part to implement.</p>
+
+<p>The other major new feature I got in today was generic subs/methods. With these, you capture the type of a parameter in the call signature. You can then use it inside the sub or method. This means that we can write a sub that prints the type of the parameter it is passed just by doing:</p>
+
+<code>sub saytype(::T $x) { say T }<br>
+saytype(42); # Int<br>
+saytype("Mam pivo"); # Str<br></code>
+
+<p>You can use T anywhere you would use a type otherwise.</p>
+
+<code>sub test(::T $x) { my T $y = "OH HAI" }<br>
+test(42) # Type check failed<br>
+test("hi") # Works<br></code>
+
+<p>Note the variable $y inside the sub is constrained to be the same type as whatever the parameter to the sub was. In the first case, we pass an Int, so $y is constrained to be an Int and the assignment fails. In the second case, we pass a Str, so the assignment is successful. One remaining to-do feature is to let you use T elsewhere in the signature after you have declared it; that will be on my hit list for next week.</p>
+
+<p>Finally, to round off the day, I took something a little easier. I've been eying enumerations for implementation, and the anonymous enum constructor was somewhat easier than the full-blown named one (which I'm still fully getting my head around). Basically, it can take a list of values and hand back a hash mapping each of them to ascending integers.</p>
+
+<code>my %ooks = enum &lt; ook! ook. ook? &gt;;<br>
+say %ooks&lt;ook!&gt;; # 0<br>
+say %ooks&lt;ook.&gt;; # 1<br>
+say %ooks&lt;ook?&gt;; # 2<br></code>
+
+<p>You can instead write a pair (in a list constructor that parses them as pairs, mind) to specify the starting value, which may be a string too.</p>
+
+<code>my %meta = enum [ :foo('A'), 'bar', 'baz' ];<br>
+say %meta&lt;foo&gt;; # A<br>
+say %meta&lt;bar&gt;; # B<br>
+say %meta&lt;baz&gt;; # C<br></code>
+
+<p>You can stick a pair at any point in there to change the indexing scheme too, or just use a load of mappings to set up your enum. At this point, it may seem like a fancy way of constructing a hash - and in a sense, it kinda is. However, the non-anonymous case introduces something somewhat more powerful, which as mentioned earlier can be used with "but", and also as a predicate function and in a smart match. Hopefully I get those in sometime in the coming weeks.</p>
+
+<p>So, that's what got done on this week's Rakudo day. Another one next week, and thanks as always go to Vienna.pm for making this possible.</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Type frenzy</h2>
+<h3><a href="/user/baest/">baest</a> on 2008-06-20T09:20:09</h3>
+Very cool. Amazing progress we're seeing. Fantastic to follow.<br> <br><br/><br/>I really like the type capture stuff. That is really nice.<br> <br><br/><br/>What about the 'return'. I've seen it has been implemented, but not really mentioned anywhere besides the changelog for parrot. Has it been in for a while?
+
+
+
+<blockquote>
+
+<h2>Re:Type frenzy</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-06-20T23:48:20</h3>
+I think return happened in the last couple of weeks, so it's pretty recent. It's certainly good to have, and we've Patrick to thank for putting that in.<nobr> <wbr></nobr>:-)<br>
+<br>
+As far as I'm aware, it isn't a full implementation of return, because it doesn't handle multi-value returns just yet (but that may have changed - I don't manage to read every single commit!) But it's certainly good to have some return support, anyway, and the rest will come probably in the not too distant future.<br>
+<br>
+And yes, I like the type capturing things too - it's nice to have those implemented. They're one step on the way to type-parameterized roles, but those are quite a brain-ache to implement...<nobr> <wbr></nobr>:-) I hope to have got all the little bits they need straight in my head soon and an implementation out in the next few weeks, anyways...<br>
+<br>
+Jonathan
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,170 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/37924/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Multiple Dispatch: More features and speed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Multiple Dispatch: More features and speed</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-22T22:40:47</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I'm working hard at the moment on getting my long-overdue MMD grant from DeepText finished up. I've got some various bits of progress to report.</p>
+
+<p>First, I cleared up the subset type code. The first cut I did of it a while back had a Subset class, which shouldn't really have existed. Now a subset is (under the hood - *not* conceptually) an anonymous subclass of the thing it is refining which overrides ACCEPTS and keeps the block around. The Subset type is gone. Also, importantly, it's easy to now find out what the real, non-subset type at the "root" of it all is. And with that in place, I could get subsets and their interaction with nominal types correct in the multiple dispatch algorithm. So, that should now work just fine.</p>
+
+<p>I also got the "default" trait in place. This means that if you have two candidates that could be ambiguous, you can mark one of them as the default. A (useless) example is:</p>
+<code>multi foo() { say 1 }<br>
+multi foo() is default { say 2 }<br>
+foo();<br></code>
+<p>Which will always output 2. As I said, useless here, but if you have a bunch of maybe-not-quite-mutually-exclusive-always subset types and want to mark one as the default if you know there's a potential overlap this is a way to do so. And with this in place, we now have all of the ways that a dispatch is decided implemented. To the best of my knowledge, it's correct.</p>
+
+<p>I'm generally not into performance work at this stage of the game, but MMD is heavily used in Perl 6. In the not too distant future we will have a prelude written in Perl 6, and then all of the operator dispatches will happen through the Perl 6 dispatch algorithm. Further, Parrot's MMD for ops had recently got more costly as it got unified with the MMD for subs (good in that we no longer have two different multiple dispatch algorithms in the Parrot core). Thus I set out to write a basic MMD cache that would aid both of these.</p>
+
+<p>I didn't optimize the heck out of the cache, I just did it quickly with what was easily to hand. The same caching system can be used by both Perl6MultiSub and Parrot ops, and in the future the Parrot MultiSub PMCs too (which the compiler users, so we may get a small performance gain there, but it won't be much). I got Perl6MultiSub using it and, after fixing a bug involving arguments instantiated from anonymous classes, all tests passed with the cache. The performance was an improvement. I ran as a benchmark:</p>
+<code>multi sub foo(Int $x) { 1 }<br>
+multi sub foo(Num $x) { 2 }<br>
+loop (my $i = 1; $i &lt; 25000; $i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;foo(4);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;foo(4.2);<br>
+}<br></code>
+<p>Without the cache, it takes 20.25s on my box; with the cache it runs in 6.953s. Note that only part of the time in the execution is spent in the dispatcher, and it takes well over 3 times improvement in dispatch time itself to make the whole program run in less than a third of the time. So, that's a satisfying improvement (though looking at the times, we're still only making 3500 calls to a multi sub per second here...then, this is an unoptimized Parrot build and the Parrot calling conventions that actually do the args passing are a known area in need of optimizing, plus we're waiting on GC improvements too, so I'm optimistic that once the other factors improve we'll be doing better).</p>
+
+<p>So how does the cache actually work? We cache on the types of the arguments. This involves collecting their type identifiers and, for now, building a hash key out of them. In the future we may be able to do something smarter. But it means that if you have the operator infix:+ and it has been overloaded plenty, and you're calling it repeatedly with a type it hasn't been overloaded for, you'll now just hit the cache each time after the first call, rather than having to run through a bunch of type-narrower candidates that come before the more general candidate.</p>
+
+<p>Note that, due to a few Parrot test fails we're tracking down in the use of the cache with MMD'd Parrot ops (not directly a problem in the cache itself, but providing the right info to the cache), it's currently in a branch. All Rakudo's tests and the same bunch of spectests are passing with the cache, however, so Rakudo is ready to run with it. We'll get it merged soon - maybe even later today or tomorrow.</p>
+
+<p>Things coming very soon: making multi methods work as well as multi subs with the new dispatch algorithm and supporting the double semicolon to specify some parameters are not part of the long name and should not be dispatched on. Thanks to <a href="http://www.deeptext.ru/">DeepText</a> for funding this MMD work.</p></p>
+
+
+<hr/>
+
+
+
+<h2>cache is dynamic?</h2>
+<h3><a href="/user/ChrisDolan/">ChrisDolan</a> on 2008-11-23T06:02:58</h3>
+<p>How does the cache behave if you add new multi subs at runtime? Does it wipe and start over, or does it figure out which entries to clear?  Similarly, if the ISA chain of any class changes at runtime, do all of the multi caches get wiped?  Or do you look at the isa tree before changing it to just clear part of the cache?</p><p>Caveat: I have not looked at the code at all yet...</p>
+
+
+
+<blockquote>
+
+<h2>Re:cache is dynamic?</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-23T11:52:16</h3>
+<p>I haven't handled the case where you add new multis at runtime yet), but yes, it'll just clear the cache for that bunch of multis. It's easy enough to do (few lines of code); it's on my task list and will be done before we merge the branch in. We don't support changing the isa chain of a class at runtime yet in Rakudo, but I expect once we do then it will just wipe all MMD caches.</p><p>We may be able to do something smarter in the future. But for Rakudo 1.0, I'm not really interested in making doing things like changing the ISA chain on an already instantiated class an efficient operation. I'd rather spend time getting us feature complete, and if I'm going to spend time making things fast it'll be on the very common cases, not the unusual evil ones. So I won't be working on that myself anywhere in the near future. Someone else may, of course, but I don't think we have the spectest coverage yet to know that any clever optimization strategy won't cause epic breakage and hurt us later on, so IMO it's premature to try being too clever yet. I'd really rather not make us fast and wrong before we've succeeded at being been slow and right.<nobr> <wbr></nobr>:-)</p><p>Jonathan</p>
+
+
+
+<blockquote>
+
+<h2>Re:cache is dynamic?</h2>
+<h3><a href="/user/ChrisDolan/">ChrisDolan</a> on 2008-11-23T13:02:50</h3>
+<p>Sounds good to me.</p>
+
+
+
+<blockquote>
+
+<h2>Re:cache is dynamic?</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-25T14:48:20</h3>
+The cache gets cleared appropriately now, and the changes are merged into trunk.<nobr> <wbr></nobr>:-)
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>Benchmarking matters</h2>
+<h3><a href="/user/LaPerla/">LaPerla</a> on 2008-11-25T01:41:50</h3>
+<p>Does this have anything to do with ticket #60692? I just repeated a run of examples/benchmarks/primes2.pir with current parrot and what used to run in 8 seconds before commit 31668, took 220 after that and now takes 133 seconds. What's so unusual evil about this program?</p>
+
+
+
+<blockquote>
+
+<h2>Re:Benchmarking matters</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-11-25T14:47:19</h3>
+<p>Yes, it has something to do with it. I knew we'd need an MMD cache at some point, though I didn't plan it for further down the line. A bunch of changes done in that commit (actually a branch merge) resulted in opcode dispatch in many cases going through the standard multi-dispatcher, where before they just were done with a 2D lookup table (which gets unsustainable when you get lots of types). The changes means that at least multi subs and ops dispatch the same way, which is good, but there were some issues.</p><p>One big one was that it was much slower to compute which thing to dispatch to with the Manhattan distance algorithm than just a couple of pointer dereferences. Since this could be aided with an MMD cache, and since we wanted one for Rakudo too, I implemented something generic that would work for both (and that we can also, after a further refactor, apply to PIR<nobr> <wbr></nobr>:multi subs too). This was responsible for much of the speedup you see from the worst point of 220s. Some further optimizations by chromatic got us a bit more.</p><p>However, as you see, it remains, well, slow. Which sucks. It's one of those "be correct and then be fast" cases, though, and the changes do remove an inconsistency that was there before. I've looked at what we're doing with regard to marshaling args and stuff per call at the moment, and when I saw what was going on, it was hardly surprising it's slow.<nobr> <wbr></nobr>:-( Happily, however, there's plenty of room for optimization. So I expect we'll start to do better on this benchmark again in the future. How soon in the future depends on people working on speeding it up - I think chromatic may be experimenting with one of the ideas soon.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

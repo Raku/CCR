@@ -1,0 +1,205 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38463/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Day: Many bug fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Day: Many bug fixes</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-02-11T20:38:26</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>So, back to the regular-ish Rakudo days! The RT queue for Rakudo has swelled 
+
+enormously, so I'm planning to use my Rakudo days in the near future to focus on 
+
+resolving tickets there rather than doing any cool new features. While I doubt this 
+
+will make as exciting reading, Rakudo will be less buggy as a result, which I hope 
+
+will make up for it by giving everyone a nicer product to play with.</p>
+
+<p>The first bug I fixed today was one related to proto-object definedness. They are 
+
+meant to be undefined, something which I accidentally broke in dispatcher changes a 
+
+while back and that, oddly, was untested. So I fixed that and added tests to make 
+
+sure we don't regress on it again.</p>
+
+<p>Next up was a more subtle one.</p>
+<code>class A {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $.b;<br>
+};<br>
+while shift [A.new( :b(0) )] -&gt; $a {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $a.b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;my $x = $a.clone( :b($a.b + 1) );<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $a.b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;last;<br>
+}<br></code>
+<p>Clearly, the output should have been two zeroes, but it was giving zero and one - 
+
+the original object was being modified. The cause was that we were getting some 
+
+(internal) reference chains, and clone was only dereferencing one level, so we 
+
+didn't properly clone the object after all. I ripped out the custom dereference code 
+
+and put in a call to !DEREF, which does the Right Thing. So now clone is shorter and 
+
+also fixed, at least in this aspect. I added something very much like the above as a 
+
+test case.</p>
+
+<p>In fact, we have some wider issues with clone in Rakudo. We can directly call 
+
+Parrot's clone v-table method on things, but since it doesn't know about ObjectRef 
+
+chains, that doesn't always work out so well. This example:</p>
+<code>sub foo($a) { say $a .. 5 }<br>
+foo(5)<br></code>
+<p>Gave a warning and no output before I fixed it; the fix was making postfix:&lt;++&gt; (and I did postfix:&lt;--&gt; while I was at it) call .clone() rather than directly using Parrot's clone v-table. I found that this fix also fixed one of our integration tests.</p>
+
+<p>I then moved onto some work to incorporate various bits of STD.pm error checking 
+
+to make things that should die at parse time do so. Therefore, the following, all of 
+
+which actually parsed and did weird things at runtime, no longer do so:</p>
+<code>my DoesNotExist $x;<br>
+regex Foo {}; # Empty regex not allowed<br>
+regex Foo = { bar }; # Should barf on the = sign, now we do<br></code>
+<p>Dealing with these allowed to to resolve a few RT tickets.</p>
+
+<p>I then moved onto a couple of tickets about grammars. One of them reported a hang 
+
+instead of an error message if you invoked .parse on a grammar that had no TOP rule. 
+
+I corrected that, and also implemented .parsefile, which slurps the passed filename 
+
+and invokes the TOP rule of the grammar on that. Since pmichaud++ had already done 
+
+.parse, that was pretty trivial. I added some tests for both methods, including one 
+
+covering the hang, to the spectests too.</p>
+
+<p>We've been getting readonly variables right for a while mostly, but we still 
+
+didn't catch modifications through ++ and --. I put in a fix for that, and then 
+
+realized that some tests for &lt;-&gt; (the lambda that makes things rw by default) were now failing, since they had worked "by accident" before rather than through &lt;-&gt; being implemented. So I implemented that also, and - after pmichaud++ pointed out a corner case - tweaked it to handle those and added more tests.</p>
+
+<p>There were a couple of bug reports relating to optional parameters which had type 
+
+constraints. When the parameter was not passed, they failed the type check. One was 
+
+about positional parameters, another about named. Happily, there was a single fix 
+
+that dealt with both cases. I unfudged a few existing tests for the positional 
+
+optional typed case, and wrote some for the named case since I didn't find any 
+
+existing spectests for that.</p>
+
+<p>We've been adding lots of compile-time detection of bad stuff of late. One that 
+
+was missing was checking that if you "is also" a class that doesn't exist, it should 
+
+complain. So I fixed that and added a test.</p>
+
+<p>Throughout the day, I've also closed up a few other tickets that were already 
+
+dealt with, but hadn't been closed. So, a busy day. Thanks go to Vienna.pm for funding all of this. Happy hacking, and keep those bug reports coming in! :-)</p></p>
+
+
+<hr/>
+
+
+
+<h2>slurp vs. lazy</h2>
+<h3><a href="/user/ChrisDolan/">ChrisDolan</a> on 2009-02-12T01:52:49</h3>
+<p>Ultimately, it would be nice if<nobr> <wbr></nobr>.parsefile worked with a file iterator so it didn't need to slurp the whole file at once.</p>
+
+
+
+<blockquote>
+
+<h2>Re:slurp vs. lazy</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-02-12T12:21:27</h3>
+That may need PGE changes, and needs laziness specs in Perl 6 improving so we can get those bits in. But yes, some day that would be nice to have.<nobr> <wbr></nobr>:-)
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

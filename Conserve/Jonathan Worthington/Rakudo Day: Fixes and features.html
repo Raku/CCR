@@ -1,0 +1,138 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38113/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Day: Fixes and features</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Day: Fixes and features</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-17T23:08:33</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>So, here we are with the last Rakudo day before Christmas break. After a rather feature-filled last Rakudo day, I figured this week was time to take on some of the bugs in the RT queue.</p>
+
+<p>masak found a bug in multiple dispatch, where it reported an ambiguity instead of no applicable candidates in cases where you had a bunch tied on constraints where none of the constraints matched. So, I fixed it. By the way, he was doing something pretty cool when he found the bug:</p>
+<code>multi foo(&c where { .arity == 1 }) { say "One." };<br>
+multi foo(&c where { .arity == 2 }) { say "Two." };<br></code>
+<p>That is, multi-dispatching on the arity of the passed code block. (This worked, it was just when foo({{$^a + $^b + $^c }) was called, with arity 3, it gave the wrong kind of error.) You can do some wonderful things in Perl 6. :-)</p>
+
+<p>Another quirk found through playing around with this was that if you wrote a sub taking a paramter with the sigil &, we needed to check that it was something that you could invoke. In Perl 6, that's the Callable role. So I stubbed that in, got Code to do it, and added a small temporary workaround to make typechecking work out on it since we aren't re-blessing Parrot subs into Perl 6 types just yet. And now if you were to call foo(42), continuing the example above, you'll get a type-check failure. Happily, multi-dispatch based on the sigil type just worked from this chance without any additional tweaks, which is what I expected.</p>
+<code>multi bar($x) { 1 }<br>
+multi bar(&x) { 2 }<br>
+say bar(42) # 1<br>
+say bar({42}) # 2<br></code>
+
+<p>Next up, I worked on adding a missing feature that had been requested: the .clone method. This in its most basic form, which I added first, lets you clone an object. The clone has its own state distinct from that of the original.</p>
+<code>class A { has $.x is rw };<br>
+my $a = A.new(x => 5);<br>
+my $a2 = $a.clone;<br>
+$a2.x = 42;<br>
+say $a.x; # 5 - original unaffected<br>
+say $a2.x; # 42<br></code>
+<p>You can also change the values of attributes, such as in the S12 example:</p>
+<code>$newdog = $olddog.clone(:trick<RollOver>);<br></code>
+<p>Which just goes to show that while you can't teach an old dog new tricks, you can always get him cloned and teach his clone a new one. Anyway, added various new tests for the clone stuff, as well as unfudging those already there.</p>
+
+<p>Smart-matching against arrays and lists had been requested, so I set about getting us an implementation of that. It supports * wildcard too, which can stand for any element. So you can now do things like:</p>
+<code>say (1,2,3) ~~ (1,2,3); # 1<br>
+say (1,2,3) ~~ (1,2,3,4); # 0<br>
+say (1,2,3) ~~ (*,2,*); # 1 (like, does it contain a 2)<br>
+say (1,2,3) ~~ (1,*); # 1 (does it start with a 1)<br>
+say (1,2,3) ~~ (*,3); # 1 (does it end with a 3)<br></code>
+
+<p>Some other fixes in brief.</p>
+
+<ul>
+  <li>Fixed doing private method calls with an indirect name, e.g. $obj!'foo'().</li>
+  <li>Applied a patch and added a test from Ronald Schmidt to handle substr being invoked with a negative start and length (the patch should now give us the Perl 5 behaviour on this).</li>
+  <li>Applied a patch from Chris Dolan to fix some grammar and nested namespace issues, and added the example from his ticket as a spectest.</li>
+  <li>Reviewed, commented on and in a couple of cases where the issue was dealt with closed various other tickets.</li>
+</ul>
+
+<p>Thanks to Vienna.pm for funding this Rakudo Day!</p></p>
+
+
+<hr/>
+
+
+
+<h2>Wow!</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2008-12-19T15:10:06</h3>
+<p>I step away from tracking Rakudo for a month or two and BAM!  It's incredible how much has been added.</p><p>I have wanted to reimplement<nobr> <wbr></nobr>.trans as an alternating grammar but I've been waiting for LTM (and have been hellaciously busy getting a bioperl release out).  Can't wait to jump back and start on bioperl6!</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

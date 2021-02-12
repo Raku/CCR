@@ -1,0 +1,121 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36895/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Enums and the &quot;but&quot; operator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Enums and the &quot;but&quot; operator</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-07-10T23:19:33</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>This week's Rakudo day (Tuesday was catching up last week's) came around and this time I worked on some more high level, visible stuff. A while ago I quickly implemented the anonymous enum constructor, which essentially is a hash constructor on steroids. This week I got a lot of progress in on the (rather more advanced) named enums. This means that you can now write things like:</p>
+
+<code>enum Day &lt;Mon Tue Wed Thu Fri Sat Sun&gt;;<br>
+say Mon; # 0 - the underlying value<br>
+say Day::Wed; # 2 - the underlying value<br></code>
+
+<p>Notice how the names lie under the Day namespace, but are also imported into the current namespace too (and if you have an enum from some external library in the future, and you import that, the same thing will happen). There are some subtleties relating to symbol collisions that we aren't handling yet (we need a type name registry in Rakudo first). You can also use pairs to set the starting values or the values at any point in the enum too, as with the anonymous ones. A cool thing is that we evaluate the list at compile time to get the set of values, and then can construct the role/class and so forth at compile time too, rather than having to work that all out at runtime.</p>
+
+<p>One of the trickier bits of enums is working out what they actually are. You are in fact introducing a role named Day in the above example, and that means you can mix it into anything else using "does" or "but". The "but" keywords a like "does", but it knows how to take one member of an enumeration and generalize it to the enumeration role, then mix than it. Additionally, it operates on a copy of the original value rather than being destructive. So we can do things like:</p>
+
+<code>enum Maybe &lt;No Yes&gt;;<br>
+my $x = 0 but Yes;<br>
+say $x; # 0<br>
+say $x.Maybe; # 1, since it's Yes<br>
+say $x.No; # 0, because $x.Maybe is not 0<br>
+say $x.Yes; # 1, because $x.Maybe is 1<br></code>
+
+<p>Note here that .No and .Yes return true only if .Maybe (the property, which you can also assign to) matches that value.</p>
+
+<code>enum Maybe &lt;No Yes&gt;;<br>
+my $x = 0 but No;<br>
+say $x; # 0<br>
+say $x.Maybe; # 0, since it's No<br>
+say $x.No; # 1, because $x.Maybe is 0<br>
+say $x.Yes; # 0, because $x.Maybe is not 1<br></code>
+
+<p>Note that you can use the "but" operator whenever you would use "does" but want a copy of the value operated on rather than the original (the expression as a whole evaluates to the copy that had the mixin applied). The "but" operator actually is implemented in terms of the "does" operator under the hood.</p>
+
+<p>Also note that "0 but True" doesn't quite work yet, or at least isn't affecting the outcome of if statements. This isn't a problem in the enumerations implementation, but rather seems an inconsistency in the spec. Hopefully a mail to perl6-language will get that cleared up - I'll write it tomorrow, when I've got some sleep.</p>
+
+<p>In other minor happenings today, I found and fixed a segfault in Parrot, helped trace a couple of other Parrot issues and fixed the Rakudo "does" operator bug where it lost the association with the proto-object in the modified object. Yesterday, I had some quite long and detailed discussions with both Larry and Patrick over signatures. I think we've got the spec side of things, where it wasn't completely clear before, worked out. However, we still have some details of the implementation left to completely work out (basically, issues about how data-ish and how procedural-ish signatures really are). I'm hopeful we can resolve these in the next week, so I've got a good base to start building the Perl 6 MMD implementation on top of.</p>
+
+<p>As usual, thanks to Vienna.pm for funding my Rakudo hacking.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

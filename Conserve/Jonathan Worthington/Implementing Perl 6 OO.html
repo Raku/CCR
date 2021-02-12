@@ -1,0 +1,158 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/35462/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Implementing Perl 6 OO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Implementing Perl 6 OO</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-01-23T00:08:09</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>So last time I wrote, I hoped not to get too many issues that kept me from hacking on Perl 6 and Parrot. As it happens, I did get sick and that wiped me out for about a week. :-( This week I've had a more fun reason not to be doing so much, which is that I've got a friend visiting me. They're the first person I've had to visit since I got my own place out here in Spain, so it's been great fun showing them some places, taking them on a tapas crawl (lots of delicious food and beer) and so on.</p>
+
+<p>Amongst it all, I found time to write a few lines of code for the Perl 6 compiler. I really, really didn't want to go to Ukraine and talk about the Perl 6 object model without people being able to play with it. So...I started implementing it. And now you can have classes with methods and attributes.</p>
+
+<code>class Foo {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $a;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method set {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$a = "w00t";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method get {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;say $a;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+<br>
+my $x = Foo.new();<br>
+$x.set();<br>
+$x.get(); # prints w00t<br></code>
+<br>
+<p>No accessor and/or mutator methods yet, but I plan to do those next. Then I will do compile time role composition, provided everyone is happy with me doing so. I already implemented roles and the composition algorithm in Parrot anyway, so it should be relatively easy to get the basics of that into the Perl 6 compiler too.</p>
+
+<p>Beyond that, my personal roadmap (as in, what I plan to hack on if it doesn't get in the way of what others are doing) is:</p>
+
+<ul>
+  <li>Refactoring to get every non-Junction type inheriting from Any.</li>
+  <li>Parsing type annotations on parameters and variables.</li>
+  <li>Getting those type annotations to be applied to MMD (so we get type-based MMD dispatch as well as the arity based one that already works).</li>
+  <li>Re-implementing junction auto-threading in terms of MMD, as it should be done.</li>
+</ul></p>
+
+
+<hr/>
+
+
+
+<h2>Is there anything runnable?</h2>
+<h3><a href="/user/Stevan/">Stevan</a> on 2008-01-23T04:36:14</h3>
+<p>
+Is this available as part of the perl6 executable? or the Radoku compiler? How can I start playing with this?
+</p>
+<p>
+We have accumulated well over 3000 unit tests in Moose and Class::MOP, and I am sure <i>at least</i> 1/2 to 2/3rds of them are relevant enough to Perl 6 that they would be useful here. Especially some of the nasty edge cases we have discovered with Role composition, it would save you from having to find them on your own. Feel free to pop over to #moose on irc.perl.org or email me directly.
+</p>
+<p>
+- Stevan
+</p>
+
+
+
+<blockquote>
+
+<h2>Re:Is there anything runnable?</h2>
+<h3><a href="/user/TeeJay/">TeeJay</a> on 2008-01-23T10:42:40</h3>
+Neat.<br><br>This should mean I can port my Hilbert's Curve code from Perl and C++ and add it to the "What can I do with Perl 6 today" wiki page.
+
+
+
+<h2>Re:Is there anything runnable?</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-01-23T17:47:24</h3>
+It's in the Parrot svn repository, under languages/perl6/. So if you get the latest from there, and then "make perl6", then you will be able to play with this. As I said, it's only very early work at the moment so don't expect to do anything other than the very minimal things I posted. I will keep hacking on it, though.<nobr> <wbr></nobr>:-)<br><br>The tests sound very interesting. I guess the place for them really is the Perl 6 test repository (in the Pugs SVN), then we can pull them down for testing Radoku but they are available for all other Perl 6 implementations too. I'll drop you an email and we can discuss it more there...<br><br>Thanks!<nobr> <wbr></nobr>:-)
+
+
+
+
+
+</blockquote>
+
+
+<h2>Publicizing</h2>
+<h3><a href="/user/petdance/">petdance</a> on 2008-01-23T15:31:13</h3>
+Very nice.  Added to the rakudo blog: <a href="http://www.rakudo.org/2008/01/w00t-rakudo-has-classes.html" title="rakudo.org">http://www.rakudo.org/2008/01/w00t-rakudo-has-classes.html</a rakudo.org>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

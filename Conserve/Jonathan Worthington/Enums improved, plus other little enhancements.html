@@ -1,0 +1,156 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38910/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Enums improved, plus other little enhancements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Enums improved, plus other little enhancements</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-05-01T23:26:33</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Since I missed a couple of Rakudo days in the middle of last month, thanks to the excellent Nordic Perl Workshop and the hackathon that followed it, I did an extra one today to get caught up with them a bit and to keep things moving.</p>
+
+<p>I did a first cut of enums quite a while ago. Since then, a lot of things in Rakudo have changed, parts of the spec became clear and, well, the first cut of enums just wasn't that good. Sometimes you gotta get something wrong as a precursor to getting it right, or at least righter. :-) So today, noting that we had a huge number of tickets in RT relating to enums, I set about improving things.</p>
+
+<p>The end result is pleasing in that actions.pm is now a lot shorter, since we construct enums in a quite different way. A bunch of code that only hung around because the previous enums implementation needed it has gone away. Also, the code that the compiler generates for enums is vastly more compact; the heavy lifting is done in a different place. It's also been easier to add a bunch of the missing stuff that people were asking for, and various other bugs just evaporated.</p>
+
+<p>Now, for enum elements, you can introspect them some more:</p>
+
+<code>enum Day &lt;Mon Tue Wed Thu Fri Sat Sun&gt;;<br>
+say Mon.name; # Mon<br>
+say Mon.perl; # Day::Mon<br>
+say Min.WHAT; # Day - not just the string, but Day itself<br></code>
+
+<p>Smart-matching now works too. So if you have some variable $thingy that has had Day mixed into it an initialied, you can do things like:</p>
+
+<code>given $thingy {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when Mon { say "yaaaaawwwwn" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when Tue|Wed|Thu { say "work work work" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when Fri { say "w00t, nearly the weekend" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when Sat { say "OH HAI I'M AT THE BAR" }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when Sun { say "good morning, vicar" }<br>
+}<br></code>
+
+<p>You can also do .pick on an enum to select 1 (or more if you give pick an optional argument) of the values at random. And .pick(*) gives you all of them in a random order.</p>
+
+<p>There's still some more bits to do, but enums should now be greatly improved in Rakudo. There's a couple more tickets, and I'm sure others will help flesh out the weaknesses of this new implementation, so we can shake out the bugs.</p>
+
+<p>I also dealt with a few other bits and pieces.</p>
+
+<ul>
+  <li>The min and max built-ins now take arity-1 blocks as well as arity-2 blocks. So, for example, if you had an array of Product objects with a price attribute, you could just do:<br>
+<code>my $cheapest = @products.min(*.price);<br></code>
+Which is kinda cute.</li>
+  <li>Closed another long-standing ticket relating to declaring alternative multi-variants of max.</li>
+  <li>Fixed a hang when you used the does or but operators with a non-role on the right hand side; it now reports the error as it should have before.</li>
+  <li>Made eval compile things into the correct namespace, resolving a couple of tickets.</li>
+  <li>.perl on a proto-object should not have parens after it, but stringifying a role should have them; corrected these two.</li>
+</ul>
+
+<p>Thanks to Vienna.pm for sponsoring this Rakudo Day.</p></p>
+
+
+<hr/>
+
+
+
+<h2>A large wall of beer loomed overhead ...</h2>
+<h3><a href="/user/thickas/">thickas</a> on 2009-05-03T02:41:39</h3>
+Alias (http://use.perl.org/user/Alias/journal/38914) is promoting Padre by offering a gazillion tons of the <b>right</b> beer to the best new Padre plugin.
+<p>
+Why don't you do a Perl 6 one ?
+</p><p>
+Please let me know if this would be an interesting
+ paid project (&amp; what you'd estimate it would take)</p>
+
+
+
+<blockquote>
+
+<h2>Re:A large wall of beer loomed overhead ...</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-05-10T16:52:07</h3>
+There already is a Perl 6 plug-in for Padre that is getting active development. Nice as beer is, I'd probably make a much more useful contribution by helping out with the existing plug-in rather than starting over again. That and GUI programming ain't my strong point (I'm a heavy user of GUIs and think a good IDE for Perl (5 and 6) matters, but just don't have much experience in that area). So I'm probably best putting any I time I do put in helping Padre out by improving the integration of the existing plug-in with Rakudo.<br>
+<br>
+I do greatly appreciate your concern that I stay well hydrated with the <b>right</b> fluid, though.<nobr> <wbr></nobr>:-)<br>
+<br>
+Thanks!<br>
+<br>
+Jonathan
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

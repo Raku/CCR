@@ -1,0 +1,161 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38035/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Fixes for Rakudo, and Parrot too</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Fixes for Rakudo, and Parrot too</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-06T00:44:57</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>This week's Rakudo day arrived, and I dug in to RT to see what I could 
+
+do.</p>
+
+<p>First, I ran accross a ticket that reported a problem with assignment of 
+
+match objects. I thought we'd have fixed it while doing the assignment 
+
+refactors, and after a quick check I found that we had. However, it seemed we 
+
+didn't have any tests for that (unless I missed them), so I added some more. In 
+
+doing so, I noticed that a test that relied on being able to check a Match 
+
+object was of type Match failed. A one-line patch to Rakudo soon resolved that 
+
+one, and later in the day I found a second ticket explicitly about that issue 
+
+that the same fix also resolved.</p>
+
+<p>I then dug into a something that I thought would be a short job, but that 
+
+then ended up swallowing up much of the day. Such are things when you end up in 
+
+Parrot guts. For a variety of reasons, we've ended up with Perl6Str - a PMC - 
+
+along with Str - the actual string class. There's not that much that we 
+
+implement in C that is Rakudo-specific, but there is the odd thing that we do 
+
+that way, and thus the PMC's existence. It subclasses the default Parrot String 
+
+PMC, and Str subclasses Perl6String and also Any. From the Rakudo point of view, 
+
+the fact it inherits from anything other than Any is really an implementation 
+
+detail, hidden away. The problem I was aiming to resolve was that, in a bunch of 
+
+places - in fact most of them - we were creating Perl6Str rather than Str.</p>
+
+<p>Simply switching them over caused a bunch of test failures. Loads of them. The first thing I discovered was that isa didn't always give the right answers when you inherited from a PMC. That was an easy fix, and then showed up a small bug in P6Object (our implementation of the Perl 6 metamodel) that had relied on isa being broken. I did an initial fix that I thought would deal with it, later realized it wasn't quite right and then did the correct one (was all a bit subtle). More serious bugs lay ahead, however: not only had Parrot not always been giving correct results for 'isa', but also it got MMD wrong when you were using a high level class that inherited from more than one level of PMC. It partly boiled down to a bit of implementation marked TODO in the code that makes PMCs feel more like high level classes. I got that working, but the fact that we were now building the correct MRO exposed some more code that relied on that bug. Wondering if it would ever end, I patched that, and found myself back with a working Parrot and Rakudo, with Perl6Str references now replaced with Str. Needless to say, Parrot has done pretty well out of today's fixes. Of course, Rakudo depends on Parrot working well, so diving in to sort things like this out now and then is worthwhile (I could have tried to paper over this lot, but it would only have bit us another month or two down the road in a different way anyway, I'd expect). I also found and deleted some now-useless code in object initialization, which will maybe shave just a little time from it.</p>
+
+<p>One side-effect of the changes is that the previously failing test for using the 'is also' trait on the Str class now passes: you can add a new method and then do "foo".my_extra_method. Resolving this bug is another reason I set out on switching to using Str in the first place - I just hadn't expected it to lead that that many other fixes.</p>
+
+<p>With much of my day sucked up by that, I dug into the RT queue. I found some tickets that had already had the issues they described solved, and closed them up, to keep the queue a bit cleaner. I then took on a segfault that Simon Cozens (who has been doing some great work on Perl 6 database interaction) discovered. Fixing up the problem in Rakudo was a one-line addition (it was a bug using attributes declared without a twigil).</p>
+
+<p>However, Parrot really shouldn't segfault and I wanted to make sure it failed more gracefully next time. Looking in the debugger showed we were looking at
+garbage data, but didn't help me see why. Then I found that if I got the compiler to just spit out PIR, then tried to compile that PIR, it turned out it was invalid. A trace later, I realized that even if the PIR compiler bailed out at some point, it still tried to run the :init subs in the not-finished-compiling-yet bytecode. We now check if the compile actually succeeded before trying to run the resulting maybe-code!</p>
+
+<p>I'd wanted to do more in Rakudo itself today, but ran out of time to finish anything more after that lot. I did, however, start work on a patch to get a much wanted feature:</p>
+<code>class Foo {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;has $.x = 42;<br>
+}<br></code>
+<p>In place. That is, being able to set the initial value for an attribute. I'm not done yet, and I'm really too tired to finish it off properly today (having a bit of a cold doesn't help either), but maybe I can get it done over the weekend.</p>
+
+<p>Thanks to Vienna.pm for funding today's fixes.</p></p>
+
+
+<hr/>
+
+
+
+<h2>RT link</h2>
+<h3><a href="/user/fw/">fw</a> on 2008-12-09T10:37:49</h3>
+Maybe a stupid question, but where lives the Rakudo RT?<br/><br/>Thanks.
+
+
+
+<blockquote>
+
+<h2>Re:RT link</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-09T23:29:07</h3>
+See the Perl 6 queue at <a href="http://rt.perl.org/rt3/Public" title="perl.org">http://rt.perl.org/rt3/Public</a perl.org> and to submit to it email rakudobug at perl.org (no web submission).
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

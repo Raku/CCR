@@ -1,0 +1,106 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38026/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: A First Cut On proto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>A First Cut On proto</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-05T00:22:40</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Today I spent a bit of time getting some basic support for the proto keyword in place. While there is an awful lot more to do, you can now at least write a proto that we fall back to if the multis couldn't decide amongst themselves. Here are some tests that now pass.</p>
+
+<code>class A { }<br>
+class B { }<br>
+class C is A is B { }<br>
+proto foo() { 1 }<br>
+multi foo(A $x) { 2 }<br>
+multi foo(B $x) { 3 }<br>
+is(foo(A.new), 2, 'dispatch on class worked');<br>
+is(foo(B.new), 3, 'dispatch on class worked');<br>
+is(foo(C.new), 1, 'ambiguous dispatch fell back to proto');<br>
+is(foo(42),    1, 'dispatch with no possible candidates fell back to proto');<br></code>
+
+<p>In the Perl 6 prelude, we will use proto variants of builtins to map named parameters to positional parameters, since we don't do multiple dispatch on named parameters (at least, we don't in Perl 6.0.0 - we may add that in the future). So even this initial bit of support should get us something useful.</p>
+
+<p>So what more will protos be able to do in the future? Well, if you declare traits on a proto, then they should be shared out amongst all of the variants, for one. Additionally, if you declare a proto for a given name, then it forces all subs and methods of that name to be multis even if they weren't declared that way (unless they are explicitly marked only, in which case the presence of a multi and an only in the same scope will give an error). This is useful if you are bringing conflicting methods in from two roles and would like to instead have them dispatch on their long names. Note also that a proto declaration may not appear after a multi declaration within a scope, but we aren't checking that yet - it'll be an error in the future.</p>
+
+<p>Thanks to <a href="http://www.deeptext.ru/">Deep Text</a> for funding this bit of hacking. And tomorrow brings this week's Rakudo Day. :-)</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

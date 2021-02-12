@@ -1,0 +1,99 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38063/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: ;; works, making illegal things illegal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>;; works, making illegal things illegal</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-10T23:22:28</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Today I have done a couple more things on multiple dispatch in Perl 6. The major one is that ;; now works (it's been parsed for a while, but now it has the expected effects). The idea is that you put ;; in a signature in place of a comma to separate two parameters. Any paramters after this are not considered by the multi-dispatcher. For example, the following two multis:</p>
+<code>multi foo(Int $a, Num $b) { 1 }<br>
+multi foo(Num $a, Int $b) { 2 }<br></code>
+<p>Will, when invoked as foo(1,1), give an ambiguous dispatch error, since neither of these subs is narrower than the other - they are tied. However, if you instead wrote:</p>
+<code>multi foo(Int $a;; Num $b) { 1 }<br>
+multi foo(Num $a;; Int $b) { 2 }<br></code>
+<p>Then foo(1,1) will call the first of these multis, since it only looks at the signatures so far as the ;; and Int is a narrower type than Num, so the bit of the signature it cares about is narrower, so the ambiguity is gone. Of course, foo(1, "x") will fail because while the multi-dispatcher doesn't care about the second parameter, you still have to meet its signature requirements.</p>
+
+<p>The more minor one is that multi, only and proto may only be used, according to the spec, on named routines, not anonymous ones. Rakudo now meets this bit of the spec (it will give a compile time error), and I've put in some spec tests to check this too.</p>
+
+<p>And with these two additions, the grant from <a href="http://www.deeptext.ru/">Deep Text</a> draws to an end. I'll be posting a final report soon - thanks to Deep Text for funding this, and many other bits of, hacking on Rakudo's multiple dispatch! :-)</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

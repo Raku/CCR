@@ -1,0 +1,128 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38070/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Final Report on DeepText Multi-Dispatch Grant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Final Report on DeepText Multi-Dispatch Grant</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-11T12:11:45</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>In May, DeepText offered to fund me to work 40 hours on implementing some features of my choosing from the Perl 6 specification in Rakudo. I chose to use the grant to work on multiple dispatch. This post is my closing report on the work done under this grant, now that the 40 hours have been spent.</p>
+
+<p><strong>Work Done Under The Grant</strong><br>
+When proposing the topic of multiple dispatch, I wrote:</p>
+
+<blockquote>At present, we have a sorta-working-ish multiple dispatch, apart from it only sort of works. For example, it doesnÃ¢â¬â¢t pay any attention to roles and constraints. But more serious, I think the candidate sorting is also different from what S12 specifies, which means at the moment we probably sometimes would dispatch to the wrong thing. Then thereÃ¢â¬â¢s no support for Ã¢â¬Åis default,Ã¢â¬Â proto, and so forth. So thereÃ¢â¬â¢s a lot of (in places I expect quite tricky) work to do here.</blockquote>
+
+<p>Using the grant, I have resolved every one of the isues I mentioned in this part of the proposal, and more. Here is a list of all the things that have been implemented.</p>
+
+<ul>
+  <li>Correct sorting of candidates, using a topological sort on a DAG constructed after analysing type narrowness of the signatures of the candidates, as specified in S12.</li>
+  <li>Dispatch on both class and role types.</li>
+  <li>Tie-breaking on constraints. There is some work remaining here on constraints that reference paramters other than the one they are constraining and that rely on being run in the correct lexical context, but the case where the constraint just checks the block paramter it is passed work fine.</li>
+  <li>The 'is default' trait.</li>
+  <li>Declaration of proto routines, and their acting as a fallback if all else fails in the dispatch.</li>
+  <li>The use of ;; to indicate some parameters do not participate in multiple dispatch.</li>
+  <li>Muchly improved signature objects, which are introspectable. You can also .perl them, which prints a Perl representation of a routine's signature.</li>
+  <li>Improved diagnostics: if you get an ambiguous dispatch, it tells you the signatures of the routines that were in conflict. (Once we've got some missing Parrot functionality in place, we can add line/file numbers easily too.)</li>
+  <li>A first cut of multi methods. We don't get inheritance and multis used together correct yet, but other than that they work.</li>
+  <li>The .?, .+ and .* operators are now multi-aware and will now call all applicable multi-subs up the hierarchy. The work done here probably helps pave the way for implementing .WALK also.</li>
+  <li>Improvements to subtypes (constraint types), because we needed them fixed to do dispatch on them correctly; this makes them better generally and more what the spec wants, however.</li>
+  <li>A multiple dispatch cache, which can vastly improve dispatch performance. I implemented this generic enough not just to be usable with Rakudo's dispatcher, but also applied it to Parrot's multi-dispatch in opcodes, yielding some notable benchmark improvements there too. With some further Parrot refactoring, it can be applied to Parrot's own multi-sub dispatch for a probable performance win there too.</li>
+</ul>
+
+<p>I believe that this grant has led to a lot of progress in Rakudo's implementation of multiple dispatch. In the future, we will have a Perl 6 prelude and will then use this dispatcher not just for user defined routines, but for all of the built-ins (operators too, since they are also multi-dispatch).</p>
+
+<p>As well as implementation, there has also been many tests unfudged and written to make sure that the things that have been made to work here keep on working.</p>
+
+<p><strong>Reporting</strong><br>
+As part of the grant, I was to make at least four blog posts about the things I implemented as part of it. I exceeded this and wrote seven, published on both use.perl.org and rakudo.org.</p>
+
+<p><strong>Delivery Time</strong><br>
+The initial grant specified that I should do this work in July and August. Given I am writing this report in December, I have massively failed to do this. I held off working on the grant while some issues surrounding signatures worked out, knowing they were a dependency. As a result, I didn't log any time on it during July. In August I unblocked the process by writing the first cut of the dispatcher and some tests in PIR for it that faked up signatures, but in reality I could have done this much earlier. Late August was swallowed up with other distractions, and it was September before I got Rakudo using the new dispatcher. Then I spent a month offline, backpacking accross Russia (part of the reason I didn't get more done in September was general demotivation and really needing a break from things). It was November before I dug back in, adding many features; the start of December saw the last few bits.</p>
+
+<p>The blame for failing to deliver on time lies entirely with me - for bad scheduling early on, being in the wrong frame of mind in September, and not working as much as I could have to clear this up in November. For this, I apologise to both DeepText and the community, and I will try to do better on future grants.</p>
+
+<p><strong>Conclusion</strong><br>
+Despite going over-schedule, this grant did suceed in greatly improving the state of multiple dispatch in Rakudo, and as a side-effect aided various other parts of Rakudo and also led to an improvement to Parrot. At the start of the grant, I went through the Perl 6 specification and extracted all of the parts relating to multiple dispatch. At the end, I went through and deleted all of the extracts relating to things that now worked. A lot was removed, and a lot of what remains relates to protos and the interaction of multiple dispatch with features that we have not yet implemented for the single dispatch case yet in Rakudo.</p>
+
+<p>I would like to thank, first and foremost, <a href="http://www.deeptext.ru"/>DeepText</a> for providing this grant and being patient while I worked on it. Many other people from #parrot and #perl6 contributed ideas and suggestions as I worked on this grant; I'd like to thank (this is not a complete list, just people who most come to mind who have said or done helpful stuff along the way) chromatic, moritz, particle, pmichaud and TimToady.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

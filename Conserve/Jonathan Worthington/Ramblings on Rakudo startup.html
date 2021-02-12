@@ -1,0 +1,107 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39500/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Ramblings on Rakudo startup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Ramblings on Rakudo startup</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-08-21T01:38:16</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I try and blog about each Rakudo day on the day it happens or shortly thereafter. Occasionally I fail. This post is a result of such a failure. Worse, I was silly enough to leave myself the following notes:</p>
+
+<ul>
+  <li>Fixed a couple of minor RT tickets.</li>
+  <li>Worked on branch to investigate eliminating reblessing into Perl6MultiSub</li>
+</ul>
+
+<p>Which are, uh, really great for writing a blog post from a couple of months later. Anyway, since exactly what RT tickets I fixed on that day are probably not of so much interest now, plus I'd have to go and figure out what the date was and what I committed and hope the commit messages had the RT ticket IDs in, I'll instead spend a while talking about what the branch was all about. It actually didn't end up getting merged, but some of the things discovered in it have been applied already, and one of the things I explored in it is going to happen in the future anyway.</p>
+
+<p>Folks playing with Rakudo will probably have noticed that our startup time is, well, not exactly stellar. Part of the blame lay with Parrot for a while, but the Parrot team have done some really great work on improving things in that aspect, and a lot of it now is that Rakudo just does a lot of work at startup. Basically, at startup, for every block (including routines) we do some setup work. One of those bits of setup work is transforming the Parrot MultiSub data structure into a Perl6MultiSub, which implements the Perl 6 multiple dispatch semantics. What would be far better would be to create that in the first place. That needed a Parrot tweak first, which I did.</p>
+
+<p>The thing is, Perl6MultiSub depends on the subs having a Perl 6 Signature object attached to them. A Signature object in Perl 6 stores details of the parameters that a block or routine takes, along with any type constraints, whether the parameter is optional or not and so forth. (Right now, some of that is duplicated in Parrot's own signature handling, but Rakudo will be moving away from that and binding entirely based upon its own Signature objects in the next couple of months.) And thus arose an issue: we were using multiple dispatch in various places in Rakudo, but specifying things using some Parrot syntax unrelated to the Perl 6 Signature objects. Some of them were guts, but others were things that really needed to end up with Perl 6 signatures as they'd be user facing.</p>
+
+<p>Basically, the thing that really killed the branch was that there were just too many places that we'd have to tweak, and it wasn't worthwhile doing that yet. These days, we are writing more and more bits of Rakudo in Perl 6. We build a first stage compiler, then run it to compile the built-ins. All of those get a Perl 6 Signature object generated for them. Writing a signature object by hand in PIR, on the other hand, is a lot of effort. I did work out a way to generate them for a lot of cases, and that led to ideas about caching and possible sharing of signatures, which I expect we will implement in the future. But overall, it was too much pain, considering that if we waited to do the change for some months, it'd be a bunch less painful. It has been worth keeping in mind during development since then, though, and I am trying keep us on a path that will lead to this conversion eventually.</p>
+
+<p>The other big cost at startup is the creation of the signature objects. This is something that I expect will become much cheaper in the next couple of months, as I review and refactor the way we build them. I'm also considering if - or how far - we can try and do more at compile time and less at runtime in this area.</p>
+
+<p>Anyway, that was a quick little look through some Rakudo guts. Hope it wasn't excessively uninteresting. And thanks to Vienna.pm for funding this Rakudo day a couple of months ago. :-)</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

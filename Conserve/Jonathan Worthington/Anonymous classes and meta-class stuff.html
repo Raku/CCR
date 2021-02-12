@@ -1,0 +1,119 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36958/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Anonymous classes and meta-class stuff</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Anonymous classes and meta-class stuff</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-07-18T23:01:39</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Today was this week's Rakudo day, and I spent it continuing my work on the S12 (objects) implementation. The biggest new addition this week is that you can now write anonymous classes.</p>
+
+<code>my $c = class {<br>
+&nbsp; &nbsp; has $.x;<br>
+&nbsp; &nbsp; method foo { say "OH HAI" }<br>
+};<br>
+my $obj = $c.new(x =&gt; 42); # Instantiate it<br>
+$obj.foo; # OH HAI<br>
+say $obj.x; # 42<br></code>
+
+<p>I've got tests written for anonymous classes with attributes and methods; you should be able to inherit and compose roles too, but I didn't get tests for those done yet. Anyone who feels like writing such tests, please do feel free - they go in S12-classes/anonymous.t (in the t/spec, in the Pugs repository).</p>
+
+<p>We've been able to write multi-dispatch subs where the dispatch was type rather than arity based for a little while. As I start to think about implementing the real Perl 6 multiple dispatch algorithm soon, I wanted to make sure that multi-methods worked with the current Parrot algorithm. I'd never thought to try it, but it occurred to me that there wasn't really any good reasons why it wouldn't work either. It turns out it didn't work, but the fix wasn't hard either. So, I did what was needed and now you can write multi methods in classes. Arity based dispatch should be fine; type based has all the issues multi-subs do until I get the real Perl 6 multi-dispatch algorithm in place that knows about roles, constraints and so forth.</p>
+
+<p>After that, I set about adding the .^ method call operator. This means "call on the meta-class". S12 changed recently to make things a bit saner here. Before it was specified that you would be able to write things like:</p>
+
+<code>my @methods = $obj.HOW.methods();<br></code>
+
+<p>To introspect the methods of the object $obj. However, this doesn't quite work out, since you are invoking "methods" on the meta-class, and there's no promise that just one class will have one meta-class; the meta-class may be shared amongst many classes, depending on your meta-model. So now you have to pass in the object to introspect as the first parameter to methods on the meta-class.</p>
+
+<code>my @methods = $obj.HOW.methods($obj);<br></code>
+
+<p>Which is a bit of a mouthful, which is why there is the .^ operator, allowing you to write the above like this:</p>
+
+<code>my @methods = $obj.^methods();<br></code>
+
+<p>This operator sorts out getting the meta-class by calling HOW, and inserting $obj as a parameter to the meta-class method. Note that "methods" on the meta-class isn't implemented yet, though it's probably not far off being done. Today I modified our existing meta-class methods to match the new S12 changes, then implemented the .^ operator. So this gets us on the way towards more introspection support. While I was in that area of the code, I moved the auto-vificiation (WHENCE) stuff out of the P6Object code (which is meant to be more generic than what Rakudo needs) and put it into the Rakudo code, which should make some upcoming refactors pmichaud has planned on P6Object a tad easier.</p>
+
+<p>I also looked at starting to get a few other things in place to flesh objects out. One of them is .WHERE, which simply returns the memory address of an object. That didn't take long. Then I read up on .WHICH, which returns an object's identity value, which is what will allow us to implement value type semantics to go with the "===" comparison operator. For normal objects, it just returns the memory address of the object; I put this in place. Next us is to override it in the value types, and then the "===" operator can be added. This is probably fairly low hanging fruit for anyone who fancies digging into Rakudo some, by the way.</p>
+
+<p>In other bits, I've applied a patch from Carl Masak during the day, and this evening helped Chris Fields, who has happily implemented transliteration for us and is now working on .match on strings, to debug a rather subtle Rakudo bug. I got to the bottom of what's wrong, but resolution is to be discussed. But hopefully we have one soon and then we can have .match defined on strings - another piece in the S05 puzzle! We've a long way to go yet, but bit by bit, day by day, Rakudo is coming together. And last but not least, I'd like to thank to Vienna.pm for funding my weekly Rakudo day.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

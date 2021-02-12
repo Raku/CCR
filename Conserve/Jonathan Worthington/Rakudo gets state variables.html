@@ -1,0 +1,144 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38658/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo gets state variables</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo gets state variables</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-03-17T22:20:35</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I spent most of my Rakudo day today adding state variables to Rakudo. Perl 5.10 supports them, so it's nice that they can now be used in Perl 6 - which first specified the feature - under Rakudo. As often happens, it took a first not-quite-right implementation to do one that I'm now reasonably happy with. I'm sure it can be improved in various ways, but for now it seems to get the right answers for everything we've thrown at it. So, a quick example.</p>
+
+<code>sub counter {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;state $count = 0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;$count++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say $count;<br>
+}<br>
+counter(); # 1<br>
+counter(); # 2<br>
+counter(); # 3<br></code>
+
+<p>Here, $count is set the first time we run the sub to 0. But then in future invocations it remembers its value. The state is kept "per closure", such that you can do things like:</p>
+
+<code>sub make_counter($start = 1) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;state $count = $start;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$count++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+my $c1 = make_counter();<br>
+my $c2 = make_counter(10);<br>
+$c1(); $c1();<br>
+$c2(); $c2();<br>
+say $c1(); # 3<br>
+say $c2(); # 12<br></code>
+
+<p>Thanks to masak, moritz and nicholas for all contributing extra test cases to exercise the state implementation throughout the day - the already decent state.t has gained an extra ten tests thanks to their input. We now pass all tests in there apart from six which test the interaction of state with other not yet implemented features. So, 24 new tests passing. Nice.</p>
+
+<p>I spent the rest of the day on some more minor things.</p>
+
+<ul>
+  <li>Karl Rune Nilsen spotted a missing \ in the hyper-ops generation code and sent in a patch. I applied it - that'll make the left-side dwimming variants work properly when we get the other issues blocking the unicode forms from working resolved.</li>
+  <li>Fixed the ability to check something is a junction with $j ~~ Junction, which got broken a while back and was untested. When I went to add a test, I discovered we already had one - in a test file that we passed entirely now, but weren't running. Added it to to the known passing list. Easy win!</li>
+  <li>Junctions have a .eigenstates method which gives a list of items in the Junction. However, recently it was suggested - and accepted by Larry - that Object should also get such a method that returns just a list containing the object itself. This means you don't have to check if something is a junction or not when you know that you just want a list of the one or many possible values. So, I added it, plus some tests.</li>
+  <li>The initial implementation of //= mostly worked, but didn't short-circuit. This has now been fixed; ||= and &&= were also implemented along the way. Fixing //= to short-circuit meant 2 more of the tests in state.t that depended on this working also ran.</li>
+</ul>
+
+<p>So, enjoy the new features, and thanks to Vienna.pm for funding this work.</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Now who is the best?</h2>
+<h3><a href="/user/Limbic Region/">Limbic Region</a> on 2009-03-19T14:51:00</h3>
+<p><a href="http://use.perl.org/user/nicholas/journal/36270" title="perl.org">http://use.perl.org/user/nicholas/journal/36270</a perl.org></p>
+
+
+
+<blockquote>
+
+<h2>Re:Now who is the best?</h2>
+<h3><a href="/user/nicholas/">nicholas</a> on 2009-03-25T23:04:05</h3>
+<p>Rakudo is now the undisputed best, because <code>state @a =<nobr> <wbr></nobr>...;</code> works in Rakudo, whereas it doesn't (yet) in Perl 5</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

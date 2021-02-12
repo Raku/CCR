@@ -1,0 +1,107 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38641/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: 'eval' can see lexicals and other fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>'eval' can see lexicals and other fixes</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-03-14T16:55:28</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Back from my conference and vacation trip (travel tip: Lviv is very pretty and cheap), I did a Vienna.pm Rakudo Day yesterday. There's one main new thing to shout about: eval can now see outer lexical variables. So this:</p>
+
+<code>my $x = 42;<br>
+eval('say $x');<br></code>
+
+<p>Will now print 42. This not only made the spectest for this particular feature pass, but also there were a bunch todo'd and skipped that needed this feature. So I reckon we'll have gained a double-figure number of tests with this, plus it should help the Web.pm effort a bit.</p>
+
+<p>I also did a variety of other fixes:</p>
+<ul>
+  <li>Fixed a Null PMC Access that could occur when looking into &some_sub.signature.params</li>
+  <li>Multi-subs now respond to .WHAT by handing back the proto of a type Multi. You can call .candidates to get a list of all candidates, which you can iterate over to introspect them as needed. This cleared up a ticket or two on weird behavior when doing such things on multi-subs, which weren't quite proper Perl 6 objects up to that point.</li>
+  <li>Fixed a bug in the multi-dispatcher that came up where you got down through nominal typing and arity to a single candidate that had a subtype constraint on a parameter. Subtypes are indeed used as tie-breakers, which we were doing correctly, but should be enforced even if there is just one candidate and can rule out the single candidate if they don't match. We were also caching the dispatch result in this case, which we shouldn't do since the cache is type-based and subtypes can examine values. All clear? :-) Added a spectest.</li>
+  <li>Using a role name as a type constraint could cause some issues, most notably when you used it as a type constraint on an attribute. These issues are now resolved and I added several tests covering this area.</li>
+  <li>Patrick pointed out that my last big method dispatch refactor, which paved the way for many features that we now have, had some issues in relation to foreign objects (e.g. for interacting with objects from languages outside of Perl 6) and proposed another refactor to deal with this. Thankfully it was a pretty easy one this time, and it went quickly and smoothly. So this should improve things for langauge interoperability.</li>
+</ul>
+
+<p>I also had discussions with various people (thanks to Larry, Allison, Tene and Patrick for input) about implementing .leave. Happily, Tene++ had thought it through a bit and had a good idea of how to do it. Which means I hopefully now don't have to do it, and can just make use of it once it's done to fix the auto-threading bug that sent me chasing after it in the first place.</p>
+
+<p>As usual, a big thanks to Vienna.pm for funding my Rakudo hacking.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

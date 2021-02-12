@@ -1,0 +1,104 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36552/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Hacking and Talks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Hacking and Talks</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-30T14:52:40</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>The last few days have been pretty action-packed, so I'm going to try and summarize what's been happening in this post.</p>
+
+<p>First up, Rakudo. So far I've been writing a lot of "hey, look, now you can do X!!!" style posts. However, developing a large piece of software (such as the Perl 6 compiler) isn't just about the fun parts: it's also about the things that Just Need Doing too. I spent much of my Rakudo day, on Wednesday last week, working with Patrick on one of these things. Before, we had multiple proto-object models for PGE and Rakudo. Grammars were somewhat special-cased. Also, the meta-class stuff wasn't quite right. Patrick did a chunk of work to build a unified model that we could use for all of these, which was more correct that what we had before. Then we worked together to get Rakudo switched over to the new model. The effects of this won't be immediately visible, but it certainly makes doing another bunch of stuff easier (I think class methods are possible to implement quite cleanly now, for example; it'll also be much easier to get class intropsection support in).</p>
+
+<p>On Thursday afternoon I took a small propellor plane from Bratislava to Prague, and then flew from Prague on to Stockholm for the Nordic Perl Workshop. Klaes Jakobsson, one of the conference organizers and a wonderful host (he lives in a nice part of Stockholm and cooks wonderful Swedish meatballs) kindly allowed me to stay at his place from Thursday through to Monday. On the Friday I gave a lecture at the university at Kista (pronounced Shista...it's almost like they want to compete with English spelling "rules" or something) to a bunch of Computer Science students, telling them about Parrot and the Parrot Compiler Toolkit. I built a mini-language (Turing complete and all) right there in the lecture, which was well received. I think people understood it at different levels, but after I had given the talk some people who spoke to me seemed really excited to play with this themselves. Others I think went away with a good high-level picture that we're building a VM to allow many dynamic languages to inter-operate.</p>
+
+<p>The Nordic Perl Workshop took place on Saturday and Sunday. I greatly enjoyed the conference, and for me it was the best set of talks that I have seen for quite a while. That's in part because they were in English, so I could understand them all, but even more because of the topics. The organizers had invited a couple of people working on stuff other than Perl along to the conference too. There was a talk about the Smalltalk web framework called Seaside, which was highly interesting and thought-inspiring. There was also a talk from some folks working on a dynamic research language, which gave a nice glance into another world. I think they got something from being at the Perl conference too. It makes me really happy to see interaction with other communities, and I hope to see more of this kind of thing, so we can share something of Perl with others, and can listen with genuine interest to see what others are doing too.</p>
+
+<p>I gave two talks, one on the Perl 6 language and one looking more at Rakudo. They were both enjoyable to give, not only because they relate to things I am working on but also because of the audience, who asked some great and at times quite challenging questions. I hope that I was able to give everyone good answers. I will get the slides online and linked to very shortly, both for the NPW and from the Kista.</p>
+
+<p>I did less coding at this workshop because I wanted to pay attention to the talks and have interesting discussions with people, but I did get some in. Again, it's refactoring, but it's work that will enable a lot more stuff to happen. For one, it will make assignment and type checking vastly cheaper. It will also make it easier to get things like "is rw" and "is ro" in place too - expect those semantics to be correct in the not too distant future. It's also laying some very early foundations for lazy lists, which will be needed to get ranges (which are lazy iterators) working properly. It's a little way down the roadmap, but I'm hoping to get a basic implementation together in the not too distant future.</p>
+
+<p>I'm not having a Rakudo day this week, but I am be attending the French Perl Workshop, where I am giving more talks and, given my (very low) French level, be getting some coding time in too.</p>
+
+<p>I have a feeling that my talks and discussions at the NPW have attracted some additional interest in both the Perl 6 and Parrot projects here at the Nordic Perl Workshop, which I'm hopeful might translate into more people joining in the fun of implementing and testing the two of them, or building other language compilers for Parrot. It's exciting times for both projects, and I'm really happy to be a part of it all. Of course, life and flights cost money, so I'd like to thank both Vienna.pm for funding the day of work on Rakudo last week, and also the Perl Foundation and Best Practical for helping to fund my travel to the Nordic and French Perl Workshops.</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

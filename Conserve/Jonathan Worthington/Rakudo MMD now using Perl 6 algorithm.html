@@ -1,0 +1,110 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/37430/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo MMD now using Perl 6 algorithm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo MMD now using Perl 6 algorithm</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-09-13T00:48:03</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I came back from a trip to my local curry house tonight determined to get my recent work on implementing the Perl 6 multiple dispatch algorithm being used by Rakudo. I had already got the algorithm itself implemented and got some PIR tests for it, but Rakudo was still using the Parrot multiple dispatch algorithm. This didn't provide the Perl 6 candidate sorting algorithm, nor did it allow dispatch based upon roles as types or with subset type constraints acting as tie-breakers. So, I sat down and started hacking. About 2am, a series of patches hit the repository, the final one switching all code compiled with Rakudo over to using the Perl 6 multi-dispatch algorithm. :-)</p>
+
+<p>I'm a little tired now, but here's a couple of examples that now run. This first one decides which one to call based upon one of them having a constraint that can disambiguate them.</p>
+
+<code> multi sub foo(Int $x) { 1 }<br>
+multi sub foo(Int $x where { $^n > 42 }) { 2 }<br>
+say foo(12); # 1<br>
+say foo(45); # 2<br></code>
+
+<p>And here's one where we have a role involved.</p>
+
+<code>role Explode { }<br>
+class Firework does Explode { }<br>
+class Kitten { }<br>
+multi sub bar(Explode $x) { 1 }<br>
+multi sub bar(Kitten $x) { 2 }<br>
+say bar(Firework.new); # 1<br>
+say bar(Kitten.new); # 2<br></code>
+
+<p>I've discovered that there are some problems that have come up with the candidate sorting, but I'm too tired to track them down right now. Curiously, there are PIR tests to exercise this and they pass. It's only when using it from Rakudo that the problems appear. So there's something not quite right there, and I'll investigate it in the next couple of days. In the meantime, all spectests that were passing before continue to pass (and we've got two more unexpected passes now too), so I'm quite hopeful that this isn't going to cause too much disruption to folks while the kinks are ironed out. Anyway, enjoy, and bug reports (other than the candidate sorting issue that I'm aware of) are most welcome. :-)</p>
+
+<p>Thanks for funding me to stay up until this crazy hour hacking on this (OK, to be fair, I slept until mid day today^Wyesterday) goes to DeepText.</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

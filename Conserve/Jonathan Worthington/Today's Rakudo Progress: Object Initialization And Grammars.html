@@ -1,0 +1,157 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36308/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Today's Rakudo Progress: Object Initialization And Grammars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Today's Rakudo Progress: Object Initialization And Grammars</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-05-01T21:47:48</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Today's work has been a mixture of refactoring and clean-ups that had been on the want list for a while, but just hadn't happened, as well as making some new things work.</p>
+
+<p>First, the initial work I did on types attached them to variables, but what we really needed was a more general way to attach properties. Therefore, there is now a hash of properties instead, where we can stash other stuff.</p>
+
+<p>Next up, I had based pairs on the Parrot Pair PMC, though as Patrick pointed out it's so far off being right for Perl 6 (for example, it's mutable, the Perl 6 one isn't) that we might as well just have our own. Dropping the Parrot Pair PMC and doing that took me all of ten minutes of work, and we get the semantics of pairs a bit more correct too. So that's much cleaner now.</p>
+
+<p>A few days back, dakkar sent in a bug report regarding inheritance. It was almost correct code, but didn't work on Rakudo, since initialization of parent attributes was not yet implemented. I've now implemented this, and I'll borrow the example from the bug report to demonstrate it.</p>
+
+<code>class Foo {<br>
+&nbsp; &nbsp; has $.x;<br>
+&nbsp; &nbsp; method boo { say $.x }<br>
+}<br>
+<br>
+class Bar is Foo {<br>
+&nbsp; &nbsp; method set($v) { $.x = $v }<br>
+}<br>
+<br>
+my Foo $u .= new(:x(5));<br>
+$u.boo;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # 5<br>
+<br>
+$u= Bar.new(Foo{ :x(12) }); # This is what now works<br>
+$u.boo;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # 12<br>
+$u.set(9);<br>
+$u.boo;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # 9<br></code>
+
+<p>This is not some magical hacky syntax just to make constructors work; you can use it in the general case to associate some vivification data with a proto-object, which gives you a copy of it back with the data attached. It's a bit like currying the object instantiation. So after making the above work, it wasn't much more work to get the following working.</p>
+
+<code>class Foo { has $.x }<br>
+my $foo42 = Foo{ :x(42) };<br>
+my $test = $foo42.new();<br>
+say $test.x; # 42<br></code>
+
+<p>Note that the original Foo itself isn't changed. We'll have to revisit this again later, because the way I've done it now doesn't have the lazy semantics it's eventually meant to have. It makes the common use case work, though.</p>
+
+<p>With some time spent on objects, I moved onto some improvements to regex stuff. The upshot of this is that you can now use grammar to group regexes into a namespace.</p>
+
+<code>grammar Test {<br>
+&nbsp; &nbsp; regex Load { \d+s };<br>
+&nbsp; &nbsp; rule Loads { &lt;Load&gt; of &lt;Load&gt; };<br>
+}<br>
+if "100s of 1000s" ~~ Test::Loads { say "yes" }<br>
+yes<br></code>
+
+<p>Note that this is just the start of grammars; inheritance doesn't yet work and you can't smart-match against them yet. It's a stop forward, though.</p>
+
+<p>If you're an avid Rakudo follower, you'll have noted that regex, rule and token all (wrongly) did the same thing before today. I've fixed that too now (there was some behind the scenes work in being able to pass options to the compiler that will be useful elsewhere, as to users of the Parrot Compiler Toolkit in general). In a nutshell, token and rule don't backtrack, where as regex does, and additionally rule translates spaces to the <ws> rule, whereas normally they have no effect on the match.</p>
+
+<code># Demonstrating :ratchet semantics (rule like token here).<br>
+regex WillBT { a*a }<br>
+token WontBT { a*a }<br>
+if "aaa" ~~ WillBT { say "yes" } else { say "no" }<br>
+yes<br>
+if "aaa" ~~ WontBT { say "yes" } else { say "no" }<br>
+no<br>
+<br>
+# Demonstrating :sigspace semantics.<br>
+regex Test1 { \d \d };<br>
+rule Test2 { \d \d };<br>
+if "12" ~~ Test1 { say "yes" } else { say "no" }<br>
+yes<br>
+if "1 2" ~~ Test1 { say "yes" } else { say "no" }<br>
+no<br>
+if "12" ~~ Test2 { say "yes" } else { say "no" }<br>
+no<br>
+if "1 2" ~~ Test2 { say "yes" } else { say "no" }<br>
+yes<br></code>
+
+<p>So, that's what got done today. I'd like to thank Vienna.pm for funding this work, and hope you'll have fun playing with it, breaking it and reporting bugs. :-)</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

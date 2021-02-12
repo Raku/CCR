@@ -1,0 +1,207 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36095/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Rakudo Gets Type Annotations And Checking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Gets Type Annotations And Checking</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-04-07T22:32:30</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I spent the weekend and most of Monday at the Oslo QA Hackathon. While 
+
+I'm not a QA expert, it did provide me with time and a relative lack of 
+
+distractions to get some work done on Rakudo. It was also nice seeing lots 
+
+of Perl folks, some of whom I've not seen in quite a while. The Hackathon 
+
+has had a very productive atmosphere with lots getting done; in this post 
+
+I'll describe some of my Rakudo exploits.</p>
+
+<p>The biggest thing I have been working on is type annotations. This now 
+
+works with both variable declarations and in the signatures of subroutines 
+
+and methods, although writing them in a multi-method doesn't lead to any 
+
+type-based MMD just yet. Attributes of classes can't have types yet either. 
+
+There are some quirks with various built-in types (including Str and Code 
+
+types), though many others work fine (Int, Num, Pair, etc). With your own 
+
+classes, roles and subset types, it should work just fine.</p>
+
+<p>So, for example, if you declare a variable as having type Int, then try 
+
+and assign a string to it, you'll get a type check failure (we'll get a 
+
+nicer error message in the end).</p>
+
+<code>my Int $x = 42; # this is ok<br />
+my Int $x = "hello"; # this is not<br />
+Type check failed<br /></code>
+
+<p>Here's a class example.</p>
+
+<code>class Foo { }<br />
+class Bar is Foo { }<br />
+class Baz { }<br />
+my Foo $x; $x = Foo.new(); # ok, Foo is a Foo<br />
+my Foo $x; $x = Bar.new(); # ok, Bar is a Foo<br />
+my Foo $x; $x = Baz.new(); # not OK<br />
+Type check failed<br />
+my Bar $x; $x = Foo.new(); # not OK; Foo is not a Bar<br />
+Type check failed<br /></code>
+
+<p>Refinement types also work with this.</p>
+
+<code>subset EvenInt of Int where { $_ % 2 == 0 };<br />
+my EvenInt $x = 4; say $x;<br />
+4<br />
+my EvenInt $x = 4; say $x; $x = 3; say $x;<br />
+4<br />
+Type check failed<br /></code>
+
+<p>You can do all of this with parameters too, as well as declaring an anonymous refinement.</p>
+
+<code>sub Test(Int where { 0 &lt; $_ &lt;= 100 } $x) { say $x }<br />
+Test(50)<br />
+50<br />
+Test(0) # fails constraint<br />
+Parameter type check failed<br />
+Test("50") # not an Int<br />
+Parameter type check failed<br /></code>
+
+<p>Of course, if we drop the Int from the above, then we get coercion:</p>
+
+<code>sub Test(where { 0 &lt; $_ &lt;= 100 } $x) { say $x }<br />
+Test(50)<br />
+50<br />
+Test("50") # matches constraint when numified<br />
+50<br />
+Test(0) # still fails it, as expected<br />
+Parameter type check failed<br /></code>
+
+<p>Getting this to work forced me to refactor the type hierarchy somewhat - 
+
+a job that needed doing, but that I'd been putting off (partly out of not 
+
+trusting myself to do it right). It was a tad nasty, and needed some fixes 
+
+inside Parrot too. However, the net result is that the majority of built-in 
+
+object types, such as Int, now inherit from Any (which we didn't have 
+
+before), and that in turn inherits from Object. The Any distinction will be 
+
+needed to get junction auto-threading of arguments to work properly; my 
+
+initial attempt was inefficient and broken. We'll most likely need to do 
+
+HLL type mapping and similar before that will really work too, though. But 
+
+anyway, now the following things give what you'd expect.</p>
+
+<code>if 42 ~~ Any { say "yes" }<br />
+yes<br />
+if 42 ~~ Object { say "yes" }<br />
+yes<br />
+if 42 | 43 ~~ Any { say "yes" }<br />
+if 42 | 43 ~~ Object { say "yes" }<br />
+yes<br />
+if 42 | 43 ~~ Junction { say "yes" }<br />
+yes</code><br />
+
+<p>I've done a few other things, but I've got a work meeting here tomorrow, 
+
+so I'm going to sleep now and write about them soon.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Wow</h2>
+<h3><a href="/user/cyocum/">cyocum</a> on 2008-04-08T06:49:55</h3>
+<p>I would just like to say that this is really, really awesome and thank you for putting so much of your free time into this.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,209 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39100/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: wrap and unwrap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>wrap and unwrap</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-06-08T22:39:50</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>A while back, I did a Rakudo day and didn't get around to writing a report (probably because I hacked until the point where all I wanted to do was sleep). The main thing I did on that day was implement .wrap and .unwrap, which I'm going to talk about in this post.</p>
+
+<p>The .wrap method on a routine allows you to modify it in place, giving it some extra behaviors before (optionally) delegating or calling the original. This allows for pre-processing of arguments, post-processing of return values, logging and so forth.</p>
+
+<p>Here is a simple example.</p>
+
+<code>sub do_some_work() { say "doing stuff" }<br>
+<br>
+do_some_work();<br>
+say "--";<br>
+<br>
+my $handle = &do_some_work.wrap(sub () {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say "About to do some work";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callsame();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;say "Finished doing some work";<br>
+});<br>
+do_some_work();<br>
+say "--";<br>
+<br>
+&do_some_work.unwrap($handle);<br>
+do_some_work();<br></code>
+
+<p>So, first we take a sub and call it. The result is just as you would expect. Then we wrap it with another sub - an anonymous one. We could have used a closure or pointy block here too. This some uses callsame() to call the original sub. If we had any arguments passed in, it would have passed the same arguments along. You can use "callwith" instead to supply a different set of arguments, if you had done some pre-processing on the arguments and wanted to pass along the modifications. Calling .wrap gives us back a handle. If we want to remove the wrapper that we installed, we simply call unwrap on the routine, passing the handle, and the wrapper is removed. So the output of this program is:</p>
+
+<code>doing stuff<br>
+--<br>
+About to do some work<br>
+doing stuff<br>
+Finished doing some work<br>
+--<br>
+doing stuff<br></code>
+
+<p>Let's take a look at a second example.</p>
+
+<code>sub foo() { say 1 }<br>
+<br>
+foo();<br>
+say "--";<br>
+<br>
+my $h1 = &foo.wrap({ say 2; nextsame; say "not here"; });<br>
+foo();<br>
+say "--";<br>
+<br>
+my $h2 = &foo.wrap({ say 3; nextsame; say "nor here"; });<br>
+foo();<br>
+say "--";<br>
+<br>
+&foo.unwrap($h1);<br>
+foo();<br>
+say "--";<br>
+<br>
+&foo.unwrap($h2);<br>
+foo();<br></code>
+
+<p>This time, we do a couple of things differently. We use the nextsame function instead of callsame. nextsame defers rather than calls, so after calling nextsame we are never inside the current routine again. Thus the "not here"/"nor here" say statements will never be executed. Secondly, we unwrap in a different order than we wrapped. This demonstrates the use of out-of-order unwrapping, meaning you can add and remove behaviors as you wish without having to worry where in the list of wrappers they are. The output of this program is:</p>
+
+<code>1<br>
+--<br>
+2<br>
+1<br>
+--<br>
+3<br>
+2<br>
+1<br>
+--<br>
+3<br>
+1<br>
+--<br>
+1<br></code>
+
+<p>We also have tests passing where we wrap and unwrap in loops, applying the same closure as a wrapper many times, which also works.</p>
+
+<p>Since doing the initial cut of wrapping on a Rakudo Day, I have further improved and refactored .wrap and .unwrap as a part of the changes in my current Hague Grant. While there's some more edge cases that need checking out and testing, we now pass just about all of the tests for wrapping (those we don't are related to the interaction between wrap and temp, and we don't have temp yet in Rakudo). So, looking pretty good.</p>
+
+<p>Thanks to Vienna.pm for sponsoring the Rakudo Day that saw us get wrap support.</p></p>
+
+
+<hr/>
+
+
+
+<h2>method modifiers?</h2>
+<h3><a href="/user/j1n3lo/">j1n3lo</a> on 2009-06-09T09:16:24</h3>
+Am I right to assume that this is how <a href="http://search.cpan.org/user/drolsky/Moose-0.81/lib/Moose/Manual/MethodModifiers.pod" title="cpan.org">Moose method modifiers</a cpan.org> are represented in Perl6?
+
+
+
+<blockquote>
+
+<h2>Re:method modifiers?</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-06-09T12:11:19</h3>
+They look to be covering very much the same problem space, yes. However, I don't see anything in the Moose docs you linked on unwrapping.
+
+
+
+<blockquote>
+
+<h2>Re:method modifiers?</h2>
+<h3><a href="/user/j1n3lo/">j1n3lo</a> on 2009-06-09T12:35:46</h3>
+Cool. Keep up the good work on Rakudo! Its coming on nicely indeed<nobr> <wbr></nobr>;-)
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>Reserved words</h2>
+<h3><a href="/user/mir/">mir</a> on 2009-06-09T09:39:38</h3>
+Does this mean that callsame and callwith are reserved words? And wrap and unwrap reserved methods?
+
+
+
+<blockquote>
+
+<h2>Re:Reserved words</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-06-09T12:17:13</h3>
+<p>Well, there's no such thing as a "reserved method" really. These are just methods defined on the (built-in) Routine class. Sub and Method and Submethod just derive from this class and thus you get<nobr> <wbr></nobr>.wrap and<nobr> <wbr></nobr>.unwrap available on them.</p><p>callsame, callwith, nextsame and nextwith are all built-in subs. They aren't recognized by the compiler specially, they just dispatch like any old subroutine. (Under the hood, they are implemented in terms of a candidate list plus scope and lexpad introspection. This same candidate list mechanism is what gives you deference or calling in a method to the next parent. That's one of the things I'm currently hacking on for my Hague Grant.)</p><p>Hope this helps,</p><p>Jonathan</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

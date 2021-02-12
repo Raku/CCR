@@ -1,0 +1,112 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/39943/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Laying the role meta-foundations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Laying the role meta-foundations</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-11-25T01:03:13</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>I got back from Latvia yesterday. The first Baltic Perl Workshop was very small, but also very enjoyable. I also very much enjoyed meeting up with masak++, who shares my love of good food - curry included! Riga turned out to be a great place for having a good nom, both in terms of local stuff and nice hot curry. And of course, amongst the workshop and some sightseeing, some hacking got done too.</p>
+
+<p>Today was Rakudo Day, and it was time to get back to meta-model matters. I actually spent a while during my time in Riga reading a good bit of Moose and Class::MOP - I'd seen bits of them before, but this time gave the parts relating to roles a much closer look and got myself a refresher on some other bits. I also spent the plane ride home (pretty much the entire flight!) reading an interesting paper on <a href="http://scg.unibe.ch/archive/papers/Duca05ySafeMetaclassTrait.pdf">composing meta-objects from traits</a>, which turned out to be a much easier read than I had expected, but left me wanting to read many of its references too.</p>
+
+<p>The first thing I worked on today was getting more details into <a href="http://github.com/rakudo/rakudo/blob/ng/docs/metamodel.pod">metamodel.pod</a>, which is the currently under heavy construction specification for Rakudo's meta-model. It will in the future become a proposal for inclusion in the Perl 6 specification too, at which point it'll be time to co-ordinate with other implementations to get something that we can all agree on. Anyway, if you have an interest in meta-programming, you may be interested to give it a read and leave comments, or catch me on #perl6. For those just wanting to see some code rather than read a spec, skip straight down to the example of how writing a module to support something AOP-ish could look. It'll no doubt evolve somewhat, and we won't be able to run it for a little bit yet, but I think it's a nice example of how easy it should be to implement such things in Perl 6.</p>
+
+<p>After that, I dug into starting to get some implementation work done, with a focus on working towards having role composition working as spec'd in the metamodel document. So far I've got a lot of the foundations laid, and I'm now starting to build up on them. So far, it's mostly just plumbing, but composing a role into a class and the class then gaining the role's methods does now work, and a bunch of what we need for required methods and conflict resolution is stubbed in, though untested. I also was able to write a chunk of this in NQP rather than PIR, something I'd like to see us increasingly do in the stage 1 compiler, where it makes sense to do so (the stage 1 compiler containing the things we need in order to compile the setting; the smaller we can keep this part, the better it'll be for us overall...for now the goal is mostly getting the ng branch landed rather than small-stage-1-nirvana though :-)). Anyway, I think I can probably progress pretty fast from here and get our role stuff up and running in the next couple of days.</p>
+
+<p>Thanks to Vienna.pm for sponsoring Rakudo Day.</p></p>
+
+
+<hr/>
+
+
+
+<h2>Metamodel of Joose 3.0</h2>
+<h3><a href="/user/SamuraiJack/">SamuraiJack</a> on 2009-11-25T09:07:06</h3>
+<p>Hi,</p><p>I thought you might be interested to look at the meta-model of the Joose 3.0. Joose is a very close port of Moose to JavaScript. And its sources are much clearer and easier to understand )</p><p>It starts with the abstract property:<br><a href="http://github.com/Joose/Joose/blob/mutability/lib/Joose/Managed/Property.js" title="github.com">http://github.com/Joose/Joose/blob/mutability/lib/Joose/Managed/Property.js</a github.com></p><p>And abstract property set (isa property):<br><a href="http://github.com/Joose/Joose/blob/mutability/lib/Joose/Managed/PropertySet.js" title="github.com">http://github.com/Joose/Joose/blob/mutability/lib/Joose/Managed/PropertySet.js</a github.com></p><p>Then defines some kind of "property set algebra", with couple of operations defined: flattening and composition.<br>Flattening is what happens between roles, when they are listed in the class (produces a new property set), and composition is what happens between class and role.</p><p>The whole project can be found here:<br><a href="http://github.com/Joose/Joose/tree/mutability" title="github.com">http://github.com/Joose/Joose/tree/mutability</a github.com></p><p>And documentation is "borrowed" from Moose<nobr> <wbr></nobr>:)<br><a href="http://joose.github.com/Joose/doc/html/Joose/Manual.html" title="github.com">http://joose.github.com/Joose/doc/html/Joose/Manual.html</a github.com></p><p>There is an implementation limitation though - Joose supports only one superclass (to fit well into prototype nature of JavaScript)</p><p>Regards, Nickolay</p>
+
+
+
+<h2>A very welcomed addition</h2>
+<h3><a href="/user/lilstevey/">lilstevey</a> on 2009-11-25T21:53:21</h3>
+Hi, I've enjoyed reading your blogs, and found this one particulary interesting - I really enjoyed reading the <a href="http://github.com/rakudo/rakudo/blob/ng/docs/metamodel.pod" title="github.com">rakudo metamodel spec</a github.com>. I can't promise any helpfull feedback but, hopefully, given time ( fingers crossed ), I hope to have a play in this area.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

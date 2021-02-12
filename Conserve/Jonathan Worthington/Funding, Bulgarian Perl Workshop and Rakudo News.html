@@ -1,0 +1,155 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/38396/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Funding, Bulgarian Perl Workshop and Rakudo News</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Funding, Bulgarian Perl Workshop and Rakudo News</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2009-02-02T22:11:47</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Sorry for not writing for so long. This time I've been burying myself not just in code, but also in conference 
+
+preparation, travel and attendance. Anyway, I'm going to try 
+
+and catch up a little bit here - more detailed posts about individual features to follow.</p>
+
+<p>First, I'd like to thank Vienna.pm. After funding a great 
+
+deal of my Rakudo hacking last year, they have kindly agreed 
+
+to continue the arrangement into this year, which is funding 
+
+me a day a week. I expect that due to attending workshops 
+
+there will be some weeks I miss and others that I will do two 
+
+days, but it should come out to a day a week on average. So, a 
+
+big thanks to Vienna.pm! I plan to use some of the initial 
+
+days to go through RT and try to cut down the number of 
+
+tickets there, most of which are bug reports. It will be a 
+
+nice complement to my Hague Grant, which is mostly focused on 
+
+feature development (though implementing those has of course 
+
+been closing existing tickets, and I've been doing other bits 
+
+on RT tickets too - but having time I can dedicate to fixes 
+
+and improving the quality of Rakudo in a wider sense is 
+
+great).</p>
+
+<p>I am writing this from Sophia in Bulgaria, where I've been 
+
+attending the first Bulgarian Perl Workshop. It's been a 
+
+wonderful time for many reasons - not least because of the 
+
+hospitality of the Bulgarians I have met during my time here. 
+
+Marian has been especially wonderful, taking me out the day 
+
+after the conference to see the beautiful mountains and a 
+
+stunning monastery. I enjoyed speaking too - the room was full 
+
+and there were lots of good questions, which always makes it 
+
+much more fun and helps me feel that people are getting it. 
+
+So, to all who organized the conference and to all those I met 
+
+and talked with - thanks for making this a great time.</p>
+
+<p>My Hague Grant is going well. In the world of parametric roles, I've done a range of enhancements to make sure you can use type parameters as types in the places you'd expect, and written more tests, plus have done some minor fixes that were needed to let us have roles parameterized on parameterized roles, so you will be able to build nested typed data structures. I also implemented the "of" keyword, and made roles pun to classes if you tried to instantiate them. This actually puts me well ahead of schedule so far as parametric roles go. My remaining work for during February mostly consists of using it to make typed arrays and hashes work. I plan to implement these directly in Perl 6 so far as I can, with some bits of inline PIR here and there. They won't be usable until we have the Perl 6 prelude, but that is high on pmichaud++'s schedule to work on too, so I hope we'll have that before February is out.</p>
+
+<p>The other big-ticket item I've now done is junction auto-threading. For now, we still have the custom code in place to thread operators, and auto-threading for built-in functions and methods does not yet work, but again once we get the Perl 6 prelude in place they will also Just Work based upon what I've already done and the custom code can go away. I've done various tests to make sure auto-threading with multis works out nicely, that we auto-thread over the invocant during method calls (to methods not defined in Junction). I will write a more detailed post on junction auto-threading shortly.</p>
+
+<p>I've done a few other bits, too. The handles trait verb will now accept pairs, a class or role name, a regex or the Whatever *. (In fact, the rule is that it's just a smartmatch with the method name as the topic, so regex and * fall out of the same code, and I'm sure folks will come up with other delightful things to write there). I am missing the s/// variant, since we don't parse that yet in Rakudo and I'm not quite sure yet how to do it. But otherwise, that's the handles work about done too, I think.</p>
+
+<p>I also did some improvements to let us write nested classes, though there's some way to go on that. Further, declaring a proto makes all subs of the same name not marked multi be multis, and this works for upgrading methods to multi-methods too when composing roles if there is a proto in the class (in fact, composing roles that had multis in them before didn't work properly, since a Parrot addition was needed; I did that as part of this work, and added Parrot tests for it as well as then doing the Rakudo bits on top). Finally, I've added redeclaration of types detection at compile time, plus a better error if you try do inherit from a non-existent class or do a non-existent role.</p>
+
+<p>So, quite a list of things that have got done, which is nice. :-) And lightens the load a bit for me in February, so I'm optimistic that I am going to be able to complete my Hague grant on schedule. Well, hopefully I didn't just jinx it...</p></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

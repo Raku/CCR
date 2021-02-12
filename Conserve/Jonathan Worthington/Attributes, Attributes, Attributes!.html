@@ -1,0 +1,133 @@
+https://use-perl.github.io/user/JonathanWorthington/journal/36677/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of JonathanWorthington: Attributes, Attributes, Attributes!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Attributes, Attributes, Attributes!</h1>
+<h2><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-06-13T00:19:59</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>After not sleeping great, it took a couple of cups of tea to get me going this morning. I like coffee too, but haven't gotten around to getting myself a good coffee machine for this place yet, and nice tea beats instant coffee. (And this is how you know that, even though I live in Slovakia, my inner Britt is still alive.) Anyway, while I was getting properly conscious, and before digging into the main task of the day, I did a little more work on ranges: essentially, getting the versions of the range operator with endpoints to work. Thus you can now do:</p>
+
+<code>say $_ for 1..5;&nbsp;&nbsp;&nbsp;&nbsp;# 1\n2\n3\n4\n5\n<br>
+say $_ for 1^..5;&nbsp;&nbsp;&nbsp;# 2\n3\n4\n5\n<br>
+say $_ for 1..^5;&nbsp;&nbsp;&nbsp;# 1\n2\n3\n4\n<br>
+say $_ for 1^..^5;&nbsp;&nbsp;# 2\n3\n4\n<br></code>
+
+<p>So, that's another little bit of progress on ranges. Now, onto the meaty stuff. Today was, as the title hints, about attributes. For a while, you've been able to declare attributes on classes in Rakudo, but the support has been fairly primitive. Today I expanded it someone, and then I dug into getting composition of attributes from roles working. Composition of methods has worked for a while, but until today there was no support for attribute composition. So, some details.</p>
+
+<p>First, accessor/mutator methods are now generated correctly. If you now write:</p>
+
+<code>has $.badgers;<br></code>
+
+<p>Then you get an accessor method. Trying to use it as an lvalue will now fail, as per the specification. If you want to have a mutator as well as an accessor, then you must write:</p>
+
+<code>has $.badgers is rw;<br></code>
+
+<p>Additionally, while you could put type constraints on variables and sub/method parameters before now, you couldn't put them on attributes. As of today, you can do so.</p>
+
+<code>has Int $.badgers is rw;<br></code>
+
+<p>And, as with variables, if you don't supply an initialization value, then in the case above your badgers attribute will be initialized to an Int proto-object. If you specify a role or some more complex or junctional type, then you just get a Failure object. Talking of junctional types, you can now list many types on variables (and attributes) and get them all enforced.</p>
+
+<code>subset Percent of Int where 1..100;<br>
+subset Even of Int where { $^n % 2 == 0 };<br>
+my Even Percent $x = 42;&nbsp;&nbsp; # OK<br>
+my Even Percent $y = 101;&nbsp; # Type check failed<br>
+my Even Percent $z = 11;&nbsp;&nbsp; # Type check failed<br></code>
+
+<p>You can write disjunctions as well, according to The Spec, but I've not figured out how STD.pm proposes we parse those yet.</p>
+
+<p>Then came getting attributes in roles working. In roles there are two ways to introduce attributes: with "has" and with "my". If you introduce a private attribute (the only kind you can introduce) with "my", then it is role private. It will not be accessible outside of the role (including in the class it is composed into or in other roles), will always get a slot of its own and will never conflict with attributes of the same name either in the class or from other roles. It is, as "my" suggests, lexically scoped within that role and invisible outside of it.</p>
+
+<p>The other thing you can do is introduce attributes that get composed into the class, with "has". In this case, the semantics of the attribute are the same as if you had declared it in the class itself. However, you may also get a composition conflict. This happens when both the class and a role, or many roles, introduce attributes with the same name but different types. Basically, if there are multiple declarations of an attribute of the same name and they all have the same type, then they will all share one storage location. If they differ in type, it's a conflict (at composition time). This sounds odd at first, but actually makes properties work nicely.</p>
+
+<p>All of what I just described is implemented as of today, and I've written basic tests for some of it (and more are to come, but I'm too tired to do any more today). It's a lot of detail, but I will try to explain it with some more concrete examples over the coming weeks as I get more progress in on roles. (I'll also talk about it in my Perl 6 OO talk at YAPC::EU, if you're going to be there; the slides will be available for everyone after the conference too.) Once again, a big thanks to Vienna.pm for funding this work.</p></p>
+
+
+<hr/>
+
+
+
+<h2>clones, clones, clones!</h2>
+<h3><a href="/user/fireartist/">fireartist</a> on 2008-06-13T06:45:47</h3>
+Just think what we could achieve if we got Damian's clones together with your clones!<br><br>Seriously, the progress you're making is amazing - thank you!
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

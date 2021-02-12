@@ -6,4 +6,5 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-12-05 [A First Cut On proto](A-First-Cut-On-proto.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-11-02 [A productive weekend in Rakudo land](A-productive-weekend-in-Rakudo-land.md)
+- 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
 - 2010-03-22 [A quick Rakudo update](A-quick-Rakudo-update.md)

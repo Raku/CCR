@@ -1,4 +1,4 @@
-This directory contains remastered versions of blog posts by Elizabeth Mattijsen.
+This directory contains remastered versions of 19 blog posts by Elizabeth Mattijsen.
 
 - 2013-12-05 [Changes in specification and operational fallout](Changes-in-specification-and-operational-fallout.md)
 - 2013-12-07 [Bagging the changes in the Set specification](Bagging-the-changes-in-the-Set-specification.md)

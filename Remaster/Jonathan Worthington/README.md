@@ -1,6 +1,7 @@
 This directory contains remastered versions of blog posts by Jonathan Worthington.
 
 - 2008-01-23 [Implementing Raku OO](Implementing-Raku-OO.md)
+- 2008-02-07 [More Rakudo OO Hacking](More-Rakudo-OO-Hacking.md)
 - 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
 - 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)
 - 2008-06-13 [Attributes, Attributes, Attributes!](Attributes-Attributes-Attributes.md)

@@ -2,15 +2,17 @@
     
 *Originally published on [18 December 2007](https://use-perl.github.io/user/JonathanWorthington/journal/35137/) by Jonathan Worthington.*
 
-> Lebennin
-> 
-> Silver flow the streams from Colos to Erui
-> In the green fields of Lebennin!
-> Tall grows the grass there. In the wind from the Sea
-> The white lilies sway,
-> And the golden bells are shaken of mallos and alfirin
-> In the green fields of Lebennin,
-> In the wind from the Sea!
+````
+Lebennin
+
+Silver flow the streams from Colos to Erui
+In the green fields of Lebennin!
+Tall grows the grass there. In the wind from the Sea
+The white lilies sway,
+And the golden bells are shaken of mallos and alfirin
+In the green fields of Lebennin,
+In the wind from the Sea!
+````
 
 On behalf of the Parrot team, I'm proud to announce Parrot 0.5.1 "Hatachi" [Parrot](http://parrotcode.org/) is a virtual machine aimed at running all dynamic languages.
 

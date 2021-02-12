@@ -1,6 +1,7 @@
-This directory contains remastered versions of 50 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 51 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
+- 2006-10-11 [Raku FAQ](Raku-FAQ.md)
 - 2007-12-18 [Parrot 0.5.1 &quot;Hatachi&quot; Released!](Parrot-051-Hatachi-Released.md)
 - 2008-01-06 [My Raku Hacking](My-Raku-Hacking.md)
 - 2008-01-23 [Implementing Raku OO](Implementing-Raku-OO.md)

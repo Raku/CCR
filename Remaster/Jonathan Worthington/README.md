@@ -1,4 +1,4 @@
-This directory contains remastered versions of 90 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 91 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -40,6 +40,7 @@ This directory contains remastered versions of 90 blog posts by Jonathan Worthin
 - 2008-12-05 [A First Cut On proto](A-First-Cut-On-proto.md)
 - 2008-12-06 [Fixes for Rakudo, and Parrot too](Fixes-for-Rakudo-and-Parrot-too.md)
 - 2008-12-09 [Hyper/cross/reduction operators, IO tweaks and more](Hyper-cross-reduction-operators-IO-tweaks-and-more.md)
+- 2008-12-10 [;; works, making illegal things illegal](works-making-illegal-things-illegal.md)
 - 2008-12-11 [Planning for my Hague Grant](Planning-for-my-Hague-Grant.md)
 - 2008-12-17 [Rakudo Day: Fixes and features](Rakudo-Day-Fixes-and-features.md)
 - 2009-01-07 [Stuff I've been doing](Stuff-Ive-been-doing.md)

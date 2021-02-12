@@ -10,7 +10,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-07-10 [Enums and the &quot;but&quot; operator](Enums-and-the-but-operator.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-07-26 [Class attributes and many fixes](Class-attributes-and-many-fixes.md)
-- 2008-08-05 [Fixing bugs, and looking at where we're at](Fixing-bugs-and-looking-at-where-were-at.md)
+- 2008-08-05 [Multiple Dispatch Design Work](Multiple-Dispatch-Design-Work.md)
 - 2008-08-09 [Lots of Rakudo fixes/enhancements](Lots-of-Rakudo-fixes-enhancements.md)
 - 2008-08-16 [Another great YAPC::Europe](Another-great-YAPC-Europe.md)
 - 2008-09-04 [Multi-dispatch progress](Multi-dispatch-progress.md)

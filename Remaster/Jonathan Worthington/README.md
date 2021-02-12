@@ -11,5 +11,6 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-10-07 [Backpacking done, now back to Rakudo](Backpacking-done-now-back-to-Rakudo.md)
 - 2009-11-02 [A productive weekend in Rakudo land](A-productive-weekend-in-Rakudo-land.md)
+- 2009-11-16 [Bringing back the setting, and bug hunting](Bringing-back-the-setting-and-bug-hunting.md)
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
 - 2010-03-22 [A quick Rakudo update](A-quick-Rakudo-update.md)

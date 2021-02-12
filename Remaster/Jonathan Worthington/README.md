@@ -1,4 +1,4 @@
-This directory contains remastered versions of 57 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 58 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -28,6 +28,7 @@ This directory contains remastered versions of 57 blog posts by Jonathan Worthin
 - 2008-12-06 [Fixes for Rakudo, and Parrot too](Fixes-for-Rakudo-and-Parrot-too.md)
 - 2008-12-09 [Hyper/cross/reduction operators, IO tweaks and more](Hyper-cross-reduction-operators-IO-tweaks-and-more.md)
 - 2008-12-11 [Planning for my Hague Grant](Planning-for-my-Hague-Grant.md)
+- 2008-12-17 [Rakudo Day: Fixes and features](Rakudo-Day-Fixes-and-features.md)
 - 2009-01-17 [Parametric Roles](Parametric-Roles.md)
 - 2009-02-02 [Funding, Bulgarian Perl Workshop and Rakudo News](Funding-Bulgarian-Perl-Workshop-and-Rakudo-News.md)
 - 2009-02-13 [Many more Rakudo fixes](Many-more-Rakudo-fixes.md)

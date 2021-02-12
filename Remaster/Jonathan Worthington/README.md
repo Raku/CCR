@@ -33,6 +33,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2009-08-20 [Deferral](Deferral.md)
 - 2009-10-07 [Backpacking done, now back to Rakudo](Backpacking-done-now-back-to-Rakudo.md)
 - 2009-11-02 [A productive weekend in Rakudo land](A-productive-weekend-in-Rakudo-land.md)
+- 2009-11-07 [More Rakudo ng hacking](More-Rakudo-ng-hacking.md)
 - 2009-11-16 [Bringing back the setting, and bug hunting](Bringing-back-the-setting-and-bug-hunting.md)
 - 2009-11-25 [Laying the role meta-foundations](Laying-the-role-meta-foundations.md)
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)

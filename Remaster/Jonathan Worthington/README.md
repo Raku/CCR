@@ -1,4 +1,4 @@
-This directory contains remastered versions of 75 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 76 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -19,6 +19,7 @@ This directory contains remastered versions of 75 blog posts by Jonathan Worthin
 - 2008-06-13 [Attributes, Attributes, Attributes!](Attributes-Attributes-Attributes.md)
 - 2008-06-19 [Mixins, generic routines and enums](Mixins-generic-routines-and-enums.md)
 - 2008-07-02 [Lexical Fixes](Lexical-Fixes.md)
+- 2008-07-08 [Signature Objects](Signature-Objects.md)
 - 2008-07-10 [Enums and the &quot;but&quot; operator](Enums-and-the-but-operator.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-07-26 [Class attributes and many fixes](Class-attributes-and-many-fixes.md)

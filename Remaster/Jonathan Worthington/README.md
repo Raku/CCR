@@ -77,7 +77,7 @@ This directory contains remastered versions of 85 blog posts by Jonathan Worthin
 - 2009-11-19 [Progress and minor frustration](Progress-and-minor-frustration.md)
 - 2009-11-25 [Laying the role meta-foundations](Laying-the-role-meta-foundations.md)
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
-- 2010-02-06 [Catching up: two Rakudo Days  from December](Catching-up-two-Rakudo-Days-from-December.md)
+- 2010-02-06 [The importance of a break](The-importance-of-a-break.md)
 - 2010-02-18 [The first release from ng is coming!](The-first-release-from-ng-is-coming.md)
 - 2010-03-16 [My life refactored, Zavolaj, workshops, Rakudo and more!](My-life-refactored-Zavolaj-workshops-Rakudo-and-more.md)
 - 2010-03-22 [A quick Rakudo update](A-quick-Rakudo-update.md)

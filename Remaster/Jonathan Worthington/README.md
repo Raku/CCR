@@ -4,6 +4,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
 - 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)
 - 2008-06-13 [Attributes, Attributes, Attributes!](Attributes-Attributes-Attributes.md)
+- 2008-07-02 [Lexical Fixes](Lexical-Fixes.md)
 - 2008-07-10 [Enums and the &quot;but&quot; operator](Enums-and-the-but-operator.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-07-26 [Class attributes and many fixes](Class-attributes-and-many-fixes.md)

@@ -15,6 +15,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-08-16 [Another great YAPC::Europe](Another-great-YAPC-Europe.md)
 - 2008-09-04 [Multi-dispatch progress](Multi-dispatch-progress.md)
 - 2008-11-01 [Back from vacation](Back-from-vacation.md)
+- 2008-11-22 [Multiple Dispatch: More features and speed](Multiple-Dispatch-More-features-and-speed.md)
 - 2008-11-27 [A day of Rakudo bug-fixing](A-day-of-Rakudo-bug-fixing.md)
 - 2008-12-04 [Better Diagnostics On Ambiguous Dispatch](Better-Diagnostics-On-Ambiguous-Dispatch.md)
 - 2008-12-05 [A First Cut On proto](A-First-Cut-On-proto.md)

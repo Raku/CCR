@@ -1,0 +1,17 @@
+# My life refactored, Zavolaj, workshops, Rakudo and more!
+    
+*Originally published on [16 March 2010](https://use-perl.github.io/user/JonathanWorthington/journal/40247/) by Jonathan Worthington.*
+
+It's been a while since I scribbled anything here, so a few quick updates.
+
+First, an update on me. Since last time I wrote, I've moved country. Yup, I actually left behind my beloved Bratislava and I'm now hacking from Lund in Sweden. The beer - like everything else - is more expensive, and I don't have views of a beautiful city castle from my apartment here. But the city is overall very pleasant, I'm located a short walk to the center and the train station, and the supermarkets have a great range of international nom (and HP sauce!) I've yet to try the nearby curry house, or any of the other many appealing restaurants here, but I'm optimistic there will be plenty of WIN. Anyway, here's hoping I can get nicely settled down here.
+
+I was greatly assisted with the move to Sweden by Raku hacker *Martin Berends*, to whom I am extremely grateful. On the way, we went via the Netherlands Perl Workshop. I gave a couple of talks; I'll get the slides online shortly. It was really lovely to be at the Netherlands Perl Workshop again - the atmosphere was every bit as warm and friendly as I remembered from the last time. To everyone who organized and attended: thanks for a wonderful couple of days. :-)
+
+In the couple of days before the move and during the NPW, *mberends*++ and I hacked on a shiny new project: [Zavolaj!](http://github.com/jnthn/zavolaj/) It is a way of doing native calls from Raku, just by adding a trait to a stub subroutine, and is a first draft for native calling in Raku. The upshot is that we now have a working MySQL client written using Zavolaj, in pure Raku! *mberends*++ is continuing to build this out, and happily this all means that Rakudo * will ship with database access, amongst other things. (I've also done an example of calling a Win32 API, and we're both pondering an ImageMagick binding with it too).
+
+My first days in Scandinavia were actually mostly spent in Copenhagen, at a Raku hackathon organized by Copenhagen.pm - a group I hope to drop in on now and then, since I'm only an hour or so's train ride away. There's a wonderful [write-up by *moritz*++](http://perlgeek.de/blog-en/perl-6/copenhagen-hackathon.html) that tells a lot of what went on, and I can only echo his sentiments about how much fun it was to hack and hang out in meat space with other Raku folks. I'm already looking forward to the next time we get to do that!
+
+Rakudo wise, the work goes on at a good pace. I've been working on lots of bits, and *colomon*++ has been having quite the patch fest too. The release later this week is a good step forward from last month's release, which was the first after the ng branch was merged. We've won back a lot of functionality again, and this is the first release ever that has some basic support for versioned modules - a direct consequence of the hackathon - and also regexes taking parameters, thanks to a patch from *bkeeler*++.
+
+Anyway, that's all for now. Only to note that I expect to be making it to the Nordic Perl Workshop in Iceland in May, and with a bit of luck to the Perl workshops in France and Ukraine too (will take some fun logistics to do the two, but I did miss the French Perl Workshop last year, and I always really love to visit Ukraine, so I'll try and work out a way). Have fun, and I'll try and blog again soonish!

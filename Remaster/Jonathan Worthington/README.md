@@ -41,5 +41,6 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2009-11-25 [Laying the role meta-foundations](Laying-the-role-meta-foundations.md)
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
 - 2010-02-06 [Catching up: two Rakudo Days  from December](Catching-up-two-Rakudo-Days-from-December.md)
+- 2010-03-16 [My life refactored, Zavolaj, workshops, Rakudo and more!](My-life-refactored-Zavolaj-workshops-Rakudo-and-more.md)
 - 2010-03-22 [A quick Rakudo update](A-quick-Rakudo-update.md)
 - 2010-07-18 [Last Post](Last-Post.md)

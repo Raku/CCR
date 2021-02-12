@@ -1,4 +1,4 @@
-This directory contains remastered versions of 67 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 68 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -9,6 +9,7 @@ This directory contains remastered versions of 67 blog posts by Jonathan Worthin
 - 2008-02-08 [One month, three conferences!](One-month-three-conferences.md)
 - 2008-02-15 [Raku Hacking At GPW](Raku-Hacking-At-GPW.md)
 - 2008-03-28 [Rakudo Hacking: Pairs and Refinement Types](Rakudo-Hacking-Pairs-and-Refinement-Types.md)
+- 2008-03-31 [Rakudo gets some IO](Rakudo-gets-some-IO.md)
 - 2008-04-07 [Rakudo Gets Type Annotations And Checking](Rakudo-Gets-Type-Annotations-And-Checking.md)
 - 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
 - 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 78 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 79 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -62,6 +62,7 @@ This directory contains remastered versions of 78 blog posts by Jonathan Worthin
 - 2009-08-19 [Rakudo pre-release bug hunting](Rakudo-pre-release-bug-hunting.md)
 - 2009-08-20 [Deferral](Deferral.md)
 - 2009-08-21 [Ramblings on Rakudo startup](Ramblings-on-Rakudo-startup.md)
+- 2009-08-25 [Starting on Perl interop for Rakudo](Starting-on-Perl-interop-for-Rakudo.md)
 - 2009-10-07 [Backpacking done, now back to Rakudo](Backpacking-done-now-back-to-Rakudo.md)
 - 2009-10-27 [Signature introspection](Signature-introspection.md)
 - 2009-10-31 [Rakudo Day: Starting to put Rakudo together again](Rakudo-Day-Starting-to-put-Rakudo-together-again.md)

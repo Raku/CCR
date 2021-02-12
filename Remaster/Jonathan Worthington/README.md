@@ -18,6 +18,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2009-02-02 [Funding, Bulgarian Perl Workshop and Rakudo News](Funding-Bulgarian-Perl-Workshop-and-Rakudo-News.md)
 - 2009-03-25 [Fixes and the start of import](Fixes-and-the-start-of-import.md)
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)
+- 2009-05-10 [Hypers on hashes and other improvements](Hypers-on-hashes-and-other-improvements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-08-20 [Deferral](Deferral.md)

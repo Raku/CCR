@@ -1,4 +1,4 @@
-This directory contains remastered versions of 79 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 80 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -69,6 +69,7 @@ This directory contains remastered versions of 79 blog posts by Jonathan Worthin
 - 2009-11-02 [A productive weekend in Rakudo land](A-productive-weekend-in-Rakudo-land.md)
 - 2009-11-05 [Relaying the metamodel foundations](Relaying-the-metamodel-foundations.md)
 - 2009-11-07 [More Rakudo ng hacking](More-Rakudo-ng-hacking.md)
+- 2009-11-11 [Starting to get over the hump](Starting-to-get-over-the-hump.md)
 - 2009-11-16 [Bringing back the setting, and bug hunting](Bringing-back-the-setting-and-bug-hunting.md)
 - 2009-11-19 [Progress and minor frustration](Progress-and-minor-frustration.md)
 - 2009-11-25 [Laying the role meta-foundations](Laying-the-role-meta-foundations.md)

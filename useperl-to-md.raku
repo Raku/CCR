@@ -136,9 +136,7 @@ HEADER
         my $readme = "Remaster/$author/README.md".IO;
         my $prefix = "- $date.yyyy-mm-dd()";
 
-        my @links = $readme.lines.grep: {
-            .starts-with("- ") && !.starts-with($prefix)
-        } if $readme.e;
+        my @links = $readme.lines.grep: *.starts-with("- ") if $readme.e;
         @links.push: "$prefix [$title]($destination.basename())";
         $readme.spurt: qq:to/INDEX/;
 This directory contains remastered versions of {+@links} blog posts by $author.

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 91 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 97 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -13,6 +13,7 @@ This directory contains remastered versions of 91 blog posts by Jonathan Worthin
 - 2008-04-07 [Rakudo Gets Type Annotations And Checking](Rakudo-Gets-Type-Annotations-And-Checking.md)
 - 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
 - 2008-05-01 [Various Rakudo Updates](Various-Rakudo-Updates.md)
+- 2008-05-01 [Todays Rakudo Progress Object Initialization And Grammars](Todays-Rakudo-Progress-Object-Initialization-And-Grammars.md)
 - 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)
 - 2008-05-17 [Rakudo Hacking: More OO, Captures and Ranges](Rakudo-Hacking-More-OO-Captures-and-Ranges.md)
 - 2008-05-30 [Rakudo Hacking and Talks](Rakudo-Hacking-and-Talks.md)
@@ -25,6 +26,7 @@ This directory contains remastered versions of 91 blog posts by Jonathan Worthin
 - 2008-07-10 [Enums and the &quot;but&quot; operator](Enums-and-the-but-operator.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-07-26 [Class attributes and many fixes](Class-attributes-and-many-fixes.md)
+- 2008-08-05 [Fixing bugs and looking at where were at](Fixing-bugs-and-looking-at-where-were-at.md)
 - 2008-08-05 [Multiple Dispatch Design Work](Multiple-Dispatch-Design-Work.md)
 - 2008-08-09 [Lots of Rakudo fixes/enhancements](Lots-of-Rakudo-fixes-enhancements.md)
 - 2008-08-16 [Another great YAPC::Europe](Another-great-YAPC-Europe.md)
@@ -41,6 +43,7 @@ This directory contains remastered versions of 91 blog posts by Jonathan Worthin
 - 2008-12-06 [Fixes for Rakudo, and Parrot too](Fixes-for-Rakudo-and-Parrot-too.md)
 - 2008-12-09 [Hyper/cross/reduction operators, IO tweaks and more](Hyper-cross-reduction-operators-IO-tweaks-and-more.md)
 - 2008-12-10 [;; works, making illegal things illegal](works-making-illegal-things-illegal.md)
+- 2008-12-11 [Final Report on DeepText Multi-Dispatch Grant](Final-Report-on-DeepText-Multi-Dispatch-Grant.md)
 - 2008-12-11 [Planning for my Hague Grant](Planning-for-my-Hague-Grant.md)
 - 2008-12-17 [Rakudo Day: Fixes and features](Rakudo-Day-Fixes-and-features.md)
 - 2009-01-07 [Stuff I've been doing](Stuff-Ive-been-doing.md)
@@ -53,6 +56,7 @@ This directory contains remastered versions of 91 blog posts by Jonathan Worthin
 - 2009-02-25 [Rakudo: More bugs squished, over 7000 passing spectests](Rakudo-More-bugs-squished-over-7000-passing-spectests.md)
 - 2009-03-14 ['eval' can see lexicals and other fixes](eval-can-see-lexicals-and-other-fixes.md)
 - 2009-03-17 [Rakudo gets state variables](Rakudo-gets-state-variables.md)
+- 2009-03-25 [Fixes and the start of import](Fixes-and-the-start-of-import.md)
 - 2009-03-25 [Raku importing, and soon sockets](Raku-importing-and-soon-sockets.md)
 - 2009-04-02 [Lexical Subs In Rakudo](Lexical-Subs-In-Rakudo.md)
 - 2009-04-26 [NPW](NPW.md)
@@ -68,6 +72,7 @@ This directory contains remastered versions of 91 blog posts by Jonathan Worthin
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-08-19 [Rakudo pre-release bug hunting](Rakudo-pre-release-bug-hunting.md)
 - 2009-08-20 [Deferral](Deferral.md)
+- 2009-08-21 [Playing with traits](Playing-with-traits.md)
 - 2009-08-21 [Ramblings on Rakudo startup](Ramblings-on-Rakudo-startup.md)
 - 2009-08-25 [Starting on Perl interop for Rakudo](Starting-on-Perl-interop-for-Rakudo.md)
 - 2009-10-07 [Backpacking done, now back to Rakudo](Backpacking-done-now-back-to-Rakudo.md)
@@ -83,6 +88,7 @@ This directory contains remastered versions of 91 blog posts by Jonathan Worthin
 - 2009-11-25 [Laying the role meta-foundations](Laying-the-role-meta-foundations.md)
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
 - 2010-02-06 [The importance of a break](The-importance-of-a-break.md)
+- 2010-02-06 [Catching up: two Rakudo Days from December](Catching-up-two-Rakudo-Days-from-December.md)
 - 2010-02-18 [The first release from ng is coming!](The-first-release-from-ng-is-coming.md)
 - 2010-02-20 [Unpacking data structures with signatures](Unpacking-data-structures-with-signatures.md)
 - 2010-03-16 [My life refactored, Zavolaj, workshops, Rakudo and more!](My-life-refactored-Zavolaj-workshops-Rakudo-and-more.md)

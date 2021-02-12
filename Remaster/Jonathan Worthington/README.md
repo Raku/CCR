@@ -25,6 +25,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)
 - 2009-05-10 [Hypers on hashes and other improvements](Hypers-on-hashes-and-other-improvements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)
+- 2009-05-20 [Meta-ops for user defined ops, and various Rakudo fixes](Meta-ops-for-user-defined-ops-and-various-Rakudo-fixes.md)
 - 2009-06-30 [Lots of little improvements](Lots-of-little-improvements.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-08-20 [Deferral](Deferral.md)

@@ -1,5 +1,6 @@
 This directory contains remastered versions of blog posts by Jonathan Worthington.
 
+- 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-11-27 [A day of Rakudo bug-fixing](A-day-of-Rakudo-bug-fixing.md)
 - 2008-12-05 [A First Cut On proto](A-First-Cut-On-proto.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)

@@ -10,6 +10,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-12-05 [A First Cut On proto](A-First-Cut-On-proto.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
+- 2009-08-20 [Deferral](Deferral.md)
 - 2009-10-07 [Backpacking done, now back to Rakudo](Backpacking-done-now-back-to-Rakudo.md)
 - 2009-11-02 [A productive weekend in Rakudo land](A-productive-weekend-in-Rakudo-land.md)
 - 2009-11-16 [Bringing back the setting, and bug hunting](Bringing-back-the-setting-and-bug-hunting.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 47 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 48 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2008-01-06 [My Raku Hacking](My-Raku-Hacking.md)
@@ -34,6 +34,7 @@ This directory contains remastered versions of 47 blog posts by Jonathan Worthin
 - 2009-05-10 [Hypers on hashes and other improvements](Hypers-on-hashes-and-other-improvements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)
 - 2009-05-20 [Meta-ops for user defined ops, and various Rakudo fixes](Meta-ops-for-user-defined-ops-and-various-Rakudo-fixes.md)
+- 2009-06-03 [Parallel Dispatch](Parallel-Dispatch.md)
 - 2009-06-30 [Lots of little improvements](Lots-of-little-improvements.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-08-20 [Deferral](Deferral.md)

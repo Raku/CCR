@@ -1,4 +1,4 @@
-This directory contains remastered versions of 54 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 55 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -42,6 +42,7 @@ This directory contains remastered versions of 54 blog posts by Jonathan Worthin
 - 2009-06-30 [Lots of little improvements](Lots-of-little-improvements.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)
 - 2009-08-20 [Deferral](Deferral.md)
+- 2009-08-21 [Playing with traits](Playing-with-traits.md)
 - 2009-10-07 [Backpacking done, now back to Rakudo](Backpacking-done-now-back-to-Rakudo.md)
 - 2009-11-02 [A productive weekend in Rakudo land](A-productive-weekend-in-Rakudo-land.md)
 - 2009-11-07 [More Rakudo ng hacking](More-Rakudo-ng-hacking.md)

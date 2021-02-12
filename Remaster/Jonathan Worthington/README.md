@@ -19,6 +19,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-12-11 [Final Report on DeepText Multi-Dispatch Grant](Final-Report-on-DeepText-Multi-Dispatch-Grant.md)
 - 2009-02-02 [Funding, Bulgarian Perl Workshop and Rakudo News](Funding-Bulgarian-Perl-Workshop-and-Rakudo-News.md)
 - 2009-03-25 [Fixes and the start of import](Fixes-and-the-start-of-import.md)
+- 2009-04-02 [Lexical Subs In Rakudo](Lexical-Subs-In-Rakudo.md)
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)
 - 2009-05-10 [Hypers on hashes and other improvements](Hypers-on-hashes-and-other-improvements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)

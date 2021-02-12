@@ -31,7 +31,7 @@ This directory contains remastered versions of 52 blog posts by Jonathan Worthin
 - 2009-01-17 [Parametric Roles](Parametric-Roles.md)
 - 2009-02-02 [Funding, Bulgarian Perl Workshop and Rakudo News](Funding-Bulgarian-Perl-Workshop-and-Rakudo-News.md)
 - 2009-02-13 [Many more Rakudo fixes](Many-more-Rakudo-fixes.md)
-- 2009-03-25 [Fixes and the start of import](Fixes-and-the-start-of-import.md)
+- 2009-03-25 [Raku importing, and soon sockets](Raku-importing-and-soon-sockets.md)
 - 2009-04-02 [Lexical Subs In Rakudo](Lexical-Subs-In-Rakudo.md)
 - 2009-04-26 [NPW](NPW.md)
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)

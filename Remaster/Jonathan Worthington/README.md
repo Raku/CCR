@@ -1,6 +1,7 @@
 This directory contains remastered versions of blog posts by Jonathan Worthington.
 
 - 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
+- 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)
 - 2008-06-13 [Attributes, Attributes, Attributes!](Attributes-Attributes-Attributes.md)
 - 2008-07-10 [Enums and the &quot;but&quot; operator](Enums-and-the-but-operator.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)

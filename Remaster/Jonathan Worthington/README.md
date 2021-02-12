@@ -10,6 +10,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-11-27 [A day of Rakudo bug-fixing](A-day-of-Rakudo-bug-fixing.md)
 - 2008-12-04 [Better Diagnostics On Ambiguous Dispatch](Better-Diagnostics-On-Ambiguous-Dispatch.md)
 - 2008-12-05 [A First Cut On proto](A-First-Cut-On-proto.md)
+- 2008-12-11 [Final Report on DeepText Multi-Dispatch Grant](Final-Report-on-DeepText-Multi-Dispatch-Grant.md)
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)
 - 2009-08-13 [A Little Reflection](A-Little-Reflection.md)

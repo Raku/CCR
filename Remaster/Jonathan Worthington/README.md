@@ -1,4 +1,4 @@
-This directory contains remastered versions of 60 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 61 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -37,6 +37,7 @@ This directory contains remastered versions of 60 blog posts by Jonathan Worthin
 - 2009-03-25 [Raku importing, and soon sockets](Raku-importing-and-soon-sockets.md)
 - 2009-04-02 [Lexical Subs In Rakudo](Lexical-Subs-In-Rakudo.md)
 - 2009-04-26 [NPW](NPW.md)
+- 2009-04-29 [Rakudo Day: constants, and other bits](Rakudo-Day-constants-and-other-bits.md)
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)
 - 2009-05-10 [Hypers on hashes and other improvements](Hypers-on-hashes-and-other-improvements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)

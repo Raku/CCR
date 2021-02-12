@@ -1,4 +1,4 @@
-This directory contains remastered versions of 65 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 66 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -24,6 +24,7 @@ This directory contains remastered versions of 65 blog posts by Jonathan Worthin
 - 2008-08-09 [Lots of Rakudo fixes/enhancements](Lots-of-Rakudo-fixes-enhancements.md)
 - 2008-08-16 [Another great YAPC::Europe](Another-great-YAPC-Europe.md)
 - 2008-09-04 [Multi-dispatch progress](Multi-dispatch-progress.md)
+- 2008-09-13 [Rakudo MMD now using Raku algorithm](Rakudo-MMD-now-using-Raku-algorithm.md)
 - 2008-11-01 [Back from vacation](Back-from-vacation.md)
 - 2008-11-22 [Multiple Dispatch: More features and speed](Multiple-Dispatch-More-features-and-speed.md)
 - 2008-11-27 [A day of Rakudo bug-fixing](A-day-of-Rakudo-bug-fixing.md)

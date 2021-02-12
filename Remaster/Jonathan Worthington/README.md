@@ -1,4 +1,4 @@
-This directory contains remastered versions of 77 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 78 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -15,6 +15,7 @@ This directory contains remastered versions of 77 blog posts by Jonathan Worthin
 - 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)
 - 2008-05-17 [Rakudo Hacking: More OO, Captures and Ranges](Rakudo-Hacking-More-OO-Captures-and-Ranges.md)
 - 2008-05-30 [Rakudo Hacking and Talks](Rakudo-Hacking-and-Talks.md)
+- 2008-06-04 [Slides From My Talks](Slides-From-My-Talks.md)
 - 2008-06-05 [Ranges, Parameters And Many Fixes](Ranges-Parameters-And-Many-Fixes.md)
 - 2008-06-13 [Attributes, Attributes, Attributes!](Attributes-Attributes-Attributes.md)
 - 2008-06-19 [Mixins, generic routines and enums](Mixins-generic-routines-and-enums.md)

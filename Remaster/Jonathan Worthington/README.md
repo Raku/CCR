@@ -1,4 +1,4 @@
-This directory contains remastered versions of 87 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 88 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -81,6 +81,7 @@ This directory contains remastered versions of 87 blog posts by Jonathan Worthin
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
 - 2010-02-06 [The importance of a break](The-importance-of-a-break.md)
 - 2010-02-18 [The first release from ng is coming!](The-first-release-from-ng-is-coming.md)
+- 2010-02-20 [Unpacking data structures with signatures](Unpacking-data-structures-with-signatures.md)
 - 2010-03-16 [My life refactored, Zavolaj, workshops, Rakudo and more!](My-life-refactored-Zavolaj-workshops-Rakudo-and-more.md)
 - 2010-03-22 [A quick Rakudo update](A-quick-Rakudo-update.md)
 - 2010-04-08 [The Easter Hackathon](The-Easter-Hackathon.md)

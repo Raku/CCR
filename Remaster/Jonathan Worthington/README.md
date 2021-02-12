@@ -1,5 +1,6 @@
 This directory contains remastered versions of blog posts by Jonathan Worthington.
 
+- 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
 - 2008-06-13 [Attributes, Attributes, Attributes!](Attributes-Attributes-Attributes.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-07-26 [Class attributes and many fixes](Class-attributes-and-many-fixes.md)

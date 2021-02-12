@@ -1,4 +1,4 @@
-This directory contains remastered versions of 56 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 57 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -31,6 +31,7 @@ This directory contains remastered versions of 56 blog posts by Jonathan Worthin
 - 2009-01-17 [Parametric Roles](Parametric-Roles.md)
 - 2009-02-02 [Funding, Bulgarian Perl Workshop and Rakudo News](Funding-Bulgarian-Perl-Workshop-and-Rakudo-News.md)
 - 2009-02-13 [Many more Rakudo fixes](Many-more-Rakudo-fixes.md)
+- 2009-02-18 [Rakudo Built-ins Can Now Be Written In Raku](Rakudo-Built-ins-Can-Now-Be-Written-In-Raku.md)
 - 2009-03-25 [Raku importing, and soon sockets](Raku-importing-and-soon-sockets.md)
 - 2009-04-02 [Lexical Subs In Rakudo](Lexical-Subs-In-Rakudo.md)
 - 2009-04-26 [NPW](NPW.md)

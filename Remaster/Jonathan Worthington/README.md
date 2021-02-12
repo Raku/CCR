@@ -1,4 +1,4 @@
-This directory contains remastered versions of blog posts by Jonathan Worthington.
+This directory contains remastered versions of 46 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2008-01-06 [My Raku Hacking](My-Raku-Hacking.md)
@@ -28,6 +28,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2009-02-13 [Many more Rakudo fixes](Many-more-Rakudo-fixes.md)
 - 2009-03-25 [Fixes and the start of import](Fixes-and-the-start-of-import.md)
 - 2009-04-02 [Lexical Subs In Rakudo](Lexical-Subs-In-Rakudo.md)
+- 2009-04-26 [NPW](NPW.md)
 - 2009-05-01 [Enums improved, plus other little enhancements](Enums-improved-plus-other-little-enhancements.md)
 - 2009-05-10 [Hypers on hashes and other improvements](Hypers-on-hashes-and-other-improvements.md)
 - 2009-05-16 [Better errors, benchmarks and some debugging](Better-errors-benchmarks-and-some-debugging.md)

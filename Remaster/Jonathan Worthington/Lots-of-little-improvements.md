@@ -26,13 +26,13 @@ A signature `:(0)` is equivalent to `:(Int $ where 0)`. This means that it will 
 
 ```` raku
  > my $fh = open("spectest.data", :r);
-Unable to open filehandle from path 'spectest.data'
-in Main (<unknown>:1)
+ Unable to open filehandle from path 'spectest.data'
+ in Main (<unknown>:1)
  > say $*CWD;
-C:\Consulting\parrot\trunk\languages\rakudo
+ C:\Consulting\parrot\trunk\languages\rakudo
  > chdir "t";
  > say $*CWD;
-C:\Consulting\parrot\trunk\languages\rakudo\t
+ C:\Consulting\parrot\trunk\languages\rakudo\t
  > my $fh = open("spectest.data", :r);
  >
 ````

@@ -5,6 +5,7 @@ This directory contains remastered versions of blog posts by Jonathan Worthingto
 - 2008-07-10 [Enums and the &quot;but&quot; operator](Enums-and-the-but-operator.md)
 - 2008-07-18 [Anonymous classes and meta-class stuff](Anonymous-classes-and-meta-class-stuff.md)
 - 2008-07-26 [Class attributes and many fixes](Class-attributes-and-many-fixes.md)
+- 2008-08-05 [Fixing bugs, and looking at where we're at](Fixing-bugs-and-looking-at-where-were-at.md)
 - 2008-08-16 [Another great YAPC::Europe](Another-great-YAPC-Europe.md)
 - 2008-11-01 [Back from vacation](Back-from-vacation.md)
 - 2008-11-27 [A day of Rakudo bug-fixing](A-day-of-Rakudo-bug-fixing.md)

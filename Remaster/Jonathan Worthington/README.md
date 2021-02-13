@@ -1,4 +1,4 @@
-This directory contains remastered versions of 133 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 134 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -122,6 +122,7 @@ This directory contains remastered versions of 133 blog posts by Jonathan Worthi
 - 2016-03-13 [Can’t forget about memory issues](Cant-forget-about-memory-issues.md)
 - 2016-03-21 [A whole heap of work](A-whole-heap-of-work.md)
 - 2016-03-27 [Happy heapster!](Happy-heapster.md)
+- 2016-04-15 [Heap heap hooray!](Heap-heap-hooray.md)
 - 2016-04-21 [Framing the problem](Framing-the-problem.md)
 - 2016-07-23 [Assorted fixes](Assorted-fixes.md)
 - 2016-08-22 [Concurrency bug squishing: part 1](Concurrency-bug-squishing-part-1.md)

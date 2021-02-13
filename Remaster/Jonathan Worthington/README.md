@@ -1,4 +1,4 @@
-This directory contains remastered versions of 152 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 153 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -152,3 +152,4 @@ This directory contains remastered versions of 152 blog posts by Jonathan Worthi
 - 2018-07-22 [Dynamic lookups and context introspection with inlining](Dynamic-lookups-and-context-introspection-with-inlining.md)
 - 2018-09-28 [Faster box/unbox and Int operations](Faster-box-unbox-and-Int-operations.md)
 - 2018-09-29 [Eliminating unrequired guards](Eliminating-unrequired-guards.md)
+- 2019-01-02 [My Raku wishes for 2019](My-Raku-wishes-for-2019.md)

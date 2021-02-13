@@ -1,4 +1,4 @@
-This directory contains remastered versions of 106 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 107 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -101,6 +101,7 @@ This directory contains remastered versions of 106 blog posts by Jonathan Worthi
 - 2011-08-01 [A hint of meta-programming](A-hint-of-meta-programming.md)
 - 2012-08-28 [A Rakudo Debugger](A-Rakudo-Debugger.md)
 - 2013-01-10 [A Bunch of Rakudo News](A-Bunch-of-Rakudo-News.md)
+- 2013-01-18 [A quick JVM backend update](A-quick-JVM-backend-update.md)
 - 2013-02-01 [A look at the preparations behind the JVM port, and a progress update](A-look-at-the-preparations-behind-the-JVM-port-and-a-progress-update.md)
 - 2013-09-08 [A MoarVM Progress Update](A-MoarVM-Progress-Update.md)
 - 2013-12-06 [A few quick updates](A-few-quick-updates.md)

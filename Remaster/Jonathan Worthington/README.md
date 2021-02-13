@@ -1,4 +1,4 @@
-This directory contains remastered versions of 97 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 98 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -12,8 +12,8 @@ This directory contains remastered versions of 97 blog posts by Jonathan Worthin
 - 2008-03-31 [Rakudo gets some IO](Rakudo-gets-some-IO.md)
 - 2008-04-07 [Rakudo Gets Type Annotations And Checking](Rakudo-Gets-Type-Annotations-And-Checking.md)
 - 2008-04-09 [Delegation With 'handles'](Delegation-With-handles.md)
-- 2008-05-01 [Various Rakudo Updates](Various-Rakudo-Updates.md)
 - 2008-05-01 [Todays Rakudo Progress Object Initialization And Grammars](Todays-Rakudo-Progress-Object-Initialization-And-Grammars.md)
+- 2008-05-01 [Various Rakudo Updates](Various-Rakudo-Updates.md)
 - 2008-05-06 [Grammars Get Class-Like, And Other Bits](Grammars-Get-Class-Like-And-Other-Bits.md)
 - 2008-05-17 [Rakudo Hacking: More OO, Captures and Ranges](Rakudo-Hacking-More-OO-Captures-and-Ranges.md)
 - 2008-05-30 [Rakudo Hacking and Talks](Rakudo-Hacking-and-Talks.md)
@@ -87,8 +87,8 @@ This directory contains remastered versions of 97 blog posts by Jonathan Worthin
 - 2009-11-19 [Progress and minor frustration](Progress-and-minor-frustration.md)
 - 2009-11-25 [Laying the role meta-foundations](Laying-the-role-meta-foundations.md)
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
-- 2010-02-06 [The importance of a break](The-importance-of-a-break.md)
 - 2010-02-06 [Catching up: two Rakudo Days from December](Catching-up-two-Rakudo-Days-from-December.md)
+- 2010-02-06 [The importance of a break](The-importance-of-a-break.md)
 - 2010-02-18 [The first release from ng is coming!](The-first-release-from-ng-is-coming.md)
 - 2010-02-20 [Unpacking data structures with signatures](Unpacking-data-structures-with-signatures.md)
 - 2010-03-16 [My life refactored, Zavolaj, workshops, Rakudo and more!](My-life-refactored-Zavolaj-workshops-Rakudo-and-more.md)
@@ -96,4 +96,5 @@ This directory contains remastered versions of 97 blog posts by Jonathan Worthin
 - 2010-04-08 [The Easter Hackathon](The-Easter-Hackathon.md)
 - 2010-04-20 [Raku talk in Malmö](Raku-talk-in-Malmö.md)
 - 2010-06-15 [Perl Mova + YAPC::Russia](Perl-Mova-YAPC-Russia.md)
+- 2010-07-08 [:st(1) Post](st1-Post.md)
 - 2010-07-18 [Last Post](Last-Post.md)

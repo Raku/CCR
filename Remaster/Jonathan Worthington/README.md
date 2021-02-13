@@ -1,4 +1,4 @@
-This directory contains remastered versions of 147 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 148 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -141,6 +141,7 @@ This directory contains remastered versions of 147 blog posts by Jonathan Worthi
 - 2017-04-22 [Massively reducing MoarVM Fixed Size Allocator contention](Massively-reducing-MoarVM-Fixed-Size-Allocator-contention.md)
 - 2017-05-12 [Looking for Raku, Rakudo, and MoarVM development funding](Looking-for-Raku-Rakudo-and-MoarVM-development-funding.md)
 - 2017-08-06 [MoarVM Specializer Improvements Part 1: Gathering Data](MoarVM-Specializer-Improvements-Part-1-Gathering-Data.md)
+- 2017-09-17 [MoarVM Specializer Improvements Part 2: Planning](MoarVM-Specializer-Improvements-Part-2-Planning.md)
 - 2017-11-24 [A unified and improved Supply concurrency model](A-unified-and-improved-Supply-concurrency-model.md)
 - 2018-06-09 [Faster dispatches with MoarVM specializer plugins](Faster-dispatches-with-MoarVM-specializer-plugins.md)
 - 2018-07-20 [Better usage information in the MoarVM specializer](Better-usage-information-in-the-MoarVM-specializer.md)

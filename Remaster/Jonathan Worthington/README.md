@@ -1,4 +1,4 @@
-This directory contains remastered versions of 162 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 163 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -137,6 +137,7 @@ This directory contains remastered versions of 162 blog posts by Jonathan Worthi
 - 2016-01-04 [Not guts, but 6: part 1](Not-guts-but-6-part-1.md)
 - 2016-01-05 [Not guts, but 6: part 2](Not-guts-but-6-part-2.md)
 - 2016-01-06 [Not guts, but 6: part 3](Not-guts-but-6-part-3.md)
+- 2016-01-09 [Not guts, but 6: part 4](Not-guts-but-6-part-4.md)
 - 2016-02-09 [A few words on Raku versioning and compatibility](A-few-words-on-Raku-versioning-and-compatibility.md)
 - 2016-03-06 [Digging into the performance/reliability work](Digging-into-the-performance-reliability-work.md)
 - 2016-03-13 [Can’t forget about memory issues](Cant-forget-about-memory-issues.md)

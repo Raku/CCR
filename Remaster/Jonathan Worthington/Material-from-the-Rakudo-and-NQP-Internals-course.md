@@ -1,0 +1,11 @@
+# Material from the Rakudo and NQP Internals course
+    
+*Originally published on [2013-09-17](https://6guts.wordpress.com/2013/09/17/material-from-the-rakudo-and-nqp-internals-course/) by Jonathan Worthington.*
+
+A little over a month ago, *lizmat*++ contacted my employer, [Edument AB](http://edument.se/), to discuss using our training services to deliver a 2-day workshop aimed at current and potential Rakudo and NQP contributors. For those of you who don’t know, aside from working on Raku I also work teaching/mentoring on various topics (typically software architecture, TDD, and advanced C# programming). The goal was for me to spend a couple of days explaining a bunch of topics – including NQP, grammars, QAST, 6model, and bounded serialization – to help people know where to start or to help them get into unfamiliar areas of the code.
+
+The workshop took place this last weekend in Frankfurt. I’d expected we might have 5-6 people sign up; in the end, we had around 15 people attending! The workshop involved a combination of teaching and exercises, with plenty of chances to ask questions. Happily, there were tasty lunches and dinners too (though I can’t take any of the credit for this side of things). I greatly enjoyed teaching the course; I like both working on Raku and doing my teaching work at Edument, and being able to do both at once was delightful! :-)
+
+One aim of developing the course was to help with the state of documentation of the NQP and Rakudo internals. Typically at Edument, we only give out our material to those attending a delivery of our courses, and even then not the original source! However, for this course, we’ve made an exception and [released the course material](https://github.com/edumentab/rakudo-and-nqp-internals-course) under a Creative Commons license. So, while I hope that we’ll be able to put together future “live” deliveries of the material for other new (or potential) contributors, this means it will now always be available to the community at large. :-)
+
+I hope this will prove a valuable resource for those contributing or interested in contributing to Raku development, and would like to take a moment to thank Edument for once again being supportive of my work on the Raku project!

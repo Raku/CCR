@@ -1,0 +1,5 @@
+# I’ll be speaking at “We Actually Build Stuff”
+    
+*Originally published on [2012-10-08](https://6guts.wordpress.com/2012/10/08/ill-be-speaking-at-we-actually-build-stuff/) by Jonathan Worthington.*
+
+I do a lot of my talking about working on the Rakudo Raku compiler inside the Perl community. Happily, I’ll be able to talk about my experiences doing so to a much more general audience soon: I’ve had a talk accepted at [We Actually Build Stuff](http://www.weactuallybuildstuff.com/)! Organized by [*Greg Young*](http://goodenoughsoftware.net/) – somebody I’ve learned a lot from and been inspired by – it brings together people who have actually worked on sizable and/or interesting projects to present their lessons learned and experiences. I think that’s a great idea for a conference, and I’m excited to be getting to share my experiences there, as well as learn a load from other people’s too. The speaker list besides me is pretty awesome. Also, it’ll be my first time in Lithuania, which is the only Baltic country that I’ve yet to visit. :-)

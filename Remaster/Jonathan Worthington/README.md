@@ -1,4 +1,4 @@
-This directory contains remastered versions of 134 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 136 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -109,6 +109,7 @@ This directory contains remastered versions of 134 blog posts by Jonathan Worthi
 - 2012-04-05 [Back from vacation, hackathon coming up!](Back-from-vacation-hackathon-coming-up.md)
 - 2012-04-21 [Hackathoning in Oslo](Hackathoning-in-Oslo.md)
 - 2012-08-28 [A Rakudo Debugger](A-Rakudo-Debugger.md)
+- 2012-10-08 [I’ll be speaking at “We Actually Build Stuff”](Ill-be-speaking-at-We-Actually-Build-Stuff.md)
 - 2013-01-10 [A Bunch of Rakudo News](A-Bunch-of-Rakudo-News.md)
 - 2013-01-18 [A quick JVM backend update](A-quick-JVM-backend-update.md)
 - 2013-02-01 [A look at the preparations behind the JVM port, and a progress update](A-look-at-the-preparations-behind-the-JVM-port-and-a-progress-update.md)

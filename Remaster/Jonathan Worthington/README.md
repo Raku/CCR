@@ -103,6 +103,7 @@ This directory contains remastered versions of 115 blog posts by Jonathan Worthi
 - 2011-06-28 [Another little nom update](Another-little-nom-update.md)
 - 2011-08-01 [A hint of meta-programming](A-hint-of-meta-programming.md)
 - 2011-10-15 [An optimizer lands, bringing native operators](An-optimizer-lands-bringing-native-operators.md)
+- 2012-04-05 [Back from vacation, hackathon coming up!](Back-from-vacation-hackathon-coming-up.md)
 - 2012-08-28 [A Rakudo Debugger](A-Rakudo-Debugger.md)
 - 2013-01-10 [A Bunch of Rakudo News](A-Bunch-of-Rakudo-News.md)
 - 2013-01-18 [A quick JVM backend update](A-quick-JVM-backend-update.md)

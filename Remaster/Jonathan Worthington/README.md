@@ -1,4 +1,4 @@
-This directory contains remastered versions of 117 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 118 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -113,6 +113,7 @@ This directory contains remastered versions of 117 blog posts by Jonathan Worthi
 - 2013-12-06 [A few quick updates](A-few-quick-updates.md)
 - 2014-01-08 [A Rakudo on MoarVM update](A-Rakudo-on-MoarVM-update.md)
 - 2016-02-09 [A few words on Raku versioning and compatibility](A-few-words-on-Raku-versioning-and-compatibility.md)
+- 2016-03-13 [Can’t forget about memory issues](Cant-forget-about-memory-issues.md)
 - 2016-03-21 [A whole heap of work](A-whole-heap-of-work.md)
 - 2016-07-23 [Assorted fixes](Assorted-fixes.md)
 - 2017-11-24 [A unified and improved Supply concurrency model](A-unified-and-improved-Supply-concurrency-model.md)

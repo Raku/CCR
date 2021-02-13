@@ -117,6 +117,7 @@ This directory contains remastered versions of 128 blog posts by Jonathan Worthi
 - 2016-03-06 [Digging into the performance/reliability work](Digging-into-the-performance-reliability-work.md)
 - 2016-03-13 [Can’t forget about memory issues](Cant-forget-about-memory-issues.md)
 - 2016-03-21 [A whole heap of work](A-whole-heap-of-work.md)
+- 2016-04-21 [Framing the problem](Framing-the-problem.md)
 - 2016-07-23 [Assorted fixes](Assorted-fixes.md)
 - 2016-08-22 [Concurrency bug squishing: part 1](Concurrency-bug-squishing-part-1.md)
 - 2016-12-09 [Complex cocktail causes cunning crash](Complex-cocktail-causes-cunning-crash.md)

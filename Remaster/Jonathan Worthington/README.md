@@ -1,4 +1,4 @@
-This directory contains remastered versions of 166 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 167 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -148,6 +148,7 @@ This directory contains remastered versions of 166 blog posts by Jonathan Worthi
 - 2016-04-21 [Framing the problem](Framing-the-problem.md)
 - 2016-07-23 [Assorted fixes](Assorted-fixes.md)
 - 2016-08-22 [Concurrency bug squishing: part 1](Concurrency-bug-squishing-part-1.md)
+- 2016-11-25 [Raku is biased towards mutators being really simple. That’s a good thing.](Raku-is-biased-towards-mutators-being-really-simple-Thats-a-good-thing.md)
 - 2016-12-09 [Complex cocktail causes cunning crash](Complex-cocktail-causes-cunning-crash.md)
 - 2017-03-16 [Considering hyper/race semantics](Considering-hyper-race-semantics.md)
 - 2017-04-22 [Massively reducing MoarVM Fixed Size Allocator contention](Massively-reducing-MoarVM-Fixed-Size-Allocator-contention.md)

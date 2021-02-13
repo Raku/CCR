@@ -1,4 +1,4 @@
-This directory contains remastered versions of 165 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 166 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -152,6 +152,7 @@ This directory contains remastered versions of 165 blog posts by Jonathan Worthi
 - 2017-03-16 [Considering hyper/race semantics](Considering-hyper-race-semantics.md)
 - 2017-04-22 [Massively reducing MoarVM Fixed Size Allocator contention](Massively-reducing-MoarVM-Fixed-Size-Allocator-contention.md)
 - 2017-05-12 [Looking for Raku, Rakudo, and MoarVM development funding](Looking-for-Raku-Rakudo-and-MoarVM-development-funding.md)
+- 2017-07-02 [Optimizing reading lines from a file](Optimizing-reading-lines-from-a-file.md)
 - 2017-08-06 [MoarVM Specializer Improvements Part 1: Gathering Data](MoarVM-Specializer-Improvements-Part-1-Gathering-Data.md)
 - 2017-09-17 [MoarVM Specializer Improvements Part 2: Planning](MoarVM-Specializer-Improvements-Part-2-Planning.md)
 - 2017-11-05 [MoarVM Specializer Improvements Part 3: Optimizing Code](MoarVM-Specializer-Improvements-Part-3-Optimizing-Code.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 123 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 124 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -123,3 +123,4 @@ This directory contains remastered versions of 123 blog posts by Jonathan Worthi
 - 2017-11-24 [A unified and improved Supply concurrency model](A-unified-and-improved-Supply-concurrency-model.md)
 - 2018-07-20 [Better usage information in the MoarVM specializer](Better-usage-information-in-the-MoarVM-specializer.md)
 - 2018-07-22 [Dynamic lookups and context introspection with inlining](Dynamic-lookups-and-context-introspection-with-inlining.md)
+- 2018-09-29 [Eliminating unrequired guards](Eliminating-unrequired-guards.md)

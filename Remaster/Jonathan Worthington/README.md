@@ -1,4 +1,4 @@
-This directory contains remastered versions of 119 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 120 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -116,6 +116,7 @@ This directory contains remastered versions of 119 blog posts by Jonathan Worthi
 - 2016-03-13 [Can’t forget about memory issues](Cant-forget-about-memory-issues.md)
 - 2016-03-21 [A whole heap of work](A-whole-heap-of-work.md)
 - 2016-07-23 [Assorted fixes](Assorted-fixes.md)
+- 2016-08-22 [Concurrency bug squishing: part 1](Concurrency-bug-squishing-part-1.md)
 - 2016-12-09 [Complex cocktail causes cunning crash](Complex-cocktail-causes-cunning-crash.md)
 - 2017-11-24 [A unified and improved Supply concurrency model](A-unified-and-improved-Supply-concurrency-model.md)
 - 2018-07-20 [Better usage information in the MoarVM specializer](Better-usage-information-in-the-MoarVM-specializer.md)

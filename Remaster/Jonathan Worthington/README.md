@@ -1,4 +1,4 @@
-This directory contains remastered versions of 199 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 200 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -159,6 +159,7 @@ This directory contains remastered versions of 199 blog posts by Jonathan Worthi
 - 2015-06-05 [That week: concurrency fixes, control exceptions, and more](That-week-concurrency-fixes-control-exceptions-and-more.md)
 - 2015-06-26 [This week: Unicode 8, loads of fixes, preparing for shaped arrays](This-week-Unicode-8-loads-of-fixes-preparing-for-shaped-arrays.md)
 - 2015-07-02 [Grant status update](Grant-status-update.md)
+- 2015-07-22 [This week: concurrency stuff, multi-dimensional stuff, stuff stuff…](This-week-concurrency-stuff-multi-dimensional-stuff-stuff-stuff.md)
 - 2015-10-15 [Last week: Unicode case fixes and much more](Last-week-Unicode-case-fixes-and-much-more.md)
 - 2015-12-05 [Getting closer to Christmas](Getting-closer-to-Christmas.md)
 - 2016-01-04 [Not guts, but 6: part 1](Not-guts-but-6-part-1.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 176 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 177 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -118,6 +118,7 @@ This directory contains remastered versions of 176 blog posts by Jonathan Worthi
 - 2012-03-09 [Meta-programming slides, and some Rakudo news](Meta-programming-slides-and-some-Rakudo-news.md)
 - 2012-04-05 [Back from vacation, hackathon coming up!](Back-from-vacation-hackathon-coming-up.md)
 - 2012-04-21 [Hackathoning in Oslo](Hackathoning-in-Oslo.md)
+- 2012-05-27 [Rakudo switched over to QRegex](Rakudo-switched-over-to-QRegex.md)
 - 2012-06-07 [LTM for alternations](LTM-for-alternations.md)
 - 2012-07-29 [Rakudo QAST switch brings memory reductions](Rakudo-QAST-switch-brings-memory-reductions.md)
 - 2012-08-28 [A Rakudo Debugger](A-Rakudo-Debugger.md)

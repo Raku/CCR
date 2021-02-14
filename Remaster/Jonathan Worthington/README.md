@@ -1,4 +1,4 @@
-This directory contains remastered versions of 171 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 173 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -112,6 +112,7 @@ This directory contains remastered versions of 171 blog posts by Jonathan Worthi
 - 2011-10-15 [An optimizer lands, bringing native operators](An-optimizer-lands-bringing-native-operators.md)
 - 2012-01-15 [Looking back, looking forward](Looking-back-looking-forward.md)
 - 2012-02-10 [Bounded serialization, better regexes and better errors](Bounded-serialization-better-regexes-and-better-errors.md)
+- 2012-02-29 [Rakudo Star 2012.02 out – and the focus for 2012.03](Rakudo-Star-201202-out-and-the-focus-for-201203.md)
 - 2012-03-09 [Meta-programming slides, and some Rakudo news](Meta-programming-slides-and-some-Rakudo-news.md)
 - 2012-04-05 [Back from vacation, hackathon coming up!](Back-from-vacation-hackathon-coming-up.md)
 - 2012-04-21 [Hackathoning in Oslo](Hackathoning-in-Oslo.md)

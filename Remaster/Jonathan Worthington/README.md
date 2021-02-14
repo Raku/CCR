@@ -1,4 +1,4 @@
-This directory contains remastered versions of 193 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 194 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -111,6 +111,7 @@ This directory contains remastered versions of 193 blog posts by Jonathan Worthi
 - 2011-02-19 [Smudging the compile-time/run-time boundary](Smudging-the-compile-time-run-time-boundary.md)
 - 2011-04-25 [Separate compilation, package refactors and gradual typing: oh boy, what a mix!](Separate-compilation-package-refactors-and-gradual-typing-oh-boy-what-a-mix.md)
 - 2011-05-09 [Rakudo on 6model gets underway!](Rakudo-on-6model-gets-underway.md)
+- 2011-06-06 [The Rakudo “nom” hacking marathon](The-Rakudo-nom-hacking-marathon.md)
 - 2011-06-28 [Another little nom update](Another-little-nom-update.md)
 - 2011-07-31 [July: Beijing Perl Workshop, vacation and hacking](July-Beijing-Perl-Workshop-vacation-and-hacking.md)
 - 2011-08-01 [A hint of meta-programming](A-hint-of-meta-programming.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 224 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 225 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -215,6 +215,7 @@ This directory contains remastered versions of 224 blog posts by Jonathan Worthi
 - 2017-11-05 [MoarVM Specializer Improvements Part 3: Optimizing Code](MoarVM-Specializer-Improvements-Part-3-Optimizing-Code.md)
 - 2017-11-09 [MoarVM Specializer Improvements Part 4: Argument Guards](MoarVM-Specializer-Improvements-Part-4-Argument-Guards.md)
 - 2017-11-24 [A unified and improved Supply concurrency model](A-unified-and-improved-Supply-concurrency-model.md)
+- 2017-12-09 [HTTP and Web Sockets with Cro](HTTP-and-Web-Sockets-with-Cro.md)
 - 2018-01-26 [Of sisters, stacks, and CPAN](Of-sisters-stacks-and-CPAN.md)
 - 2018-06-09 [Faster dispatches with MoarVM specializer plugins](Faster-dispatches-with-MoarVM-specializer-plugins.md)
 - 2018-07-20 [Better usage information in the MoarVM specializer](Better-usage-information-in-the-MoarVM-specializer.md)

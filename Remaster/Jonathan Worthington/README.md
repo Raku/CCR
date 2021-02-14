@@ -230,5 +230,6 @@ This directory contains remastered versions of 233 blog posts by Jonathan Worthi
 - 2018-07-22 [Dynamic lookups and context introspection with inlining](Dynamic-lookups-and-context-introspection-with-inlining.md)
 - 2018-09-28 [Faster box/unbox and Int operations](Faster-box-unbox-and-Int-operations.md)
 - 2018-09-29 [Eliminating unrequired guards](Eliminating-unrequired-guards.md)
+- 2018-12-22 [Testing Cro HTTP APIs](Testing-Cro-HTTP-APIs.md)
 - 2019-01-02 [My Raku wishes for 2019](My-Raku-wishes-for-2019.md)
 - 2020-10-05 [Taking a break from Raku core development](Taking-a-break-from-Raku-core-development.md)

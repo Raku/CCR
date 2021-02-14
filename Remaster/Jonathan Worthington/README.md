@@ -99,6 +99,7 @@ This directory contains remastered versions of 173 blog posts by Jonathan Worthi
 - 2010-07-08 [:st(1) Post](st1-Post.md)
 - 2010-07-18 [Fixes…and feeds](Fixes-and-feeds.md)
 - 2010-07-18 [Last Post](Last-Post.md)
+- 2010-07-29 [Rakudo Star, and where from here](Rakudo-Star-and-where-from-here.md)
 - 2010-09-11 [A roadmap for 6model and nqp-rx changes](A-roadmap-for-6model-and-nqp-rx-changes.md)
 - 2010-09-20 [Gradual typing, merged MOPs and bounded serialization](Gradual-typing-merged-MOPs-and-bounded-serialization.md)
 - 2010-10-31 [Multi-dispatch lands in 6model on .Net](Multi-dispatch-lands-in-6model-on-Net.md)

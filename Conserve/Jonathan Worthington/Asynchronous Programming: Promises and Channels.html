@@ -1,0 +1,1034 @@
+https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 14 &#8211; Asynchronous Programming: Promises and Channels | Raku Advent Calendar</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://perl6advent.wordpress.com/xmlrpc.php">
+
+<script type="text/javascript">
+  WebFontConfig = {"google":{"families":["Merriweather:r:latin,latin-ext","Merriweather:r,i,b,bi:latin,latin-ext"]}};
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = 'https://s0.wp.com/wp-content/plugins/custom-fonts/js/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+	})();
+</script><style id="jetpack-custom-fonts-css">.wf-active body, .wf-active button, .wf-active input, .wf-active select, .wf-active textarea{font-family:"Merriweather",serif}.wf-active blockquote{font-family:"Merriweather",serif}.wf-active .archive .format-quote blockquote, .wf-active .blog .format-quote blockquote{font-family:"Merriweather",serif}.wf-active .blog .format-quote blockquote cite, .wf-active .archive .format-quote blockquote cite{font-family:"Merriweather",serif}.wf-active #infinite-handle span{font-family:"Merriweather",serif}.wf-active h1{font-family:"Merriweather",serif;font-size:25.9px;font-weight:400;font-style:normal}.wf-active h2{font-family:"Merriweather",serif;font-size:22.4px;font-weight:400;font-style:normal}.wf-active h3{font-family:"Merriweather",serif;font-size:18.9px;font-weight:400;font-style:normal}.wf-active h4{font-family:"Merriweather",serif;font-size:16.1px;font-style:normal;font-weight:400}.wf-active h5{font-family:"Merriweather",serif;font-size:14px;font-style:normal;font-weight:400}.wf-active h6{font-family:"Merriweather",serif;font-size:11.2px;font-weight:400;font-style:normal}.wf-active .widget-area .widget-title{font-size:9.1px;font-family:"Merriweather",serif;font-weight:400;font-style:normal}.wf-active .page-header .page-title{font-family:"Merriweather",serif;font-size:10.5px;font-weight:400;font-style:normal}.wf-active .page-header .title-accent{font-family:"Merriweather",serif;font-size:0.875em;font-weight:400;font-style:normal}.wf-active .entry-title{font-family:"Merriweather",serif;font-size:18.2px;font-weight:400;font-style:normal}.wf-active .comments-title{font-family:"Merriweather",serif;font-size:1.82px;font-weight:400;font-style:normal}.wf-active .comment-reply-title{font-family:"Merriweather",serif;font-size:21px;font-weight:400;font-style:normal}.wf-active .site-title{font-family:"Merriweather",serif;font-size:18.2px;font-weight:400;font-style:normal}.wf-active .site-description{font-family:"Merriweather",serif;font-size:10.5px;font-weight:400;font-style:normal}@media screen and ( min-width: 789px ){.wf-active .site-title{font-size:21px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active .site-description{font-size:11.9px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active .entry-title{font-size:27.3px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active .widget-area .widget-title{font-size:9.1px;font-style:normal;font-weight:400}}@media screen and ( min-width: 789px ){.wf-active comments-title{font-size:21px;font-style:normal;font-weight:400}}</style>
+<meta name="google-site-verification" content="YPNxtMSK3Jj7JR2XCK-hDqmF9xDIeBEyvYm3aT1s71Y" />
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel="alternate" type="application/rss+xml" title="Raku Advent Calendar &raquo; Feed" href="https://perl6advent.wordpress.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Raku Advent Calendar &raquo; Comments Feed" href="https://perl6advent.wordpress.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Raku Advent Calendar &raquo; Day 14 &#8211; Asynchronous Programming: Promises and&nbsp;Channels Comments Feed" href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/feed/" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+			<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1612197847h&ver=5.6.1"}};
+			!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([55357,56424,8205,55356,57212],[55357,56424,8203,55356,57212])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='all-css-0-1' href='https://s0.wp.com/_static/??-eJydkN0KgzAMhV9oNShz4MXYs7QaumpbS5NOfPvVwkD2x9hN4CTnSziBJYh+9oyewSURbNLGE0S0knEQYSZ+UlVPdID3mDUTEozIQfaTKOrF/vDqlKXCqPMkIty6qqsaUMnYAZSdC6+ijCsQrxZ/2FOo3Xm5zomFjmb4d0WUbLymD/gu+BYh912QvDkcDkaiRZdt37AlZEYoFSISiVydSU7wNYPlcRd3rk9109Zde2zGO9e+oL4=?cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<link crossorigin="anonymous" rel='stylesheet' id='wilson-raleway-css'  href='https://fonts.googleapis.com/css?family=Raleway%3A400%2C700&#038;ver=5.6.1' media='all' />
+<link crossorigin="anonymous" rel='stylesheet' id='wilson-latos-css'  href='https://fonts.googleapis.com/css?family=Lato%3A400%2C700%2C400italic%2C700italic&#038;subset=latin%2Clatin-ext&#038;ver=5.6.1' media='all' />
+<link rel='stylesheet' id='all-css-4-1' href='https://s0.wp.com/_static/??-eJyNjlELwjAMhP+QNU6YzAfxt3Q11mjalDWl7N9b8WUwHL7dcXf5AjUZJ1ExKugDA2ZIZYRKnCVC1plx73LewaIXiklcPMUMHiNO1IIfcrVdMyi6L8fU5CRs0SrdPGoGLC2VF6FhW0ExJLbarv7xrhgWZ5UaeGnMnS1NW9MJRxbfpIfWWtjP6BouXX8+dKf+OAzPN2zjf80=?cssminify=yes' type='text/css' media='all' />
+<link rel='stylesheet' id='print-css-5-1' href='https://s0.wp.com/wp-content/mu-plugins/global-print/global-print.css?m=1465851035h&cssminify=yes' type='text/css' media='print' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link rel='stylesheet' id='all-css-8-1' href='https://s0.wp.com/_static/??-eJxti8sKgCAQAH8oW6KHdoi+xcTUWF1pjX4/OnSIOg0DM3BmYSgVmwrEQ2Q8XEgMmbiIFXXYgb3eQ3IPa8Ncwf/FZIJGgeToLZ+peBstg+/AIS0a72COU9OPUg69atV2AWWKN+I=?cssminify=yes' type='text/css' media='all' />
+<script id='jetpack_related-posts-js-extra'>
+var related_posts_js_options = {"post_heading":"h4"};
+</script>
+<script id='wpcom-actionbar-placeholder-js-extra'>
+var actionbardata = {"siteID":"10740073","siteName":"Raku Advent Calendar","siteURL":"http:\/\/perl6advent.wordpress.com","icon":"<img alt='' src='https:\/\/s0.wp.com\/i\/logo\/wpcom-gray-white.png' class='avatar avatar-50' height='50' width='50' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/wilson","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/wordpress.com\/log-in?redirect_to=https%3A%2F%2Fperl6advent.wordpress.com%2F2013%2F12%2F14%2Fasynchronous-programming-promises-and-channels%2F&signup_flow=account","themeURL":"https:\/\/wordpress.com\/theme\/wilson\/","xhrURL":"https:\/\/perl6advent.wordpress.com\/wp-admin\/admin-ajax.php","nonce":"b4b36f611a","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"35335f14f8\" \/>","referer":"https:\/\/perl6advent.wordpress.com\/2013\/12\/14\/asynchronous-programming-promises-and-channels\/","canFollow":"1","feedID":"150402","statusMessage":"","customizeLink":"https:\/\/perl6advent.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2Fperl6advent.wordpress.com%2F2013%2F12%2F14%2Fasynchronous-programming-promises-and-channels%2F","postID":"2088","shortlink":"https:\/\/wp.me\/pJ3YZ-xG","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/perl6advent.wordpress.com\/2088","statsLink":"https:\/\/wordpress.com\/stats\/post\/2088\/perl6advent.wordpress.com","i18n":{"view":"View site","follow":"Follow","following":"Following","edit":"Edit","login":"Log in","signup":"Sign up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Wilson","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editSubs":"Manage subscriptions","viewReader":"View site in Reader","viewReadPost":"View post in Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"Join 128 other followers","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/wordpress.com\/log-in?redirect_to=https%3A%2F%2Fperl6advent.wordpress.com%2F2013%2F12%2F14%2Fasynchronous-programming-promises-and-channels%2F&signup_flow=account\">Log in now.<\/a>","stats":"Stats"}};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFzdEKwjAMBdAfMiurMPFB/Ja5xZLSpLVpEP9+HSiILz6FezmXuGeBJUtDaS6q43yjhGCKdQ69A5J7HqIeXHckS7IVdYfxYVhf7zMwyV8ETKHODb/x5zMblGSBRF3F1NEKJWv7SX115cs4jf548ufJxw1oVkW8'></script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1530132353h&cssminify=yes' type='text/css' media='all' />
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://perl6advent.wordpress.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/" />
+<link rel='shortlink' href='https://wp.me/pJ3YZ-xG' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2Fperl6advent.wordpress.com%2F2013%2F12%2F14%2Fasynchronous-programming-promises-and-channels%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2Fperl6advent.wordpress.com%2F2013%2F12%2F14%2Fasynchronous-programming-promises-and-channels%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Day 14 &#8211; Asynchronous Programming: Promises and Channels" />
+<meta property="og:url" content="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/" />
+<meta property="og:description" content="Some of the most exciting progress in Perl 6 over the last year has been in the area of asynchronous, concurrent and parallel programming. In this post, we&#8217;ll take a look at two of the langua…" />
+<meta property="article:published_time" content="2013-12-14T13:39:05+00:00" />
+<meta property="article:modified_time" content="2014-04-01T23:17:24+00:00" />
+<meta property="og:site_name" content="Raku Advent Calendar" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:site" content="@wordpressdotcom" />
+<meta name="twitter:text:title" content="Day 14 &#8211; Asynchronous Programming: Promises and&nbsp;Channels" />
+<meta name="twitter:image" content="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png" />
+<meta name="twitter:card" content="summary" />
+<meta property="fb:app_id" content="249643311490" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s0.wp.com/i/webclip.png" />
+<link rel='openid.server' href='https://perl6advent.wordpress.com/?openidserver=1' />
+<link rel='openid.delegate' href='https://perl6advent.wordpress.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="https://perl6advent.wordpress.com/osd.xml" title="Raku Advent Calendar" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+<meta name="application-name" content="Raku Advent Calendar" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Something cool about Raku (formerly known as Perl 6) every day" /><meta name="msapplication-task" content="name=Subscribe;action-uri=https://perl6advent.wordpress.com/feed/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="description" content="Some of the most exciting progress in Perl 6 over the last year has been in the area of asynchronous, concurrent and parallel programming. In this post, we&#039;ll take a look at two of the language features that relate to this: promises and channels. But first... A Little Design Philosophy Threads and locks are the&hellip;" />
+<link rel="amphtml" href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/amp/"></head>
+
+<body class="post-template-default single single-post postid-2088 single-format-standard customizer-styles-applied group-blog has-site-logo highlander-enabled highlander-light">
+<div id="page" class="hfeed site">
+
+	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+	<header id="masthead" class="site-header" role="banner">
+		<div class="site-branding">
+							<a href="https://perl6advent.wordpress.com/" class="site-logo-link" rel="home" itemprop="url"><img width="274" height="197" src="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=274" class="site-logo attachment-wilson-site-logo" alt="" loading="lazy" data-size="wilson-site-logo" itemprop="logo" srcset="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png 274w, https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=150 150w" sizes="(max-width: 274px) 100vw, 274px" data-attachment-id="2913" data-permalink="https://perl6advent.wordpress.com/cropped-camelia-small-santa1-png/" data-orig-file="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png" data-orig-size="274,197" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="cropped-camelia-small-santa1.png" data-image-description="" data-medium-file="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=274" data-large-file="https://perl6advent.files.wordpress.com/2015/11/cropped-camelia-small-santa1.png?w=274" /></a>						<h1 class="site-title"><a href="https://perl6advent.wordpress.com/" rel="home">Raku Advent Calendar</a></h1>
+			<h2 class="site-description">Something cool about Raku (formerly known as Perl 6) every day</h2>
+		</div>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<h1><span class="screen-reader-text">Primary Menu</span></h1>
+			<button class="menu-toggle"><span class="genericon genericon-menu"></span><span class="screen-reader-text">Menu</span></button>
+
+			<div class="menu"><ul>
+<li ><a href="https://perl6advent.wordpress.com/">Home</a></li><li class="page_item page-item-2"><a href="https://perl6advent.wordpress.com/about/">About</a></li>
+</ul></div>
+		</nav><!-- #site-navigation -->
+	</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-2088" class="post-2088 post type-post status-publish format-standard hentry category-755991">
+	<header class="entry-header">
+					<h1 class="entry-title">Day 14 &#8211; Asynchronous Programming: Promises and&nbsp;Channels</h1>				<div class="entry-meta">
+			<span class="posted-on"><a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/" rel="bookmark"><time class="entry-date published" datetime="2013-12-14T13:39:05+00:00">December 14, 2013</time><time class="updated" datetime="2014-04-01T23:17:24+00:00">April 1, 2014</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://perl6advent.wordpress.com/author/jnthnwrthngtn/">jnthnwrthngtn</a></span></span>					</div><!-- .entry-meta -->
+	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>Some of the most exciting progress in Perl 6 over the last year has been in the area of asynchronous, concurrent and parallel programming. In this post, we&#8217;ll take a look at two of the language features that relate to this: promises and channels. But first&#8230;</p>
+<h3>A Little Design Philosophy</h3>
+<p>Threads and locks are the assembly language of parallel programming. In the spirit of &#8220;make the hard things possible&#8221;, Perl 6 does let you spawn a thread and provide you with a Lock primitive. But these are absolutely aimed at those doing the hard things. I&#8217;ve written, code-reviewed and taught parallel programming in languages where these were the primary primitives for a while. Doing code reviews was often a fairly depressing affair. It&#8217;s not just that there were bugs, it&#8217;s that often it felt like the approach taken by the code&#8217;s author was, &#8220;just throw locks all over the place and all will be well&#8221;.</p>
+<p>In this post, I&#8217;ll focus on the things we have in Perl 6 to help make the easy things easy. They are designed around a number of principles:</p>
+<ul>
+<li>The paradigms we provide should have a strong focus on being composable, to make it easy to extend, re-use and refactor code</li>
+<li>Furthermore, it should be easy to compose the various paradigms together, as well as having ways to move between the synchronous and asynchronous worlds where needed</li>
+<li>Both asynchrony and synchronization should be explicit, happen at clearly defined boundaries, and be done at a fairly high level</li>
+</ul>
+<p>In general, the Perl 6 approach is that you achieve concurrency by decomposing a problem into many pieces, communicating through the provided synchronization mechanisms (those in the language, and no doubt a bunch of extra ones that will be provided by the module ecosystem over time). The approach is <em>not</em> about mutating shared memory. That&#8217;s decidedly in the &#8220;hard things possible&#8221; category. The fact that it&#8217;s really hard to get right is the main problem, but from a performance perspective, lots of threads competing to write to the same bit of memory is the worst case for CPU caches &#8211; which really matter these days.</p>
+<h3>Promises</h3>
+<p>A promise is a synchronization primitive for a piece of asynchronous work that will produce a single result at some point in the future, or fail to do so because something went wrong. Different languages have evolved different terms for this idea, or use the terms with different nuances. Both &#8220;future&#8221; and &#8220;task&#8221; are often used.</p>
+<p>The easiest way to create a promise is:</p>
+<pre>my $p10000 = start {
+    (1..Inf).grep(*.is-prime)[9999]
+}</pre>
+<p>This schedules the work in the block to be done. By default, this means it will be scheduled to run on a pool of threads. Thus, start introduces asynchrony into a program. We continue by executing the next line of code, and the work we specified will be done on another thread. If it runs to completion and produces a result, we say that the promise was <strong>kept</strong>. If, by contrast, it dies by throwing an exception, then we say the promise was <strong>broken</strong>.</p>
+<p>So, what can you do with a promise? Well, you can ask it for the result:</p>
+<pre>say $p10000.result;</pre>
+<p>This blocks until the promise is kept or broken. If it is kept, the value it produced is returned. If it&#8217;s broken, the exception is thrown. There&#8217;s a neater way to write this:</p>
+<pre>say await $p10000;</pre>
+<p>This may take many promises, and so you can do things like:</p>
+<pre>my @quotes = await @currency_exchanges.map(-&gt; $ex { start { $ex.get_quote($val) } });</pre>
+<p>Although this will throw an exception if any of them fail. Thus, we may wish to wait on all of them, then just extract those that produced a result:</p>
+<pre>my @getting = @currency_exchanges.map(-&gt; $ex { start { $ex.get_quote($val) } });
+await Promise.allof(@getting);
+my @quotes = @getting.grep(*.status == Kept).map(*.result);</pre>
+<p>There&#8217;s something a little interesting in there: allof. This is an example of a promise combinator: something that takes one or more promises as its arguments and creates some kind of composite promise that relates to them. And this brings us to the next interesting and important thing: a promise need not be backed by a piece of asynchronously executing code! For example, we can create a promise that will be kept after a certain amount of time has elapsed:</p>
+<pre>my $kept_in_10 = Promise.in(10);</pre>
+<p>Thus, we might provide a basic timeout mechanism, making sure any exchange that doesn&#8217;t give us a result in 5 seconds doesn&#8217;t get blocked on:</p>
+<pre>my @getting = @currency_exchanges.map(-&gt; $ex { start { $ex.get_quote($val) } });
+await Promise.anyof(Promise.allof(@getting), Promise.in(5));
+my @quotes = @getting.grep(*.status == Kept).map(*.result);</pre>
+<p>Of course, sitting around and waiting for results is just one thing we can do with a promise. We can also provide things that should be done upon the promise being completed. These will also be scheduled and run asynchronously. For example:</p>
+<pre>my $p10000 = start {
+    (1..Inf).grep(*.is-prime)[9999]
+}
+my $base16 = $p10000.then(sub ($res) {
+    $res.result.base(16)
+});
+my $pwrite = $base16.then(sub ($res) {
+    spurt 'p10000.txt', $res.result;
+    return 'p10000.txt';
+});</pre>
+<p>Here, we use then in order to specify something that should be done after the promise is kept or broken. This also returns a promise, meaning you can chain another operation into the process. And you can call then multiple times on one promise too, giving a kind of one-off publish/subscribe mechanism (see a future article on supplies for a much richer way to do this kind of thing, however). Note that promise takes care internally to make sure races work out OK (for example, the work being done in the promise is already completed by the time we call then).</p>
+<p>You can also create your own promises, keeping or breaking them as you desire. This is as simple as:</p>
+<pre># Create the promise.
+my $p = Promise.new;
+
+# Take the "vow" object, used to keep/break it.
+my $v = $p.vow;
+
+# Later, one of...
+$v.keep($result);
+$v.break($exception_or_message);</pre>
+<p>Thus, you can write your own promise factories and combinators too.</p>
+<h3>Channels</h3>
+<p>A promise is OK for conveying a single result, but what about producer/consumer scenarios where the producer will produce many values over time, and the consumer will process them as they are available? This is where a channel can come in useful.</p>
+<p>Let&#8217;s say we want to read in a bunch of INI configuration files, parse each one using a grammar, and then flatten the configuration results into a single hash. There are three distinct steps here, in a producer/consumer relationship, which we can do in parallel. While the final result is a single value, and so a promise feels suitable, there are many files to read and parse. This is where channels come in. Let&#8217;s explore them using this example.</p>
+<p>First, here is the top level of the program:</p>
+<pre>sub MAIN() {
+    loop {
+        my @files = prompt('Files: ').words;
+        read_all(@files);
+    }
+}</pre>
+<p>This prompts the user for a bunch of filenames, then calls read_all. This is a little more interesting:</p>
+<pre>sub read_all(@files) {
+    my $read = Channel.new;
+    my $parsed = Channel.new;
+    read_worker(@files, $read);
+    parse_worker($read, $parsed) for 1..2;
+    my %all_config = await config_combiner($parsed);
+    say %all_config.perl;
+}</pre>
+<p>This creates two channels, $read and $parsed. The $read channel will be used by read_worker in order to send the contents of each of the files it reads in along to the parse_worker. Here is read_worker:</p>
+<pre>sub read_worker(@files, $dest) {
+    start {
+        for @files -&gt; $file {
+            $dest.send(slurp($file));
+        }
+        $dest.close();
+        CATCH { $dest.fail($_) }
+    }
+}</pre>
+<p>It uses the send method in order to send along the contents of each file it slurps. After slurping them all, it calls last on the channel to indicate there will be no more. The CATCH block calls fail on the channel to indicate that the producer failed. This will, when reached, throw an exception in the consumer. A channel that has had last or fail called on it can no longer be used to send values. Finally, the whole thing is wrapped in a start block so it is done on a thread in the thread pool.</p>
+<p>The parse_worker is a little more interesting:</p>
+<pre>sub parse_worker($source, $dest) {
+    my grammar INIFile {
+        token TOP {
+            ^
+            &lt;entries&gt;
+            &lt;section&gt;+
+            $
+        }
+
+        token section {
+            '[' ~ ']' &lt;key&gt; \n
+            &lt;entries&gt;
+        }
+
+        token entries {
+            [
+            | &lt;entry&gt; \n
+            | \n
+            ]*
+        }
+
+        rule entry { &lt;key&gt; '=' &lt;value&gt; }
+
+        token key   { \w+ }
+        token value { \N+ }
+
+        token ws { \h* }
+    }
+
+    my class INIFileActions {
+        method TOP($/) {
+            my %result;
+            %result&lt;_&gt; = $&lt;entries&gt;.ast;
+            for @&lt;section&gt; -&gt; $sec {
+                %result{$sec&lt;key&gt;} = $sec&lt;entries&gt;.ast;
+            }
+            make %result;
+        }
+
+        method entries($/) {
+            my %entries;
+            for @&lt;entry&gt; -&gt; $e {
+                %entries{$e&lt;key&gt;} = ~$e&lt;value&gt;;
+            }
+            make %entries;
+        }
+    }
+
+    start {
+        loop {
+            winner $source {
+                more $source {
+                    if INIFile.parse($_, :actions(INIFileActions)) -&gt; $parsed {
+                        $dest.send($parsed.ast);
+                    }
+                    else {
+                        $dest.fail("Could not parse INI file");
+                        last;
+                    }
+                }
+                done $source { last }
+            }
+        }
+        $dest.close();
+        CATCH { $dest.fail($_) }
+    }
+}</pre>
+<p>It starts off with a grammar and actions class for INI files. We then sit in a loop, watching the $source channel, which is the one that read_worker is placing results in. If a channel has one <em>more</em> value available, then the more block will be called. Inside it, $_ will contain the slurped contents of an INI file. We then parse it, and provided this worked out send along the hash of hashes representing the INI file&#8217;s content (sections at the top level, then key/value pairs). Again, we take care to call fail and last appropriately.</p>
+<p>Finally, config_combiner takes each of those hash of hashes, and does the work to combine them into a single hash. It uses a promise to convey the final, single, result.</p>
+<pre>sub config_combiner($source) {
+    my $p = Promise.new;
+    my $v = $p.vow;
+    start {
+        my %result;
+        loop {
+            winner $source {
+                more $source {
+                    for %^content.kv -&gt; $sec, %kvs {
+                        for %kvs.kv -&gt; $k, $v {
+                            %result{$sec}{$k} = $v;
+                        }
+                    }
+                }
+                done $source { last }
+            }
+        }
+        $v.keep(%result);
+        CATCH { $v.break($_) }
+    }
+    return $p;
+}</pre>
+<p>And there we have it: a program using promises and channels happily together, in a producer/consumer, map/reduce style.</p>
+<div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-2088" class="share-twitter sd-button share-icon" href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?share=twitter" target="_blank" title="Click to share on Twitter"><span>Twitter</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-2088" class="share-facebook sd-button share-icon" href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?share=facebook" target="_blank" title="Click to share on Facebook"><span>Facebook</span></a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-10740073-2088-6029651178273' data-src='//widgets.wp.com/likes/index.html?ver=20200826#blog_id=10740073&amp;post_id=2088&amp;origin=perl6advent.wordpress.com&amp;obj_id=10740073-2088-6029651178273' data-name='like-post-frame-10740073-2088-6029651178273'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>			</div><!-- .entry-content -->
+
+	<footer class="entry-footer">
+				<span class="cat-links">
+			Categories: <a href="https://perl6advent.wordpress.com/category/2013/" rel="category tag">2013</a>		</span>
+		
+			</footer><!-- .entry-footer -->
+</article><!-- #post-## -->
+
+				<nav class="navigation post-navigation" role="navigation">
+		<h1 class="screen-reader-text">Post navigation</h1>
+		<div class="nav-links">
+			<div class="nav-previous"><a href="https://perl6advent.wordpress.com/2013/12/13/day-13-roasting-rakudo-star/" rel="prev"><span class="meta-nav">&larr;</span> Day 13 &#8211; Roasting Rakudo&nbsp;Star</a></div><div class="nav-next"><a href="https://perl6advent.wordpress.com/2013/12/15/day-15-numbers-and-ways-of-writing-them/" rel="next">Day 15 &#8211; Numbers and ways of writing&nbsp;them <span class="meta-nav">&rarr;</span></a></div>		</div><!-- .nav-links -->
+	</nav><!-- .navigation -->
+	
+			
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			7 thoughts on &ldquo;<span>Day 14 &#8211; Asynchronous Programming: Promises and&nbsp;Channels</span>&rdquo;		</h2>
+
+		
+		<ol class="comment-list">
+					<li id="comment-3472" class="comment even thread-even depth-1 highlander-comment">
+			<article id="div-comment-3472" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://0.gravatar.com/avatar/cd165f58edd9a53ba95b79ed787fb37a?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn">Jesper</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3472"><time datetime="2013-12-14T18:43:18+00:00">December 14, 2013 at 18:43</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>I like the comparison of threads and locks to assembly language. Doing everything with threads and locks is a bit like doing everything with ifs and gotos.</p>
+<p>&#8220;winner&#8221; is used twice without being explained. Is there a synopsis or earlier calendar entry that explains it?</p>
+<p>Also, does the &#8220;await&#8221; have the same connotations (asynchronously waiting without blocking) as in C#, given that the same word was picked and I see a lot of the same concepts recurring?</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?replytocom=3472#respond' data-commentid="3472" data-postid="2088" data-belowelement="div-comment-3472" data-respondelement="respond" data-replyto="Reply to Jesper" aria-label='Reply to Jesper'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+		<li id="comment-3474" class="comment odd alt thread-odd thread-alt depth-1 highlander-comment">
+			<article id="div-comment-3474" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://i0.wp.com/lh3.googleusercontent.com/-ws8tMcSd-zg/AAAAAAAAAAI/AAAAAAAAAAA/ADLyTJAUcjc/photo.jpg?resize=50%2C50&#038;ssl=1' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='https://plus.google.com/115289448037897603962' rel='external nofollow ugc' class='url'>raiph mellor</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3474"><time datetime="2013-12-14T23:53:35+00:00">December 14, 2013 at 23:53</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>I think winner is like a promise case statement. Whichever promise is next kept/broken is the winner and the associated closure is called. Hmm, the idea for Whenever as the keyword just popped in to my head. Maybe worth suggesting. Spec says: &#8220;winner statement [keywords still negotiable]&#8221;</p>
+<p>For more see the Spec (@Larryian specification/speculation) doc S17, the Synopsis for asynchrony, concurrency, and parallel aspects: <a href="http://feather.perl6.nl/syn/S17.html" rel="nofollow ugc">http://feather.perl6.nl/syn/S17.html</a></p>
+<p>await in P6 blocks. That&#8217;s a troubling reversal. I liked P6&#8217;s usage, but if it needs to change, now&#8217;s better than later. Why not &#8220;wait&#8221;? Must be some reason I&#8217;m not seeing. Maybe &#8220;finish&#8221;?</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?replytocom=3474#respond' data-commentid="3474" data-postid="2088" data-belowelement="div-comment-3474" data-respondelement="respond" data-replyto="Reply to raiph mellor" aria-label='Reply to raiph mellor'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+		<li id="comment-3478" class="comment even thread-even depth-1 highlander-comment">
+			<article id="div-comment-3478" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://0.gravatar.com/avatar/cd165f58edd9a53ba95b79ed787fb37a?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn">Jesper</b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3478"><time datetime="2013-12-15T09:51:05+00:00">December 15, 2013 at 09:51</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>I think &#8220;whenever&#8221; is a better keyword than &#8220;winner&#8221;, since it both sounds closer to &#8220;until&#8221;, &#8220;while&#8221; and &#8220;unless&#8221; and constricts the aspect of &#8220;winning&#8221; to &#8220;being resolved first&#8221;.</p>
+<p>I mentioned C# related to &#8220;await&#8221;. In recent versions of C#, and now starting to appear in other languages, &#8220;awaiting&#8221; something like in the code above has the complier jump through a bunch of hoops to sign up the remainder of the function as a continuation on asynchronous waiting &#8211; in other words, it won&#8217;t twiddle its thumbs and block a thread, it&#8217;ll arrange for a promise and for the lucky and unlucky cases to be followed with that code whenever that happens. </p>
+<p>These are both wildly specific semantics and even if you don&#8217;t care about details, it at least does the opposite thing from &#8220;sitting here blocking&#8221;. I don&#8217;t know if Perl has ever fallen in line behind other languages&#8217; behaviors simply over a keyword, but if it&#8217;s not doing the same thing, I think picking another keyword would fry fewer brains. (That&#8217;s what metaoperators and grammars are for.) Maybe it&#8217;s simply a way to avoid reusing the keyword &#8220;wait&#8221;, which already appears in S17 as the timeout branch in the winner statement.</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?replytocom=3478#respond' data-commentid="3478" data-postid="2088" data-belowelement="div-comment-3478" data-respondelement="respond" data-replyto="Reply to Jesper" aria-label='Reply to Jesper'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+		<li id="comment-3495" class="comment odd alt thread-odd thread-alt depth-1 parent highlander-comment">
+			<article id="div-comment-3495" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://i1.wp.com/pbs.twimg.com/profile_images/432990605/85c803e7_normal.jpg?resize=50%2C50' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='http://twitter.com/cbk1090' rel='external nofollow ugc' class='url'>cbk1090 (@cbk1090)</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3495"><time datetime="2013-12-16T21:52:28+00:00">December 16, 2013 at 21:52</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>Why do I get this error for the very first example&#8230;?</p>
+<p>===SORRY!=== Error while compiling ThreadTest.p6<br />
+Undeclared routine:<br />
+    start used at line 10. Did you mean &#8216;&amp;spurt&#8217;, &#8216;&amp;sqrt&#8217;, &#8216;&amp;sort&#8217;?</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?replytocom=3495#respond' data-commentid="3495" data-postid="2088" data-belowelement="div-comment-3495" data-respondelement="respond" data-replyto="Reply to cbk1090 (@cbk1090)" aria-label='Reply to cbk1090 (@cbk1090)'>Reply</a></div>			</article><!-- .comment-body -->
+		<ol class="children">
+		<li id="comment-3496" class="comment byuser comment-author-colomon even depth-2 parent highlander-comment">
+			<article id="div-comment-3496" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://0.gravatar.com/avatar/3bfeb633907f64a75fb2db415eb13370?s=50&#038;d=identicon&#038;r=G' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='http://justrakudoit.wordpress.com' rel='external nofollow ugc' class='url'>colomon</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3496"><time datetime="2013-12-16T22:25:33+00:00">December 16, 2013 at 22:25</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>What version of Rakudo are you using?  I wouldn&#8217;t expect these examples to work on anything but a recent JVM version of Rakudo.</p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?replytocom=3496#respond' data-commentid="3496" data-postid="2088" data-belowelement="div-comment-3496" data-respondelement="respond" data-replyto="Reply to colomon" aria-label='Reply to colomon'>Reply</a></div>			</article><!-- .comment-body -->
+		<ol class="children">
+		<li id="comment-3499" class="comment odd alt depth-3 highlander-comment">
+			<article id="div-comment-3499" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://i1.wp.com/pbs.twimg.com/profile_images/432990605/85c803e7_normal.jpg?resize=50%2C50' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='http://twitter.com/cbk1090' rel='external nofollow ugc' class='url'>cbk1090 (@cbk1090)</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3499"><time datetime="2013-12-17T04:13:18+00:00">December 17, 2013 at 04:13</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>I&#8217;m using the current version of Rakudo * on Fedora 19.  :-(</p>
+				</div><!-- .comment-content -->
+
+							</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li id="comment-3573" class="comment even depth-2 highlander-comment">
+			<article id="div-comment-3573" class="comment-body">
+				<footer class="comment-meta">
+					<div class="comment-author vcard">
+						<img alt='' src='https://i0.wp.com/lh3.googleusercontent.com/-ws8tMcSd-zg/AAAAAAAAAAI/AAAAAAAAAAA/ADLyTJAUcjc/photo.jpg?resize=50%2C50&#038;ssl=1' class='avatar avatar-50' height='50' width='50' />						<b class="fn"><a href='https://plus.google.com/115289448037897603962' rel='external nofollow ugc' class='url'>raiph mellor</a></b> <span class="says">says:</span>					</div><!-- .comment-author -->
+
+					<div class="comment-metadata">
+						<a href="https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/#comment-3573"><time datetime="2013-12-22T16:21:09+00:00">December 22, 2013 at 16:21</time></a>					</div><!-- .comment-metadata -->
+
+									</footer><!-- .comment-meta -->
+
+				<div class="comment-content">
+					<p>The Rakudo Star bundle is currently Parrot only.</p>
+<p>One option you have is to download and compile the latest Rakudo compiler (December&#8217;s release just got cut) and follow the build instructions for the /JVM backend:<br />
+<a href="http://rakudo.org/downloads/rakudo/" rel="nofollow ugc">http://rakudo.org/downloads/rakudo/</a></p>
+<p>If you go this route and have any issues pop on the freenode IRC channel #perl6 for help.</p>
+<p>Another option you have is to use the on channel Rakudo/JVM evaluator on #perl6 (use &#8220;r-j: start { say 1 }&#8221;).</p>
+<p>For more about how to get the /JVM backend and when it will be bundled with Rakudo Star, see the Future section at the bottom of this <a href="https://perl6advent.wordpress.com/2013/12/03/day-03-rakudo-perl-6-on-the-jvm/" rel="nofollow ugc">https://perl6advent.wordpress.com/2013/12/03/day-03-rakudo-perl-6-on-the-jvm/</a></p>
+				</div><!-- .comment-content -->
+
+				<div class="reply"><a rel='nofollow' class='comment-reply-link' href='https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/?replytocom=3573#respond' data-commentid="3573" data-postid="2088" data-belowelement="div-comment-3573" data-respondelement="respond" data-replyto="Reply to raiph mellor" aria-label='Reply to raiph mellor'>Reply</a></div>			</article><!-- .comment-body -->
+		</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .comment-list -->
+
+		
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2013/12/14/asynchronous-programming-promises-and-channels/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://perl6advent.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate><input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="ef994ced00" /><input type="hidden" name="_wp_http_referer" value="/2013/12/14/asynchronous-programming-promises-and-channels/" />
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest" />
+
+<div class="comment-form-field comment-textarea">
+	<label for="comment">Enter your comment here...</label>
+	<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+
+<div id="comment-form-identity">
+	<div id="comment-form-nascar">
+		<p>Fill in your details below or click an icon to log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="#comment-form-guest" id="postas-guest" class="nascar-signin-link"
+                   title="Login via Guest">
+									</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" class="nascar-signin-link"
+                   title="Login via WordPress.com">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></g></svg>				</a>
+			</li>
+			<li>
+			<iframe id="googleplus-sign-in" name="googleplus-sign-in" src="https://public-api.wordpress.com/connect/?googleplus-sign-in=https%3A%2F%2Fperl6advent.wordpress.com&#038;color_scheme=light" width="24" height="24" scrolling="no" allowtransparency="true" seamless="seamless" frameborder="0"></iframe>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Twitter" id="postas-twitter" class="nascar-signin-link"
+                   title="Login via Twitter">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"/></g></svg>				</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Facebook" id="postas-facebook" class="nascar-signin-link"
+                   title="Login via Facebook">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"/></g></svg>				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Gravatar" width="25" class="no-grav" />
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Name <span class="required">(required)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Website</label>
+					<div class="comment-form-input"><input id="url" name="url" type="url" value="" /></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="WordPress.com Logo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="" />
+						<p class="comment-form-posting-as pa-wordpress">
+			<strong></strong>
+			You are commenting using your WordPress.com account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-googleplus" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Google photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value="" />
+				<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value="" />
+				<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value="" />
+						<p class="comment-form-posting-as pa-googleplus">
+			<strong></strong>
+			You are commenting using your Google account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" x="0px" y="0px" viewBox="0 0 60 60" ><path fill="#519bf7" d="M56.3,30c0,-1.6 -0.2,-3.4 -0.6,-5h-3.1H42.2H30v10.6h14.8C44,39.3 42,42 39.1,43.9l8.8,6.8C53,46 56.3,39 56.3,30z" /><path fill="#3db366" d="M30,57.5c6.7,0 13.1,-2.4 17.9,-6.8l-8.8,-6.8c-2.5,1.6 -5.6,2.4 -9.1,2.4c-7.2,0 -13.3,-4.7 -15.4,-11.2l-9.3,7.1C9.8,51.3 19.1,57.5 30,57.5z" /><path fill="#fdc600" d="M5.3,42.2l9.3,-7.1c-0.5,-1.6 -0.8,-3.3 -0.8,-5.1s0.3,-3.5 0.8,-5.1l-9.3,-7.1C3.5,21.5 2.5,25.6 2.5,30S3.5,38.5 5.3,42.2z" /><path fill="#f15b44" d="M40.1,17.4l8,-8C43.3,5.1 37,2.5 30,2.5C19.1,2.5 9.8,8.7 5.3,17.8l9.3,7.1c2.1,-6.5 8.2,-11.1 15.4,-11.1C33.9,13.7 37.4,15.1 40.1,17.4z" /></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Twitter picture" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="" />
+						<p class="comment-form-posting-as pa-twitter">
+			<strong></strong>
+			You are commenting using your Twitter account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Facebook photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="" />
+						<p class="comment-form-posting-as pa-facebook">
+			<strong></strong>
+			You are commenting using your Facebook account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var highlander_expando_javascript = function () {
+
+	function hide( sel ) {
+		var el = document.querySelector( sel );
+		if ( el ) {
+			el.style.setProperty( 'display', 'none' );
+		}
+	}
+
+	function show( sel ) {
+		var el = document.querySelector( sel );
+		if ( el ) {
+			el.style.removeProperty( 'display' );
+		}
+	}
+
+	var input = document.createElement( 'input' );
+	var comment = document.querySelector( '#comment' );
+
+	if ( input && comment && 'placeholder' in input ) {
+		var label = document.querySelector( '.comment-textarea label' );
+		if ( label ) {
+			var text = label.textContent;
+			label.parentNode.removeChild( label );
+			comment.setAttribute( 'placeholder', text );
+		}
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	hide( '#comment-form-identity' );
+	hide( '#comment-form-subscribe' );
+	hide( '#commentform .form-submit' );
+
+	if ( comment ) {
+		comment.style.height = '10px';
+
+		var handler = function () {
+			comment.style.height = HighlanderComments.initialHeight + 'px';
+			show( '#comment-form-identity' );
+			show( '#comment-form-subscribe' );
+			show( '#commentform .form-submit' );
+			HighlanderComments.resizeCallback();
+
+			comment.removeEventListener( 'focus', handler );
+		};
+
+		comment.addEventListener( 'focus', handler );
+	}
+}
+
+if ( document.readyState !== 'loading' ) {
+	highlander_expando_javascript();
+} else {
+	if ( typeof window.jQuery === 'function' ) {
+		// Use jQuery's `ready` if available.
+		// This solves some scheduling issues between this script and the main highlander script.
+		jQuery( document ).ready( highlander_expando_javascript );
+	} else {
+		// If not available, add a vanilla event listener.
+		document.addEventListener( 'DOMContentLoaded', highlander_expando_javascript );
+	}
+}
+
+</script>
+
+<div id="comment-form-subscribe">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog"  style="display: inline;">Notify me of new posts via email.</label></p></div>
+
+
+
+
+<p class="form-submit"><input name="submit" type="submit" id="comment-submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='2088' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="5ce52506fa" /></p>
+<input type="hidden" name="genseq" value="1613325585" />
+<input type="hidden" id="ak_js" name="ak_js" value="111"/><textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100" style="display: none !important;"></textarea></form>	</div><!-- #respond -->
+	<div style="clear: both"></div><p class="akismet_comment_form_privacy_notice">This site uses Akismet to reduce spam. <a href="https://akismet.com/privacy/" target="_blank" rel="nofollow noopener">Learn how your comment data is processed</a>.</p>
+</div><!-- #comments -->
+
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+	<div id="secondary" class="widget-area" role="complementary">
+		
+					<aside id="calendar-10" class="widget widget_calendar"><div id="calendar_wrap" class="calendar_wrap"><table id="wp-calendar" class="wp-calendar-table">
+	<caption>December 2013</caption>
+	<thead>
+	<tr>
+		<th scope="col" title="Monday">M</th>
+		<th scope="col" title="Tuesday">T</th>
+		<th scope="col" title="Wednesday">W</th>
+		<th scope="col" title="Thursday">T</th>
+		<th scope="col" title="Friday">F</th>
+		<th scope="col" title="Saturday">S</th>
+		<th scope="col" title="Sunday">S</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td colspan="6" class="pad">&nbsp;</td><td><a href="https://perl6advent.wordpress.com/2013/12/01/" aria-label="Posts published on December 1, 2013">1</a></td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2013/12/02/" aria-label="Posts published on December 2, 2013">2</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/03/" aria-label="Posts published on December 3, 2013">3</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/04/" aria-label="Posts published on December 4, 2013">4</a></td><td>5</td><td><a href="https://perl6advent.wordpress.com/2013/12/06/" aria-label="Posts published on December 6, 2013">6</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/07/" aria-label="Posts published on December 7, 2013">7</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/08/" aria-label="Posts published on December 8, 2013">8</a></td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2013/12/09/" aria-label="Posts published on December 9, 2013">9</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/10/" aria-label="Posts published on December 10, 2013">10</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/11/" aria-label="Posts published on December 11, 2013">11</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/12/" aria-label="Posts published on December 12, 2013">12</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/13/" aria-label="Posts published on December 13, 2013">13</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/14/" aria-label="Posts published on December 14, 2013">14</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/15/" aria-label="Posts published on December 15, 2013">15</a></td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2013/12/16/" aria-label="Posts published on December 16, 2013">16</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/17/" aria-label="Posts published on December 17, 2013">17</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/18/" aria-label="Posts published on December 18, 2013">18</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/19/" aria-label="Posts published on December 19, 2013">19</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/20/" aria-label="Posts published on December 20, 2013">20</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/21/" aria-label="Posts published on December 21, 2013">21</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/22/" aria-label="Posts published on December 22, 2013">22</a></td>
+	</tr>
+	<tr>
+		<td><a href="https://perl6advent.wordpress.com/2013/12/23/" aria-label="Posts published on December 23, 2013">23</a></td><td><a href="https://perl6advent.wordpress.com/2013/12/24/" aria-label="Posts published on December 24, 2013">24</a></td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td>
+	</tr>
+	<tr>
+		<td>30</td><td>31</td>
+		<td class="pad" colspan="5">&nbsp;</td>
+	</tr>
+	</tbody>
+	</table><nav aria-label="Previous and next months" class="wp-calendar-nav">
+		<span class="wp-calendar-nav-prev"><a href="https://perl6advent.wordpress.com/2013/11/">&laquo; Nov</a></span>
+		<span class="pad">&nbsp;</span>
+		<span class="wp-calendar-nav-next"><a href="https://perl6advent.wordpress.com/2014/12/">Dec &raquo;</a></span>
+	</nav></div></aside><aside id="archives-8" class="widget widget_archive"><h1 class="widget-title">Archives</h1>
+			<ul>
+					<li><a href='https://perl6advent.wordpress.com/2019/12/'>December 2019</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2018/12/'>December 2018</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2017/12/'>December 2017</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2016/12/'>December 2016</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2016/02/'>February 2016</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2015/12/'>December 2015</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2015/11/'>November 2015</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2014/12/'>December 2014</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2013/12/'>December 2013</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2013/11/'>November 2013</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2012/12/'>December 2012</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2011/12/'>December 2011</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2010/12/'>December 2010</a></li>
+	<li><a href='https://perl6advent.wordpress.com/2009/12/'>December 2009</a></li>
+			</ul>
+
+			</aside><aside id="search-4" class="widget widget_search"><form role="search" method="get" class="search-form" action="https://perl6advent.wordpress.com/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s">
+	</label>
+	<input type="submit" class="search-submit" value="Search">
+	<span class="genericon genericon-search"></span>
+</form>
+</aside>			</div><!-- #secondary -->
+
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+				<div class="site-info">
+			<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			
+					</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!--  -->
+<script src='//0.gravatar.com/js/gprofiles.js?ver=202106y' id='grofiles-cards-js'></script>
+<script id='wpgroho-js-extra'>
+var WPGroHo = {"my_hash":""};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-cd165f58edd9a53ba95b79ed787fb37a">
+	</div>
+	<div class="grofile-hash-map-f00f8b55b0ade2c4748e94fb73a40662">
+	</div>
+	<div class="grofile-hash-map-6d5506ca010cc1ad2aead1cc478fa9ac">
+	</div>
+	<div class="grofile-hash-map-3bfeb633907f64a75fb2db415eb13370">
+	</div>
+	</div>
+<script id='highlander-comments-js-extra'>
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/perl6advent.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/perl6advent.wordpress.com\/wp-login.php?action=logout&_wpnonce=1762211b15","homeURL":"https:\/\/perl6advent.wordpress.com\/","postID":"2088","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"","userIsLoggedIn":"","isJetpack":"","text_direction":"ltr"};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1573483029j'></script>
+
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20201002";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20201002";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/perl6advent.wordpress.com\/2013\/12\/14\/asynchronous-programming-promises-and-channels\/":2088};
+	</script>
+				<div class="widget widget_eu_cookie_law_widget">
+<div
+	class="hide-on-button ads-active"
+	data-hide-timeout="30"
+	data-consent-expiration="180"
+	id="eu-cookie-law"
+>
+	<form method="post">
+		<input type="submit" value="Close and accept" class="accept" />
+
+		Privacy &amp; Cookies: This site uses cookies. By continuing to use this website, you agree to their use. <br />
+To find out more, including how to control cookies, see here:
+				<a href="https://automattic.com/cookies" rel="nofollow">
+			Cookie Policy		</a>
+ </form>
+</div>
+</div><script id='sharing-js-js-extra'>
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyNkl1OxDAMhC9EagqIhQfEUVA2dVu3+SN2WpbT40qAxILKPjmK5xtPrMCajUtRMApMDB0u5DC/NRNfwc9WTiwBme2Af3Sn14rl9Fkaigvh+q9sQsnWzaYg0/sv11BN9nWgyOBpRgaFKo42dh7LuVhG1HCQ6xFW8pziNi3ahQYrlOJFcp4pG09xNn1ylU1P33ug6HztlFCZSyGoh6bO/tQEusBccWBXKItZs/I7T12pG1AYsGo3zYTG2xUEQ/ZW8Ox+x8d2mswcbYFgWbDoyUjRbfMeNBMHFHPbXMPLFrpPZS/s9idM7y0V4NEWisNXVeg5PLX37U37eHi4O0wfXAPmfQ=='></script>
+<script type='text/javascript'>
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-twitter' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-twitter' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<iframe src='https://widgets.wp.com/likes/master.html?ver=20200826#ver=20200826' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+		<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script src="//stats.wp.com/w.js?61" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'10740073','blog_tz':'0','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'10740073','v':'wpcom','tz':'0','user_id':'0','post':'2088','subd':'perl6advent'}]);
+_stq.push(['extra', {'crypt':'UE40eW5QN0p8M2Y/RE1oV0pFNEwueXFaVXlyMGwvVFs4ODlRZi15ODdZbV9dUVlqL1VfcEREP1s4TjU5Yn4/Uk5vakJXb2lxQ3V4N0tka0c5dzFQTDVfYltkY3ZwbmxQQWYtVH5fLE8uc3wtQnB3UUJLL1JQdVRaK0EraklWQ0lnUWk3U3U0eTY3ejAsPVl0MFZXLjRlN29KLEMsbFZ6RDgmfHA1QUtvRyxoPys/RWpHSXN8bVptbyxtfDksRjZYZXx2Y1NYZDYuQVJhbFA3YUtdS1JOb25rUG40RV9JPThGRFtpSVFQLy9scGJ2ZUw2K1h5RWdybDJ4am0sdWwmWE9QRmo4Ml1FYWViTTRja0k4WXhnVGNMb1prN1pUWjI='}]);
+_stq.push([ 'clickTrackerInit', '10740073', '2088' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script>
+</body>
+</html>

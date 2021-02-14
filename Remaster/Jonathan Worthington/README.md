@@ -1,4 +1,4 @@
-This directory contains remastered versions of 173 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 174 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -162,6 +162,7 @@ This directory contains remastered versions of 173 blog posts by Jonathan Worthi
 - 2017-07-02 [Optimizing reading lines from a file](Optimizing-reading-lines-from-a-file.md)
 - 2017-08-06 [MoarVM Specializer Improvements Part 1: Gathering Data](MoarVM-Specializer-Improvements-Part-1-Gathering-Data.md)
 - 2017-09-17 [MoarVM Specializer Improvements Part 2: Planning](MoarVM-Specializer-Improvements-Part-2-Planning.md)
+- 2017-09-23 [Rakudo gets a new thread pool](Rakudo-gets-a-new-thread-pool.md)
 - 2017-11-05 [MoarVM Specializer Improvements Part 3: Optimizing Code](MoarVM-Specializer-Improvements-Part-3-Optimizing-Code.md)
 - 2017-11-09 [MoarVM Specializer Improvements Part 4: Argument Guards](MoarVM-Specializer-Improvements-Part-4-Argument-Guards.md)
 - 2017-11-24 [A unified and improved Supply concurrency model](A-unified-and-improved-Supply-concurrency-model.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 230 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 231 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -89,6 +89,7 @@ This directory contains remastered versions of 230 blog posts by Jonathan Worthi
 - 2009-12-10 [Attribute sub-protocol and other role bits](Attribute-sub-protocol-and-other-role-bits.md)
 - 2009-12-11 [Classes, attributes, methods and more](Classes-attributes-methods-and-more.md)
 - 2009-12-11 [Day 11: Classes, attributes, methods and more](Day-11-Classes-attributes-methods-and-more.md)
+- 2009-12-18 [Roles](Roles.md)
 - 2010-02-06 [Catching up: two Rakudo Days from December](Catching-up-two-Rakudo-Days-from-December.md)
 - 2010-02-06 [The importance of a break](The-importance-of-a-break.md)
 - 2010-02-18 [The first release from ng is coming!](The-first-release-from-ng-is-coming.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 177 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 178 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -100,6 +100,7 @@ This directory contains remastered versions of 177 blog posts by Jonathan Worthi
 - 2010-07-18 [Fixes…and feeds](Fixes-and-feeds.md)
 - 2010-07-18 [Last Post](Last-Post.md)
 - 2010-07-29 [Rakudo Star, and where from here](Rakudo-Star-and-where-from-here.md)
+- 2010-08-21 [Rakudo’s meta-model: The Road Ahead](Rakudos-meta-model-The-Road-Ahead.md)
 - 2010-09-11 [A roadmap for 6model and nqp-rx changes](A-roadmap-for-6model-and-nqp-rx-changes.md)
 - 2010-09-20 [Gradual typing, merged MOPs and bounded serialization](Gradual-typing-merged-MOPs-and-bounded-serialization.md)
 - 2010-10-31 [Multi-dispatch lands in 6model on .Net](Multi-dispatch-lands-in-6model-on-Net.md)

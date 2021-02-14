@@ -1,4 +1,4 @@
-This directory contains remastered versions of 209 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 210 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -107,6 +107,7 @@ This directory contains remastered versions of 209 blog posts by Jonathan Worthi
 - 2010-10-31 [Multi-dispatch lands in 6model on .Net](Multi-dispatch-lands-in-6model-on-Net.md)
 - 2011-01-08 [Back and hackin’](Back-and-hackin.md)
 - 2011-01-16 [NQP and 6model: big steps forward on Parrot and JVM](NQP-and-6model-big-steps-forward-on-Parrot-and-JVM.md)
+- 2011-01-23 [Well that was hard work: getting nqp-rx grammars using 6model](Well-that-was-hard-work-getting-nqp-rx-grammars-using-6model.md)
 - 2011-01-30 [NQP changes getting there; Rakudo next!](NQP-changes-getting-there-Rakudo-next.md)
 - 2011-02-19 [Smudging the compile-time/run-time boundary](Smudging-the-compile-time-run-time-boundary.md)
 - 2011-04-25 [Separate compilation, package refactors and gradual typing: oh boy, what a mix!](Separate-compilation-package-refactors-and-gradual-typing-oh-boy-what-a-mix.md)

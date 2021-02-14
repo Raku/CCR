@@ -1,0 +1,11 @@
+# YAPC::Asia 2012
+    
+*Originally published on [2012-10-03](https://6guts.wordpress.com/2012/10/03/yapcasia-2012/) by Jonathan Worthington.*
+
+Three years ago I paid a visit to Japan to attend YAPC::Asia. It was also my first time in Japan, and so in addition to a very enjoyable and well attended Perl conference, I got to enjoy the incredible Japanese cities, the beautiful nature, great food (and this is coming from somebody who can’t eat fish and seafood – yes, there are still plenty of nice things to eat) and some of the most polite and pleasant people I’ve come across anywhere. I’m still a bit mystified what made me leave coming back again a whole three years – but it goes without saying that I’m very glad I did. Japan is as awesome as I remembered. :-)
+
+Naturally, Raku has come a long way since I was last here. Last time, I talked about Raku at the level of interesting snippets of code that you could run that solved small problems. These days, with the language having a growing ecosystem of modules and compilers capable of running them, it felt natural to focus on that. Thus, my talk was [Exploring Raku Through Its Modules](http://jnthn.net/papers/2012-yapcasia-modules.pdf). The code in it is really nothing new to those who have followed Raku very closely; it just shows off various modules along with some annotations and explanations of how they put Raku to good use. Many people don’t follow along so closely, however, so I think for most people attending the talk had quite a bit of new and interesting stuff.
+
+Of all the Perl events I’ve been to, YAPC::Asia is by a long way the biggest. This year, once you counted speakers in, there was over 800 people there! That’s incredible for a community-organized conference, and the organizers did a great job of making it happen. Also impressive is that they got the videos of the talks up really soon afterwards – so you can even [watch my talk](http://yapcasia.org/2012/talk/show/645d66cc-d98a-11e1-af5f-0d4e6aeab6a4)! I suggest having the PDF of the slides too for easier following.
+
+Anyway, I’ll now get on with enjoying the Japanese countryside for a few days before returning to Sweden and resuming life as normal. Maybe I’ll even be lucky enough to catch a glimpse of Fuji, :-)

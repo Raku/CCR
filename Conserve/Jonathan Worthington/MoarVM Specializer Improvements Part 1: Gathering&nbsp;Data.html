@@ -1,0 +1,1220 @@
+https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+MoarVM Specializer Improvements Part 1: Gathering Data | 6guts</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s0.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://6guts.wordpress.com/xmlrpc.php">
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel='dns-prefetch' href='//s.pubmine.com' />
+<link rel='dns-prefetch' href='//x.bidswitch.net' />
+<link rel='dns-prefetch' href='//static.criteo.net' />
+<link rel='dns-prefetch' href='//ib.adnxs.com' />
+<link rel='dns-prefetch' href='//aax.amazon-adsystem.com' />
+<link rel='dns-prefetch' href='//bidder.criteo.com' />
+<link rel='dns-prefetch' href='//cas.criteo.com' />
+<link rel='dns-prefetch' href='//gum.criteo.com' />
+<link rel='dns-prefetch' href='//ads.pubmatic.com' />
+<link rel='dns-prefetch' href='//gads.pubmatic.com' />
+<link rel='dns-prefetch' href='//tpc.googlesyndication.com' />
+<link rel='dns-prefetch' href='//ad.doubleclick.net' />
+<link rel='dns-prefetch' href='//googleads.g.doubleclick.net' />
+<link rel='dns-prefetch' href='//www.googletagservices.com' />
+<link rel='dns-prefetch' href='//cdn.switchadhub.com' />
+<link rel='dns-prefetch' href='//delivery.g.switchadhub.com' />
+<link rel='dns-prefetch' href='//delivery.swid.switchadhub.com' />
+<link rel='dns-prefetch' href='//a.teads.tv' />
+<link rel='dns-prefetch' href='//prebid.media.net' />
+<link rel='dns-prefetch' href='//adserver-us.adtech.advertising.com' />
+<link rel='dns-prefetch' href='//fastlane.rubiconproject.com' />
+<link rel='dns-prefetch' href='//prebid-server.rubiconproject.com' />
+<link rel='dns-prefetch' href='//hb-api.omnitagjs.com' />
+<link rel='dns-prefetch' href='//mtrx.go.sonobi.com' />
+<link rel='dns-prefetch' href='//apex.go.sonobi.com' />
+<link rel='dns-prefetch' href='//u.openx.net' />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Feed" href="https://6guts.wordpress.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Comments Feed" href="https://6guts.wordpress.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; MoarVM Specializer Improvements Part 1: Gathering&nbsp;Data Comments Feed" href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/feed/" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+			<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s0.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1612197847h&ver=5.6.1"}};
+			!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){var a=String.fromCharCode;p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,e),0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(a.apply(this,t),0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(!p||!p.fillText)return!1;switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])?!1:!s([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!s([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]);case"emoji":return!s([55357,56424,8205,55356,57212],[55357,56424,8203,55356,57212])}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(n=t.source||{}).concatemoji?c(n.concatemoji):n.wpemoji&&n.twemoji&&(c(n.twemoji),c(n.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='all-css-0-1' href='https://s0.wp.com/_static/??-eJytUstuwyAQ/KFiZKuplEPVbwGzpcS8BEss/30WorZurLo+9II87Mx6dlg+RzYGj+CRSxs0i7Zo4zOfQ1JCZa5tkMJ2Y85P/C8uzlRaqM6uw0bhyhc/gRUIisWQ8QHtyayZIPMLYBTjxBra0D+5uhCUkDRVEvDruTt3A5fFWFW9N71MIi0842LhH/rgB7gjfZpqNYZYQkGmk1GHrTy0SAKN1/kX+SrAOgLduyiwMhwoI8CSbY97sjmShkkZE+TM6HSmONbm3T7A/ZrHIr/X4Z7UQW6bgrV/7poySgNtDxSqhskAJTlzBBfrNh0IQ0NgZIuyC/4HYO9WmLS/v3X96VNzYq1gFb251/6lH079+fQ8XG7nkUW+?cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+</style>
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link rel='stylesheet' id='all-css-2-1' href='https://s0.wp.com/_static/??-eJxti8sKgCAQAH8oW6KHdoi+xcTUWF1pjX4/OnSIOg0DM3BmYSgVmwrEQ2Q8XEgMmbiIFXXYgb3eQ3IPa8Ncwf/FZIJGgeToLZ+peBstg+/AIS0a72COU9OPUg69atV2AWWKN+I=?cssminify=yes' type='text/css' media='all' />
+<script id='jetpack_related-posts-js-extra'>
+var related_posts_js_options = {"post_heading":"h4"};
+</script>
+<script id='wpcom-actionbar-placeholder-js-extra'>
+var actionbardata = {"siteID":"14597269","siteName":"6guts","siteURL":"http:\/\/6guts.wordpress.com","icon":"<img alt='' src='https:\/\/s0.wp.com\/i\/logo\/wpcom-gray-white.png' class='avatar avatar-50' height='50' width='50' \/>","canManageOptions":"","canCustomizeSite":"","isFollowing":"","themeSlug":"pub\/twentyten","signupURL":"https:\/\/wordpress.com\/start\/","loginURL":"https:\/\/wordpress.com\/log-in?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2017%2F08%2F06%2Fmoarvm-specializer-improvements-part-1-gathering-data%2F&signup_flow=account","themeURL":"","xhrURL":"https:\/\/6guts.wordpress.com\/wp-admin\/admin-ajax.php","nonce":"73a4d0c81a","isSingular":"1","isFolded":"","isLoggedIn":"","isMobile":"","subscribeNonce":"<input type=\"hidden\" id=\"_wpnonce\" name=\"_wpnonce\" value=\"db0032352c\" \/>","referer":"https:\/\/6guts.wordpress.com\/2017\/08\/06\/moarvm-specializer-improvements-part-1-gathering-data\/","canFollow":"1","feedID":"913460","statusMessage":"","customizeLink":"https:\/\/6guts.wordpress.com\/wp-admin\/customize.php?url=https%3A%2F%2F6guts.wordpress.com%2F2017%2F08%2F06%2Fmoarvm-specializer-improvements-part-1-gathering-data%2F","postID":"497","shortlink":"https:\/\/wp.me\/pZfpP-81","canEditPost":"","editLink":"https:\/\/wordpress.com\/post\/6guts.wordpress.com\/497","statsLink":"https:\/\/wordpress.com\/stats\/post\/497\/6guts.wordpress.com","i18n":{"view":"View site","follow":"Follow","following":"Following","edit":"Edit","login":"Log in","signup":"Sign up","customize":"Customize","report":"Report this content","themeInfo":"Get theme: Twenty Ten","shortlink":"Copy shortlink","copied":"Copied","followedText":"New posts from this site will now appear in your <a href=\"https:\/\/wordpress.com\/read\">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","editSubs":"Manage subscriptions","viewReader":"View site in Reader","viewReadPost":"View post in Reader","subscribe":"Sign me up","enterEmail":"Enter your email address","followers":"Join 59 other followers","alreadyUser":"Already have a WordPress.com account? <a href=\"https:\/\/wordpress.com\/log-in?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2017%2F08%2F06%2Fmoarvm-specializer-improvements-part-1-gathering-data%2F&signup_flow=account\">Log in now.<\/a>","stats":"Stats"}};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFzdEKwjAMBdAfMiurMPFB/Ja5xZLSpLVpEP9+HSiILz6FezmXuGeBJUtDaS6q43yjhGCKdQ69A5J7HqIeXHckS7IVdYfxYVhf7zMwyV8ETKHODb/x5zMblGSBRF3F1NEKJWv7SX115cs4jf548ufJxw1oVkW8'></script>
+<link rel='stylesheet' id='all-css-0-2' href='https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style.css?m=1530132353h&cssminify=yes' type='text/css' media='all' />
+<!--[if lt IE 8]>
+<link rel='stylesheet' id='highlander-comments-ie7-css'  href='https://s0.wp.com/wp-content/mu-plugins/highlander-comments/style-ie7.css?m=1351637563h&#038;ver=20110606' media='all' />
+<![endif]-->
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://6guts.wordpress.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://s0.wp.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/" />
+<link rel='shortlink' href='https://wp.me/pZfpP-81' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2F6guts.wordpress.com%2F2017%2F08%2F06%2Fmoarvm-specializer-improvements-part-1-gathering-data%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2F6guts.wordpress.com%2F2017%2F08%2F06%2Fmoarvm-specializer-improvements-part-1-gathering-data%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="MoarVM Specializer Improvements Part 1: Gathering Data" />
+<meta property="og:url" content="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/" />
+<meta property="og:description" content="Over the last weeks I&#8217;ve had the chance to work full time on Perl 6, and have dedicated this time to improving the MoarVM specializer. Since &#8220;specializer&#8221; is such a lot to type, b…" />
+<meta property="article:published_time" content="2017-08-06T00:34:01+00:00" />
+<meta property="article:modified_time" content="2017-08-06T00:34:01+00:00" />
+<meta property="og:site_name" content="6guts" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:site" content="@wordpressdotcom" />
+<meta name="twitter:text:title" content="MoarVM Specializer Improvements Part 1: Gathering&nbsp;Data" />
+<meta name="twitter:card" content="summary" />
+<meta property="fb:app_id" content="249643311490" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s0.wp.com/i/webclip.png" />
+<link rel='openid.server' href='https://6guts.wordpress.com/?openidserver=1' />
+<link rel='openid.delegate' href='https://6guts.wordpress.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="https://6guts.wordpress.com/osd.xml" title="6guts" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="6guts" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Tales of Perl 6 guts hacking" /><meta name="msapplication-task" content="name=Subscribe;action-uri=https://6guts.wordpress.com/feed/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=Sign up for a free blog;action-uri=http://wordpress.com/signup/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=WordPress.com Support;action-uri=http://support.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="msapplication-task" content="name=WordPress.com Forums;action-uri=http://forums.wordpress.com/;icon-uri=https://s0.wp.com/i/favicon.ico" /><meta name="description" content="Over the last weeks I&#039;ve had the chance to work full time on Perl 6, and have dedicated this time to improving the MoarVM specializer. Since &quot;specializer&quot; is such a lot to type, but shortening it to &quot;spec&quot; would result in it being confused with specification (or perhaps bacon), we refer to it as &quot;spesh&quot;.&hellip;" />
+		<script type="text/javascript">
+
+			window.doNotSellCallback = function() {
+
+				var linkElements = [
+					'a[href="https://wordpress.com/?ref=footer_blog"]',
+					'a[href="https://wordpress.com/?ref=footer_website"]',
+					'a[href="https://wordpress.com/?ref=vertical_footer"]',
+					'a[href^="https://wordpress.com/?ref=footer_segment_"]',
+				].join(',');
+
+				var dnsLink = document.createElement( 'a' );
+				dnsLink.href = 'https://wordpress.com/advertising-program-optout';
+				dnsLink.classList.add( 'do-not-sell-link' );
+				dnsLink.rel = 'nofollow';
+				dnsLink.style.marginLeft = '0.5em';
+				dnsLink.textContent = 'Do Not Sell My Personal Information';
+
+				var creditLinks = document.querySelectorAll( linkElements );
+
+				if ( 0 === creditLinks.length ) {
+					return false;
+				}
+
+				Array.prototype.forEach.call( creditLinks, function( el ) {
+					el.insertAdjacentElement( 'afterend', dnsLink );
+				});
+
+				return true;
+			};
+
+		</script>
+				<script type="text/javascript">
+		function __ATA_CC() {var v = document.cookie.match('(^|;) ?personalized-ads-consent=([^;]*)(;|$)');return v ? 1 : 0;}
+		var __ATA_PP = { pt: 1, ht: 0, tn: 'twentyten', amp: false, siteid: 8982, blogid: 14597269, consent: __ATA_CC()   };
+		var __ATA = __ATA || {};
+		__ATA.cmd = __ATA.cmd || [];
+		__ATA.criteo = __ATA.criteo || {};
+		__ATA.criteo.cmd = __ATA.criteo.cmd || [];
+		
+		</script>
+		<script type="text/javascript">
+		(function(){var g=Date.now||function(){return+new Date};function h(a,b){a:{for(var c=a.length,d="string"==typeof a?a.split(""):a,e=0;e<c;e++)if(e in d&&b.call(void 0,d[e],e,a)){b=e;break a}b=-1}return 0>b?null:"string"==typeof a?a.charAt(b):a[b]};function k(a,b,c){c=null!=c?"="+encodeURIComponent(String(c)):"";if(b+=c){c=a.indexOf("#");0>c&&(c=a.length);var d=a.indexOf("?");if(0>d||d>c){d=c;var e=""}else e=a.substring(d+1,c);a=[a.substr(0,d),e,a.substr(c)];c=a[1];a[1]=b?c?c+"&"+b:b:c;a=a[0]+(a[1]?"?"+a[1]:"")+a[2]}return a};var l=0;function m(a,b){var c=document.createElement("script");c.src=a;c.onload=function(){b&&b(void 0)};c.onerror=function(){b&&b("error")};a=document.getElementsByTagName("head");var d;a&&0!==a.length?d=a[0]:d=document.documentElement;d.appendChild(c)}function n(a){var b=void 0===b?document.cookie:b;return(b=h(b.split("; "),function(c){return-1!=c.indexOf(a+"=")}))?b.split("=")[1]:""}function p(a){return"string"==typeof a&&0<a.length}
+		function r(a,b,c){b=void 0===b?"":b;c=void 0===c?".":c;var d=[];Object.keys(a).forEach(function(e){var f=a[e],q=typeof f;"object"==q&&null!=f||"function"==q?d.push(r(f,b+e+c)):null!==f&&void 0!==f&&(e=encodeURIComponent(b+e),d.push(e+"="+encodeURIComponent(f)))});return d.filter(p).join("&")}function t(a,b){a||((window.__ATA||{}).config=b.c,m(b.url))}var u=Math.floor(1E13*Math.random()),v=window.__ATA||{};window.__ATA=v;window.__ATA.cmd=v.cmd||[];v.rid=u;v.createdAt=g();var w=window.__ATA||{},x="s.pubmine.com";
+		w&&w.serverDomain&&(x=w.serverDomain);var y="//"+x+"/conf",z=window.top===window,A=window.__ATA_PP&&window.__ATA_PP.gdpr_applies,B="boolean"===typeof A?Number(A):null,C=window.__ATA_PP||null,D=z?document.referrer?document.referrer:null:null,E=z?window.location.href:document.referrer?document.referrer:null,F,G=n("__ATA_tuuid");F=G?G:null;var H=window.innerWidth+"x"+window.innerHeight,I=n("usprivacy"),J=r({gdpr:B,pp:C,rid:u,src:D,ref:E,tuuid:F,vp:H,us_privacy:I?I:null},"",".");
+		(function(a){var b=void 0===b?"cb":b;l++;var c="callback__"+g().toString(36)+"_"+l.toString(36);a=k(a,b,c);window[c]=function(d){t(void 0,d)};m(a,function(d){d&&t(d)})})(y+"?"+J);}).call(this);
+		</script><link rel="amphtml" href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/amp/"><script type="text/javascript">
+	window.google_analytics_uacct = "UA-52447-2";
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_gat._anonymizeIp']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script>
+</head>
+
+<body class="post-template-default single single-post postid-497 single-format-standard customizer-styles-applied single-author highlander-enabled highlander-light">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="https://6guts.wordpress.com/" title="6guts" rel="home">6guts</a>
+					</span>
+				</div>
+				<div id="site-description">Tales of Perl 6 guts hacking</div>
+
+									<a class="home-link" href="https://6guts.wordpress.com/" title="6guts" rel="home">
+						<img src="https://6guts.files.wordpress.com/2010/07/cropped-30141.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="https://6guts.wordpress.com/">Home</a></li><li class="page_item page-item-2"><a href="https://6guts.wordpress.com/about/">About</a></li>
+<li class="page_item page-item-24"><a href="https://6guts.wordpress.com/interesting-papers/">Interesting Papers</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="https://6guts.wordpress.com/2017/07/30/shrinking-moarvm-call-frames/" rel="prev"><span class="meta-nav">&larr;</span> Shrinking MoarVM call&nbsp;frames</a></div>
+					<div class="nav-next"><a href="https://6guts.wordpress.com/2017/09/17/moarvm-specializer-improvements-part-2-planning/" rel="next">MoarVM Specializer Improvements Part 2:&nbsp;Planning <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-497" class="post-497 post type-post status-publish format-standard hentry category-uncategorized">
+											<h2 class="entry-title"><a href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/" rel="bookmark">MoarVM Specializer Improvements Part 1: Gathering&nbsp;Data</a></h2>					
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/" title="1:34 AM" rel="bookmark"><span class="entry-date">August 6, 2017</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="https://6guts.wordpress.com/author/jnthnwrthngtn/" title="View all posts by jnthnwrthngtn">jnthnwrthngtn</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>Over the last weeks I&#8217;ve had the chance to work full time on Perl 6, and have dedicated this time to improving the MoarVM specializer. Since &#8220;specializer&#8221; is such a lot to type, but shortening it to &#8220;spec&#8221; would result in it being confused with specification (or perhaps bacon), we refer to it as &#8220;spesh&#8221;. But what is it?</p>
+<h3><a id="user-content-specialization" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#specialization"></a>Specialization</h3>
+<p>Specialization is the process of taking code with lots of late-binding in it, and producing one or more versions of the code with as much of that stripped out as we can. We take late binding in a very broad sense, really using it to mean any place where we defer a decision until the code is executed (that is, runtime) because we don&#8217;t know the context it will be executed in. So, if we write a module with this in it:</p>
+<pre><code>sub shorten($text, $limit) is export {
+    $text.chars &gt; $limit
+        ?? $text.substr(0, $limit) ~ '...'
+        !! $text
+}
+</code></pre>
+<p>Then this code isn&#8217;t committed to the types of <code>$text</code> and <code>$limit</code>. Thus, we must:</p>
+<ul>
+<li>Resolve the <code>chars</code> and <code>substr</code> method at runtime</li>
+<li>Decide which multi dispatch candidate of <code>&gt;</code> and <code>~</code> to call</li>
+<li>Since <code>substr</code> is also a multi, decide what multi dispatch candidate to call</li>
+</ul>
+<p>Even if we put <code>Str</code> and <code>Int</code> type constraints on the sub, that still isn&#8217;t really enough: these could be subclassed (for example, by mixing in to them) and thus override the methods that we call. (Granted in this particular case that&#8217;d be a tad odd, but in the general case, it&#8217;s not.)</p>
+<p>Even with nice things like method caches and multi-dispatch caches, which do provide a huge speedup, we still must do the cache lookups, call the methods, and so forth. The job of the specializer is to notice what types we actually call <code>shorten</code> with, and the types methods like <code>chars</code> return, and thus strip out the need to even do cache lookups. It can then go further, for example inlining the body of the small <code>chars</code> method (and maybe <code>substr</code> too) into the caller so that there will be no invocation overhead for them at all!</p>
+<h3><a id="user-content-before-we-go-any-further-a-quick-thank-you" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#before-we-go-any-further-a-quick-thank-you"></a>Before we go any further, a quick thank you</h3>
+<p>This work is funded by my <a href="http://news.perlfoundation.org/2017/07/grant-extension-approved-perl-.html">current TPF grant</a>, which was approved some weeks back (so I&#8217;ve already been working away at it), though only recently publicly announced due to an internal TPF procedure that had to be completed first. So, thanks go to TPF for administering the funding, and to those who have donated to TPF and the Perl 6 Core Development Fund for providing the funding.</p>
+<h3><a id="user-content-a-little-series" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#a-little-series"></a>A little series</h3>
+<p>I could just write up a list of the improvements I&#8217;ve done, but I figure that many readers here don&#8217;t know a great deal about spesh. So instead, I will write a series of posts working through the way spesh works today, after my changes, together with some notes on how it used to work and why that changed. Hopefully that will be a more interesting and useful read.</p>
+<h3><a id="user-content-what-to-optimize" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#what-to-optimize"></a>What to optimize?</h3>
+<p>When I&#8217;ve talked people through how spesh works in the past, I&#8217;ve tended to start by discussing how the bytecode is turned into a control flow graph in single static assignment form, and then we go on and do the various bits of analysis and transformation. We&#8217;ll get to that, but in fact there has always been a step before it.</p>
+<p>Constructing a CFG and putting it in SSA form takes time; transforming it by doing a load of optimizations takes more. How much depends on the size and structure of the code. So we need to decide what code to spend time on. This was done in two ways.</p>
+<p>The first was just incrementing a counter every time the sub, block, method, or regex was called. If the count passed a threshold (which was chosen based upon the size of the bytecode) then an optimized version of it would be produced. Easy enough.</p>
+<p>Trouble is that this doesn&#8217;t catch an important case: that where we have a program that spends most of its lifetime in a loop. In that case, we only enter the block holding the loop once, which is never going to trigger optimization. Thus we also count the number of iterations of loops. If that counter hits a high enough value, then we produce the optimized code and replace the running code with it, potentially moving from the interpreter into machine code. This replacement of code with an optimized version is known as &#8220;on stack replacement&#8221;, because it&#8217;s replacing code already running on the call stack).</p>
+<h3><a id="user-content-gathering-data" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#gathering-data"></a>Gathering data</h3>
+<p>Just throwing bytecode representing a highly dynamic program into an optimizer won&#8217;t achieve much, however. The cost is in the late binding, and to remove that we need an idea of what kinds of things are showing up when the code is run. This data came from two sources.</p>
+<p>The first source was the incoming parameter types. When code was determined as hot, then the shape of the callsite (how many arguments, which named arguments) and the types of the arguments were taken and turned into a &#8220;key&#8221; for the specialization. These could then be assumed inside of the optimizer.</p>
+<p>This was not enough on its own to produce good optimizations, however, because a lot of data comes from attribute accesses, lexical accesses, and the return values of things the code calls. Therefore, before doing any significant work, spesh would go through the code and insert logging instructions. These would record the values that were observed. After 8 runs, the specialization process would continue, using this data.</p>
+<h3><a id="user-content-bad-decisions-and-missing-information" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#bad-decisions-and-missing-information"></a>Bad decisions and missing information</h3>
+<p>This worked relatively well, but had notable shortcomings. The main one concerns code that is highly polymorphic in nature &#8211; that is, it is called with many different types. In this case, whichever type it was called with on, say, its 100th call, would have a specialization produced for it. If the next call used a different type, another specialization would be produced for that. And so forth, up until we had four specializations, which was the number picked as the limit.</p>
+<p>This meant that things like <code>defined</code> or <code>sink</code>, which are called very often but on a lot of different types, would often go unoptimized and un-JITted. Worse, the way inlining works is to inline any existing specialization. Inlining all the <code>defined</code> and <code>sink</code> calls would be ideal. But in reality, for any non-trivial program, that would not happen in most cases. Clearly, if only the specializer were able to take a step back, it could see this situation and do something smarter. But the data just wasn&#8217;t there to do it.</p>
+<p>The 8 samples taken when logging could also get lucky or unlucky about what values they saw. If a value returned from a method is a certain type over 99% of the time, and less than 1% of the time it is something else, then it makes sense to stick a guard in, optimize for the 99% case, and let the guard fail and trigger deoptimization for the less than 1% of the cases. (A deoptimization is like the opposite of OSR: we swap the optimized version of the code for the slower one that can handle all of the cases, and let it take care of the rare cases).</p>
+<p>With only 8 values, however, 1 of them being different suggests we might have to deoptimize over 10% of the time. Deoptimization takes a bit of time to do, but leaves us interpreting the code with a bunch of late binding. The stakes are too high if all the data can tell us is that there&#8217;s a 1 in 8 chance.</p>
+<p>Another problem in the data was a lack of knowing about the stability of the types on the callee side of a callsite. We relied on being able to infer them based on things we did know, or had inserted checks to guard against. However, what if we were just one more guard clause away from being able to inline something? Previously we could never determine that, so had to miss out on the opportunity. With better data, it would be possible to do better.</p>
+<h3><a id="user-content-interruptions-and-stampedes" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#interruptions-and-stampedes"></a>Interruptions and stampedes</h3>
+<p>Spesh needed to interrupt the execution of the program twice for each frame it wished to optimize: once to parse the bytecode into the SSA CFG, insert the logging and produce a logged version of the code, and again after the logging to produce an optimized version of the code. This introduced pauses into the execution. So, every time spesh makes a program run faster, it has to do so sufficiently to overcome the time it stole to do its optimization work. And if it speeds something up that doesn&#8217;t get run much in the future, it can make the program slower overall.</p>
+<p>This is pretty poor use of the parallel hardware available in pretty much all computers nowadays. Better would be to spend time doing the optimization work on a thread separate from the execution of the user&#8217;s program. This not only gets rid of the pauses; it also means that if the work is completed by the interpreter before the optimized version is ready then we didn&#8217;t slow the program down by stopping it to do optimization work that was never going to pay off anyway.</p>
+<p>Having a thread taking care of specialization work can also resolve another problem. Imagine that a bunch of threads are set off executing the same code on a range of different data items (so, data parallelism). In this case, more than one thread could see that the code is hot, notice there&#8217;s not yet any specialization, and get to work on producing it. There was detection of any duplicate ones at installation time, but that still meant there was wasted work producing specializations. If 3 different threads wasted their time this way, then the amount of time before the specializer had paid for itself was also increased.</p>
+<h3><a id="user-content-a-new-approach-to-data-collection" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#a-new-approach-to-data-collection"></a>A new approach to data collection</h3>
+<p>Clearly, there was plenty of room for improvement. It was fairly clear that having a better data model representing the execution of the program, which the specialier would use to make smarter decisions, was a key part of this. At the same time, it was important that threads executing user code didn&#8217;t spend much of their time building this. Ideally, they would just throw data into a sequential buffer, and toss it over to another thread &#8211; a specializer thread &#8211; when it was full.</p>
+<p>So, that&#8217;s the direction I headed it. Each thread would log interesting events into a thread local buffer. The append-only and thread local (for writes) nature of it should make it fairly cache friendly. It was desirable that the entries were fairly small; the main place this had an impact was parameter type logging, where we both wish to log the container type and the type held inside of the container. This was taken care of by just writing two entries, rather than all the rest being padded out (fixed size entries weren&#8217;t all that important, I guess, but it did make things easier).</p>
+<p>I converged on <a href="https://github.com/MoarVM/MoarVM/blob/ece9788ee0a443d9a9572cface9fd18ca7d82fb8/src/6model/reprs/MVMSpeshLog.h#L4">this set of events in the log</a>. It&#8217;s 24 bytes per entry, which isn&#8217;t too bad. One early mistake I made was logging invokes. I was keen that we start being able to inline calls to closures in the future, when it&#8217;s always the same code we call but with a different environment. So I logged the invoked code object, figuring the specializer thread could then pick the interesting parts out. This turned out to quite notably extend the lifetime of the closed over data, however. As the things we cared about were what code was invoked and whether the calling frame was also the outer frame, it was quite cheap to just extract those at the point of writing the log anyway.</p>
+<p>The end result only logs references to static frames, types objects, and code objects where we&#8217;re told the result of the lookup can be cached because it will always be the same. It never logs values. This fixes an issue in the previous logging mechanism: during its 8 runs it would keep values alive for longer, and &#8211; much worse &#8211; if the 8 runs were never completed, it could keep them alive indefinitely. It was a bounded leak, but certainly one I&#8217;m glad to no longer have.</p>
+<p>A hugely important part of the log is the correlation ID. This is a per-thread incrementing counter. It is bumped each time a frame is entered with logging turned on. It is then included in all events occurring within the execution of that frame. This allows the specializer thread to work out what events go with what code.</p>
+<h3><a id="user-content-the-spesh-worker-thread" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#the-spesh-worker-thread"></a>The spesh worker thread</h3>
+<p>The spesh worker thread sits in a loop, reading a log from a blocking queue (meaning it waits in an efficient way, and &#8211; once the program has been fully specialized &#8211; just never gets woken up again). Once a thread running code fills up a log buffer, it sticks it into the blocking queue, the spesh worker receives it, and it gets to work. I&#8217;ll go through the various steps it takes later in this series; for today I&#8217;ll focus only on the first one (updating the statistics model, below) and what it does before going to wait for another data buffer.</p>
+<p>To prevent runaway memory use if the threads running code are producing logs way faster than the specializer can make use of them, threads are given a quota of log buffers they are allowed to send. On sending, they decrement the quota. If it&#8217;s still greater than zero, then they allocate another log buffer and continue logging. Otherwise, logging is disabled for that thread. Once the specialization worker thread is done processing a buffer and acting upon its content, it increments the quotas. If it incremented it from zero, then it also installs a spesh log buffer for the thread, so it will continue logging.</p>
+<h3><a id="user-content-nailing-the-main-loop" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#nailing-the-main-loop"></a>Nailing the main loop</h3>
+<p>This scheme almost worked out fine, but there was an awkward problem. If we weren&#8217;t logging at the point that the outermost frame of the program started running (perhaps because we were specializing bits of the compiler still), then the outermost body of the program wouldn&#8217;t get a correlation ID, and so wouldn&#8217;t log any events. This would be especially unfortunate, since the first thing people measuring performance tend to do is write a hot loop in the mainline of a program! (More usefully, any <code>perl6 -ne ...</code> invocation has the same kind of program structure.)</p>
+<p>Thankfully, there was an easy way to deal with this: when we enter a new compilation unit for the first time, if there is no spesh log, then grant a temporary quota boost. Alternatively, if the log is almost full, then we send it off and then make a new one (with a quota boost if needed). This boost is temporary.</p>
+<p>Every heuristic written with good intentions can go rogue, and this one is no exception: imagine a program doing a load of <code>EVAL</code>s. So, there is a fixed limit on how many times this quota boosting can happen, to ensure it handles the cases it is aimed at but doesn&#8217;t do harm.</p>
+<h3><a id="user-content-building-a-model" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#building-a-model"></a>Building a model</h3>
+<p>Over on the specialization thread, the events are fed into a simulation that recreates something much like the call stack of the logged program, so it can understand the relationships between callers and callees. This produces a set of statistics, hung off each invoked piece of code (know as a &#8220;static frame&#8221; in MoarVM); doing it this way has the advantage that the statistics will be garbage collected should the code also be garbage collected (this can matter in <code>EVAL</code>-heavy programs).</p>
+<p>One of the things I like most about this new approach is that, with the <code>MVM_SPESH_LOG</code> environment variable set to the name of a file to log to, the assembled statistical data will be dumped. This makes it possible to see the data being used to make decisions. Enough with me describing stuff, though: let&#8217;s see the stats! Here&#8217;s an example program:</p>
+<pre><code>sub shorten($text, $limit) is export {
+    $text.chars &gt; $limit
+        ?? $text.substr(0, $limit) ~ '...'
+        !! $text
+}
+for ^10000 {
+    shorten 'foo' x 100, (20..500).pick;
+}
+</code></pre>
+<p>Here&#8217;s the statistics output after a while for the <code>shorten</code> sub:</p>
+<pre><code>Latest statistics for 'shorten' (cuid: 1, file: xxx.p6:1)
+
+Total hits: 156
+
+Callsite 0x7fdb8a1249e0 (2 args, 2 pos)
+Positional flags: obj, obj
+
+    Callsite hits: 156
+
+    Maximum stack depth: 13
+
+    Type tuple 0
+        Type 0: Str (Conc)
+        Type 1: Int (Conc)
+        Hits: 156
+        Maximum stack depth: 13
+        Logged at offset:
+            226:
+                156 x type Int (Conc)
+                156 x static frame 'chars' (4197) (caller is outer: 0)
+                156 x type tuple:
+                    Type 0: Scalar (Conc) of Str (Conc)
+            260:
+                156 x type Bool (Conc)
+                1 x static frame 'infix:«&gt;»' (2924) (caller is outer: 0)
+                155 x static frame 'infix:«&gt;»' (3143) (caller is outer: 0)
+                156 x type tuple:
+                    Type 0: Int (Conc)
+                    Type 1: Scalar (Conc) of Int (Conc)
+            340:
+                91 x type Str (Conc)
+                91 x static frame 'substr' (2541) (caller is outer: 0)
+                91 x type tuple:
+                    Type 0: Scalar (Conc) of Str (Conc)
+                    Type 1: Int (Conc)
+                    Type 2: Scalar (Conc) of Int (Conc)
+            382:
+                91 x type Str (Conc)
+                        91 x static frame 'infix:&lt;~&gt;' (4223) (caller is outer: 0)
+                        91 x type tuple:
+                    Type 0: Str (Conc)
+                    Type 1: Str (Conc)
+
+Static values:
+    - Sub+{&lt;anon|77645888&gt;} (0x2a70d48) @ 194
+    - Sub+{&lt;anon|77645888&gt;}+{Precedence} (0x23a90c0) @ 288
+</code></pre>
+<p>From this we can see:</p>
+<ul>
+<li>It&#8217;s always called with two arguments</li>
+<li>Those are always a <code>Str</code> and an <code>Int</code> respectively</li>
+<li>We always pass a <code>Scalar</code> variable holding a <code>Str</code> to <code>chars</code>, and it always returns an <code>Int</code></li>
+<li>We always pass an <code>Int</code> and a <code>Scalar</code> variable holding an <code>Int</code> to <code>&gt;</code>, and it always returns a <code>Bool</code></li>
+<li>When we call <code>substr</code> and <code>~</code> the type tuples and return values are also consistent</li>
+</ul>
+<p>At compile time it was also worked out that some lexical lookups will always resolve to the very same object; the results of those have been logged also (the static values section), so the optimization process can elide the lookups and do further optimizations by knowing exactly what will be called. (The lookups in question are for the <code>&gt;</code> and <code>~</code> operations, which are lexical, but in this case not overridden in a nested scope and so will come from the CORE setting.)</p>
+<p>Here&#8217;s another example, this time for <code>chars</code>:</p>
+<pre><code>Latest statistics for 'chars' (cuid: 4197, file: SETTING::src/core/Str.pm:2728)
+
+Total hits: 157
+
+Callsite 0x7fdb8a124a00 (1 args, 1 pos)
+Positional flags: obj
+
+    Callsite hits: 157
+
+    Maximum stack depth: 33
+
+    Type tuple 0
+        Type 0: Str (Conc)
+        Hits: 1
+        Maximum stack depth: 33
+
+    Type tuple 1
+        Type 0: Scalar (Conc) of Str (Conc)
+        Hits: 156
+        Maximum stack depth: 14
+</code></pre>
+<p>Here we can see that it was called once with a <code>Str</code> value, but a bunch of times with a <code>Scalar</code> holding a <code>Str</code>. Therefore, it&#8217;s worth producing optimized code for the latter case, but not worth bothering about the former.</p>
+<h3><a id="user-content-clearing-up" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#clearing-up"></a>Clearing up</h3>
+<p>But what about all of the statistics we record on one-off cold paths, such as at startup? We&#8217;ll never do optimizations based on them, and so they&#8217;d just sit around using memory. Or what about after we&#8217;ve optimized a frame in all the needed ways, and it&#8217;s no longer logging new data? We don&#8217;t really need the statistics any more.</p>
+<p>To alleviate this, each time a log buffer is received a statistics version number is incremented. The statistics are marked with the current version when updated. Any statistics that are not updated in a while will be presumed to be no longer interesting, and so thrown out.</p>
+<h3><a id="user-content-debuggability" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#debuggability"></a>Debuggability</h3>
+<p>When I first mentioned moving specialization work off to its own thread on <code>#moarvm</code>, brrt (who leads development of the JIT) was immediately concerned about the unpredictability this would introduce. Threads are scheduled a bit differently between runs, which would make it a nightmare to reproduce and hunt down specializer and JIT compiler bugs, including using the bisection approach to work out exactly which specialization made things go wrong. It was an excellent point.</p>
+<p>Therefore, I introduced the <code>MVM_SPESH_BLOCKING</code> environment variable. When set, a thread executing code will send off its log, and then block until the spesh worker thread has finished processing it and installing specializations. This means that, for a single threaded program, the behavior will again be fully deterministic.</p>
+<h3><a id="user-content-you-wont-believe-what-happens-next" class="anchor" href="https://gist.github.com/jnthn/67b25a6200d39e98114acf1a69c9c894#you-wont-believe-what-happens-next"></a>You won&#8217;t believe what happens next!</h3>
+<p>Alas, that&#8217;s all I&#8217;m covering this time. Next time, I&#8217;ll talk about how the statistics are used.</p>
+<div id="atatags-370373-6027b8c8e90bc">
+        <script type="text/javascript">
+            __ATA.cmd.push(function() {
+                __ATA.initVideoSlot('atatags-370373-6027b8c8e90bc', {
+                    sectionId: '370373',
+                    format: 'inread'
+                });
+            });
+        </script>
+    </div>			<div id="atatags-26942-6027b8c8e915d"></div>
+			
+			<script>
+				__ATA.cmd.push(function() {
+					__ATA.initDynamicSlot({
+						id: 'atatags-26942-6027b8c8e915d',
+						location: 120,
+						formFactor: '001',
+						label: {
+							text: 'Advertisements',
+						},
+						creative: {
+							reportAd: {
+								text: 'Report this ad',
+							},
+							privacySettings: {
+								text: 'Privacy',
+								
+							}
+						}
+					});
+				});
+			</script><div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-twitter"><a rel="nofollow noopener noreferrer" data-shared="sharing-twitter-497" class="share-twitter sd-button share-icon" href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/?share=twitter" target="_blank" title="Click to share on Twitter"><span>Twitter</span></a></li><li class="share-facebook"><a rel="nofollow noopener noreferrer" data-shared="sharing-facebook-497" class="share-facebook sd-button share-icon" href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/?share=facebook" target="_blank" title="Click to share on Facebook"><span>Facebook</span></a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-14597269-497-6027b8c8e98f1' data-src='//widgets.wp.com/likes/index.html?ver=20200826#blog_id=14597269&amp;post_id=497&amp;origin=6guts.wordpress.com&amp;obj_id=14597269-497-6027b8c8e98f1' data-name='like-post-frame-14597269-497-6027b8c8e98f1'><h3 class='sd-title'>Like this:</h3><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class="loading">Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>											</div><!-- .entry-content -->
+
+		
+						<div class="entry-utility">
+							This entry was posted in <a href="https://6guts.wordpress.com/category/uncategorized/" rel="category tag">Uncategorized</a>. Bookmark the <a href="https://6guts.wordpress.com/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/" title="Permalink to MoarVM Specializer Improvements Part 1: Gathering&nbsp;Data" rel="bookmark">permalink</a>.													</div><!-- .entry-utility -->
+					</div><!-- #post-497 -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="https://6guts.wordpress.com/2017/07/30/shrinking-moarvm-call-frames/" rel="prev"><span class="meta-nav">&larr;</span> Shrinking MoarVM call&nbsp;frames</a></div>
+					<div class="nav-next"><a href="https://6guts.wordpress.com/2017/09/17/moarvm-specializer-improvements-part-2-planning/" rel="next">MoarVM Specializer Improvements Part 2:&nbsp;Planning <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">
+			4 Responses to <em>MoarVM Specializer Improvements Part 1: Gathering&nbsp;Data</em>			</h3>
+
+
+			<ol class="commentlist">
+						<li class="post pingback">
+		<p>Pingback: <a href='https://p6weekly.wordpress.com/2017/08/07/2017-32-weekly-101/' rel='external nofollow ugc' class='url'>2017.32 Weekly 101 | Weekly changes in and around Perl 6</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href='https://6guts.wordpress.com/2017/11/05/moarvm-specializer-improvements-part-3-optimizing-code/' rel='external nofollow ugc' class='url'>MoarVM Specializer Improvements Part 3: Optimizing Code | 6guts</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href='https://6guts.wordpress.com/2017/11/09/moarvm-specializer-improvements-part-4-argument-guards/' rel='external nofollow ugc' class='url'>MoarVM Specializer Improvements Part 4: Argument Guards | 6guts</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href='https://p6weekly.wordpress.com/2017/11/13/2017-46-spesh-explained/' rel='external nofollow ugc' class='url'>2017.46 Spesh Explained | Weekly changes in and around Perl 6</a></p>
+				</li><!-- #comment-## -->
+			</ol>
+
+
+	
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://6guts.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><input type="hidden" id="highlander_comment_nonce" name="highlander_comment_nonce" value="d7e6913b3a" /><input type="hidden" name="_wp_http_referer" value="/2017/08/06/moarvm-specializer-improvements-part-1-gathering-data/" />
+<input type="hidden" name="hc_post_as" id="hc_post_as" value="guest" />
+
+<div class="comment-form-field comment-textarea">
+	<label for="comment">Enter your comment here...</label>
+	<div id="comment-form-comment"><textarea id="comment" name="comment" title="Enter your comment here..."></textarea></div>
+</div>
+
+<div id="comment-form-identity">
+	<div id="comment-form-nascar">
+		<p>Fill in your details below or click an icon to log in:</p>
+		<ul>
+			<li class="selected" style="display:none;">
+				<a href="#comment-form-guest" id="postas-guest" class="nascar-signin-link"
+                   title="Login via Guest">
+									</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:WordPress.com" id="postas-wordpress" class="nascar-signin-link"
+                   title="Login via WordPress.com">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></g></svg>				</a>
+			</li>
+			<li>
+			<iframe id="googleplus-sign-in" name="googleplus-sign-in" src="https://public-api.wordpress.com/connect/?googleplus-sign-in=https%3A%2F%2F6guts.wordpress.com&#038;color_scheme=light" width="24" height="24" scrolling="no" allowtransparency="true" seamless="seamless" frameborder="0"></iframe>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Twitter" id="postas-twitter" class="nascar-signin-link"
+                   title="Login via Twitter">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"/></g></svg>				</a>
+			</li>
+			<li>
+				<a href="#comment-form-load-service:Facebook" id="postas-facebook" class="nascar-signin-link"
+                   title="Login via Facebook">
+					<svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"/></g></svg>				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div id="comment-form-guest" class="comment-form-service selected">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+<a href="https://gravatar.com/site/signup/" target="_blank">				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Gravatar" width="25" class="no-grav" />
+</a>			</div>
+
+				<div class="comment-form-fields">
+				<div class="comment-form-field comment-form-email">
+					<label for="email">Email <span class="required">(required)</span> <span class="nopublish">(Address never made public)</span></label>
+					<div class="comment-form-input"><input id="email" name="email" type="email" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-author">
+					<label for="author">Name <span class="required">(required)</span></label>
+					<div class="comment-form-input"><input id="author" name="author" type="text" value="" /></div>
+				</div>
+				<div class="comment-form-field comment-form-url">
+					<label for="url">Website</label>
+					<div class="comment-form-input"><input id="url" name="url" type="url" value="" /></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+	<div id="comment-form-wordpress" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="WordPress.com Logo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="wp_avatar" id="wordpress-avatar" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_user_id" id="wordpress-user_id" class="comment-meta-wordpress" value="" />
+				<input type="hidden" name="wp_access_token" id="wordpress-access_token" class="comment-meta-wordpress" value="" />
+						<p class="comment-form-posting-as pa-wordpress">
+			<strong></strong>
+			You are commenting using your WordPress.com account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'wordpress' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#0087be" d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.762-7.57zM3.008 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.342c-.5 1.117-.78 2.354-.78 3.658zm15.06-.454c0-1.112-.398-1.88-.74-2.48-.456-.74-.883-1.368-.883-2.11 0-.825.627-1.595 1.51-1.595.04 0 .078.006.116.008-1.598-1.464-3.73-2.36-6.07-2.36-3.14 0-5.904 1.613-7.512 4.053.21.008.41.012.58.012.94 0 2.395-.114 2.395-.114.484-.028.54.684.057.74 0 0-.487.058-1.03.086l3.275 9.74 1.968-5.902-1.4-3.838c-.485-.028-.944-.085-.944-.085-.486-.03-.43-.77.056-.742 0 0 1.484.114 2.368.114.94 0 2.397-.114 2.397-.114.486-.028.543.684.058.74 0 0-.488.058-1.03.086l3.25 9.665.897-2.997c.456-1.17.684-2.137.684-2.907zm1.82-3.86c.04.286.06.593.06.924 0 .912-.17 1.938-.683 3.22l-2.746 7.94c2.672-1.558 4.47-4.454 4.47-7.77 0-1.564-.4-3.033-1.1-4.314zM12 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-googleplus" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Google photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="googleplus_avatar" id="googleplus-avatar" class="comment-meta-googleplus" value="" />
+				<input type="hidden" name="googleplus_user_id" id="googleplus-user_id" class="comment-meta-googleplus" value="" />
+				<input type="hidden" name="googleplus_access_token" id="googleplus-access_token" class="comment-meta-googleplus" value="" />
+						<p class="comment-form-posting-as pa-googleplus">
+			<strong></strong>
+			You are commenting using your Google account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'googleplus' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" x="0px" y="0px" viewBox="0 0 60 60" ><path fill="#519bf7" d="M56.3,30c0,-1.6 -0.2,-3.4 -0.6,-5h-3.1H42.2H30v10.6h14.8C44,39.3 42,42 39.1,43.9l8.8,6.8C53,46 56.3,39 56.3,30z" /><path fill="#3db366" d="M30,57.5c6.7,0 13.1,-2.4 17.9,-6.8l-8.8,-6.8c-2.5,1.6 -5.6,2.4 -9.1,2.4c-7.2,0 -13.3,-4.7 -15.4,-11.2l-9.3,7.1C9.8,51.3 19.1,57.5 30,57.5z" /><path fill="#fdc600" d="M5.3,42.2l9.3,-7.1c-0.5,-1.6 -0.8,-3.3 -0.8,-5.1s0.3,-3.5 0.8,-5.1l-9.3,-7.1C3.5,21.5 2.5,25.6 2.5,30S3.5,38.5 5.3,42.2z" /><path fill="#f15b44" d="M40.1,17.4l8,-8C43.3,5.1 37,2.5 30,2.5C19.1,2.5 9.8,8.7 5.3,17.8l9.3,7.1c2.1,-6.5 8.2,-11.1 15.4,-11.1C33.9,13.7 37.4,15.1 40.1,17.4z" /></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-twitter" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Twitter picture" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="twitter_avatar" id="twitter-avatar" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_user_id" id="twitter-user_id" class="comment-meta-twitter" value="" />
+				<input type="hidden" name="twitter_access_token" id="twitter-access_token" class="comment-meta-twitter" value="" />
+						<p class="comment-form-posting-as pa-twitter">
+			<strong></strong>
+			You are commenting using your Twitter account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'twitter' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#1DA1F2" d="M22.23 5.924c-.736.326-1.527.547-2.357.646.847-.508 1.498-1.312 1.804-2.27-.793.47-1.67.812-2.606.996C18.325 4.498 17.258 4 16.078 4c-2.266 0-4.103 1.837-4.103 4.103 0 .322.036.635.106.935-3.41-.17-6.433-1.804-8.457-4.287-.353.607-.556 1.312-.556 2.064 0 1.424.724 2.68 1.825 3.415-.673-.022-1.305-.207-1.86-.514v.052c0 1.988 1.415 3.647 3.293 4.023-.344.095-.707.145-1.08.145-.265 0-.522-.026-.773-.074.522 1.63 2.038 2.817 3.833 2.85-1.404 1.1-3.174 1.757-5.096 1.757-.332 0-.66-.02-.98-.057 1.816 1.164 3.973 1.843 6.29 1.843 7.547 0 11.675-6.252 11.675-11.675 0-.178-.004-.355-.012-.53.802-.578 1.497-1.3 2.047-2.124z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+	<div id="comment-form-facebook" class="comment-form-service">
+		<div class="comment-form-padder">
+			<div class="comment-form-avatar">
+				<img src="https://1.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?s=25&amp;d=identicon&amp;forcedefault=y&amp;r=G" alt="Facebook photo" width="25" class="no-grav" />
+			</div>
+
+				<div class="comment-form-fields">
+				<input type="hidden" name="fb_avatar" id="facebook-avatar" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_user_id" id="facebook-user_id" class="comment-meta-facebook" value="" />
+				<input type="hidden" name="fb_access_token" id="facebook-access_token" class="comment-meta-facebook" value="" />
+						<p class="comment-form-posting-as pa-facebook">
+			<strong></strong>
+			You are commenting using your Facebook account.			<span class="comment-form-log-out">
+				(&nbsp;<a href="javascript:HighlanderComments.doExternalLogout( 'facebook' );">Log&nbsp;Out</a>&nbsp;/&nbsp;
+				<a href="#" onclick="javascript:HighlanderComments.switchAccount();return false;">Change</a>&nbsp;)
+			</span>
+			<span class="pa-icon"><svg xmlns="http://www.w3.org/2000/svg" role="presentation" viewBox="0 0 24 24" ><rect x="0" fill="none" width="24" height="24"/><g><path fill="#3B5998" d="M20.007 3H3.993C3.445 3 3 3.445 3 3.993v16.013c0 .55.445.994.993.994h8.62v-6.97H10.27V11.31h2.346V9.31c0-2.325 1.42-3.59 3.494-3.59.993 0 1.847.073 2.096.106v2.43h-1.438c-1.128 0-1.346.537-1.346 1.324v1.734h2.69l-.35 2.717h-2.34V21h4.587c.548 0 .993-.445.993-.993V3.993c0-.548-.445-.993-.993-.993z"/></g></svg></span>
+		</p>
+					</div>
+	
+		</div>
+	</div>
+
+
+	<div id="comment-form-load-service" class="comment-form-service">
+		<div class="comment-form-posting-as-cancel"><a href="javascript:HighlanderComments.cancelExternalWindow();">Cancel</a></div>
+		<p>Connecting to %s</p>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var highlander_expando_javascript = function () {
+
+	function hide( sel ) {
+		var el = document.querySelector( sel );
+		if ( el ) {
+			el.style.setProperty( 'display', 'none' );
+		}
+	}
+
+	function show( sel ) {
+		var el = document.querySelector( sel );
+		if ( el ) {
+			el.style.removeProperty( 'display' );
+		}
+	}
+
+	var input = document.createElement( 'input' );
+	var comment = document.querySelector( '#comment' );
+
+	if ( input && comment && 'placeholder' in input ) {
+		var label = document.querySelector( '.comment-textarea label' );
+		if ( label ) {
+			var text = label.textContent;
+			label.parentNode.removeChild( label );
+			comment.setAttribute( 'placeholder', text );
+		}
+	}
+
+	// Expando Mode: start small, then auto-resize on first click + text length
+	hide( '#comment-form-identity' );
+	hide( '#comment-form-subscribe' );
+	hide( '#commentform .form-submit' );
+
+	if ( comment ) {
+		comment.style.height = '10px';
+
+		var handler = function () {
+			comment.style.height = HighlanderComments.initialHeight + 'px';
+			show( '#comment-form-identity' );
+			show( '#comment-form-subscribe' );
+			show( '#commentform .form-submit' );
+			HighlanderComments.resizeCallback();
+
+			comment.removeEventListener( 'focus', handler );
+		};
+
+		comment.addEventListener( 'focus', handler );
+	}
+}
+
+if ( document.readyState !== 'loading' ) {
+	highlander_expando_javascript();
+} else {
+	if ( typeof window.jQuery === 'function' ) {
+		// Use jQuery's `ready` if available.
+		// This solves some scheduling issues between this script and the main highlander script.
+		jQuery( document ).ready( highlander_expando_javascript );
+	} else {
+		// If not available, add a vanilla event listener.
+		document.addEventListener( 'DOMContentLoaded', highlander_expando_javascript );
+	}
+}
+
+</script>
+
+<div id="comment-form-subscribe">
+	<p class="comment-subscription-form"><input type="checkbox" name="subscribe" id="subscribe" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-label" for="subscribe" style="display: inline;">Notify me of new comments via email.</label></p><p class="post-subscription-form"><input type="checkbox" name="subscribe_blog" id="subscribe_blog" value="subscribe" style="width: auto;"/> <label class="subscribe-label" id="subscribe-blog-label" for="subscribe_blog"  style="display: inline;">Notify me of new posts via email.</label></p></div>
+
+
+
+
+<p class="form-submit"><input name="submit" type="submit" id="comment-submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='497' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="2509872ab1" /></p>
+<input type="hidden" name="genseq" value="1613215944" />
+<input type="hidden" id="ak_js" name="ak_js" value="208"/><textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100" style="display: none !important;"></textarea></form>	</div><!-- #respond -->
+	<div style="clear: both"></div><p class="akismet_comment_form_privacy_notice">This site uses Akismet to reduce spam. <a href="https://akismet.com/privacy/" target="_blank" rel="nofollow noopener">Learn how your comment data is processed</a>.</p>
+</div><!-- #comments -->
+
+	
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="https://6guts.wordpress.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>
+		<li id="recent-posts-2" class="widget-container widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/">Taking a break from Raku core&nbsp;development</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2019/01/02/my-perl-6-wishes-for-2019/">My Perl 6 wishes for&nbsp;2019</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2018/10/06/speeding-up-object-creation/">Speeding up object&nbsp;creation</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2018/09/29/eliminating-unrequired-guards/">Eliminating unrequired guards</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2018/09/28/faster-box-unbox-and-int-operations/">Faster box/unbox and Int&nbsp;operations</a>
+									</li>
+					</ul>
+
+		</li><li id="recent-comments-2" class="widget-container widget_recent_comments"><h3 class="widget-title">Recent Comments</h3>				<table class="recentcommentsavatar" cellspacing="0" cellpadding="0" border="0">
+					<tr><td title="2019.01 Wishes for 2019 | Weekly changes in and around Perl 6" class="recentcommentsavatartop" style="height:48px; width:48px;"><a href="https://p6weekly.wordpress.com/2019/01/08/2019-01-wishes-for-2019/" rel="nofollow"></a></td><td class="recentcommentstexttop" style=""><a href="https://p6weekly.wordpress.com/2019/01/08/2019-01-wishes-for-2019/" rel="nofollow">2019.01 Wishes for 2&hellip;</a> on <a href="https://6guts.wordpress.com/2019/01/02/my-perl-6-wishes-for-2019/#comment-6005">My Perl 6 wishes for&nbsp;2019</a></td></tr><tr><td title="hobbified (@hobbified)" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="http://twitter.com/hobbified" rel="nofollow"><img alt='' src='https://i1.wp.com/pbs.twimg.com/profile_images/67477518/dr_haas_normal.jpg?resize=48%2C48' class='avatar avatar-48' height='48' width='48' /></a></td><td class="recentcommentstextend" style=""><a href="http://twitter.com/hobbified" rel="nofollow">hobbified (@hobbifie&hellip;</a> on <a href="https://6guts.wordpress.com/2018/10/06/speeding-up-object-creation/#comment-5966">Speeding up object&nbsp;creati&hellip;</a></td></tr><tr><td title="Alex" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="http://gravatar.com/kaokun" rel="nofollow"><img alt='' src='https://0.gravatar.com/avatar/6428904bea03ecf54d864d2bf574a3a2?s=48&#038;d=identicon&#038;r=G' class='avatar avatar-48' height='48' width='48' /></a></td><td class="recentcommentstextend" style=""><a href="http://gravatar.com/kaokun" rel="nofollow">Alex</a> on <a href="https://6guts.wordpress.com/2018/10/06/speeding-up-object-creation/#comment-5913">Speeding up object&nbsp;creati&hellip;</a></td></tr><tr><td title="jnthnwrthngtn" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="https://6guts.wordpress.com" rel="nofollow"><img alt='' src='https://2.gravatar.com/avatar/5999d5d26089eb4019867dc7705c41a9?s=48&#038;d=identicon&#038;r=G' class='avatar avatar-48' height='48' width='48' /></a></td><td class="recentcommentstextend" style=""><a href="https://6guts.wordpress.com" rel="nofollow">jnthnwrthngtn</a> on <a href="https://6guts.wordpress.com/2018/10/06/speeding-up-object-creation/#comment-5907">Speeding up object&nbsp;creati&hellip;</a></td></tr><tr><td title="Alex" class="recentcommentsavatarend" style="height:48px; width:48px;"><img alt='' src='https://0.gravatar.com/avatar/6428904bea03ecf54d864d2bf574a3a2?s=48&#038;d=identicon&#038;r=G' class='avatar avatar-48' height='48' width='48' /></td><td class="recentcommentstextend" style="">Alex on <a href="https://6guts.wordpress.com/2018/10/06/speeding-up-object-creation/#comment-5896">Speeding up object&nbsp;creati&hellip;</a></td></tr>				</table>
+				</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">Archives</h3>
+			<ul>
+					<li><a href='https://6guts.wordpress.com/2020/10/'>October 2020</a></li>
+	<li><a href='https://6guts.wordpress.com/2019/01/'>January 2019</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/10/'>October 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/09/'>September 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/07/'>July 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/06/'>June 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/03/'>March 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/01/'>January 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/11/'>November 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/09/'>September 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/08/'>August 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/07/'>July 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/06/'>June 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/05/'>May 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/04/'>April 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/03/'>March 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/12/'>December 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/11/'>November 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/08/'>August 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/07/'>July 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/06/'>June 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/04/'>April 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/03/'>March 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/02/'>February 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/01/'>January 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/12/'>December 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/11/'>November 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/10/'>October 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/09/'>September 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/08/'>August 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/07/'>July 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/06/'>June 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/05/'>May 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/04/'>April 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/06/'>June 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/04/'>April 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/01/'>January 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/12/'>December 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/10/'>October 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/09/'>September 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/08/'>August 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/07/'>July 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/05/'>May 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/04/'>April 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/02/'>February 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/01/'>January 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/11/'>November 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/10/'>October 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/09/'>September 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/08/'>August 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/07/'>July 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/06/'>June 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/05/'>May 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/04/'>April 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/03/'>March 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/02/'>February 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/01/'>January 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/11/'>November 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/10/'>October 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/09/'>September 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/08/'>August 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/07/'>July 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/06/'>June 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/05/'>May 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/04/'>April 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/02/'>February 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/01/'>January 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/11/'>November 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/10/'>October 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/09/'>September 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/08/'>August 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/07/'>July 2010</a></li>
+			</ul>
+
+			</li><li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">Categories</h3>
+			<ul>
+					<li class="cat-item cat-item-1"><a href="https://6guts.wordpress.com/category/uncategorized/">Uncategorized</a>
+</li>
+			</ul>
+
+			</li><li id="meta-2" class="widget-container widget_meta"><h3 class="widget-title">Meta</h3>
+		<ul>
+			<li><a href="https://wordpress.com/start?ref=wplogin">Register</a></li>			<li><a href="https://6guts.wordpress.com/wp-login.php">Log in</a></li>
+			<li><a href="https://6guts.wordpress.com/feed/">Entries feed</a></li>
+			<li><a href="https://6guts.wordpress.com/comments/feed/">Comments feed</a></li>
+
+			<li><a href="https://wordpress.com/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.com</a></li>
+		</ul>
+
+		</li>			<div id="atatags-286348-6027b8c8f299c"></div>
+			
+			<script>
+				__ATA.cmd.push(function() {
+					__ATA.initDynamicSlot({
+						id: 'atatags-286348-6027b8c8f299c',
+						location: 140,
+						formFactor: '003',
+						label: {
+							text: 'Advertisements',
+						},
+						creative: {
+							reportAd: {
+								text: 'Report this ad',
+							},
+							privacySettings: {
+								text: 'Privacy',
+								
+							}
+						}
+					});
+				});
+			</script>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="https://6guts.wordpress.com/" title="6guts" rel="home">
+					6guts				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script src='//0.gravatar.com/js/gprofiles.js?ver=202106y' id='grofiles-cards-js'></script>
+<script id='wpgroho-js-extra'>
+var WPGroHo = {"my_hash":""};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240h'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init( 'body', '#wp-admin-bar-my-account' );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-5147bc9a113fad891146efe41b79f2d6">
+	</div>
+	<div class="grofile-hash-map-6428904bea03ecf54d864d2bf574a3a2">
+	</div>
+	<div class="grofile-hash-map-5999d5d26089eb4019867dc7705c41a9">
+	</div>
+	</div>
+<script id='highlander-comments-js-extra'>
+var HighlanderComments = {"loggingInText":"Logging In\u2026","submittingText":"Posting Comment\u2026","postCommentText":"Post Comment","connectingToText":"Connecting to %s","commentingAsText":"%1$s: You are commenting using your %2$s account.","logoutText":"Log Out","loginText":"Log In","connectURL":"https:\/\/6guts.wordpress.com\/public.api\/connect\/?action=request","logoutURL":"https:\/\/6guts.wordpress.com\/wp-login.php?action=logout&_wpnonce=c0076cd1eb","homeURL":"https:\/\/6guts.wordpress.com\/","postID":"497","gravDefault":"identicon","enterACommentError":"Please enter a comment","enterEmailError":"Please enter your email address here","invalidEmailError":"Invalid email address","enterAuthorError":"Please enter your name here","gravatarFromEmail":"This picture will show whenever you leave a comment. Click to customize it.","logInToExternalAccount":"Log in to use details from one of these accounts.","change":"Change","changeAccount":"Change Account","comment_registration":"","userIsLoggedIn":"","isJetpack":"","text_direction":"ltr"};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??/wp-content/js/jquery/jquery.autoresize.js,/wp-content/mu-plugins/highlander-comments/script.js?m=1573483029j'></script>
+		<!-- CCPA [start] -->
+		<script type="text/javascript">
+			( function () {
+
+				var setupPrivacy = function() {
+
+					document.addEventListener( 'DOMContentLoaded', function() {
+
+						// Minimal Mozilla Cookie library
+						// https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie/Simple_document.cookie_framework
+						var cookieLib = window.cookieLib = {getItem:function(e){return e&&decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*"+encodeURIComponent(e).replace(/[\-\.\+\*]/g,"\\$&")+"\\s*\\=\\s*([^;]*).*$)|^.*$"),"$1"))||null},setItem:function(e,o,n,t,r,i){if(!e||/^(?:expires|max\-age|path|domain|secure)$/i.test(e))return!1;var c="";if(n)switch(n.constructor){case Number:c=n===1/0?"; expires=Fri, 31 Dec 9999 23:59:59 GMT":"; max-age="+n;break;case String:c="; expires="+n;break;case Date:c="; expires="+n.toUTCString()}return"rootDomain"!==r&&".rootDomain"!==r||(r=(".rootDomain"===r?".":"")+document.location.hostname.split(".").slice(-2).join(".")),document.cookie=encodeURIComponent(e)+"="+encodeURIComponent(o)+c+(r?"; domain="+r:"")+(t?"; path="+t:"")+(i?"; secure":""),!0}};
+
+						var setDefaultOptInCookie = function() {
+							var value = '1YNN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 365 * 24 * 60 * 60, '/', domain );
+						};
+
+						var setCcpaAppliesCookie = function( value ) {
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'ccpa_applies', value, 24 * 60 * 60, '/', domain );
+						}
+
+						var maybeCallDoNotSellCallback = function() {
+							if ( 'function' === typeof window.doNotSellCallback ) {
+								return window.doNotSellCallback();
+							}
+
+							return false;
+						}
+
+						var usprivacyCookie = cookieLib.getItem( 'usprivacy' );
+
+						if ( null !== usprivacyCookie ) {
+							maybeCallDoNotSellCallback();
+							return;
+						}
+
+						var ccpaCookie = cookieLib.getItem( 'ccpa_applies' );
+
+						if ( null === ccpaCookie ) {
+
+							var request = new XMLHttpRequest();
+							request.open( 'GET', 'https://public-api.wordpress.com/geo/', true );
+
+							request.onreadystatechange = function () {
+								if ( 4 === this.readyState ) {
+									if ( 200 === this.status ) {
+
+										var data = JSON.parse( this.response );
+										var ccpa_applies = data['region'] && data['region'].toLowerCase() === 'california';
+
+										setCcpaAppliesCookie( ccpa_applies );
+
+										if ( ccpa_applies ) {
+											if ( maybeCallDoNotSellCallback() ) {
+												setDefaultOptInCookie();
+											}
+										}
+									} else {
+										setCcpaAppliesCookie( true );
+										if ( maybeCallDoNotSellCallback() ) {
+											setDefaultOptInCookie();
+										}
+									}
+								}
+							};
+
+							request.send();
+						} else {
+							if ( ccpaCookie === 'true' ) {
+								if ( maybeCallDoNotSellCallback() ) {
+									setDefaultOptInCookie();
+								}
+							}
+						}
+					} );
+				};
+
+				if ( window.defQueue && defQueue.isLOHP && defQueue.isLOHP === 2020 ) {
+					defQueue.items.push( setupPrivacy );
+				} else {
+					setupPrivacy();
+				}
+
+			} )();
+		</script>
+
+		<!-- CCPA [end] -->
+					<script type="text/javascript">
+			( function( $ ) {
+				$( document.body ).on( 'post-load', function () {
+					if ( typeof __ATA.insertInlineAds === 'function' ) {
+						__ATA.insertInlineAds();
+					}
+				} );
+			} )( jQuery );
+			</script>
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20201002";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20201002";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+	
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https:\/\/6guts.wordpress.com\/2017\/08\/06\/moarvm-specializer-improvements-part-1-gathering-data\/":497};
+	</script>
+				<div class="widget widget_eu_cookie_law_widget">
+<div
+	class="hide-on-button ads-active"
+	data-hide-timeout="30"
+	data-consent-expiration="180"
+	id="eu-cookie-law"
+>
+	<form method="post">
+		<input type="submit" value="Close and accept" class="accept" />
+
+		Privacy &amp; Cookies: This site uses cookies. By continuing to use this website, you agree to their use. <br />
+To find out more, including how to control cookies, see here:
+				<a href="https://automattic.com/cookies" rel="nofollow">
+			Cookie Policy		</a>
+ </form>
+</div>
+</div><script id='sharing-js-js-extra'>
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+</script>
+<script type='text/javascript' src='https://s0.wp.com/_static/??-eJyFkN1OwzAMhV+I1BQQgwvEoyCTeJ3TJM1iZ2U8PUZiF/yoXNnyOeezbFir80tRKgpRINCJPdW3IcoVfJfqIppJBCf6Q43HTu38VQYuJ6b1X1skrehn10j4/Rc1d1dTn7gIJJ5JwEKdDlhConYxc/GpBxMN7pecLWi4ms5D5rJBXDlMpALUTV1mJpdwBaVcEyr9mG9wMNge94oNMopSs85ps6NkKzSzZFJ3O1zDi10A+6XlDf/n690+ITeQAzYu06Va6Dk/jffjzfi4e7jbxQ8TLqzD'></script>
+<script type='text/javascript'>
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-twitter' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-twitter' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomtwitter', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<iframe src='https://widgets.wp.com/likes/master.html?ver=20200826#ver=20200826' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+		<div id='likes-other-gravatars'><div class="likes-text"><span>%d</span> bloggers like this:</div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+<script src="//stats.wp.com/w.js?61" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14597269','blog_tz':'1','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14597269','v':'wpcom','tz':'1','user_id':'0','post':'497','subd':'6guts'}]);
+_stq.push(['extra', {'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWFnNncxc1tjZG9XVXhRY2gzcWhIRkllQ2l2Q3ZyRGZSdDFEZVhvNj1rNTdSdGl1aEhCQ3pnWlEmMnVtTXlIUlJbRStpdFg3SzUwS19ncCU9d216JTEyNGdacjlnWHI9bVAsej9LaTNpaTdxaHNrbjRILVAzK3RHLjQ5diwxN1ZsdTZDQldMWjR8NTRBamxJPXJjMndIfmtWc3owX35aTnBfclBsSy9GP1JOaVUzUGJqM0RvQ3omW3UzRktHJlVSZ2kybmYrJXNbMHhyYXk3MnNUW3p5ZXFvYlt0bUN6OFY9LE8rdUE0VWlRblNlPzlLcm81SVRBUlBrM1pHTXNSZQ=='}]);
+_stq.push([ 'clickTrackerInit', '14597269', '497' ]);
+	</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script>
+if ( 'object' === typeof wpcom_mobile_user_agent_info ) {
+
+	wpcom_mobile_user_agent_info.init();
+	var mobileStatsQueryString = "";
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedPlatformName )
+		mobileStatsQueryString += "&x_" + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+	
+	if( false !== wpcom_mobile_user_agent_info.matchedUserAgentName )
+		mobileStatsQueryString += "&x_" + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+	
+	if( wpcom_mobile_user_agent_info.isIPad() )
+		mobileStatsQueryString += "&x_" + 'ipad_views' + '=' + 'views';
+
+	if( "" != mobileStatsQueryString ) {
+		new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+	}
+	
+}
+</script></body>
+</html>

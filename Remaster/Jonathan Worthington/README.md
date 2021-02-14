@@ -1,4 +1,4 @@
-This directory contains remastered versions of 212 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 213 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -117,6 +117,7 @@ This directory contains remastered versions of 212 blog posts by Jonathan Worthi
 - 2011-07-31 [July: Beijing Perl Workshop, vacation and hacking](July-Beijing-Perl-Workshop-vacation-and-hacking.md)
 - 2011-08-01 [A hint of meta-programming](A-hint-of-meta-programming.md)
 - 2011-08-23 [My YAPC::EU talks](My-YAPC-EU-talks.md)
+- 2011-09-12 [What’s coming up in September/October](Whats-coming-up-in-September-October.md)
 - 2011-09-17 [This is not enough!](This-is-not-enough.md)
 - 2011-10-15 [An optimizer lands, bringing native operators](An-optimizer-lands-bringing-native-operators.md)
 - 2011-11-09 [Slides from my Optimizing Rakudo Raku talk](Slides-from-my-Optimizing-Rakudo-Raku-talk.md)

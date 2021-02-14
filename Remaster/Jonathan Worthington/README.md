@@ -1,4 +1,4 @@
-This directory contains remastered versions of 174 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 175 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -106,6 +106,7 @@ This directory contains remastered versions of 174 blog posts by Jonathan Worthi
 - 2011-01-08 [Back and hackin’](Back-and-hackin.md)
 - 2011-01-16 [NQP and 6model: big steps forward on Parrot and JVM](NQP-and-6model-big-steps-forward-on-Parrot-and-JVM.md)
 - 2011-01-30 [NQP changes getting there; Rakudo next!](NQP-changes-getting-there-Rakudo-next.md)
+- 2011-05-09 [Rakudo on 6model gets underway!](Rakudo-on-6model-gets-underway.md)
 - 2011-06-28 [Another little nom update](Another-little-nom-update.md)
 - 2011-07-31 [July: Beijing Perl Workshop, vacation and hacking](July-Beijing-Perl-Workshop-vacation-and-hacking.md)
 - 2011-08-01 [A hint of meta-programming](A-hint-of-meta-programming.md)

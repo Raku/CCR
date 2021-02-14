@@ -1,0 +1,7 @@
+# Taking a break from Raku core development
+    
+*Originally published on [2020-10-05](https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/) by Jonathan Worthington.*
+
+I’d like to thank everyone who voted for me in the recent Raku Steering Council elections. By this point, I’ve been working on the language for well over a decade, first to help turn a language design I found fascinating into a working implementation, and since the Christmas release to make that implementation more robust and performant. Overall, it’s been as fun as it has been challenging – in a large part because I’ve found myself sharing the journey with a lot of really great people. I’ve also tried to do my bit to keep the community around the language kind and considerate. Receiving a vote from around 90% of those who participated in the Steering Council elections was humbling.
+
+Alas, I’ve today [submitted my resignation](https://gist.github.com/jnthn/0015f339be0c92c56fdc713852bce0be#steering-council) to the Steering Council, on personal health grounds. For the same reason, I’ll be taking a step back from Raku core development (Raku, MoarVM, language design, etc.) Please don’t worry too much; I’ll almost certainly be fine. It may be I’m ready to continue working on Raku things in a month or two. It may also be longer. Either way, I think Raku will be better off with a fully sized Steering Council in place, and I’ll be better off without the anxiety that I’m holding a role that I’m not in a place to fulfill.

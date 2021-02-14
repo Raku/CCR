@@ -1,4 +1,4 @@
-This directory contains remastered versions of 225 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 226 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -127,6 +127,7 @@ This directory contains remastered versions of 225 blog posts by Jonathan Worthi
 - 2011-11-09 [Slides from my Optimizing Rakudo Raku talk](Slides-from-my-Optimizing-Rakudo-Raku-talk.md)
 - 2011-11-20 [Rakudo: this week’s release, and the next Rakudo Star](Rakudo-this-weeks-release-and-the-next-Rakudo-Star.md)
 - 2011-12-02 [Grammar::Tracer and Grammar::Debugger](Grammar-Tracer-and-Grammar-Debugger.md)
+- 2011-12-14 [Meta-programming: what, why and how](Meta-programming-what-why-and-how.md)
 - 2012-01-15 [Looking back, looking forward](Looking-back-looking-forward.md)
 - 2012-01-29 [This month’s Rakudo Star release – and what’s coming next](This-months-Rakudo-Star-release-and-whats-coming-next.md)
 - 2012-02-10 [Bounded serialization, better regexes and better errors](Bounded-serialization-better-regexes-and-better-errors.md)

@@ -1,4 +1,4 @@
-This directory contains remastered versions of 167 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 168 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -131,6 +131,7 @@ This directory contains remastered versions of 167 blog posts by Jonathan Worthi
 - 2014-01-08 [A Rakudo on MoarVM update](A-Rakudo-on-MoarVM-update.md)
 - 2014-01-24 [January Rakudo Compiler Release: MoarVM support and much more](January-Rakudo-Compiler-Release-MoarVM-support-and-much-more.md)
 - 2014-04-12 [Optimization, concurrency, and Moar](Optimization-concurrency-and-Moar.md)
+- 2014-04-17 [Racing to writeness to wrongness leads](Racing-to-writeness-to-wrongness-leads.md)
 - 2015-05-15 [Last week: smaller hashes, faster startup, and many fixes](Last-week-smaller-hashes-faster-startup-and-many-fixes.md)
 - 2015-07-02 [Grant status update](Grant-status-update.md)
 - 2015-10-15 [Last week: Unicode case fixes and much more](Last-week-Unicode-case-fixes-and-much-more.md)

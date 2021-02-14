@@ -1,4 +1,6 @@
-Blog posts by Jonathan Worthington
+# Blog posts by Jonathan Worthington
+
+## Blog posts on use.perl.org
 
 - [My write-up of YAPC::Europe](https://use-perl.github.io/user/JonathanWorthington/journal/30898/)
 - [Perl 6 FAQ](https://use-perl.github.io/user/JonathanWorthington/journal/31294/)
@@ -97,6 +99,9 @@ Blog posts by Jonathan Worthington
 - [Perl 6 talk in Malm&amp;#246;](https://use-perl.github.io/user/JonathanWorthington/journal/40316/)
 - [Perl Mova + YAPC::Russia](https://use-perl.github.io/user/JonathanWorthington/journal/40399/)
 - [Last Post](https://use-perl.github.io/user/JonathanWorthington/journal/40450/)
+
+## Blog posts on 6guts.wordpress.com
+
 - [:st(1) Post](https://6guts.wordpress.com/2010/07/09/st1-post/)
 - [Fixes&#8230;and feeds](https://6guts.wordpress.com/2010/07/18/fixes-and-feeds/)
 - [Rakudo Star, and where from&nbsp;here](https://6guts.wordpress.com/2010/07/30/rakudo-star-and-where-from-here/)
@@ -223,3 +228,22 @@ Blog posts by Jonathan Worthington
 - [Eliminating unrequired guards](https://6guts.wordpress.com/2018/09/29/eliminating-unrequired-guards/)
 - [My Perl 6 wishes for&nbsp;2019](https://6guts.wordpress.com/2019/01/02/my-perl-6-wishes-for-2019/)
 - [Taking a break from Raku core&nbsp;development](https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/)
+
+## Advent Calendars
+- [Classes, attributes, methods and more](https://perl6advent.wordpress.com/2009/12/11/day-11-classes-attributes-methods-and-more/)
+- [Roles](https://perl6advent.wordpress.com/2009/12/18/day-18-roles/)
+- [Grammar::Tracer and Grammar::Debugger](https://perl6advent.wordpress.com/2011/12/02/grammartracer-and-grammardebugger/)
+- [Privacy and OOP](https://perl6advent.wordpress.com/2011/12/11/privacy-and-oop/)
+- [Meta-programming: what, why and how](https://perl6advent.wordpress.com/2011/12/14/meta-programming-what-why-and-how/)
+- [The view from the inside: using meta-programming to implement Rakudo](https://perl6advent.wordpress.com/2011/12/18/the-view-from-the-inside-using-meta-programming-to-implement-rakudo/)
+- [A Perl 6 Debugger](https://perl6advent.wordpress.com/2012/12/05/a-perl-6-debugger/)
+- [Don’t quote me on it…](https://perl6advent.wordpress.com/2012/12/10/day-10-dont-quote-me-on-it/)
+- [Phasers set to stun](https://perl6advent.wordpress.com/2012/12/15/day-15-phasers-set-to-stun/)
+- [Rakudo Perl 6 on the JVM](https://perl6advent.wordpress.com/2013/12/03/day-03-rakudo-perl-6-on-the-jvm/)
+- [Asynchronous Programming: Promises and Channels](https://perl6advent.wordpress.com/2013/12/14/asynchronous-programming-promises-and-channels/)
+- [Perl 6 Supplies Reactive Programming](https://perl6advent.wordpress.com/2013/12/19/perl-6-supplies-reactive-programming/)
+- [So, what does MoarVM do with your Perl 6 code?](https://perl6advent.wordpress.com/2014/12/11/day-11-so-what-does-moarvm-do-with-your-perl-6-code/)
+- [A nice supplies: syntactic relief for working with asynchronous data](https://perl6advent.wordpress.com/2015/12/14/day-14-a-nice-supplies-syntactic-relief-for-working-with-asynchronous-data/)
+- [Testing in virtual time](https://perl6advent.wordpress.com/2016/12/17/testing-in-virtual-time/)
+- [HTTP and Web Sockets with Cro](https://perl6advent.wordpress.com/2017/12/09/http-and-web-sockets-with-cro/)
+- [Testing Cro HTTP APIs](https://perl6advent.wordpress.com/2018/12/22/day-22-testing-cro-http-apis/)

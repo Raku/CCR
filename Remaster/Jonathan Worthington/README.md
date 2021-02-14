@@ -1,4 +1,4 @@
-This directory contains remastered versions of 192 blog posts by Jonathan Worthington.
+This directory contains remastered versions of 193 blog posts by Jonathan Worthington.
 
 - 2006-09-05 [My write-up of YAPC::Europe](My-write-up-of-YAPC-Europe.md)
 - 2006-10-11 [Raku FAQ](Raku-FAQ.md)
@@ -130,6 +130,7 @@ This directory contains remastered versions of 192 blog posts by Jonathan Worthi
 - 2012-06-07 [LTM for alternations](LTM-for-alternations.md)
 - 2012-07-29 [Rakudo QAST switch brings memory reductions](Rakudo-QAST-switch-brings-memory-reductions.md)
 - 2012-08-28 [A Rakudo Debugger](A-Rakudo-Debugger.md)
+- 2012-09-09 [The Moving to Moose Hackathon, and NQP on QAST](The-Moving-to-Moose-Hackathon-and-NQP-on-QAST.md)
 - 2012-10-08 [I’ll be speaking at “We Actually Build Stuff”](Ill-be-speaking-at-We-Actually-Build-Stuff.md)
 - 2012-10-24 [Rakudo Debugger Updates](Rakudo-Debugger-Updates.md)
 - 2012-11-07 [Lots of improvements coming in the Rakudo November release](Lots-of-improvements-coming-in-the-Rakudo-November-release.md)

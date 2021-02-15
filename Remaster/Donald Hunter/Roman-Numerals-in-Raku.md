@@ -42,7 +42,7 @@ all the zero length strings between the delimiters.
 say [+] %r2i{ $roman.split(%r2i.keys, :v).grep(*.Bool) }
 ````
 
-[Try it Online!](https://tio.run/##Nc6xCsIwFIXh3ae4i7TVEFKxgkodjEuhWUtAHByKFCMNiQpFfPaYm8Tty7n/EN0btXGPCeZmNUA9A8iaDOoDlMSrC1x7RlU4ysAtwTa6ZH6XbYzRkVWYecxZ6Hnq8XJKEZqLVOFD/CO2d/Y6wXl5Cd/7gFUvo6nVanjmuNB7P1kCu3dBb6bX@YIex1EV8HVOcNFKKZvuBw)]
+[Try it Online!](https://tio.run/##Nc6xCsIwFIXh3ae4i7TVEFKxgkodjEuhWUtAHByKFCMNiQpFfPaYm8Tty7n/EN0btXGPCeZmNUA9A8iaDOoDlMSrC1x7RlU4ysAtwTa6ZH6XbYzRkVWYecxZ6Hnq8XJKEZqLVOFD/CO2d/Y6wXl5Cd/7gFUvo6nVanjmuNB7P1kCu3dBb6bX@YIex1EV8HVOcNFKKZvuBw)
 
 `Str.split` uses the longest delimiter matches, filtering out the matches that are wholly contained within a longer match – though this does not appear to be documented in the [`split` documentation](https://docs.perl6.org/routine/split).
 

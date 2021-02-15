@@ -1,0 +1,442 @@
+https://donaldh.wtf/2019/07/the-vigen%C3%A8re-cipher/
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>The Vigenère Cipher</title>
+  <meta property="og:title" content="The Vigenère Cipher" />
+  <meta name="twitter:title" content="The Vigenère Cipher" />
+  <meta name="description" content="
+This is a solution to task #2 from the 15th Perl Weekly Challenge, written in Raku (nee Perl 6).">
+  <meta property="og:description" content="
+This is a solution to task #2 from the 15th Perl Weekly Challenge, written in Raku (nee Perl 6).">
+  <meta name="twitter:description" content="
+This is a solution to task #2 from the 15th Perl Weekly Challenge, written in Raku (nee Perl 6).">
+  <meta name="author" content="Donald Hunter"/>
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@donaldhunter" />
+  <meta name="twitter:creator" content="@donaldhunter" />
+  <meta property="og:url" content="https://donaldh.wtf/2019/07/the-vigen%C3%A8re-cipher/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="donaldh.wtf" />
+
+  <meta name="generator" content="Hugo 0.80.0" />
+  <link rel="canonical" href="https://donaldh.wtf/2019/07/the-vigen%C3%A8re-cipher/" />
+  <link rel="alternate" href="https://donaldh.wtf/index.xml" type="application/rss+xml" title="donaldh.wtf">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css" integrity="sha512-h7nl+xz8wgDlNM4NqKEM4F1NkIRS17M9+uJwIGwuo8vGqIl4BhuCKdxjWEINm+xyrUjNCnK5dCrhM0sj+wTIXw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://donaldh.wtf/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="https://donaldh.wtf/css/monokai.css" /><link rel="stylesheet" href="https://donaldh.wtf/css/codeblock.css" />
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://donaldh.wtf/">donaldh.wtf</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="Categories" href="/categories">Categories</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Tags" href="/tags">Tags</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="About" href="/about/">About</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    <div class="avatar-container">
+      <div class="avatar-img-border">
+        
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+
+
+    
+  
+  
+  
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              <h1>The Vigenère Cipher</h1>
+                
+                
+                  <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on July 4, 2019
+  
+  
+  
+</span>
+
+                
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <p>
+This is a solution to task #2 from the <a href="https://perlweeklychallenge.org/blog/perl-weekly-challenge-015/">15th Perl Weekly Challenge</a>, written in Raku (nee Perl 6).</p>
+<blockquote>
+<p>Write a script to implement Vigenère cipher. The script should be able encode and decode.</p>
+</blockquote>
+<p>
+The <a href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher">Vigenère Cipher</a> is a method of encryption that uses a series of Caesar ciphers chosen using
+the letters of a repeating key.</p>
+<p>
+Two solution approaches spring to mind:</p>
+<ul>
+<li>
+<p>Use a Vigenère square as a lookup table</p>
+</li>
+<li>
+<p>Compute the rotations directly</p>
+</li>
+</ul>
+<p>I have chosen to compute the rotations directly. As an aside, here is a one-liner to construct a
+Vigenère square:</p>
+<div class="src src-raku">
+<pre><code class="language-raku" data-lang="raku">my @vigenère-square[26;26] = (^26).map: -&gt; $n { (&#39;A&#39;..&#39;Z&#39;).List.rotate($n) }</code></pre>
+</div>
+<p>
+The encode and decode operations can be implemented with exactly the same algorithm, with the
+only difference being whether to add or subtract the key offset.</p>
+<p>
+Here is my solution in full:</p>
+<div class="src src-raku">
+<pre><code class="language-raku" data-lang="raku">  enum Operation &lt;encode decode&gt;;
+
+  #| Apply the Vigenère Cipher to text from STDIN, using the provided key.
+  sub MAIN(
+      Operation $operation, #= encode or decode
+      Str $key)             #= Key to use
+  {
+      my @key-values = $key.uc.comb(/&lt;[A..Z]&gt;/).map(*.ord - &#39;A&#39;.ord);
+
+      slurp.uc.comb(/&lt;[A..Z]&gt;/).map(*.ord - &#39;A&#39;.ord)
+      .map(-&gt; $n {
+                  LEAVE @key-values .= rotate(1);
+                  given $operation {
+                      when encode {
+                          ($n + @key-values[0]) % 26;
+                      }
+                      when decode {
+                          ($n + 26 - @key-values[0]) % 26;
+                      }
+                  }
+              })
+      .map(* + &#39;A&#39;.ord).rotor(60, :partial).map(*.chrs.join.say);
+  }</code></pre>
+</div>
+<p>
+The encode/decode transforms are performed in <code>0..25</code> number space.
+The input data is normalized to uppercase and only the letters <code>A..Z</code> are processed. The
+solution ignores all other characters both in the source text and the key.</p>
+<p>
+I have also added <code>POD</code> comments to the <code>MAIN</code> sub and to its parameters. This produces some
+nice friendly command-line usage. It is worth noting that source layout matters when using <code>POD</code>
+comments to generate usage. The parameter comments need to be attached to the parameters so each
+parameter is on its own line.</p>
+<div class="src src-sh">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">% ./Vigenère.raku
+Usage:
+  ./Vigenère.raku &lt;operation&gt; &lt;key&gt; -- Apply the Vigenère Cipher to text from STDIN, using the provided key.
+
+    &lt;operation&gt;    encode or decode
+    &lt;key&gt;          Key to use</code></pre></div>
+</div>
+<p>
+Here is the example from the <a href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher">Wikipedia page</a>:</p>
+<div class="src src-sh">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">% echo <span style="color:#e6db74">&#39;ATTACKATDAWN&#39;</span> | ./Vigenère.raku encode <span style="color:#e6db74">&#39;LEMON&#39;</span>
+LXFOPVEFRNHR
+% echo <span style="color:#e6db74">&#39;Attack at dawn!&#39;</span> | ./Vigenère.raku encode <span style="color:#e6db74">&#39;lemon&#39;</span>
+LXFOPVEFRNHR
+% echo <span style="color:#e6db74">&#39;LXFOPVEFRNHR&#39;</span> | ./Vigenère.raku decode <span style="color:#e6db74">&#39;Lemon&#39;</span>
+ATTACKATDAWN</code></pre></div>
+</div>
+<p>
+Here is an example with a longer source text:</p>
+<div class="src src-sh">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">% fortune | ./Vigenère.raku encode fortune
+XKVKPRQJHYXJNXMHFFSSMCSUIOETTGVBMYENRNBNUMWCEKUVPXKYXLRSSAPL
+IHPNGXKIBZJRKHLHRTJVKOAWTIEWYQKTFXXMGLWCLZBGLJFZYFRHMSRKNFSK
+AFNHGENBJNHQIWHFKLRRYGSXXFYSSIKCAKQMZKOFLHOGMUVRFVRUGBFDRZVE</code></pre></div>
+</div>
+<p>
+As an added bonus, the solution uses <code>.rotor</code> to wrap the output text to 60 columns, regardless
+of the input format.</p>
+
+        
+          <div class="blog-tags">
+            
+              <a href="https://donaldh.wtf//tags/challenge/">challenge</a>&nbsp;
+            
+              <a href="https://donaldh.wtf//tags/perl6/">perl6</a>&nbsp;
+            
+              <a href="https://donaldh.wtf//tags/raku/">raku</a>&nbsp;
+            
+          </div>
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://donaldh.wtf/2019/06/van-eck-byeck/" data-toggle="tooltip" data-placement="top" title="Van Eck by&#39;eck">&larr; Previous Post</a>
+            </li>
+          
+          
+            <li class="next">
+              <a href="https://donaldh.wtf/2019/09/stones-and-jewels/" data-toggle="tooltip" data-placement="top" title="Stones and Jewels">Next Post &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+        
+          <div class="disqus-comments">
+            <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "donaldh-wtf" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+          </div>
+        
+        
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="https://github.com/donaldh" title="GitHub">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/donaldhunter" title="Twitter">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://stackoverflow.com/users/386025" title="StackOverflow">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.instagram.com/donaldihunter" title="Instagram">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.flickr.com/people/sealgair" title="Flickr">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-flickr fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+          <li>
+            <a href="" title="RSS">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              Donald Hunter
+            
+          
+
+          &nbsp;&bull;&nbsp;
+          2021
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://donaldh.wtf/">donaldh.wtf</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          <a href="http://gohugo.io">Hugo v0.80.0</a> powered &nbsp;&bull;&nbsp; Theme by <a href="http://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a> adapted to <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js" integrity="sha512-/CMIhXiDA3m2c9kzRyd97MTb3MC6OVnx4TElQ7fkkoRghwDf6gi41gaT1PwF270W6+J60uTmwgeRpNpJdRV6sg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js" integrity="sha512-Do7uJAaHZm5OLrIv/yN4w0iG1dbu01kzdMNnFfu/mAqgUk6Nniv2JYHcwH+cNwjqgLcqcuBBk+JRvprLVI8azg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://donaldh.wtf/js/main.js"></script>
+<script src="https://donaldh.wtf/js/highlight.min.js"></script>
+<script> hljs.initHighlightingOnLoad(); </script>
+<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://donaldh.wtf/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+

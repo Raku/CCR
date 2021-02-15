@@ -1,0 +1,120 @@
+# A Twist To The Rational Story
+
+*Originally published on [2 September 2018](https://donaldh.wtf/2018/09/a-twist-to-the-rational-story/) by Donald Hunter.*
+
+As a followup to brrt's [Curious Benchmark](http://brrt-to-the-future.blogspot.com/2018/08/a-curious-benchmark.html) post, I wanted to explore some of the questions that were left unanswered.
+
+## A Reminder
+
+This is the benchmark that we started with.
+
+```` raku
+# reciprocal.pl
+my $x = 0;
+$x += 1/$_ for 1..50_000_000;
+print "$x\n";
+say "Took {now - BEGIN now} seconds";
+````
+
+````
+18.304749238293297
+Took 37.44224442 seconds
+````
+
+I ran this on a Raku with all the nice MoarVM postrelease-opts performance improvements. Even still, it takes its leisurely time to complete the 50M iterations. In the samples below I am going to use a far smaller range, for reasons that will become clear.
+
+## Enforcing the Rat Type
+
+Firstly, what happens if we require ~$x~ to be a ~Rat~?
+
+```` raku
+my Rat $x = 0.Rat;
+$x += 1/$_ for 1..50_000;
+say $x;
+CATCH { default { .say } }
+````
+
+````
+Type check failed in assignment to $x; expected Rat but got Num (4.437963841730785e0)
+  in sub  at EVAL_0 line 4
+  in block <unit> at EVAL_0 line 7
+  in block <unit> at -e line 1
+````
+
+That's a surprise! Partway through execution, the `Rat` must overflow and get promoted to a `Num` – or is that demoted?
+
+## Let's Try FatRat
+
+Okay, so `Rat` wasn't big enough so let's try a `FatRat` instead.
+
+```` raku
+{
+    my FatRat $x = 0.FatRat;
+    $x += 1/$_ for 1..50_000;
+    say "Took $(now - ENTER now) seconds";
+    {
+      say $x;
+      say "Took $(now - ENTER now) seconds";
+    }
+}
+````
+
+````
+Took 2.4054302 seconds
+9.094508852984436967261245533393439391782987811303811450616283852090532830500877899391409299236919740934720238423958152461464697961622169241216791813750556812237313511140859270404541831699614754904269158516598241629322075801752116740431282583910490694817880059304425528697636894237513849342228259432117843984452095036207741367170195434776718730672051742512011684795924796504589284884983594406387782399589897339451903860663283511854503274439879816592044456945773254455711557434617651389382862163916129471984525721863166980007698641306451382737263108301823328515346280599078199924958477831938100326754331218433710083376461207790456151273618214761663786421583619870926557833387010912425422463713445727605033957580213563044379373993099087270299948291541401493871536121697877985858428341656399022885723806364741339502816420605832991453304501605073674466747017303873357018723900540406146046456443644030469863929256359609306121855786558557319397803083709255269002824207411915964104010465799065403533660896176085619791918999457106531507816827020034959881412244447364632468190985773855441903151967413422221257039375062944629694873598674985445114416758362142179107039709753140912455789066912941999796602420986514991051180297554293991544363505315137370048461268760493365572301561758462166226030762716920811267950974622528020552921252450110196508304427669880560860148792530903958804393013289095139412439001489152545082650274456591858268381958364303872285421143108996973443984931632852565281764123162272042988188031627475855556969251905663806187822026043054543788425418167117114177298447981297141050648142536402067542406940696380370820592643823025390316121777120920630903923203809700914144246592321213424882645323853537191487401562555337325197773832863607094176325687770325041707268407475710620704461559746527369630917931686513408078143853060070502351105758038741067818255191970046781711756379318996696181504975510337520029384275583560810112764886784426005517224438440092233147389320233898519601258970640361473644981284274698820973817169983250484506000025083953638120994057872040996158768783727413024494684573261481759846292967131080689221411336106208013550068579713639132626946272
+Took 0.014583 seconds
+````
+
+There are two things to note here. Firstly, the precision of the result is far
+greater. Secondly, it runs like treacle. It's taken nearly 13 min for just 50K
+iterations. You're welcome to try a 500K or more, but the run time deteriorates non-linearly.
+
+## Reducing Hyper Fun
+
+Okay, that was interesting. And we've uncovered just how slow `Rat` and `FatRat` are just
+now. But questions. What would be a more idiomatic way to write this in Raku?
+
+```` raku
+say [+] [1..50_000] »**» -1;
+say "Took {now - BEGIN now} seconds";
+````
+
+````
+11.397003949278504
+Took 0.32804122 seconds
+````
+
+That was pretty slick. Why not run it for more iterations, I hear you ask.
+
+```` raku
+say [+] [1..500_000] »**» -1;
+CATCH { default { .say } }
+````
+
+````
+Too many arguments in flattening array.
+  in sub  at EVAL_0 line 3
+  in block <unit> at EVAL_0 line 5
+  in block <unit> at -e line 1
+````
+
+Sadface. I'm not sure why this flattens before the reduce operator.
+
+## It's a Race
+
+Could we speed things up a bit with a `.race`? Yes we can!
+
+```` raku
+say [+] [1..50_000].race.map(1 / *);
+say "Took {now - BEGIN now} seconds";
+````
+
+````
+11.397003949278504
+Took 0.2375065 seconds
+````
+
+## Comments
+
+Several excellent comments can be found on the gist where I originally posted this blog:
+[https://gist.github.com/donaldh/87441392c21f1190a3d82b385d95cc36]

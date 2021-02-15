@@ -117,4 +117,4 @@ Took 0.2375065 seconds
 ## Comments
 
 Several excellent comments can be found on the gist where I originally posted this blog:
-[https://gist.github.com/donaldh/87441392c21f1190a3d82b385d95cc36]
+https://gist.github.com/donaldh/87441392c21f1190a3d82b385d95cc36

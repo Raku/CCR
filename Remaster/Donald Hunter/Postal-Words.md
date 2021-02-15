@@ -6,7 +6,7 @@ This is a solution to challenge #2 from the [Weekly Challenge #14](https://perlw
 
 > Using only the official postal (2-letter) abbreviations for the 50 U.S. states, write a script to find the longest English word you can spell?
 
-I copied the table of codes and abbreviations from the [wikipedia page](https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations). The data is tab separated like this:
+I copied the table of codes and abbreviations from the [wikipedia page](https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations). The [data](us-abbrevs.txt) is tab separated like this:
 
 ````
 Alabama 	State	US-AL	AL	01	AL	AL	Ala.	Ala.

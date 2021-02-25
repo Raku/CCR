@@ -1,11 +1,153 @@
-https://perl6.party/<a href="/post/Bit-Rot-Thursday
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Bit-Rot-Thursday
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Bit Rot Thursday - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Bit Rot Thursday</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-01-27 <span class="words-count">| 1938 words |</span> A plan to combat Bit Rot in software. Cause and solutions.</p>
+  <h2 id="part1:thereisaproblem">Part 1: There is a Problem</h2>
+
+<p>I don't think I'd have to look for long for someone who'd agree that writing new code is much more fun that fixing bugs in old one. A cool new idea gets written up, while older code is still lacking tests. A new module gets shipped, while there's still that API improvement proposal from 6 months ago in the other. And while you're drafting a design document for the Next Awesome Thing, the rest of your code is being slowly consumed by <a href="https://en.wikipedia.org/wiki/Software_rot">bit rot</a>.</p>
+
+<p>Having written <a href="http://backpan.perl.org/authors/id/Z/ZO/ZOFFIX/">250–300 Perl 5 modules</a> and now <a href="https://github.com/search?utf8=%E2%9C%93&amp;q=user%3Azoffixznet+perl6&amp;type=Repositories&amp;ref=searchresults">32 Perl 6 modules and other ideas</a>, I'm more than aware of what it feels like to be leaving a decaying pile of code in your wake. The problems I notice are these:</p>
+
+<ul>
+<li>Unfixed bugs</li>
+<li>Lack of compresensive tests</li>
+<li>Lack of documentation</li>
+<li>Bad documentation (too wordy; incorrect; partial)</li>
+<li>Unimplemented new features, even if the proposal for them was approved</li>
+<li>Partial implementation (an FTP client that can only download, for example)</li>
+</ul>
+
+<p>I can think of several reasons why it might be hard to find motivation to take care of bit rot, <strong>all</strong> of which are perfectly valid:</p>
+
+<ul>
+<li><strong>You're "too busy."</strong> You spent 8 hours at work, hacking on arcane code, and when you come home you want to relax and <a href="http://warframe.com/">play Warframe</a> and not spend 3 more hours hacking on arcane code. Your next <em>Killer App</em> is more important than this module you wrote 5 years ago because you were bored. Your interests changed: you no longer do web development with Perl 5 and instead are hacking on Artificial Intelligence software with Perl 6. And maybe you just have too many projects in the first place.</li>
+<li><strong>You don't know what needs to be done.</strong> Sure, CPAN Testers send you emails when something's broken, but it's easy to put off until the mythical "tomorrow." Your documentation is missing and users want new features, but you forgot that was brought up a few months ago. And what about Issues that go stale without any plan of action?</li>
+<li><strong>It's too hard.</strong> You set out to do a task and you implemented A, B, and C. Now, someone came up to you and said your thing is lacking X. Problem is, you don't have adequate knowledge and experience to implement X. And learning it requires both time and interest. Another example: users are reporting a nasty bug, but you can rarely reproduce it, and when you do, you still have no idea why it occurs.</li>
+</ul>
+
+<p>And while entropy is a tough foe to conquer, I think at least acknowledging there is a problem is a good stepping stone to finding a workable solution.</p>
+
+<h2 id="part2:thereisasolution">Part 2: There is a Solution</h2>
+
+<p>I toyed with the idea of dedicating a special day to deal with just these sort of problems for a while. Today, I decided to commit myself to it, and I invite anyone willing, to do so themselves and address bit rot in their own software. The plan is simple:</p>
+
+<p>Every Thursday is a "Bit Rot Thursday." You find some time to address bit rot and just do it. Why Thursday? I figure Friday, Saturday, and Sunday are all about relaxing; Monday, Tuesday, Wednesday are a beginning of the week people tend to "hate"; and Thursday is in the sweet spot: do work just before the weekend and feel good about yourself when the weekend comes. Since monotony is boring, you get one Thursday every month that you can "legally" skip and do nothing. Keep in mind, Bit Rot Thursday is not only about dealing with current bit rot, but doing preventative care as well. Let's see how we can accomplish those goals:</p>
+
+<h3 id="tossitinthebin">Toss It in the Bin</h3>
+
+<p>Before you rush off to fix a bug in your <code>lolcat_phrase_generator_5000.pl</code>, ask yourself: is this script or module still needed? You may feel attached to this "web framework" you wrote 8 years ago, but nobody—even you any more—uses it, so implementing HTTP/2 in it is likely a waste of time.</p>
+
+<p>The modules you delete off CPAN will still be available on <a href="http://backpan.perl.org/">BackPAN</a>, so don't be shy. You only have this much time in a day, and it's necessary to regularly throw clutter out. This is quite equivalent to accumulating useless trinkets in your garage, in case you'll need them some day. Just toss it in the bin.</p>
+
+<h3 id="giveitaway">Give It Away</h3>
+
+<p>If you don't think your software deserves such a harsh fate as being wiped from the face of Earth, consider putting it up for adoption. You can use blogs, social media, and <abbr style="border-bottom: 1px dotted #666" title="Internet Relay Chat">IRC</abbr> to advertise that you're looking for a new maintainer who'd be interested in fixing issues. On CPAN, you can transfer the module to user <a href="https://metacpan.org/author/ADOPTME">ADOPTME</a>, to enlist your module as adoptable by interested parties. Perl 6 has its own version of the idea: place the META file into the <a href="https://github.com/perl6/mu/tree/master/misc/SHELTER">SHELTER</a> and then remove your module from the Ecosystem.</p>
+
+<h3 id="delegate">Delegate</h3>
+
+<p>Instead of parting with your goods completely, delegate. The <a href="http://mojolicious.org/">Mojolicious project</a> is a good example of how to seek out volunteers: <a href="https://github.com/kraih/mojo/issues?utf8=%E2%9C%93&amp;q=is%3Aissue+label%3Afuture+">Issue labels</a> <code>future</code> and <code>help wanted</code> are used to indicate work to be done and <a href="https://twitter.com/kraih/status/671414334346665986">social media is used</a> to advertise and find volunteers willing to do the required work.</p>
+
+<p>Did someone submit a report for a bug? Ask the submitter whether they'd be able to fix it. Did someone request a new feature? Suggest you'd accept a patch. Include details on what you think might be causing the bug and outline the details of how a feature can be implemented. Even if that person is unable to help, you'll have a plan of action already in writing.</p>
+
+<h3 id="findandreviewreports">Find and Review Reports</h3>
+
+<p>Go through RT tickets, GitHub Issues, your notes and reminders. When you log in to <a href="https://rt.cpan.org/">RT</a>, the <code>Bugs in My Distributions</code> panel is third on the left. On GitHub, click the <code>Issues</code> link in top, center of the page and then change <code>author:</code> to <code>user:</code> in the search box. This will show you all open Issues in your code. You can use <code>user:</code> more than once, if you wish to also include issues from GitHub organizations you belong to. As an example, <a href="https://github.com/issues?utf8=%E2%9C%93&amp;q=is%3Aopen+is%3Aissue+user%3Azoffixznet+user%3Aperl6+">here's a search query</a> that shows both Issues in my code and in Perl 6 organization: <code>is:open is:issue user:zoffixznet user:perl6</code></p>
+
+<p>Get a MetaCPAN account and try out the Dashboard MetaCPAN Lab to <a href="http://i.imgur.com/P5WBJWE.png">see the number of open issues and test failures</a> in all your modules: <a href="https://metacpan.org/lab/dashboard">https://metacpan.org/lab/dashboard</a>.</p>
+
+<p>Categorize the issues using tags and labels. Merge duplicates. Close anything that's irrelevant, can't or won't be fixed. If the conversation died out, just close the ticket with a request to reopen it if anyone has the same issue. There's no reason for tickets to be left open for years.</p>
+
+<h3 id="evaluateunreportedthings">Evaluate Unreported Things</h3>
+
+<p>Go to <a href="http://www.cpantesters.org/">CPAN Testers</a> and browse by Author to your Author page (middle of page, third section). You can then use the Preferences panel on the left to generate a link to show failures only. Bookmark it. Examine any failures and see if you can fix them. When you upload new modules, if their tests are failing, you should be getting an email from CPAN Testers informing you there is a problem. If you're not getting those, check <a href="https://prefs.cpantesters.org/cgi-bin/pages.cgi?act=user-login">your settings</a> and your spam folder.</p>
+
+<p>Use <a href="https://metacpan.org/pod/Devel::Cover">Devel::Cover</a> to evaluate how well your tests cover your code. If you use <a href="https://metacpan.org/pod/Dist::Zilla">Dist::Zilla</a>, there's <a href="https://metacpan.org/pod/Dist::Zilla::App::Command::cover">Dist::Zilla::App::Command::cover</a> that adds <code>cover</code> command to <code>dzil</code>.</p>
+
+<p>To ensure your documentation is complete, add <a href="https://metacpan.org/pod/Pod::Coverage">Pod::Coverage</a> to your author tests (that is, place it in <code>xt/</code> directory rather than <code>t/</code> so it doesn't run during user's installation). Completeness is one thing, but quality is another. Examine your extant documentation. Try to reduce the amount of words in it, while still retaining information. Use examples! A good, clear example can shave off a whole paragraph of dense technical text. There's nothing wrong with actively inquiring your users about the quality of the documentation. Do people frequently ask a particular question? Creating a FAQ is one way to go, but it's often an indicator your actual documentation can be improved in that area.</p>
+
+<p>In Perl 6, <a href="http://modules.perl6.org/dist/Test::META">Test::META</a> lets you find problems in your META file and <a href="http://modules.perl6.org/dist/Pod::Coverage">Pod::Coverage distribution</a> includes <code>Test::Coverage</code> module to check completeness of your docs.</p>
+
+<h3 id="preventbitrot">Prevent Bit Rot</h3>
+
+<p>So far, our Bit Rot Thursday sounds mundane and boring, dealing with tedious problems. However, you can actively work against those problems appearing in the first place.</p>
+
+<p>When you start a new project, do you write down a clear definition of the problem you're attempting to solve? A sure-fire way to waste time is to spend several days adding a ton of configuration options and features that you don't have any use for, simply because you never defined a concrete problem to solve. Worse: you continue to support and maintain all those features for years to come!</p>
+
+<p>When you lay down the first line of code, do you have some form of a "spec" that details the bits and pieces of your project and how they're supposed to interact with each other? I'll leave it to <a href="http://www.amazon.com/Code-Complete-Practical-Handbook-Construction/dp/0735619670/">other sources</a> to argue for cost savings of such an approach, but I can tell you that when you realize JSON and not PDF is better suited for the output of your program, rewriting two paragraphs of text in the spec is much simpler than rewriting several subroutines, methods, and tests.</p>
+
+<p>A design spec also makes it much easier to create both tests and user documentation for your project. The test suite is the spec translated into a computer language. The docs are the spec with internal details removed and code examples added.</p>
+
+<p>Speaking of tests, it's often handy to <a href="https://en.wikipedia.org/wiki/Test-driven_development">write them first</a>, before your actual module or script. The tests define the problem you're attempting to solve. Failing tests indicate what bits you haven't solved yet. You can also very easily track your progress, as you can see how many tests still fail. Since this approach generates a lot of output on each test run, you may find <a href="https://metacpan.org/pod/Test::Most#DIE-OR-BAIL-ON-FAIL">Test::Most's <code>DIE_ON_FAIL</code></a> useful. You can include it in code or use <code>DIE_ON_FAIL=1</code> environmental variable and this will cause the test suite to stop at the first failure.</p>
+
+<p>So spend your Bit Rot Thursday making templates for specs and tests and outlining plans for what sort of documents need to be prepared for the types of projects you create. It's also a good idea to draft up guidelines for contributors, to make it clearer what sort of contributions you're looking for. You'll spend less time explaining your standards in pull requests!</p>
+
+<h3 id="growingyourself">Growing Yourself</h3>
+
+<p>Who is more likely to produce a wall that'll crumble in a year: an experienced bricklayer or a novice? Writing code certainly gives you practice, but you need theory too, as well as to keep yourself up to date with the world. You can write a million lines of code that uses CGI.pm and memorize every word in its documentation, but in 2016 you'll still be unemployable in the field of Web Development if that's all you can do. Technologies change. Standards change. Practices change. We should change too.</p>
+
+<p>And so, it's possible to spend the Bit Rot Thursday away from the keyboard. On a train, plane, bus, or boat, with your phone or tablet, reading programming blogs and articles. At a bar with your fellow programmers, exchanging ideas. In a park, on a sunny day, with a programming book in your hand.</p>
+
+<p>And as you get better, so will your code...</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,172 @@
-https://perl6.party/<a href="/post/Newcomer-Guide-to-Contributing-to-Core-Perl-6
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Newcomer-Guide-to-Contributing-to-Core-Perl-6
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Newcomer Guide to Contributing to Core Perl 6 - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Newcomer Guide to Contributing to Core Perl 6</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-08-02 <span class="words-count">| 882 words |</span> How to start contributing to Rakudo Perl 6 compiler</p>
+  <p>So, you want to contribute to an awesome open source project like the
+Rakudo Perl&nbsp;6 compiler, but didn't know where to start? Good news! This guide
+is for you.</p>
+
+<h2 id="findingwhattofix">Finding What to Fix</h2>
+
+<p>The <a href="https://github.com/rakudo/rakudo/issues">Issues in the repository</a> have
+labels on them. Newcomers should look for Issues labeled with
+<a href="https://github.com/rakudo/rakudo/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><code>good first issue</code></a>
+and <a href="https://github.com/rakudo/rakudo/issues?q=is%3Aissue+is%3Aopen+label%3A%22easy+to+resolve%22"><code>easy to resolve</code> Issues</a>.
+The two labels are largely synonyms, though slightly harder than trivial Issues
+might be marked with <code>easy to resolve</code> label only.</p>
+
+<p>Once you have a few bug corpses behind you, you may wish to give
+<a href="https://github.com/rakudo/rakudo/issues?q=is%3Aissue+is%3Aopen+label%3A%22medium+difficulty%22"><code>medium difficulty</code> Issues</a> a go.</p>
+
+<p>Some of these labels are assigned based only on a <em>guess</em> about what the
+problem is, so keep in mind a labelled Issue might turn out to be harder than
+it first looked like.</p>
+
+<hr />
+
+<p>If you found the easy Issues too hard, you may have some luck writing tests
+for already-fixed bugs instead. Such Issues are marked with
+<a href="https://github.com/rakudo/rakudo/issues?q=is%3Aopen+is%3Aissue+label%3Atestneeded"><code>testneeded</code> labels instead</a></p>
+
+<h2 id="askquestions">Ask Questions</h2>
+
+<p>The main point of these labeled Issues isn't that any passer-by should be able
+to fix them, but that any passer-by can asks questions about fixing those
+issues and a core dev will be willing to walk you through fixing them, so that
+you can learn about fixing bugs in core.</p>
+
+<p>So, be sure you ask questions if you're stuck with some Issue. You can ask by
+commenting directly on the Issue or join our <a href="https://perl6.org/irc-dev">dev chat room</a> (but keep in mind that due to timezones, at times you may find no one around. Just ask your question and eventually someone will turn up and answer it).</p>
+
+<h2 id="buildingstuff">Building Stuff</h2>
+
+<p>The system involves 4 repos: <a href="https://github.com/rakudo/rakudo/">Rakudo</a> compiler, which uses <a href="https://github.com/perl6/nqp/">NQP</a>, which in turn uses
+<a href="https://github.com/MoarVM/MoarVM/">MoarVM</a>. All work requires passing
+the <a href="https://github.com/perl6/roast/">roast</a>.</p>
+
+<p>There are many ways to set all these repos up, but I'll tell you just the one
+way that I use: <a href="https://github.com/zoffixznet/z">Z-Script</a>. It's a helper
+script that simplifies a lot of the building instructions to a single command.
+The rest of the guide will assume you're using Z-Script.</p>
+
+<p>For initial setup, follow <a href="https://github.com/zoffixznet/z#z-script">Z-Script's installation instructions</a>. Once installed, you can run <code>z --help</code> for a list
+of supported commands (the list in README is outdated). It will check out
+the 3 code repos inside your setup directory and the roast will be checked
+out inside <code>rakudo/t/spec</code> directory.</p>
+
+<p>You need to build different stuff, depending on what repos you modified:</p>
+
+<ul>
+<li>If you made changes in MoarVM, run <code>z m</code> to rebuild MoarVM</li>
+<li>If you made changes in NQP, run <code>z n</code> to rebuild NQP and Rakudo on top of it</li>
+<li>If you made changes in Rakudo, run <code>z</code> to rebuild Rakudo</li>
+</ul>
+
+<p>In some cases, such as when modifying <code>Makefile</code>-related stuff or list of
+build files, you'll need to go through the full build cycle for a particular
+repo. In those cases, run <code>z build moar</code>, <code>z build nqp</code>, <code>z build rakudo</code>
+to from-scratch rebuild MoarVM, NQP, and Rakudo respectively.</p>
+
+<h2 id="testingstuff">Testing Stuff</h2>
+
+<p>Any change you wish to contribute must pass the "spectest". Simply run
+<code>z s</code> to run the test. On a typical computer, it'll take about 5-10 minutes to
+run. If you have a lot of CPU cores, you may choose to run "stresstest" <em>instead,</em> by running <code>z ss</code>, which takes about 160 seconds on a 24-core box.</p>
+
+<p>Note that a couple of test files are known to fail (to "flop") on occasion.
+You can re-run a particular test file by running <code>z t t/spec/The/Test-file.t</code>.
+This command is also handy when you're adding new tests to roast and wish
+to check they run OK.</p>
+
+<p>To find a place where to put your new test, a rule of thumb is to <code>tree -f | grep -i ThingYou'reTesting</code> the <a href="https://github.com/perl6/roast/">roast</a> files to find any files for
+the feature you're testing. If that finds nothing, <code>grep -FIRn ThingYou'reTesting</code> can sometimes be helpful. If that fails too, you can either ask the core devs for a good place or just find some file.</p>
+
+<p>Keep in mind, roast is the language specification that applies to all
+compilers, not just Rakudo. If you have a very specific test (like text content of error messages), it may be best to place that test into Rakudo's
+test suite, into <code>t/</code> (e.g. <code>t/05-messages/03-errors.t</code>).</p>
+
+<p>Don't over-agonize about the location of the test. The spec gets reviewed
+before language release, so even if you place the test into the wrong place,
+it'll likely be relocated later.</p>
+
+<h2 id="submittingstuff">Submitting Stuff</h2>
+
+<p>Simply submit your work as a Pull Request on GitHub. If you already have a
+commit bit to a particular repository, feel free to commit directly if you're
+confident in your work and it isn't something controvercial. Otherwise, still
+submit a Pull Request.</p>
+
+<h2 id="tipsandstuff">Tips and Stuff</h2>
+
+<p>Some tips for excellent bug fixing: write tests to cover the bug firsts. They should all fail and when they all pass you know you fixed the bug. And even if you fail to fix the bug, the tests can still be submitted to roast.</p>
+
+<p>Think about the code you're fixing. Do similar routines have similar bug?
+Is the bug present with other types of input? Often what's reported in the
+bug report covers just a part of the problem.</p>
+
+<hr />
+
+<p>And again, if you need help, <a href="https://perl6.org/irc-dev">just ask us</a>.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,92 @@
-https://perl6.party/<a href="/post/Perl-6-is-written-in...-Perl-6
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-is-written-in...-Perl-6
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 is written in... Perl 6 - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 is written in... Perl 6</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-01-22 <span class="words-count">| 499 words |</span> Discussion of Rakudo Perl 6 compiler&#39;s implementation.</p>
+  <p>Today, I've done something strange.</p>
+
+<p>No, there weren't drugs involved, I merely sent a patch for Rakudo for a bug I reported a few weeks back. But the patch is... interesting.</p>
+
+<p>First, about the "bug." Newest JSON spec lets you have anything as the top level thing. I spotted a few modules in the <a href="http://modules.perl6.org/">Perl 6 ecosystem</a> that still expected an object or an array only, and the vendor-specific (possibly to be made hidden in the future) <code>to-json</code> subroutine provided by core Rakudo behaved the same as well.</p>
+
+<p>One of the modules got fixed right away and today, seeing as there were no takers, I went in to fix the bug in Rakudo myself. Since I'm a lazy bum, I merely went in to that one fixed module and just copied the fix over!</p>
+
+<p>But wait a second... ain't the Perl 6 module written in Perl 6? How did I manage to "just copy it over"? What sorcery is this! Surely you lie, good sir!</p>
+
+<p>Here are the Rakudo and the module patches one above the other. Try to figure out which one is for Rakudo:</p>
+
+<p><img alt="source2.png" src="http://blogs.perl.org/users/zoffix_znet/source2.png" width="532" height="904" class="mt-image-none" style="" /></p>
+
+<p>Give up yet? The code above the black bar is the <a href="https://github.com/rakudo/rakudo/pull/687/files">patch made in JSON::Tiny module</a> and the code below it is the <a href="https://github.com/rakudo/rakudo/pull/687/files">patch I made for Rakudo</a>.</p>
+
+<p>As surprising and amazing as it is, most of Perl 6 is actually written in Perl 6! The <a href="https://github.com/perl6/nqp">NQP (Not Quite Perl)</a> provides the bricks and the mortar, but when it comes to the drywall, paint, and floorboards, you're full in the Perl 6 territory.</p>
+
+<h2 id="sowhatdoesthisallmean">So what does this all mean?</h2>
+
+<p>I'm not a genius programmer and I'm quite new to Perl 6 too, but I was able to send in a patch <em>for the Perl 6 compiler</em> that fixes something. And it's not even the first time <a href="https://github.com/rakudo/rakudo/pull/635/files">I sent some Perl 6 code</a> to improve Rakudo. Each one of the <strong>actual users of Perl 6</strong> can fix bugs, add features, and do optimizations. For the most part, there's no need to learn some new arcane thing to hack on the innards of the compiler.</p>
+
+<p>Imagine if to fix your car or to make it more fuel efficient, all you had to do was learn how to drive; if to rewire your house, all you had to do is learn how to turn on TV or a toaster; if to become a chef, all you had to do was enjoy a savory steak once in a while. And not only the users of Perl 6 are the potential guts hackers, they also have <em>direct interest</em> in making the compiler better.</p>
+
+<p>So to the <a href="http://blogs.perl.org/users/jt_smith/2016/01/perl-6s-killer-app---async.html">speculations on the potential Perl 6 Killer App</a>, I'll add that one of the Perl 6's killer apps is Perl 6 itself. And for those wishing to add <em>"programming a compiler"</em> onto their résumés, simply clone <a href="https://github.com/rakudo/rakudo">the Rakudo repo</a> and go to town on it... there are <a href="http://rt.perl.org">plenty of bugs to squish</a>.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

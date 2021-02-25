@@ -1,11 +1,580 @@
-https://perl6.party/<a href="/post/Perl-6-Core-Hacking-Wheres-Da-Sauce-Boss
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Core-Hacking-Wheres-Da-Sauce-Boss
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Core Hacking: Where&#39;s Da Sauce, Boss? - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Core Hacking: Where&#39;s Da Sauce, Boss?</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-08-04 <span class="words-count">| 3071 words |</span> Locating the source code for specific core methods and subs</p>
+  <p>Imagine you were playing with Perl 6 and you came across a buglet
+or you were having some fun with <a href="http://rakudo.org/rt/open-all">the Perl 6 bug
+queue</a>—you'd like to debug a particular core
+subroutine or method, so where's the source for it at?</p>
+
+<p>Asked such a question, you might be told it's in <a href="rakudo.org/downloads/rakudo/">Rakudo compiler's
+GitHub repository</a>. Depending on how deep
+down the rabbit hole you wish to go, you may also stop by <a href="https://github.com/perl6/nqp">NQP's
+repo</a>, which is a subset of Perl 6 that's used
+in Rakudo, or the <a href="https://github.com/MoarVM/MoarVM">MoarVM's repo</a>, which
+is the leading virtual machine Perl 6 runs on.</p>
+
+<p>The answer is fine, but we can do better. We'd like to know <em>exactly</em> where
+da sauce is.</p>
+
+<h2 id="sticktothebasics">Stick to The Basics</h2>
+
+<p>The most obvious way is to just use <code>grep</code> command in the source repository.
+The code is likely in <code>src/</code> directory, or <code>src/core</code> more specifically.</p>
+
+<p>We'll use a regex that catches <code>sub</code>, <code>method</code>, and <code>multi</code> keywords. For
+example, here's our search for <code>path</code> sub or method:</p>
+
+<pre><code>$ grep -nER '^\s*(multi|sub|method|multi sub|multi method)\s+path' src/core
+
+src/core/Cool.pm:229:    method path() { self.Stringy.IO }
+src/core/CompUnit/Repository/Locally.pm:26:    method path-spec(CompUnit::Repository::Locally:D:) {
+src/core/CompUnit/Repository/AbsolutePath.pm:46:    method path-spec() {
+src/core/CompUnit/Repository/NQP.pm:32:    method path-spec() {
+src/core/CompUnit/Repository/Perl5.pm:46:    method path-spec() {
+src/core/CompUnit/PrecompilationStore/File.pm:93:    method path(CompUnit::PrecompilationId $compiler-id,
+src/core/CompUnit/PrecompilationUnit.pm:17:    method path(--&gt; IO::Path) { ... }
+src/core/IO/Spec/Win32.pm:58:    method path {
+src/core/IO/Spec/Unix.pm:61:    method path {
+src/core/IO/Handle.pm:714:    method path(IO::Handle:D:)            { $!path.IO }
+</code></pre>
+
+<p>It's not too terrible, but it's a rather blunt tool. We have these problems:</p>
+
+<ul>
+<li>There are false positives; we have several <code>path-spec</code> methods found</li>
+<li>It doesn't tell us which of the results is for the actual method we have in
+our code. There's <code>Cool</code>, <code>IO::Spec::Unix</code>, and <code>IO::Handle</code> all with
+<code>method path</code> in them. If I call <code>"foo".IO.path</code>, which of those get called?</li>
+</ul>
+
+<p>The last one is particularly irksome, but luckily Perl 6 can tell us where
+the source is from. Let's ask it!</p>
+
+<h2 id="buthereslinenumber...socodememaybe">But here's line number... So code me maybe</h2>
+
+<p>The <code>Code</code> class from which all subs and methods inherit provides
+<code>.file</code> and <code>.line</code> methods that tell which file that particular <code>Code</code> is
+defined in, including the line number:</p>
+
+<pre><code>say "The code is in {.file} on line {.line}" given &amp;foo;
+
+sub foo {
+    say 'Hello world!';
+}
+
+# OUTPUT:
+# The code is in test.p6 on line 3
+</code></pre>
+
+<p>That looks nice and simple, but it gets more awkward with methods:</p>
+
+<pre><code>class Kitty {
+    method meow {
+        say 'Meow world!';
+    }
+}
+
+say "The code is in {.file} on line {.line}" given Kitty.^can('meow')[0];
+
+# OUTPUT:
+# The code is in test.p6 on line 2
+</code></pre>
+
+<p>We got extra cruft of the <code>.^can</code> metamodel call, which returns a list of
+<code>Method</code> objects. Above we use the first one to get the <code>.file</code> and
+<code>.line</code> number from, but is it really the method we were looking for?
+Take a look at this example:</p>
+
+<pre><code>class Cuddly {
+    method meow ('meow', 'meow') {
+        say 'Meow meow meow!';
+    }
+}
+
+class Kitty is Cuddly {
+    multi method meow ('world') {
+        say 'Meow world!';
+    }
+
+    multi method meow ('meow') {
+        say 'Meow meow';
+    }
+}
+</code></pre>
+
+<p>We have a method <code>meow</code> in one class and in another class we have two
+<code>multi method</code>s <code>meow</code>. How can we print the location of the last method,
+the one that takes a single <code>'meow'</code> as an argument?</p>
+
+<p>First, let's take a gander at all the items <code>.^can</code> returns:</p>
+
+<pre><code>say Kitty.^can('meow');
+# OUTPUT:
+# (meow meow)
+</code></pre>
+
+<p>Wait a minute, we have three methods in our code, so how come we only have
+two meows in the output? Let's print the <code>.file</code> and <code>.line</code> for both meows:</p>
+
+<pre><code>for 0, 1 {
+    say "The code is in {.file} on line {.line}"
+        given Kitty.^can('meow')[$_];
+}
+# OUTPUT:
+# The code is in gen/moar/m-CORE.setting on line 587
+# The code is in test.p6 on line 2
+</code></pre>
+
+<p>The second <code>meow</code> gives us a sane result; it's our method defined in
+class <code>Cuddly</code>. The first one, however, gives us some weird file.</p>
+
+<p>What's happening here is the line is referencing the <code>proto</code> for the multies.
+Since in this case instead of providing our own <code>proto</code> we use the
+autogenerated one, the referenced file has nothing to do with our code. We
+can, of course, add a proto into the code, but then the line number would
+still reference the proto, not the last <code>meow</code> method. Is there anything that
+we can do?</p>
+
+<h2 id="you.candoit">You <code>.cando</code> It!</h2>
+
+<p>The <code>Routine</code> class, from which both <code>Method</code> and <code>Sub</code> classes inherit,
+provides the <code>.cando</code> method. Given a
+<a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a>, it returns a list of
+candidates that can handle it, with the narrowest candidate first in the list,
+and since the returned object is a <code>Code</code>, we can query
+its specific <code>.file</code> and <code>.line</code>:</p>
+
+<pre><code>class Cuddly {
+    method meow ('meow', 'meow') {
+        say 'Meow meow meow!';
+    }
+}
+
+class Kitty is Cuddly {
+    multi method meow ('world') {
+        say 'Meow world!';
+    }
+
+    multi method meow ('meow') {
+        say 'Meow meow';
+    }
+}
+
+my $code = gather {
+    for Kitty.^can('meow') -&gt; $meth {
+        .take for $meth.cando: \(Kitty, 'meow');
+    }
+}
+
+say "The code is in {.file} on line {.line}" with $code[0];
+
+# OUTPUT:
+# The code is in test.p6 on line 12
+</code></pre>
+
+<p>Hooray! We got the correct location of the multi we wanted. We still have
+our two classes with three <code>meow</code> methods total. On line 17–21 we loop
+over the two <code>meow</code> <code>Method</code>s the <code>.^can</code> metamodel call gives us. For
+each of them we call the <code>.cando</code> method with the <code>Capture</code> that matches
+the multi we want (note that we do need to provide the needed object as the
+first argument of the Capture). We then <code>.take</code> all found candidates to
+<code>gather</code> them into the <code>$code</code> variable.</p>
+
+<p>The first value we get is the narrowest candidate and is good 'nuf for us,
+so we call the <code>.file</code> and <code>.line</code> on it, which gives us the location we were
+looking for. Sounds like we nailed this <code>.file</code> and <code>.line</code> business down
+rather well. Let's dive into the core, shall we?</p>
+
+<h2 id="cantseethecorefilesforthesetting">Can't see the core files for the setting</h2>
+
+<p>If this is the first time you're to see the print out of the <code>.file</code>/<code>.line</code>
+for some core stuff, you're in for a surprise. Actually, we've already seen the
+surprise, but you may have thought it to be a fluke:</p>
+
+<pre><code>say "{.file}:{.line}" given &amp;say;
+# OUTPUT:
+# gen/moar/m-CORE.setting:29038
+</code></pre>
+
+<p>All of the <a href="https://github.com/rakudo/rakudo/tree/nom/src/core">nice, good looking
+files</a> you see in
+<code>src/core</code> in the repo actually get compiled into one giant file called
+the "setting." My current setting is 40,952 lines long and the <code>.line</code> of core
+subs and methods refers to one of those thousands of lines.</p>
+
+<p>Now sure, we could pop the setting open and watch our editor grind to a
+stuttering halt (I'm looking at <em>you,</em> <a href="https://atom.io/">Atom</a>!). However,
+that doesn't help us find the right repo file to edit if we want to make
+changes to how it works. So what do we do?</p>
+
+<p>A keen eye will look at the contents of the setting or <a href="https://github.com/rakudo/rakudo/blob/nom/tools/build/gen-cat.nqp">at the file
+that generates it</a> and notice that for each of the <a href="https://github.com/rakudo/rakudo/tree/nom/src/core">separate files in the
+repo</a>, the setting has
+this type of comment before the contents of the file are inserted into the
+setting:</p>
+
+<pre><code>#line 1 src/core/core_prologue.pm
+</code></pre>
+
+<p>This means if we're clever enough, we can write a sub that translates
+a line number in the setting to the separate file we can locate in the repo.
+Here's a plan of action: we pop open the setting file and read it line by line.
+When we encounter one of the above comments, we make a note of which file
+we're in as well as how many lines deep in the setting we're currently at.</p>
+
+<p>The location of the setting file may differ, depending on how you installed
+Perl 6, but on my system (I use
+<a href="https://github.com/tadzik/rakudobrew"><code>rakudobrew</code></a>), it's in
+<code>$*EXECUTABLE.parent.parent.parent.child('gen/moar/m-CORE.setting')</code>, so the
+code for finding the actual file that defines our core sub or method is this:</p>
+
+<pre><code>sub real-location-for ($wanted) {
+    state $setting = $*EXECUTABLE.parent.parent.parent.child: 'gen/moar/m-CORE.setting';
+    my ($cur-line-num, $offset) = 0, 0;
+    my $file;
+    for $setting.IO.lines -&gt; $line {
+        return %( :$file, :line($cur-line-num - $offset), )
+            if ++$cur-line-num == $wanted;
+
+        if $line ~~ /^ '#line 1 ' $&lt;file&gt;=\S+/ {
+            $file   = $&lt;file&gt;;
+            $offset = $cur-line-num + 1;
+        }
+    };
+    fail 'Were not able to find location in setting.';
+}
+
+say "{.&lt;file&gt;}:{.&lt;line&gt;}" given real-location-for &amp;say.line;
+
+
+# OUTPUT:
+# src/core/io_operators.pm:17
+</code></pre>
+
+<p>The <code>$wanted</code> contains the setting line number given to us by <code>.line</code> call
+and the <code>$cur-line-num</code> contains
+the number of the current line we're examining. We loop until the
+<code>$cur-line-num</code> reaches
+<code>$wanted</code> and return a <code>Hash</code> with the results. For each line that matches our
+special comment, we store the real name of the file the code is from into
+<code>$file</code> and store the <code>$offset</code> of the first line of the code in that file.
+Once done, we simply subtract the <code>$offset</code> from the setting
+<code>$cur-line-num</code> and we get the line number in the source file.</p>
+
+<p>This is pretty awesome and useful, but it's still not what I had in mind
+when I said we wanted to know <em>exactly</em> where da sauce is. I don't want
+to clone the repo and go to the repo and open my editor. I want to just look
+at code.</p>
+
+<h2 id="ifitsworthdoingitsworthoverdoing">If it's worth doing, it's worth overdoing</h2>
+
+<p>There's one place where we can stare at Rakudo's source code until it blushes
+and looks away: <a href="https://github.com/rakudo/rakudo/">GitHub</a>. Since our handy
+sub gives us a filename and a line number, we can construct a URL that points
+to a specific file and line in the source code, like this one, for example:
+<a href="https://github.com/rakudo/rakudo/blob/nom/src/core/Str.pm#L16">https://github.com/rakudo/rakudo/blob/nom/src/core/Str.pm#L16</a></p>
+
+<p>There's an obvious problem with such an approach: the URL points to the master
+branch (called <code>nom</code>, for <em>"New Object Model,"</em> in Rakudo). Commits go into
+the repo daily, and unless we rebuild our Perl 6 several times a day, there's
+a good chance the location our GitHub URL points to is wrong.</p>
+
+<p>Not only do we have to point to a specific file and line number, we have to
+point to the right commit too. On GitHub's end, it's easy: we just replace
+<code>nom</code> in the URL with the appropriate commit number—we just need Rakudo to
+tell us what that number is.</p>
+
+<p>The two dynamic variables <code>$*VM</code> and <code>$*PERL</code> contain some juicy information.
+By introspecting them, we can locate some useful info and what looks like
+commit prefix parts in version numbers:</p>
+
+<pre><code>say $*VM.^methods;
+# (BUILD platform-library-name Str gist config prefix precomp-ext
+# precomp-target precomp-dir name auth version signature desc)
+
+say $*VM.version;
+# v2016.06
+
+say $*PERL.^methods;
+# (BUILD VMnames DISTROnames KERNELnames Str gist compiler name auth version
+# signature desc)
+
+say $*PERL.compiler.^methods;
+# (BUILD build-date Str gist id release codename name auth version
+# signature desc)
+
+say $*PERL.compiler.version;
+# v2016.06.10.g.7.cff.429
+</code></pre>
+
+<p>Rakudo is a compiler and so we're interested in the value of
+<code>$*PERL.compiler.version</code>. It contains the major release version, followed by
+<code>g</code>, followed by the commit prefix of this particular build. The prefix is
+split up on number-letter boundaries, so we'll need to join up all the bits and
+split on <code>g</code>. But, take a look at <code>$*VM.version</code>, which is the version of the
+virtual machine we're running the code on. There aren't any <code>g</code>s and
+commits in it and for a good reason: it's a tagged major release, and the
+name of the tag is the version. The same
+will occur for Rakudo on release builds, like the ones shipped with
+<a href="http://rakudo.org/">Rakudo Star</a>. So we'll need to check for such edge cases
+and this is the code:</p>
+
+<pre><code>my $where = .Str ~~ /g/
+    ?? .parts.join.split("g")[*-1]
+    !! .Str
+given $*PERL.compiler.version;
+</code></pre>
+
+<p><code>given</code> a <code>$*PERL</code> <code>.compiler</code> <code>.version</code>, if it contains letter <code>g</code>, join up
+version bits, split on <code>g</code>, and the last portion will be our commit prefix; if
+it doesn't contain letter <code>g</code>, then we're dealing with a release tag, so we'll
+take it as-is. All said and done, our code for locating source becomes this:</p>
+
+<pre><code>my $where = .Str ~~ /g/
+    ?? .parts.join.split("g")[*-1]
+    !! .Str
+given $*PERL.compiler.version;
+
+say [~] 'https://github.com/rakudo/rakudo/blob/',
+        $where, '/', .&lt;file&gt;, '#L', .&lt;line&gt;
+given real-location-for &amp;say.line;
+
+# OUTPUT:
+# https://github.com/rakudo/rakudo/blob/c843682/src/core/io_operators.pm#L17
+</code></pre>
+
+<p>Hey! Awesome! We got a link that points to the correct commit and file! Let
+celebrations begin! Wait. What? You followed the link and noticed the line
+number is not quite right? What gives? Did we mess up our algorithm?</p>
+
+<h2 id="crankuptheinsanity">Crank Up The Insanity</h2>
+
+<p>If you take a look again at the <a href="https://github.com/rakudo/rakudo/blob/nom/tools/build/gen-cat.nqp">script that generates the setting
+file</a>,
+you'll notice it strips things: comments and special backend-specific chunks
+of code.</p>
+
+<p>There are two ways to fix this. The sane approach would be to commit a change
+that would make that script insert an empty line for each line it skips and
+then pretend that we didn't commit that just to make our personal project work.
+Then, there's the Zoffix Way to fix this: we got the GitHub link, so why
+don't we fetch that code and figure out what the right line number is. Hey!
+That second way sounds much more fun! Let's do just that!</p>
+
+<p>The one link we've seen so far is this:
+<a href="https://github.com/rakudo/rakudo/blob/c843682/src/core/io_operators.pm#L17">https://github.com/rakudo/rakudo/blob/c843682/src/core/io_operators.pm#L17</a>.
+It's not quite what we want, since it's got HTML and bells and whistles in it.
+We want raw code and GitHub does offer that at a slightly different URL:
+<a href="https://raw.githubusercontent.com/rakudo/rakudo/c843682/src/core/io_operators.pm">https://raw.githubusercontent.com/rakudo/rakudo/c843682/src/core/io_operators.pm</a>. The plan of action then
+becomes:</p>
+
+<ul>
+<li>Get the line number in the setting</li>
+<li>Use our <code>real-location-for</code> sub to get the filename and sorta-right line
+number in a source file</li>
+<li>Get the commit our compiler was built with</li>
+<li>Generate a GitHub URL for raw code for that file on that commit
+and fetch that code</li>
+<li>Use the same algorithm as in the <a href="https://github.com/rakudo/rakudo/blob/nom/tools/build/gen-cat.nqp#L28-L45">setting generating
+script</a> to convert the code we fetched into the version that lives in our setting,
+while keeping track of the number of lines we strip</li>
+<li>When we reach the correct line number in the converted file, we adjust
+the original line number we had by the number of lines we stripped</li>
+<li>Generate a regular GitHub URL to the commit, file, and corrected line number</li>
+<li>???</li>
+<li>Profit!</li>
+</ul>
+
+<p>I could go over the code, but it's just a dumb, unfun algorithm, and most
+importantly, you don't need to know it. Because... there's a module that
+does just that!</p>
+
+<h2 id="whatsorceryisthis">What Sorcery Is This?</h2>
+
+<p>The module is called
+<a href="https://github.com/zoffixznet/perl6-CoreHackers-Sourcery">CoreHackers::Sourcery</a> and when you <code>use</code> it, it'll
+<a href="https://docs.perl6.org/syntax/augment"><code>augment</code></a> the <code>Code</code> class and
+all core classes that inherit from it with <code>.sourcery</code> method, as well
+as provide a <code>sourcery</code> subroutine.</p>
+
+<p>So, to get the location of the code for <code>say</code> sub, just run:</p>
+
+<pre><code>use CoreHackers::Sourcery;
+&amp;say.sourcery.put;
+
+# OUTPUT:
+# src/core/io_operators.pm:20 https://github.com/rakudo/rakudo/blob/c843682/src/core/io_operators.pm#L20
+</code></pre>
+
+<p>That gives us the correct location of the <code>proto</code>. We can either pop
+open a file in a repo checkout or view the code at the provided GitHub URL.</p>
+
+<p>Want to get the location
+of a specific multi? There's no need to mess with <code>.cando</code>! The arguments you
+give to the <code>.sourcery</code> method will be used to select the best matching multi,
+so to find the location of the <code>say</code> multi that will handle <code>say "foo"</code> call,
+just run:</p>
+
+<pre><code>&amp;say.sourcery("foo").put;
+
+# OUTPUT:
+# src/core/io_operators.pm:22 https://github.com/rakudo/rakudo/blob/c843682/src/core/io_operators.pm#L22
+</code></pre>
+
+<p>That covers the subs. For methods, you can go with the whole <code>.^can</code> meta
+dance, but we like simple things, and so we'll use the subroutine form
+of <code>sourcery</code>:</p>
+
+<pre><code>put sourcery Int, 'abs';         # method of a type object
+put sourcery 42,  'split';       # method of an Int object
+put sourcery 42,  'base', \(16); # best candidate for `base` method called with 16 as arg
+</code></pre>
+
+<p>This is pretty handy. And the whole hitting the GitHub thing? The module
+will cache the code fetched from GitHub, so things like this won't take
+forever:</p>
+
+<pre><code>put "Int.{.name} is at {.sourcery}" for Int.^methods;
+</code></pre>
+
+<p>However, if you do actually run that code, after some output you'll be greeted
+with this error:</p>
+
+<pre><code># Method 'sourcery' not found for invocant of class 'Method+{Callable[Bool:D]}'
+#   in block  at test.p6 line 1
+#   in block &lt;unit&gt; at test.p6 line 1
+</code></pre>
+
+<p>The class it mentions is not a pure <code>Method</code> object, but has a mixin in it.
+While <code>CoreHackers::Sourcery</code> recomposes all core subclasses of <code>Code</code> class
+after augmenting it,
+it doesn't do that for such mixes, so you'd have to recompose them yourself:</p>
+
+<pre><code>for Int.^methods {
+    .WHAT.^compose;
+    put "Int.{.name} is at {.sourcery}" ;
+}
+</code></pre>
+
+<p>Or better still, just use the subroutine form of <code>sourcery</code>:</p>
+
+<pre><code>put "Int.{.name} is at {sourcery $_}" for Int.^methods;
+</code></pre>
+
+<h2 id="doitforme">Do It For Me</h2>
+
+<p>For most stuff, we wouldn't want to do a whole bunch of typing to
+<code>use</code> a module and call subs and then copy/paste URLs or filenames.
+You'll notice <code>sourcery</code> returns a list of two items: the filename and the URL.
+This means we can make some nice and short
+<a href="http://askubuntu.com/questions/17536/how-do-i-create-a-permanent-bash-alias">aliases</a>
+to call it and automatically pop open either our editor or web browser:</p>
+
+<pre><code>$ alias sourcery='perl6 -MCoreHackers::Sourcery -MMONKEY-SEE-NO-EVAL \
+    -e '\''run "atom", "/home/zoffix/rakudo/" \
+        ~ EVAL "sourcery(@*ARGS[0])[0]" '\'''
+
+$ alias sourcery-web='perl6 -MCoreHackers::Sourcery -MMONKEY-SEE-NO-EVAL \
+    -e '\''run "firefox", EVAL "sourcery(@*ARGS[0])[1]" '\'''
+
+# opens Atom editor at the spot to edit code for Int.base
+$  sourcery 'Int, "base"'
+
+# opens Firefox, showing code for Int.base
+$  sourcery 'Int, "base"'
+</code></pre>
+
+<p>We <code>EVAL</code> the argument we give to these aliases, so be careful with them.
+For <code>sourcery</code> alias, we <a href="https://docs.perl6.org/routine/run"><code>run</code></a> the Atom
+editor and give it the file to open. I prepended the location of my
+local Rakudo checkout, but you'd use yours. Most editors support opening
+<code>file:line-number</code> format to open files at a particular spot; if yours doesn't,
+modify the command.</p>
+
+<p>For <code>sourcery-web</code> we use the URL returned by <code>sourcery</code> and open Firefox
+browser at this location. And just like that, with a few keystrokes, we
+can jump in to view or edit the code for a particular core sub or method
+in Rakudo!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>We've learned where Rakudo's source lives, how to find the commit
+the current compiler is built off, and how to locate the source code
+for a particular sub or method in a giant file called the setting. We then
+further hacked away the inconveniences by getting to the actual place in the
+source code we can edit, culminating with a shiny module and a couple of
+handy command line aliases.</p>
+
+<p>Happy hacking!</p>
+
+<h2 id="update2016.08.05">UPDATE 2016.08.05</h2>
+
+<p>Inspired by this blog post, lizmat++
+<a href="https://github.com/rakudo/rakudo/commit/715b822bfd7dc66efbf041e19d11cf4841fbf12f">has changed</a>
+the setting generation script to <em>not</em> skip any lines, so making adjustments
+to line numbers by fetching source from GitHub is no longer necessary,
+as the line numbers match up with the original source.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

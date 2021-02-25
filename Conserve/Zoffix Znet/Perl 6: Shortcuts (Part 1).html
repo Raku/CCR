@@ -1,11 +1,317 @@
-https://perl6.party/<a href="/post/Perl-6-Shortcuts--Part-1
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Shortcuts--Part-1
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6: Shortcuts (Part 1) - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6: Shortcuts (Part 1)</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-02-01 <span class="words-count">| 1421 words |</span> Examination of available ways to write more concise code.</p>
+  <p>Programming is a task where laziness is a virtue. We write modules to avoid repeatedly writing subroutines. We write subroutines to avoid repeatedly writing loops. We write loops to avoid repeatedly writing code... And there's another level of laziness: we use language shortcuts to avoid writing too much code.</p>
+
+<p>Shortcuts are a controversial subject. Some say they make code faster to write and easier to read. Some say they make it harder to understand for people unfamiliar with those shortcuts. So this article is merely <em>telling</em> you about shortcuts and it's up to you to decide whether to use them or to avoid them. Let's begin, shall we!</p>
+
+<h2 id="publicgettersetterforclassattributes">Public Getter/Setter for Class Attributes</h2>
+
+<p>The concept of a "getter" and "setter" is common in many languages: you have a "thing" in your class and you write a method to set or get the value of that thing. In verbose Perl 6, such a set up might look something like this:</p>
+
+<pre><code>class Foo {
+    has $!attr = 42;
+    method attr is rw { $!attr }
+}
+
+my  $obj = Foo.new;
+say $obj.attr;
+    $obj.attr = 72;
+say $obj.attr;
+
+# OUTPUT&gt;&gt;:
+# 42
+# 72
+</code></pre>
+
+<p>That looks pretty concise as it is, but public attributes are common enough to make
+writing even this bit of code annoying. Which is why the <code>$.</code> twigil exists. Using it
+alone creates a "getter"; if you want a "setter" as well, use the <code>is rw</code> trait:</p>
+
+<pre><code>class Foo { has $.attr is rw = 42; }
+my  $obj = Foo.new;
+say $obj.attr;
+    $obj.attr = 72;
+say $obj.attr;
+
+# OUTPUT&gt;&gt;:
+# 42
+# 72
+</code></pre>
+
+<p>We changed the <code>$!</code> twigil on our attribute to <code>$.</code> twigil and it took care of creating
+a public method for us. Moving on!</p>
+
+<h2 id="omitingparenthesesonmethodcalls">Omiting Parentheses on method calls</h2>
+
+<p>It's not uncommon to see code like this, where you have a whole ton of
+parentheses at the end. Be sure they all match up!!</p>
+
+<pre><code>$foo.log( $obj.nukanate( $foo.grep(*.bar).map(*.ber) ) );
+</code></pre>
+
+<p>For those who are reminded of a <a href="https://xkcd.com/297/">popular webcomic</a>, Perl 6 has
+an alternative:</p>
+
+<pre><code>$foo.log: $obj.nukanate: $foo.grep(*.bar).map: *.ber;
+</code></pre>
+
+<p>If a method is last in the method call chain, you can omit its parentheses and use
+a colon <code>:</code> instead. Except for <code>.grep</code>, all of our calls above are "last in the
+chain," so that was quite a bit of parentheses we got rid of. Sometimes I also like to
+start the thing following the colon on a new line.</p>
+
+<p>And just a note: you can always omit parenthesis on method calls if you're not supplying
+any arguments; no semicolons are needed either.</p>
+
+<h2 id="commalessnamedarguments">Commaless Named Arguments</h2>
+
+<p>If you're calling a method or a sub and are providing <strong>only named arguments,</strong>
+you can omit commas between the arguments. Sometimes, I like to stack each argument
+on a new line as well:</p>
+
+<pre><code>class Foo {
+    method baz (:$foo, :$bar, :$ber) { say "[$foo, $bar, $ber]" }
+}
+    sub    baz (:$foo, :$bar, :$ber) { say "[$foo, $bar, $ber]" }
+
+Foo.baz:
+    :foo(42)
+    :bar(72)
+    :ber(100);
+
+baz :foo(42) :bar(72) :ber(100);
+
+# OUTPUT&gt;&gt;:
+# [42, 72, 100]
+# [42, 72, 100]
+</code></pre>
+
+<p>Again, this works when you are providing <strong>only named arguments.</strong> There are many, many
+other places where you'd be using the same form to provide arguments or
+<a href="http://docs.perl6.org/type/Pair">Pairs</a>, but you can't omit commas there.</p>
+
+<h2 id="integersinnamedargumentspairs">Integers in Named Arguments/Pairs</h2>
+
+<p>Looking at the last code example, it's a bit parentheses-heavy. So there's another
+shortcut: if the argument or Pair takes a <strong>positive integer</strong> as a value, simply
+write it between the colon and the name of the key:</p>
+
+<pre><code>say DateTime.new: :2016year :2month :1day :16hour :32minute;
+
+# OUTPUT&gt;&gt;:
+# 2016-02-01T16:32:00Z
+</code></pre>
+
+<p>This is one of those things that look jarring when you first learn it, but you get
+used to it quite fast. It also reads a lot like English:</p>
+
+<pre><code>my  %ingredients = :4eggs, :2sticks-of-butter, :4cups-of-sugar;
+say %ingredients;
+
+# OUTPUT&gt;&gt;:
+# cups-of-sugar =&gt; 4, eggs =&gt; 4, sticks-of-butter =&gt; 2
+</code></pre>
+
+<h2 id="booleansinnamedargumentspairs">Booleans in Named Arguments/Pairs</h2>
+
+<p>If we have a shortcut for Ints in named arguments, it'd be daft not to have one for
+Booleans too. And there is one: use the name of the key by itself to indicate <code>True</code>;
+insert an exclamation mark between the key and the colon to indicate <code>False</code>:</p>
+
+<pre><code>sub foo (:$bar, :$ber) { say "$bar, $ber" }
+foo :!bar :ber;
+
+my  %hash = :!bar, :ber;
+say %hash;
+
+# OUTPUT&gt;&gt;:
+# False, True
+# bar =&gt; False, ber =&gt; True
+</code></pre>
+
+<p>Note: this applies to adverbs as well!</p>
+
+<h2 id="listsinnamedargumentspairs">Lists in Named Arguments/Pairs</h2>
+
+<p>If you're supplying a quote-word construct to a named argument/pair that expects
+something listy, you can omit parentheses; just don't use any spaces between the key
+and the the quote-words:</p>
+
+<pre><code>sub foo (:@args) { say @args }
+foo :args&lt;foo bar ber&gt;;
+
+my  %hash = :ingredients&lt;milk eggs butter&gt;;
+say %hash;
+
+# OUTPUT&gt;&gt;:
+# (foo bar ber)
+# ingredients =&gt; (milk eggs butter)
+</code></pre>
+
+<h2 id="pass-throughofvariablestonamedargumentspairs">Pass-through of variables to Named Arguments/Pairs;</h2>
+
+<p>Did you think we were done with the named args? There's one more cool
+shortcut: s'pose you have a variable and it has the same name as the named argument...
+just pass it in by using the variable itself, instead of the key, after the colon:</p>
+
+<pre><code>sub hashify (:$bar, :@ber) {
+    my %hash = :$bar, :@ber;
+    say %hash;
+}
+
+my ( $bar, @ber ) = 42, (1..3);
+hashify :$bar :@ber;
+
+# OUTPUT&gt;&gt;:
+# bar =&gt; 42, ber =&gt; [1..3]
+</code></pre>
+
+<p>Notice neither in the sub call nor in our hash creation are we duplicating the names
+of keys. They're derived from variable names.</p>
+
+<h2 id="subsasmethodcalls">Subs as method calls</h2>
+
+<p>If you have a sub you're dying to call as a method on something, just prefix it
+with an ampersand. The invocant will be the first positional argument, with all the
+other args passed as usual.</p>
+
+<pre><code>sub be-wise ($self, $who = 'Anonymous') { "Know your $self, $who!" }
+
+'ABC'.&amp;be-wise.say;
+'ABC'.&amp;be-wise('Zoffix').say;
+
+# OUTPUT&gt;&gt;:
+# Know your ABC, Anonymous!
+# Know your ABC, Zoffix!
+</code></pre>
+
+<p>This is essentially a less-ugly way to call a <code>.map</code> in certain instances, but using a sub as a sub was meant to be used would likely win most of the time, in terms of readability.</p>
+
+<pre><code>sub be-wise ($self, $who = 'Anonymous') { "Know your $self, $who!" }
+
+'ABC'.map({be-wise $_, 'Zoffix'})».say;
+say be-wise 'ABC', 'Zoffix';
+
+# OUTPUT&gt;&gt;:
+# Know your ABC, Zoffix!
+# Know your ABC, Zoffix!
+</code></pre>
+
+<p>For the sake of completeness, and not anything overly practical, know that you can also
+inline the call and even use a pointy block to set a signature!</p>
+
+<pre><code>'ABC'.&amp;('Know your ' ~ *).say;
+'ABC'.&amp;( -&gt; $self, $who = 'Anonymous' {"Know your $self, $who!"} )('Zoffix')
+    .say;
+
+# OUTPUT&gt;&gt;:
+# Know your ABC
+# Know your ABC, Zoffix!
+</code></pre>
+
+<h2 id="hypermethodcalls">Hyper Method Calls</h2>
+
+<p>Since we're on the topic of shortcuts for <code>.map</code>, keep the <code>»</code> hyper operator in mind.
+Using it before the dot of a method call indicates you want to call the following method
+on each element of the invocant, instead of the invocant itself. As with all fancy-pants
+operators, Perl&nbsp;6 provides
+<a href="http://docs.perl6.org/language/unicode_texas">"Texas" variant</a> for this operator as
+well, <code>&gt;&gt;</code></p>
+
+<pre><code>(1, 2, 3)».is-prime.say;
+(1, 2, 3)&gt;&gt;.is-prime.say;
+
+# OUTPUT&gt;&gt;:
+# (False True True)
+# (False True True)
+</code></pre>
+
+<p>This one has a bonus too: while currently not yet implemented in Rakudo, the spec
+permits this operator to perform concurrently, so you can eventually see it perform
+the faster the more cores your box has!</p>
+
+<h2 id="summary">Summary</h2>
+
+<ul>
+<li>Use <code>$.</code> twigil to declare public attributes</li>
+<li>Use <code>:</code> instead of parentheses for giving arguments to a method call that is last in the chain</li>
+<li>Method/sub calls with only named arguments do not need commas</li>
+<li>Pass Int values by writing them between the key and the colon</li>
+<li>Use key by itself to specify a <code>True</code> boolean value</li>
+<li>Use key by itself, with <code>!</code> between it and colon to specify a <code>False</code> boolean value</li>
+<li>When value is a quote-word construct, write it right after the key, without any parentheses</li>
+<li>When a variable has the same name as the key, use it directly as the key (including the sigil), without specifying any values</li>
+<li>Prefix the name of a sub with <code>&amp;</code> when calling it as a method.</li>
+<li>Use <code>»</code> operator to call a method on each item in the list.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This isn't the full list of Perl 6 shortcuts and I'm sure I'm yet to learn some of them
+myself. This is why I named the article 'Part 1'. Do you know any cool and useful shortcuts
+you'd like to be included in subsequent parts? Post them in the comments!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

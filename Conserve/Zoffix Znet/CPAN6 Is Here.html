@@ -1,11 +1,197 @@
-https://perl6.party/<a href="/post/CPAN6-Is-Here
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/CPAN6-Is-Here
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>CPAN6 Is Here - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">CPAN6 Is Here</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-10-06 <span class="words-count">| 962 words |</span> CPAN support for Rakudo Perl 6 dists</p>
+  <p>If you've been following Rakudo's development since first language release on
+Christmas, 2015, you might've heard of numerous people working to bring CPAN
+support to Rakudo Perl 6.</p>
+
+<p>Good news! It's finally here in usable form and you should start using it!</p>
+
+<p>Let's talk about all the moving parts and how to upload your dists
+to CPAN.</p>
+
+<h2 id="themovingpartsandstatusreport">The Moving Parts and Status Report</h2>
+
+<p>All of the heavy lifting has been done awhile back, during Perl Toolchain Summit and other times. I wasn't present for it to know the details, but to
+catch up you could
+join <a href="https://webchat.freenode.net/?channels=#perl6-toolchain">#perl6-toolchain chat</a> and talk to humans or read <a href="https://irclog.perlgeek.de/perl6-toolchain/2017-10-06">the channel log</a>. <abbr
+title="Perl [programming] Authors Upload Server">PAUSE</abbr>/CPAN
+support for Perl 6 dists was implemented and <a href="https://modules.perl6.org/dist/zef">zef module installer</a> was trained to check for CPAN dists
+as well as our GitHub/GitLab-based ecosystem (called "p6c").</p>
+
+<p>The only bit that was left missing is a front-end to browse available CPAN
+dists. There is a team who wished to take <a href="https://metacpan.org/">metacpan.org</a>'s codebase and modify it for Rakudo dists. I'm told that project is currently
+"stalled but not dead".</p>
+
+<p>That's unfortunate, however, earlier this week,
+<a href="https://modules.perl6.org">modules.perl6.org</a> was
+<a href="http://modules.perl6.org/search/?q=from%3Acpan">taught to handle CPAN dists</a>,
+so—hooray!—we finally have some sort of a front-end for CPAN dists. If you
+only want to see CPAN dists in search results, you can use <code>from:cpan</code> search
+qualifier (just like you can use <code>from:github</code> and <code>from:gitlab</code> ones).</p>
+
+<p>GitHub/GitLab dists URLs still direct to repos, but CPAN dists have a
+<a href="http://modules.perl6.org/dist/Number::Denominate:cpan:ZOFFIX">file browser</a>
+that lets you see what files are up in the dist. The file browser also
+renders <code>README.md</code>/<code>README.markdown</code> markdown readme files.</p>
+
+<p>The viewer doesn't have all the bells and whistles of
+<a href="https://metacpan.org/">metacpan.org</a> and doesn't (yet) render POD6, but it's
+certainly useable. The person who implemented this viewer will be busy
+preparing 6.d language release in the near future and won't have the time
+to make additional improvements to the CPAN dist viewer. So… <a href="https://github.com/perl6/modules.perl6.org">you're invited
+to contribute</a> and make it better!</p>
+
+<h2 id="whyuploadtocpan">Why Upload to CPAN</h2>
+
+<p>CPAN has many mirrors ensuring module installation is not affected whenever
+GitHub (a single website) has issues. The uploaded dists are also immutable
+and stay there forever (barring special deletion requests, even deleted dists
+remain available on <a href="http://backpan.perl.org/">BackPAN</a>). This means people
+are more likely to trust these dists for use in their larger projects that
+need dependable dependencies. Lastly… it's what the cool kids use!</p>
+
+<h2 id="howtouploadtocpan">How to Upload to CPAN</h2>
+
+<p>Here's the process for how you can get your dists to CPAN. If these dists
+are currently listed in our p6c ecosystem, both p6c and CPAN versions will
+appear on <a href="https://modules.perl6.org">modules.perl6.org</a>, and you're encouraged
+to remove the p6c version. Some of the described tools are brand-new and others
+are brand-old, created before Rakudo existed, so treat this
+guide as part information and part invitation to improve the tools.</p>
+
+<h3 id="step1:getapauseaccount">Step 1: Get a PAUSE account</h3>
+
+<p>PAUSE stands for "The [Perl programming] Authors Upload Server", it's located
+at <a href="https://pause.perl.org">pause.perl.org</a>, and it's a
+site you use to upload dists to CPAN.</p>
+
+<p>Go to <a href="https://pause.perl.org/pause/query?ACTION=request_id">request PAUSE account page</a> and subscribe for an account. The
+"desired ID" field is for your PAUSE ID, and it's currently used as "author"
+field on <a href="https://modules.perl6.org">modules.perl6.org</a>. For example, <a href="https://modules.perl6.org/search/?q=from%3Acpan+author%3AZOFFIX">mine is ZOFFIX</a>.</p>
+
+<p>I had my account for over a decade, so my memory is a bit fuzzy, but I think you'll need to wait for a human to approve and create your account—it's not instantaneous.</p>
+
+<h3 id="step2:makeadistarchive">Step 2: Make a Dist Archive</h3>
+
+<p>You can manually create a tarball or a zip archive. I don't have all the
+details on which files you're supposed to have in them; you can
+<a href="http://modules.perl6.org/search/?q=from%3Acpan">take a look at other CPAN dists</a> to see what they're doing or…</p>
+
+<p>Use <a href="http://modules.perl6.org/dist/App::Mi6:github">App::Mi6 module</a>! It's
+possible you were already using it to create dists, in which case you're in
+luck, as you can just run <code>mi6 dist</code> to make a dist archive.</p>
+
+<p>I rolled my dists by hand and wrote all the docs in <code>README.md</code>, so when I
+gave <code>mi6 dist</code> a whirl, it
+<a href="https://github.com/skaji/mi6/issues/23">replaced my <code>README.md</code></a> with
+emptiness because I wasn't using any POD6—something (currently) to watch
+out for.</p>
+
+<h3 id="step3:uploadyourdist">Step 3: Upload Your Dist</h3>
+
+<p>The first option is to upload manually: log into
+<a href="https://pause.perl.org">pause.perl.org</a>, then go to
+<a href="https://pause.perl.org/pause/authenquery?ACTION=add_uri">Upload a file to CPAN</a>, be sure to select <code>Perl6</code> in the select input and then upload either
+via an uploaded file or a URL.</p>
+
+<p>The second option is to use <a href="http://modules.perl6.org/dist/App::Mi6:github">App::Mi6</a>'s <code>mi6 upload</code> command.</p>
+
+<p>Shortly after the upload, you'll get an email about whether your upload
+succeeded (you can also see emails on <a href="https://www.nntp.perl.org/group/perl.cpan.uploads/">nntp.perl.org</a>). Make sure you have a <code>META6.json</code> file
+in your dist and that the dist
+version you're uploading is higher than the currently uploaded version. Those
+are the most common upload errors.</p>
+
+<h3 id="step4:relaxandwait">Step 4: Relax and Wait</h3>
+
+<p>If you're <a href="https://webchat.freenode.net/?channels=#perl6">on IRC</a>,
+in about 10 minutes after your upload, our buggable robot will announce it:</p>
+
+<blockquote>
+  <p><b>&lt;buggable&gt;</b> New CPAN upload: Number-Denominate-1.001001.tar.gz by ZOFFIX<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;https://www.cpan.org/authors/id/Z/ZO/ZOFFIX/Perl6/Number-Denominate-1.001001.tar.gz<br></p>
+</blockquote>
+
+<p>In about 2 hours, the dist will also appear on <a href="https://modules.perl6.org">modules.perl6.org</a>. Its updater is started in a cron job on 20th and 40th minute of the hour (unless a job is already running) and it
+<a href="https://modules.perl6.org/update.log">takes about 2 hours</a> to finish each run.</p>
+
+<h3 id="step5:celebratewiththeappropriateamountoffun">Step 5: Celebrate with the Appropriate Amount of Fun</h3>
+
+<p>That's about it to the process. I foresee more tools will be created in the
+future to make the process even easier than it is today. If you have any
+questions or issues, just talk to a human or a robot
+<a href="https://webchat.freenode.net/?channels=#perl6">on our #perl6 IRC channel</a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>CPAN support for Rakudo Perl 6 dists is now usably here. You're encouraged
+to upload your dists to CPAN, to grow a more dependable ecosystem. You're
+also invited to improve and create tooling that manages and displays CPAN
+uploads.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

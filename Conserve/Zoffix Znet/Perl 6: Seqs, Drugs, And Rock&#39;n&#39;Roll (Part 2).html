@@ -1,11 +1,921 @@
-https://perl6.party/<a href="/post/Perl-6-Seqs-Drugs-and-Rock-n-Roll--Part-2
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Seqs-Drugs-and-Rock-n-Roll--Part-2
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6: Seqs, Drugs, And Rock&#39;n&#39;Roll (Part 2) - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6: Seqs, Drugs, And Rock&#39;n&#39;Roll (Part 2)</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-06-27 <span class="words-count">| 4976 words |</span> How to make your very own Iterator object</p>
+  <p>This is the second part in the series! Be sure you
+<a href="https://perl6.party/post/Perl-6-Seqs-Drugs-and-Rock-n-Roll">read Part I first</a> where we discuss
+what <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> are and how to <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> them.</p>
+
+<p>Today, we'll take the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> apart and see what's up in it; what drives it;
+and how to make it do exactly what we want.</p>
+
+<h1 id="partii:thatiteratedquickly">PART II: That Iterated Quickly</h1>
+
+<p>The main piece that makes a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> do its thing is
+an object that does the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>
+role. It's <em>this</em> object that knows how to generate the next value, whenever
+we try to pull a value from a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>, or push all of its values somewhere, or
+simply discard all of the remaining values.</p>
+
+<p>Keep in mind that you never need to use <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>'s</a> methods directly,
+when making use of a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> as a source of values. They are called
+indirectly under the hood in various Perl 6 constructs. The use case for calling
+those methods yourself is often the time when we're making an <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>
+that's fed by another <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>, as we'll see.</p>
+
+<h2 id="pullmyfinger...">Pull my finger...</h2>
+
+<p>In its most basic form, an <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> object needs to provide only one
+method: <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a></p>
+
+<pre><code>my $seq := Seq.new: class :: does Iterator {
+    method pull-one {
+        return $++ if $++ &lt; 4;
+        IterationEnd
+    }
+}.new;
+
+.say for $seq;
+
+# OUTPUT:
+# 0
+# 1
+# 2
+# 3
+</code></pre>
+
+<p>Above, we create a <code>Seq</code> using its
+<a href="https://docs.perl6.org/type/Seq#method_new"><code>.new</code> method</a> that expects an
+instantiated <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>, for which
+we use an anonymous <code>class</code> that does the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> <code>role</code> and provides a
+single <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> method that uses a pair of
+<a href="https://docs.perl6.org/syntax/$">anonymous state variables</a> to generate 4
+numbers, one per call, and then returns
+<a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code> constant</a> to signal the <code>Iterator</code>
+does not have any more values to produce.</p>
+
+<p>The <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> protocol <strong>forbids</strong> attempting to fetch more values from an
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> once it generated the
+<a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code></a> value, so
+your <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>'s</a> methods may assume they'll never get called again past
+that point.</p>
+
+<h2 id="meettherestofthegang">Meet the rest of the gang</h2>
+
+<p>The <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> role defines several more methods, all of which are
+optional to implement, and most of which have some sort of default
+implementation. The extra methods are there for optimization
+purposes that let you take shortcuts depending on how the sequence is iterated
+over.</p>
+
+<p>Let's build a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> that hashes a bunch of data using
+<a href="https://modules.perl6.org/dist/Crypt::Bcrypt"><code>Crypt::Bcrypt</code>module</a>
+(run <code>zef install Crypt::Bcrypt</code> to install it). We'll
+start with the most basic <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> that provides <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> method and
+then we'll optimize it to perform better in different circumstances.</p>
+
+<pre><code>use Crypt::Bcrypt;
+
+sub hash-it (*@stuff) {
+    Seq.new: class :: does Iterator {
+        has @.stuff;
+        method pull-one {
+            @!stuff ?? bcrypt-hash @!stuff.shift, :15rounds
+                    !! IterationEnd
+        }
+    }.new: :@stuff
+}
+
+my $hashes := hash-it &lt;foo bar ber&gt;;
+for $hashes {
+    say "Fetched value #{++$} {now - INIT now}";
+    say "\t$_";
+}
+
+# OUTPUT:
+# Fetched value #1 2.26035863
+#     $2b$15$ZspycxXAHoiDpK99YuMWqeXUJX4XZ3cNNzTMwhfF8kEudqli.lSIa
+# Fetched value #2 4.49311657
+#     $2b$15$GiqWNgaaVbHABT6yBh7aAec0r5Vwl4AUPYmDqPlac.pK4RPOUNv1K
+# Fetched value #3 6.71103435
+#     $2b$15$zq0mf6Qv3Xv8oIDp686eYeTixCw1aF9/EqpV/bH2SohbbImXRSati
+</code></pre>
+
+<p>In the above program, we wrapped all the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> making stuff inside
+a <code>sub</code> called <code>hash-it</code>. We <a href="https://docs.perl6.org/type/Signature#Types_of_Slurpy_Array_Parameters">slurp</a> all the positional
+arguments given to that sub and instantiate a new <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> with an anonymous
+<code>class</code> as the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>. We use attribute <code>@!stuff</code> to store the stuff we
+need to hash. In the <code>.pull-one</code> method we check if we still have
+<code>@!stuff</code> to hash; if we do, we <a href="https://docs.perl6.org/routine/shift"><code>shift</code></a>
+a value off <code>@!stuff</code> and hash it, using 15 rounds to make the hashing algo
+take some time. Lastly, we added a <a href="https://docs.perl6.org/routine/say"><code>say</code></a> statement to measure
+how long the program has been running for each iteration, using two <a href="https://docs.perl6.org/routine/now"><code>now</code></a>
+calls, one of which is run with the
+<a href="https://docs.perl6.org/language/phasers#INIT"><code>INIT</code> phaser</a>. From the output,
+we see it takes about 2.2 seconds to hash a single string.</p>
+
+<h3 id="skippingbreakfast">Skipping breakfast</h3>
+
+<p>Using a <code>for</code> loop, is not the only way to use the <code>Seq</code> returned by our
+hashing routine. What if some user doesn't care about the first few hashes?
+For example, they could write a piece of code like this:</p>
+
+<pre><code>my $hash = hash-it(&lt;foo bar ber&gt;).skip(2).head;
+say "Made hash {now - INIT now}";
+say bcrypt-match 'ber', $hash;
+
+# OUTPUT:
+# Made hash 6.6813790
+# True
+</code></pre>
+
+<p>We've used <a href="https://modules.perl6.org/dist/Crypt::Bcrypt"><code>Crypt::Bcrypt</code>module's</a> <code>bcrypt-match</code>
+routine to ensure the hash we got matches our
+third input string and it does, but look at the timing in the output. It took
+<code>6.7s</code> to produce that single hash!</p>
+
+<p>In fact, things will look the worse the more items the user tries to skip.
+If the user calls our <code>hash-it</code> with a ton of items and then tries to
+<a href="https://docs.perl6.org/routine/skip"><code>.skip</code></a> the first 1,000,000 elements to
+get at the 1,000,001<sup>st</sup> hash, they'll be waiting for about
+25 days for that single hash to be produced!!</p>
+
+<p>The reason is our basic <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> only knows how to <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a>, so the
+skip operation still generates the hashes, just to discard them. Since the
+values our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> generates do not depend on previous values, we can
+implement one of the optimizing methods to skip iterations cheaply:</p>
+
+<pre><code>use Crypt::Bcrypt;
+
+sub hash-it (*@stuff) {
+    Seq.new: class :: does Iterator {
+        has @.stuff;
+        method pull-one {
+            @!stuff ?? bcrypt-hash @!stuff.shift, :15rounds
+                    !! IterationEnd
+        }
+        method skip-one {
+            return False unless @!stuff;
+            @!stuff.shift;
+            True
+        }
+    }.new: :@stuff
+}
+
+my $hash = hash-it(&lt;foo bar ber&gt;).skip(2).head;
+say "Made hash {now - INIT now}";
+say bcrypt-match 'ber', $hash;
+
+# OUTPUT:
+# Made hash 2.2548012
+# True
+</code></pre>
+
+<p>We added a <a href="https://docs.perl6.org/routine/skip-one"><code>.skip-one</code></a> method to our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> that instead of hashing a
+value, simply discards it. It needs to return a truthy value, if it was
+able to skip a value (i.e. we had a value we'd otherwise generate in
+<a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a>, but we
+skipped it), or falsy value if there weren't any values to skip.</p>
+
+<p>Now, the <a href="https://docs.perl6.org/routine/skip"><code>.skip</code></a> method called on our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> uses
+our new <a href="https://docs.perl6.org/routine/skip-one"><code>.skip-one</code></a> method to cheaply skip through 2 items and then uses
+<code>.pull-one</code> to generate the third hash. Look at the timing now: 2.2s; the
+time it takes to generate a single hash.</p>
+
+<p>However, we can kick it up a notch. While we won't notice a difference with
+our 3-item <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>, that user who was attempting to skip 1,000,000 items won't
+get the 2.2s time to generate the 1,000,000<sup>th</sup> hash. They would also have to wait for 1,000,000 calls to <a href="https://docs.perl6.org/routine/skip-one"><code>.skip-one</code></a> and <code>@!stuff.shift</code>. To
+optimize skipping over <em>a bunch of items</em>, we can implement the
+<a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a> method (for brevity, just our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> class is shown):</p>
+
+<pre><code>class :: does Iterator {
+    has @.stuff;
+    method pull-one {
+        @!stuff
+            ?? bcrypt-hash( @!stuff.shift, :15rounds )
+            !! IterationEnd
+    }
+    method skip-one {
+        return False unless @!stuff;
+        @!stuff.shift;
+        True
+    }
+    method skip-at-least (Int \n) {
+        n == @!stuff.splice: 0, n
+    }
+}
+</code></pre>
+
+<p>The <a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a> method takes an <a href="https://docs.perl6.org/type/Int"><code>Int</code></a> of items to skip. It should
+skip as many as it can, and return a truthy value if it was able to skip
+that many items, and falsy value if the number of skipped items was fewer.
+Now, the user who skips 1,000,000 items will only have to suffer through
+a single <a href="https://docs.perl6.org/routine/splice"><code>.splice</code></a> call.</p>
+
+<p>For the sake of completeness, there's another skipping method defined by
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>: <a href="https://docs.perl6.org/routine/skip-at-least-pull-one"><code>.skip-at-least-pull-one</code></a>. It follows the same semantics as
+<a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a>, except with <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> semantics for return values. Its
+default implemention involves just calling those two methods, short-circuiting
+and returning <a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code></a> if the <a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a> returned a falsy value,
+and that default implementation is very likely good enough for all
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a>. The method exists as
+a convenience for <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> <em>users</em> who call methods on <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a> and
+(at the moment) it's not used in core Rakudo Perl 6 by any methods that can be
+called on users' <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a>.</p>
+
+<h3 id="asosocount...">A so, so count...</h3>
+
+<p>There are two more optimization methods—<a href="https://docs.perl6.org/routine/bool-only"><code>.bool-only</code></a>
+and <a href="https://docs.perl6.org/routine/count-only"><code>.count-only</code></a>—that do not have a default implementation. The first one returns <code>True</code> or <code>False</code>, depending on
+whether there are still items that can be generated by the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> (<code>True</code>
+ if yes). The
+second one returns the number of items the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> can still produce.
+<strong>Importantly</strong> these methods <strong>must</strong> be able to do that <strong><em>without</em></strong>
+exhausting
+the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>. In other words, after finding these methods implemented,
+the user of our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> can call them and afterwards should still be
+able to <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> all of the items, as if the methods were never called.</p>
+
+<p>Let's make an <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> that will take an <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a> and <a href="https://docs.perl6.org/routine/rotate"><code>.rotate</code></a> it
+once per iteration of our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> until its <a href="https://docs.perl6.org/routine/tail"><code>tail</code></a> becomes its <a href="https://docs.perl6.org/routine/head"><code>head</code></a>.
+Basically, we want this:</p>
+
+<pre><code>.say for rotator 1, 2, 3, 4;
+
+# OUTPUT:
+# [2 3 4 1]
+# [3 4 1 2]
+# [4 1 2 3]
+</code></pre>
+
+<p>This iterator will serve our purpose to study the two <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> methods.
+For a less "made-up" example, try to find
+implementations of iterators for <a href="https://docs.perl6.org/routine/combinations"><code>combinations</code></a> and <a href="https://docs.perl6.org/routine/permutations"><code>permutations</code></a>
+routines in <a href="https://github.com/rakudo/rakudo/">Perl 6 compiler's source code</a>.</p>
+
+<p>Here's a sub that creates our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> with our shiny <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> along
+with some code that operates on it and some timings for different stages of
+the program:</p>
+
+<pre><code>sub rotator (*@stuff) {
+    Seq.new: class :: does Iterator {
+        has int $!n;
+        has int $!steps = 1;
+        has     @.stuff is required;
+
+        submethod TWEAK { $!n = @!stuff − 1 }
+
+        method pull-one {
+            if $!n-- &gt; 0 {
+                LEAVE $!steps = 1;
+                [@!stuff .= rotate: $!steps]
+            }
+            else {
+                IterationEnd
+            }
+        }
+        method skip-one {
+            $!n &gt; 0 or return False;
+            $!n--; $!steps++;
+            True
+        }
+        method skip-at-least (Int \n) {
+            if $!n &gt; all 0, n {
+                $!steps += n;
+                $!n     −= n;
+                True
+            }
+            else {
+                $!n = 0;
+                False
+            }
+        }
+    }.new: stuff =&gt; [@stuff]
+}
+
+my $rotations := rotator ^5000;
+
+if $rotations {
+    say "Time after getting Bool: {now - INIT now}";
+
+    say "We got $rotations.elems() rotations!";
+    say "Time after getting count: {now - INIT now}";
+
+    say "Fetching last one...";
+    say "Last one's first 5 elements are: $rotations.tail.head(5)";
+    say "Time after getting last elem: {now - INIT now}";
+}
+
+# OUTPUT:
+# Time after getting Bool: 0.0230339
+# We got 4999 rotations!
+# Time after getting count: 26.04481484
+# Fetching last one...
+# Last one's first 5 elements are: 4999 0 1 2 3
+# Time after getting last elem: 26.0466234
+</code></pre>
+
+<p>First things first, let's take a look at what we're doing in our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>.
+We take an <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a> (in the sub call on line 37, we use a <a href="https://docs.perl6.org/type/Range"><code>Range</code></a> object out of which we can milk 5000
+elements in this case),
+shallow-clone it (using <code>[ ... ]</code> operator) and keep that clone in
+<code>@!stuff</code> attribute of our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>. During object instantiation, we
+also save how many items <code>@!stuff</code> has in it into <code>$!n</code> attribute, inside the
+<a href="https://docs.perl6.org/language/objects#index-entry-TWEAK"><code>TWEAK</code> submethod</a>.</p>
+
+<p>For each <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> of the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>, we <a href="https://docs.perl6.org/routine/rotate"><code>.rotate</code></a> our <code>@!stuff</code>
+attribute, storing the rotated result back in it, as well as making a shallow
+clone of it, which is what we return for the iteration.</p>
+
+<p>We also already implemented the <a href="https://docs.perl6.org/routine/skip-one"><code>.skip-one</code></a> and <a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a>
+optimization methods, where we use a private <code>$!steps</code> attribute to alter
+how many steps the next <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> will <a href="https://docs.perl6.org/routine/rotate"><code>.rotate</code></a> our <code>@!stuff</code> by.
+Whenever <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> is called, we simply reset <code>$!steps</code> to its default
+value of <code>1</code> using the <a href="https://docs.perl6.org/syntax/LEAVE"><code>LEAVE</code> phaser</a>.</p>
+
+<p>Let's check out how this thing performs! We store
+our precious <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> in <code>$rotations</code> variable that we first check for
+truthiness, to see if it has any elements in it at all; then we tell the
+world how many rotations we can fish out of that <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>; lastly, we fetch
+the <em>last</em> element of the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> and (for screen space reasons) print the
+first 5 elements of the last rotation.</p>
+
+<p>All three steps—check <a href="https://docs.perl6.org/routine/Bool"><code>.Bool</code></a>, check <a href="https://docs.perl6.org/routine/elems"><code>.elems</code></a>, and fetch last item with
+<a href="https://docs.perl6.org/routine/tail"><code>.tail</code></a> are timed, and the results aren't that pretty. While <a href="https://docs.perl6.org/routine/Bool"><code>.Bool</code></a> took
+relatively quick to complete, the <a href="https://docs.perl6.org/routine/elems"><code>.elems</code></a> call took ages (26s)! That's
+actually not all of the damage. Recall from
+<a href="https://perl6.party/post/Perl-6-Seqs-Drugs-and-Rock-n-Roll">PART I of this series</a> that both <a href="https://docs.perl6.org/routine/Bool"><code>.Bool</code></a> and <a href="https://docs.perl6.org/routine/elems"><code>.elems</code></a> cache the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> unless special
+methods are implemented in the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>. This means that each of those
+rotations we made are still there in memory, using up space for nothing! What
+are we to do? Let's try implementing those special methods
+<a href="https://docs.perl6.org/routine/Bool"><code>.Bool</code></a> and <a href="https://docs.perl6.org/routine/elems"><code>.elems</code></a> are looking for!</p>
+
+<p>This only thing we need to change is to add two extra methods to our
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>
+that determinine how many elements we can generate (<a href="https://docs.perl6.org/routine/count-only"><code>.count-only</code></a>)
+and whether we have any elements to generate (<a href="https://docs.perl6.org/routine/bool-only"><code>.bool-only</code></a>):</p>
+
+<pre><code>method count-only { $!n     }
+method bool-only  { $!n &gt; 0 }
+</code></pre>
+
+<p>For the sake of completeness, here is our previous example, with these two
+methods added to our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>:</p>
+
+<pre><code>sub rotator (*@stuff) {
+    Seq.new: class :: does Iterator {
+        has int $!n;
+        has int $!steps = 1;
+        has     @.stuff is required;
+
+        submethod TWEAK { $!n = @!stuff − 1 }
+
+        method count-only { $!n     }
+        method bool-only  { $!n &gt; 0 }
+
+        method pull-one {
+            if $!n-- &gt; 0 {
+                LEAVE $!steps = 1;
+                [@!stuff .= rotate: $!steps]
+            }
+            else {
+                IterationEnd
+            }
+        }
+        method skip-one {
+            $!n &gt; 0 or return False;
+            $!n--; $!steps++;
+            True
+        }
+        method skip-at-least (\n) {
+            if $!n &gt; all 0, n {
+                $!steps += n;
+                $!n     −= n;
+                True
+            }
+            else {
+                $!n = 0;
+                False
+            }
+        }
+    }.new: stuff =&gt; [@stuff]
+}
+
+my $rotations := rotator ^5000;
+
+if $rotations {
+    say "Time after getting Bool: {now - INIT now}";
+
+    say "We got $rotations.elems() rotations!";
+    say "Time after getting count: {now - INIT now}";
+
+    say "Fetching last one...";
+    say "Last one's first 5 elements are: $rotations.tail.head(5)";
+    say "Time after getting last elem: {now - INIT now}";
+}
+
+# OUTPUT:
+# Time after getting Bool: 0.0087576
+# We got 4999 rotations!
+# Time after getting count: 0.00993624
+# Fetching last one...
+# Last one's first 5 elements are: 4999 0 1 2 3
+# Time after getting last elem: 0.0149863
+</code></pre>
+
+<p>The code is nearly identical, but look at those sweet, sweet timings! Our
+entire program runs about 1,733 <em>times</em> faster because our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> can figure
+out <em>if</em> and <em>how many</em> elements it has <em>without</em> having to iterate or
+rotate anything.
+The <code>.tail</code> call sees our optimization (side note: that's actually
+<a href="https://github.com/rakudo/rakudo/commit/9c04dfc4a427da11f5762534e4601fe697b9e127">very recent</a>) and it too
+doesn't have to iterate over anything and can just use our <a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a>
+optimization to skip to the end. And last but not least, our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> is
+<em>no longer being cached</em>, so the only things kept around in memory are the
+things we care about. It's a huge win-win-win for very little extra code.</p>
+
+<p>But wait... there's more!</p>
+
+<h3 id="pushitrealgood...">Push it real good...</h3>
+
+<p>The <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> we looked at so far did heavy work: each generated value took
+a relatively long time to generate. However, <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> are quite versatile
+and at times you'll find that generation of a value is cheaper than
+calling <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> and storing that value somewhere. For cases like that,
+there're a few more methods we can implement to make our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> perform
+better.</p>
+
+<p>For the next example, we'll stick with the basics. Our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> will
+generate
+a sequence of positive
+<a href="https://en.wikipedia.org/wiki/Parity_%28mathematics%29">even numbers</a> up to
+the wanted limit. Here's what the call to the sub that makes our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> looks
+like:</p>
+
+<pre><code>say evens-up-to 20; # OUTPUT: (2 4 6 8 10 12 14 16 18)
+</code></pre>
+
+<p>And here's the all of the code for it. The particular operation we'll be
+doing is storing all the values in an <a href="https://docs.perl6.org/type/Array"><code>Array</code></a>, by assigning to it:</p>
+
+<pre><code>sub evens-up-to {
+    Seq.new: class :: does Iterator {
+        has int $!n = 0;
+        has int $.limit is required;
+        method pull-one { ($!n += 2) &lt; $!limit ?? $!n !! IterationEnd }
+    }.new: :$^limit
+}
+
+my @a = evens-up-to 1_700_000;
+
+say now - INIT now; # OUTPUT: 1.00765440
+</code></pre>
+
+<p>For a limit of 1.7 million, the code takes around a second
+to run. However, all we do in our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> is add some numbers together,
+so a lot of the time is likely lost in <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code>ing</a> the values and adding
+them to the <a href="https://docs.perl6.org/type/Array"><code>Array</code></a>, one by one.</p>
+
+<p>In cases like this, implementing a custom <a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a> method in our
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> can help. The method receives one argument that is a
+<a href="https://docs.perl6.org/language/glossary#index-entry-Reify">reification</a>
+target. We're pretty close to bare "metal" now, so we can't do anything fancy
+with the reification target object other than call <code>.push</code> method on it with a
+single value to add to the target. The <a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a> always returns
+<a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code></a>, since it
+exhausts the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>, so we'll just pop that value right into the
+return value of the method's <a href="https://docs.perl6.org/type/Signature"><code>Signature</code></a>:</p>
+
+<pre><code>sub evens-up-to {
+    Seq.new: class :: does Iterator {
+        has int $!n = 0;
+        has int $.limit is required;
+        method pull-one {
+            ($!n += 2) &lt; $!limit ?? $!n !! IterationEnd
+        }
+        method push-all (\target --&gt; IterationEnd) {
+            target.push: $!n while ($!n += 2) &lt; $!limit;
+        }
+    }.new: :$^limit
+}
+
+my @a = evens-up-to 1_700_000;
+say now - INIT now; # OUTPUT: 0.91364949
+</code></pre>
+
+<p>Our program is now 10% faster; not a lot. However, since we're doing all the
+work in <a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a> now, we no longer need to deal with state inside the
+method's body, so we can shave
+off a bit of time by using lexical variables instead of accessing object's
+attributes all the time. We'll make them use native <code>int</code> types for
+even more speed. Also, (at least currently), the <code>+=</code> meta operator
+is more expensive than a simple assignment and a regular <code>+</code>; since we're
+trying to squeeze every last bit of juice here, let's take advantage of
+that as well. So what we have now is this:</p>
+
+<pre><code>sub evens-up-to {
+    Seq.new: class :: does Iterator {
+        has int $!n = 0;
+        has int $.limit is required;
+        method pull-one {
+            ($!n += 2) &lt; $!limit ?? $!n !! IterationEnd
+        }
+        method push-all (\target --&gt; IterationEnd) {
+            my int $limit = $!limit;
+            my int $n     = $!n;
+            target.push: $n while ($n = $n + 2) &lt; $limit;
+            $!n = $n;
+        }
+    }.new: :$^limit
+}
+
+my @a = evens-up-to 1_700_000;
+say now - INIT now; # OUTPUT: 0.6688109
+</code></pre>
+
+<p>There we go. Now our program is 1.5 times faster than the original, thanks to
+<a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a>. The gain isn't as dramatic as we what saw with other methods,
+but can come in quite handy when you need it.</p>
+
+<p>There are <a href="https://docs.perl6.org/type/Iterator">a few more <code>.push-*</code> methods</a>
+you can implement to, for example, do something special when your <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>
+is used in codes like...</p>
+
+<pre><code>for $your-seq -&gt; $a, $b, $c { ... }
+</code></pre>
+
+<p>...where the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> would be asked to <a href="https://docs.perl6.org/routine/push-exactly"><code>.push-exactly</code></a> three items.
+The idea behind them is similar to <a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a>: you push stuff onto the
+reification target. Their utility and performance gains are ever smaller,
+useful only in particular situations, so I won't be covering them.</p>
+
+<p>It's worth noting the <a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a> can be used only with <a href="https://docs.perl6.org/type/Iterators"><code>Iterators</code></a> that
+are not lazy, since... well... it expects you to push <strong>all</strong> the items. And
+what exactly are lazy <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a>? I'm so glad you asked!</p>
+
+<h3 id="aquickbrownfoxjumpedoverthelazyseq">A quick brown fox jumped over the lazy Seq</h3>
+
+<p>Let's pare down our previous <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> that generates even numbers down to the
+basics. Let's make it generate an <strong>infinite</strong> list of even numbers, using
+an <a href="https://docs.perl6.org/syntax/$">anonymous state variable</a>:</p>
+
+<pre><code>sub evens {
+    Seq.new: class :: does Iterator {
+        method pull-one { $ += 2 }
+    }.new
+}
+
+put evens
+</code></pre>
+
+<p>Since the list is infinite, it'd take us an infinite time to fetch them all.
+So what exactly happens when we run the code above? It... quite predictably
+hangs when the <a href="https://docs.perl6.org/routine/put"><code>put</code></a> routine is called; it sits and patiently waits for
+our infinite <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> to complete. The same issue occurs when trying to
+assign our seq to a
+<a href="https://docs.perl6.org/language/glossary#index-entry-Sigil"><code>@</code>-sigiled</a> variable:</p>
+
+<pre><code>my @evens = evens # hangs
+</code></pre>
+
+<p>Or even when trying to pass our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> to a sub with a
+<a href="https://docs.perl6.org/type/Signature#Slurpy_(A.K.A._Variadic)_Parameters">slurpy parameter</a>:</p>
+
+<pre><code>sub meows (*@evens) { say 'Got some evens!' }
+meows evens # hangs
+</code></pre>
+
+<p>That's quite an annoying problem. Fortunately, there's a very easy solution
+for it. But first, a minor detour to the land of naming clarification!</p>
+
+<h4 id="arosebyanyothernamewouldlazeassweet">A rose by any other name would laze as sweet</h4>
+
+<p>In Perl 6 some things are or can be made "<a href="https://docs.perl6.org/routine/lazy"><code>lazy</code></a>". While it evokes the
+concept of on-demand or "lazy" evaluation, which is ubiquitous in
+Perl 6, things that are <a href="https://docs.perl6.org/routine/lazy"><code>lazy</code></a> in Perl 6
+aren't <em>just</em> about that. If something <a href="https://docs.perl6.org/routine/is-lazy"><code>is-lazy</code></a>, it means it <strong>always</strong>
+wants to be evaluated lazily, fetching only as many items as needed, even in
+"mostly lazy" Perl 6 constructs that would otherwise eagerly consume even from sources that do on-demand generation.</p>
+
+<p>For example, a sequence of lines read from a file would want to be <a href="https://docs.perl6.org/routine/lazy"><code>lazy</code></a>,
+as reading them all in at once has the potential to use up all the RAM.
+An infinite sequence would also want to be <a href="https://docs.perl6.org/routine/is-lazy"><code>is-lazy</code></a> because
+an <a href="https://docs.perl6.org/routine/eager"><code>eager</code></a> evaluation would cause it to hang, as the sequence never
+completes.</p>
+
+<p>So a thing that <a href="https://docs.perl6.org/routine/is-lazy"><code>is-lazy</code></a> in Perl 6 can be thought of as being infinite.
+Sometimes it actually will be infinite, but even if it isn't, it being <a href="https://docs.perl6.org/routine/lazy"><code>lazy</code></a>
+means it has similar consequences if used eagerly (too much CPU time used, too
+much RAM, etc).</p>
+
+<hr />
+
+<p>Now back to our infinite list of even numbers. It sounds like all we have to
+do is make our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> lazy and we do that by implementing <a href="https://docs.perl6.org/routine/is-lazy"><code>.is-lazy</code></a> method
+on our <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> that simply returns <code>True</code>:</p>
+
+<pre><code>sub evens {
+    Seq.new: class :: does Iterator {
+        method pull-one { $ += 2 }
+        method is-lazy (--&gt; True) {}
+    }.new
+}
+
+sub meows (*@evens) { say 'Got some evens!' }
+
+put         evens; # OUTPUT: ...
+my @evens = evens; # doesn't hang
+meows       evens; # OUTPUT: Got some evens!
+</code></pre>
+
+<p>The <a href="https://docs.perl6.org/routine/put"><code>put</code></a> routine now detects its dealing with something terribly long and
+just outputs some dots. Assignment to <a href="https://docs.perl6.org/type/Array"><code>Array</code></a> no longer hangs (and will
+instead <a href="https://docs.perl6.org/language/glossary#index-entry-Reify">reify</a> on
+demand). And the call to a slurpy doesn't hang either and will
+also <a href="https://docs.perl6.org/language/glossary#index-entry-Reify">reify</a> on
+demand.</p>
+
+<p>There's one more <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> optimization method left that we should
+discuss...</p>
+
+<h3 id="asinkingship">A Sinking Ship</h3>
+
+<p>Perl 6 has <a href="https://github.com/perl6/doc/issues/1309">sink context</a>, similar
+to "void" context in other languages, which means a value is being discarded:</p>
+
+<pre><code>42;
+
+# OUTPUT:
+# WARNINGS for ...:
+# Useless use of constant integer 42 in sink context (line 1)
+</code></pre>
+
+<p>The constant <code>42</code> in the above program is in sink context—its value isn't
+used by anything—and since it's nearly pointless to have it like that, the
+compiler warns about it.</p>
+
+<p>Not all sinkage is bad however and sometimes you may find that gorgeous
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> on which you worked so hard is ruthlessly being sunk by the user! Let's take
+a look at what happens when we sink one of our previous examples, the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>
+that generates up to <code>limit</code> even numbers:</p>
+
+<pre><code>sub evens-up-to {
+    Seq.new: class :: does Iterator {
+        has int $!n = 0;
+        has int $.limit is required;
+        method pull-one {
+            ($!n += 2) &lt; $!limit ?? $!n !! IterationEnd
+        }
+    }.new: :$^limit
+}
+
+evens-up-to 5_000_000; # sink our Seq
+
+say now - INIT now; # OUTPUT: 5.87409072
+</code></pre>
+
+<p>Ouch! Iterating our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> has no side-effects outside of the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>
+that it uses, which means it took the program almost six seconds to do
+<em>absolutely nothing.</em></p>
+
+<p>We can remedy the situation by implementing our own <a href="https://docs.perl6.org/routine/sink-all"><code>.sink-all</code></a> method.
+Its default implementation <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code>s</a> until the end of the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>
+(since <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> may have useful side effects), which is not what we want
+for <em>our</em> <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>. So let's implement a <a href="https://docs.perl6.org/routine/sink-all"><code>.sink-all</code></a> that does nothing!</p>
+
+<pre><code>sub evens-up-to {
+    Seq.new: class :: does Iterator {
+        has int $!n = 0;
+        has int $.limit is required;
+        method pull-one {
+            ($!n += 2) &lt; $!limit ?? $!n !! IterationEnd
+        }
+        method sink-all(--&gt; IterationEnd) {}
+    }.new: :$^limit
+}
+
+evens-up-to 5_000_000; # sink our Seq
+
+say now - INIT now; # OUTPUT: 0.0038638
+</code></pre>
+
+<p>We added a single line of code and made our program 1,520 times faster—the
+perfect speed up for a program that does nothing!</p>
+
+<p>However, doing nothing is not the only thing <a href="https://docs.perl6.org/routine/sink-all"><code>.sink-all</code></a> is good for. Use
+it for clean up that would usually be done at the end of iteration (e.g.
+closing a file handle the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> was using). Or simply set the state
+of the system to what it would be at the end of the iteration (e.g. <a href="https://docs.perl6.org/routine/seek"><code>.seek</code></a>
+a file handle to the end, for sunk <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> that produces <a href="https://docs.perl6.org/routine/lines"><code>lines</code></a> from it).
+Or, as an alternative idea, how about warning the user their code might
+contain an error:</p>
+
+<pre><code>sub evens-up-to {
+    Seq.new: class :: does Iterator {
+        has int $!n = 0;
+        has int $.limit is required;
+        method pull-one {
+            ($!n += 2) &lt; $!limit ?? $!n !! IterationEnd
+        }
+        method sink-all(--&gt; IterationEnd) {
+            warn "Oh noes! Looks like you sunk all the evens!\n"
+                ~ 'Why did you make them in the first place?'
+        }
+    }.new: :$^limit
+}
+
+evens-up-to 5_000_000; # sink our Seq
+
+# OUTPUT:
+# Oh noes! Looks like you sunk all the evens!
+# Why did you make them in the first place?
+# ...
+</code></pre>
+
+<p>That concludes our discussion on optimizing your <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a>. Now, let's
+talk about using <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a> others have made.</p>
+
+<h2 id="itsamarathonnotasprint">It's a marathon, not a sprint</h2>
+
+<p>With all the juicy knowledge about <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a> and <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> we now
+possess, we can probably see how this piece of code manages to work without
+hanging, despite being given an infinite <a href="https://docs.perl6.org/type/Range"><code>Range</code></a> of numbers:</p>
+
+<pre><code>.say for ^∞ .grep(*.is-prime).map(* ~ ' is a prime number').head: 5;
+
+# OUTPUT:
+# 2 is a prime number
+# 3 is a prime number
+# 5 is a prime number
+# 7 is a prime number
+# 11 is a prime number
+</code></pre>
+
+<p>The infinite <a href="https://docs.perl6.org/type/Range"><code>Range</code></a> probably <a href="https://docs.perl6.org/routine/is-lazy"><code>is-lazy</code></a>. That <a href="https://docs.perl6.org/routine/grep"><code>.grep</code></a>
+probably <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code>s</a> until it finds a prime number. The <a href="https://docs.perl6.org/routine/map"><code>.map</code></a>
+<a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code>s</a> each of the <a href="https://docs.perl6.org/routine/grep"><code>.grep</code>'s</a> values and modifies them, and
+<a href="https://docs.perl6.org/routine/head"><code>.head</code></a> allows at most 5 values to be <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code>d</a> from it.</p>
+
+<p>In short what we have here is a pipeline of <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> and <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a> where
+the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> of the next <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> is based on the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> of the
+previous one. For our study purposes, let's cook up a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> of our own that
+combines all of the steps above:</p>
+
+<pre><code>sub first-five-primes (*@numbers) {
+    Seq.new: class :: does Iterator {
+        has     $.iter;
+        has int $!produced = 0;
+        method pull-one {
+            $!produced++ == 5 and return IterationEnd;
+            loop {
+                my $value := $!iter.pull-one;
+                return IterationEnd if $value =:= IterationEnd;
+                return "$value is a prime number" if $value.is-prime;
+            }
+        }
+    }.new: iter =&gt; @numbers.iterator
+}
+
+.say for first-five-primes ^∞;
+
+# OUTPUT:
+# 2 is a prime number
+# 3 is a prime number
+# 5 is a prime number
+# 7 is a prime number
+# 11 is a prime number
+</code></pre>
+
+<p>Our sub <a href="https://docs.perl6.org/type/Signature#Slurpy_(A.K.A._Variadic)_Parameters">slurps up</a> its positional arguments and then calls
+<a href="https://docs.perl6.org/routine/iterator"><code>.iterator</code> method</a> on the <code>@numbers</code> <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a>. This method is available
+on all Perl 6 objects and will let us interface with the object using
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> methods directly.</p>
+
+<p>We save the <code>@numbers</code>'s <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> in one of the attributes of <em>our</em>
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> as well as create another attribute to keep track of how many
+items we produced. In the <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> method, we first check whether
+we already produced the 5 items we need to produce, and if not, we drop into
+a <a href="https://docs.perl6.org/syntax/loop">loop</a> that calls <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> on
+the <em>other</em> <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>, the one we got from <code>@numbers</code> <a href="https://docs.perl6.org/type/Array"><code>Array</code>.</a></p>
+
+<p>We recently learned that if the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> does not have any more values for
+us,
+it will return the <a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code> constant</a>. A constant whose job is to signal the end of
+iteration is finicky to deal with, as you can imagine. To detect it, we need to ensure we use the <a href="https://docs.perl6.org/language/operators#index-entry-Binding_operator">binding (<code>:=</code>)</a>, not
+the <a href="https://docs.perl6.org/language/operators#Assignment_Operators">assignment (<code>=</code>)</a> operator, when storing the
+value we get from <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> in a variable. This is because
+pretty much only the <a href="https://docs.perl6.org/routine/=:=">container identity (<code>=:=</code>) operator</a> will accept such a monstrosity, so we can't stuff the value
+we <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> into just any container we please.</p>
+
+<p>In our example program, if we do find that we received
+<a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code></a> from the source <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>, we simply return
+it to indicate we're done. If not, we repeat the process until we find a prime
+number, which we then put into our desired string and that's what we return
+from our <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a>.</p>
+
+<p>All the rest of the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> methods we've learned about can be called
+on the source <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> in a similar fashion as we called <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a>
+in our example.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Today, we've learned a whole ton of stuff! We now know that <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> are
+powered by <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> objects and we can make custom iterators that generate
+any variety of values we can dream about.</p>
+
+<p>The most basic <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> has only <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> method that generates
+a single value and returns <a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code></a> when it has no more values to produce. It's not
+permitted to call <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> again, once it generated
+<a href="https://docs.perl6.org/type/Iterator#IterationEnd"><code>IterationEnd</code></a> and we
+can write our <a href="https://docs.perl6.org/routine/pull-one"><code>.pull-one</code></a> methods with the expectation that will never
+happen.</p>
+
+<p>There are plenty of optimization opportunities a custom <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> can
+take advantage of. If it can cheaply skip through items, it can implement
+<a href="https://docs.perl6.org/routine/skip-one"><code>.skip-one</code></a> or <a href="https://docs.perl6.org/routine/skip-at-least"><code>.skip-at-least</code></a> methods. If it can know how many items
+it'll produce, it can implement <a href="https://docs.perl6.org/routine/bool-only"><code>.bool-only</code></a> and <a href="https://docs.perl6.org/routine/count-only"><code>.count-only</code></a> methods
+that can avoid a ton of work and memory use when only certain values of a
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> are needed. And for squeezing the very last bit of performance, you
+can take advantage of <a href="https://docs.perl6.org/routine/push-all"><code>.push-all</code></a> and other <code>.push-*</code> methods that let you
+push values onto the target directly.</p>
+
+<p>When your <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> <a href="https://docs.perl6.org/routine/is-lazy"><code>.is-lazy</code></a>, things will treat it with extra care and
+won't try to fetch all of the items at once. And we can use the <a href="https://docs.perl6.org/routine/sink-all"><code>.sink-all</code></a>
+method to avoid work or warn the user of
+potential mistakes in their code, when our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> is being sunk.</p>
+
+<p>Lastly, since we know how to make <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a> and what their methods do,
+we can make use of <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a> coming from other sources and call methods
+on them directly, manipulating them just how we want to.</p>
+
+<p>We now have all the tools to work with <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> objects in Perl 6. In the
+PART III of this series, we'll learn how to compactify all of that knowledge
+and skillfully build <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> with just a line or two of code, using the
+sequence operator.</p>
+
+<p>Stay tuned!</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

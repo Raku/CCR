@@ -1,11 +1,484 @@
-https://perl6.party/<a href="/post/Hacking-on-Rakudo-Perl-6-Compiler-Mix-Your-Fix
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Hacking-on-Rakudo-Perl-6-Compiler-Mix-Your-Fix
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Hacking on The Rakudo Perl 6 Compiler: Mix Your Fix - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Hacking on The Rakudo Perl 6 Compiler: Mix Your Fix</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-08-01 <span class="words-count">| 2216 words |</span> An example of fixing a bug in Rakudo</p>
+  <p>While testing a fix for one of the Less Than Awesome behaviours in standalone
+<a href="https://docs.perl6.org/type/Signature"><code>Signature</code></a> objects, I came across
+a bugglet. Smartmatching two Signatures throws, while spilling a bit of the
+guts:</p>
+
+<blockquote>
+  <p>&lt;Zoffix&gt; m: my $m = method ($a: $b) { }; say $m.signature ~~ :($a, $b);<br>
+  &lt;camelia&gt; rakudo-moar 46838d: OUTPUT«Method 'type' not found
+  for invocant of class 'Any'␤  in block <unit> at <tmp> line 1␤␤»</p>
+</blockquote>
+
+<p>So I figured I'll write about fixing it, 'cause hacking on internals is lots of
+fun. Let's roll!</p>
+
+<h2 id="golfitdown">Golf It Down</h2>
+
+<p>The less code there is to reproduces the bug, the fewer places there are
+for that bug to hide. We have a detached method and then we smartmatch
+its signature against something else. Let's try to golf it down a bit
+and smartmatch two Signatures, without involving a method:</p>
+
+<blockquote>
+  <p>&lt;Zoffix&gt; m: :($a, $b) ~~ :($a, $b);<br>
+  &lt;camelia&gt; rakudo-moar 46838d: ( no output )</p>
+</blockquote>
+
+<p>The bug disappeared, so perhaps out Signature on the left doesn't contain
+the stuff that triggers the bug. Let's dump the signature of the method to see
+what we should match against:</p>
+
+<blockquote>
+  <p>&lt;Zoffix&gt; m: my $m = method ($a: $b) { }; say $m.signature
+  &lt;camelia&gt; rakudo-moar 46838d: OUTPUT«($a: $b, *%_)␤»</p>
+</blockquote>
+
+<p>Aha! It has a slurpy hash: <code>*%_</code>. Let's try matching a Signature with a
+slurpy in it:</p>
+
+<blockquote>
+  <p>&lt;Zoffix&gt; m: <code>:(*%) ~~ :();</code><br>
+  &lt;camelia&gt; rakudo-moar 46838d: OUTPUT«Method 'type' not found
+  for invocant of class 'Any'␤  in block <unit> at <tmp> line 1␤␤»</p>
+</blockquote>
+
+<p>And there we go: hole in three. Let's proceed.</p>
+
+<h2 id="roastit">Roast It</h2>
+
+<p>There's <a href="https://github.com/perl6/roast">an official Perl 6 test suite</a> that
+Rakudo must pass to be called a Perl 6 compiler. Since we got a bug on our
+hands, we should add a test for it to the test suite to ensure it doesn't rear
+its ugly head again.</p>
+
+<p>The copy of the repo gets automatically cloned into <code>t/spec</code> when you
+run <code>make spectest</code> in <a href="https://github.com/rakudo/rakudo">Rakudo's checkout</a>.
+If you don't have a commit bit, you can just change the remote/branch of that
+checkout to your fork:</p>
+
+<pre><code>cd t/spec
+git remote rm origin
+git remote add origin https://github.com/YOURUSERNAME/roast
+git checkout your-branch
+cd ../..
+</code></pre>
+
+<p>It may be tricky to figure out which file to put the test in, if you're new.
+You can always ask the good folks on
+<a href="irc://irc.freenode.net/#perl6">irc.freenode.net/#perl6</a>
+for advice. In this case, I'll place the test
+into <code>S06-signature/outside-subroutine.t</code></p>
+
+<p>While not required, I find it helpful to open a ticket for the bug. This
+way I can reference it in my fix in the compiler repo, I can reference
+it in the commit to the test repo, and people get a place where to tell me
+why I'm being stupid when I am. I opened this bug
+as <a href="https://rt.perl.org/Ticket/Display.html?id=128795">RT#128795</a>.</p>
+
+<p>Now, for the code of the test itself.
+I'll adjust the <code>plan</code> at the top of the file to
+include however many tests I'm writing—in this case one. I'll use the
+<a href="https://docs.perl6.org/language/testing#index-entry-lives-ok-lives-ok%28%24code%2C_%24description%3F%29"><code>lives-ok</code></a> test sub and stick our buggy golfed code
+into it. Here's the <code>diff</code> of the changes to the file; note the reference
+to the ticket number in the comment before the test:</p>
+
+<pre><code>@@ -1,7 +1,7 @@
+  use v6;
+  use Test;
+
+ -plan 3;
+ +plan 4;
+
+  # RT #82946
+  subtest 'signature binding outside of routine calls' =&gt; {
+ @@ -25,4 +25,7 @@ subtest 'smartmatch on signatures with literal strings' =&gt; {
+  # RT #128783
+  lives-ok { EVAL ’:($:)‘ }, ’signature marker is allowed in bare signature‘;
+
+ +# RT #128795
+ +lives-ok { :(*%)~~ :() }, 'smartmatch with no slurpy on right side';
+ +
+  # vim: ft=perl6
+</code></pre>
+
+<p>Run the file now to ensure the test fails. Hint: some files have fudging;
+explaining it is out of the scope of this article, but if you notice failures
+you're not expecting, look it up.</p>
+
+<pre><code>$ make t/spec/S06-signature/outside-subroutine.t
+...
+Test Summary Report
+-------------------
+t/spec/S06-signature/outside-subroutine.t (Wstat: 256 Tests: 4 Failed: 1)
+  Failed test:  4
+  Non-zero exit status: 1
+</code></pre>
+
+<p>With the test in place, it's time to look at some source code. Let the bug
+hunt begin!</p>
+
+<h2 id="makeitsaucy">Make it Saucy</h2>
+
+<p>Our bug involves a Smartmatch operator, which aliases the left side to the topic
+variable <code>$_</code> and calls <code>.ACCEPTS</code> method on the right side with it. Both
+of our sides are <code>Signature</code> objects, so let's pop open Rakudo's sauce code
+for that class.</p>
+
+<p>In <a href="https://github.com/rakudo/rakudo">the Rakudo's repo</a>,
+directory <code>src/core/</code> contains most of the built in types in separate
+files named after those types, so we'll just pop open
+<a href="https://github.com/rakudo/rakudo/blob/nom/src/core/Signature.pm"><code>src/core/Signature.pm</code></a> in the editor and locate the definition of method <code>ACCEPTS</code>.</p>
+
+<p>There are actually four multis for <code>ACCEPTS</code>. Here's the full code. Don't
+try to understand all of it, just note its size.</p>
+
+<pre><code>multi method ACCEPTS(Signature:D: Capture $topic) {
+    nqp::p6bool(nqp::p6isbindable(self, nqp::decont($topic)));
+}
+
+multi method ACCEPTS(Signature:D: @topic) {
+    self.ACCEPTS(@topic.Capture)
+}
+
+multi method ACCEPTS(Signature:D: %topic) {
+    self.ACCEPTS(%topic.Capture)
+}
+
+multi method ACCEPTS(Signature:D: Signature:D $topic) {
+    my $sclass = self.params.classify({.named});
+    my $tclass = $topic.params.classify({.named});
+    my @spos := $sclass{False} // ();
+    my @tpos := $tclass{False} // ();
+
+    while @spos {
+        my $s;
+        my $t;
+        last unless @tpos &amp;&amp; ($t = @tpos.shift);
+        $s=@spos.shift;
+        if $s.slurpy or $s.capture {
+            @spos=();
+            @tpos=();
+            last;
+        }
+        if $t.slurpy or $t.capture {
+            return False unless any(@spos) ~~ {.slurpy or .capture};
+            @spos=();
+            @tpos=();
+            last;
+        }
+        if not $s.optional {
+            return False if $t.optional
+        }
+        return False unless $t ~~ $s;
+    }
+    return False if @tpos;
+    if @spos {
+        return False unless @spos[0].optional or @spos[0].slurpy or @spos[0].capture;
+    }
+
+    for flat ($sclass{True} // ()).grep({!.optional and !.slurpy}) -&gt; $this {
+        my $other;
+        return False unless $other=($tclass{True} // ()).grep(
+            {!.optional and $_ ~~ $this });
+        return False unless +$other == 1;
+    }
+
+    my $here=($sclass{True}:v).SetHash;
+    my $hasslurpy=($sclass{True} // ()).grep({.slurpy});
+    $here{@$hasslurpy} :delete;
+    $hasslurpy .= Bool;
+    for flat @($tclass{True} // ()) -&gt; $other {
+        my $this;
+
+        if $other.slurpy {
+            return False if any($here.keys) ~~ -&gt; Any $_ { !(.type =:= Mu) };
+            return $hasslurpy;
+        }
+        if $this=$here.keys.grep( -&gt; $t { $other ~~ $t }) {
+            $here{$this[0]} :delete;
+        }
+        else {
+            return False unless $hasslurpy;
+        }
+    }
+    return False unless self.returns =:= $topic.returns;
+    True;
+}
+</code></pre>
+
+<p>The error we get from the bug mentions <code>.type</code> method call and there is one
+such method call in the code above (close to the end of it). In this case,
+there's quite a bit of code to sort through. It would be nice to be able
+to play around
+with it, stick a couple of <code>dd</code> or <code>say</code> calls to dump out variables, right?</p>
+
+<p>That approach, however, is somewhat annoying because after each change we
+have to recompile the entire Rakudo. On the meatiest box I got, it takes about
+60 seconds. Not the end of the world, but there's a way to make things
+lightning fast!</p>
+
+<h2 id="mixyourfix">Mix Your Fix</h2>
+
+<p>We need to fix a bug in a method of a class. Another way to think of it is:
+we need to <em>replace</em> a broken method with a working one. <code>Signature</code> class
+is just like any other class, so if we want to replace one of its methods, we
+can just mix in a role!</p>
+
+<p>The broken <code>ACCEPTS</code> will continue to live in the compiler, and we'll pop
+open a separate playground file and define a role—let's calls it
+<code>FixedSignature</code>—in it.
+To get our new-and-improved <code>ACCEPTS</code> method in standalone signature objects,
+we'll use the <code>but</code> operator to mix the <code>FixedSignature</code> in.</p>
+
+<p>Here's the role, the mixing in, and the code that triggers the bug. I'll
+leave out method bodies for brieviety, but there's they are the same as in the
+code above.</p>
+
+<pre><code>role FixedSignature {
+    multi method ACCEPTS(Signature:D: Capture $topic)     { #`(redacted for brevity) }
+    multi method ACCEPTS(Signature:D: @topic)             { #`(redacted for brevity) }
+    multi method ACCEPTS(Signature:D: %topic)             { #`(redacted for brevity) }
+    multi method ACCEPTS(Signature:D: Signature:D $topic) { #`(redacted for brevity) }
+}
+
+my $a = :(*%) but FixedSignature;
+my $b = :()   but FixedSignature;
+
+say $a ~~ $b;
+</code></pre>
+
+<p>There are two more things we need to do for our role to work properly.
+First, we're dealing with multis and right now the multis in our role
+are creating ambiguities with the multis in the original <code>Signature</code> class.
+To avoid that, we'll define a proto:</p>
+
+<pre><code>proto method ACCEPTS (|) { * }
+</code></pre>
+
+<p>Since the code is using some NQP, we also need to bring in those features
+into our playground file with the role. Just add the appropriate pragma
+at the top of the file:</p>
+
+<pre><code>use MONKEY-GUTS;
+</code></pre>
+
+<p>With these modifications, our final test file becomes the following:</p>
+
+<pre><code>use MONKEY-GUTS;
+
+role FixedSignature {
+    proto method ACCEPTS (|) { * }
+
+    multi method ACCEPTS(Signature:D: Capture $topic)     { #`(redacted for brevity) }
+    multi method ACCEPTS(Signature:D: @topic)             { #`(redacted for brevity) }
+    multi method ACCEPTS(Signature:D: %topic)             { #`(redacted for brevity) }
+    multi method ACCEPTS(Signature:D: Signature:D $topic) { #`(redacted for brevity) }
+}
+
+my $a = :(*%) but FixedSignature;
+my $b = :()   but FixedSignature;
+
+say $a ~~ $b;
+</code></pre>
+
+<p>And with this trick in place, we now have a rapid-fire weapon to hunt
+down the bug with—the changes we make compile instantly.</p>
+
+<h2 id="pullthetrigger">Pull The Trigger</h2>
+
+<p>Now, we can debug the code just like any other. I prefer applying liberal
+amounts of <code>dd</code> (or <code>say</code>) calls and dumping out the variables to ensure
+their contents match expectations.</p>
+
+<p>The <code>.type</code> method call our error message mentions is in this line:</p>
+
+<pre><code>return False if any($here.keys) ~~ -&gt; Any $_ { !(.type =:= Mu) };
+</code></pre>
+
+<p>It calls it on the keys of <code>$here</code>, so let's dump the <code>$here</code> before that
+statement:</p>
+
+<pre><code>...
+dd $here
+return False if any($here.keys) ~~ -&gt; Any $_ { !(.type =:= Mu) };
+...
+# OUTPUT:
+# SetHash $here = SetHash.new(Any)
+</code></pre>
+
+<p>Here's our offending <code>Any</code>, let's go up a bit and dump the <code>$here</code> right where
+it's defined:</p>
+
+<pre><code>...
+my $here=$sclass{True}.SetHash;
+dd $here;
+...
+# OUTPUT:
+# SetHash $here = SetHash.new(Any)
+</code></pre>
+
+<p>It's still there, and for a good reason. If we trace the creation of
+<code>$sclass</code>, we'll see it's this:</p>
+
+<pre><code>my $sclass = self.params.classify({.named});
+</code></pre>
+
+<p>The params of the Signature on the right of the smartmatch get classified
+based on whether they are named or not. The named parameters will be inside
+a list under the <code>True</code> key of <code>$sclass</code>. Since we do <em>not</em> have any named
+params, there won't be such a key, and we can verify that with this bit of
+code:</p>
+
+<pre><code>:().params.classify(*.named).say
+# OUTPUT:
+# {}
+</code></pre>
+
+<p>When we go to define <code>$here</code>, we get an <code>Any</code> from <code>$sclass{True}</code>, since
+that key doesn't exist, and when we call <code>.SetHash</code> on it, we get our
+problematic <code>Sethash</code> object with an <code>Any</code> in it. And so, we have our fix for the bug: ensure the <code>True</code> key in <code>$sclass</code> is actually there before creating
+a <code>SetHash</code> out of its value:</p>
+
+<pre><code>my $here=($sclass{True}:v).SetHash;
+</code></pre>
+
+<p>Add that to our playground file with the <code>FixedSignature</code> role in it, run it,
+and verify the fix works. Now, simply transplant the fix back into
+<a href="https://github.com/rakudo/rakudo/blob/nom/src/core/Signature.pm"><code>src/core/Signature.pm</code></a> and then compile the
+compiler.</p>
+
+<pre><code>perl Configure.pl --gen-moar --gen-nqp --backends=moar
+make
+make test
+make install
+</code></pre>
+
+<p>Verify our fix worked before we proceed onto the final stages:</p>
+
+<pre><code>$ make t/spec/S06-signature/outside-subroutine.t
+...
+All tests successful.
+Files=1, Tests=4,  1 wallclock secs ( 0.03 usr  0.00 sys +  0.32 cusr  0.02 csys =  0.37 CPU)
+Result: PASS
+</code></pre>
+
+<h2 id="acleankill">A Clean Kill</h2>
+
+<p>So far, all we know is the bug we found was fixed and the tests we wrote for
+it pass. However, before we ship our fix, we must ensure we didn't break
+anything else. There are other devs working from the same repo and you'll be
+interfering with their work if you break stuff.</p>
+
+<p>Run the full Roast test suite with <code>make spectest</code> command.
+You can use the <code>TEST_JOBS</code> environmental variable to specify the number of
+simultaneous tests. Generally a value slightly higher than the available cores
+works the fastest... and cores make all the difference. On my 24-core VM I
+cut releases on, the spectest completes in about 1 minute and 15 seconds. On
+my 2-core web server, it takes about 25 minutes. You get the idea.</p>
+
+<pre><code>TEST_JOBS=28 make spectest
+...
+All tests successful.
+Files=1111, Tests=52510, 82 wallclock secs (13.09 usr 2.44 sys + 1517.34 cusr 97.67 csys = 1630.54 CPU)
+Result: PASS
+</code></pre>
+
+<p>Once the spectest completes and we have the clean bill of health, we're ready
+to ship our fix. Commit the Rakudo fix, then go into <code>t/spec</code> and commit
+the Roast fix:</p>
+
+<pre><code>git commit -m 'Fix Smartmatch with two signatures, only one of which has slurpy hash' \
+           -m 'Fixes RT#128795' src/core/Signature.pm
+git push
+
+cd t/spec
+git commit -m 'smartmatch on signature with no slurpy on right side does not crash' \
+           -m 'RT#128795' S06-signature/outside-subroutine.t
+git push
+</code></pre>
+
+<p>If you're pushing to your fork of these projects, you have to go the extra
+step and submit a Pull Request (just go to your fork and GitHub should
+display a button just for that).</p>
+
+<p>And we're done! Celebrate with the appropriate amount of fun.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Rakudo bugs can be easy to fix, requiring not much more than knowledge of
+Perl 6. To fix them, you don't need to re-compile the entire compiler, but
+can instead define a small role with a method you're trying to fix and modify
+and recompile just that.</p>
+
+<p>It's important to add tests for the bug into the official test suite and
+it's also important to run the full spectest after you fix the bug. But
+most important of all, is to have fun fixing it.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

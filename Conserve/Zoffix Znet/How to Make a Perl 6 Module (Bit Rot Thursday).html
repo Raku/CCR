@@ -1,11 +1,178 @@
-https://perl6.party/<a href="/post/How-to-Make-a-Perl-6-Module--Bit-Rot-Thursday
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/How-to-Make-a-Perl-6-Module--Bit-Rot-Thursday
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>How to Make a Perl 6 Module (Bit Rot Thursday) - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">How to Make a Perl 6 Module (Bit Rot Thursday)</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-02-04 <span class="words-count">| 964 words |</span> Discussion of steps involved in publishing a Perl 6 modules into the Perl 6 ecosystem.</p>
+  <p>Happy <a href="http://blogs.perl.org/users/zoffix_znet/2016/01/bit-rot-thursday.html">Bit Rot Thursday</a>! This week I'm taking care of fixing minor issues with packaging of my Perl 6 modules, and so, I'll talk about the general process of
+releasing a Perl 6 module. Let's dive in!</p>
+
+<h2 id="prelude">Prelude</h2>
+
+<p>Perl 6 is a brand new language, so there's yet no well-established module system like what Perl 5 has, but there is a work in progress. Thus, I'll first describe the process for our temporary GitHub-based system and then I'll talk about the PAUSE-based system that's being worked on.</p>
+
+<p>There are some <a href="http://doc.perl6.org/language/modules-extra">tools and helpers available</a> to help with the process of module development, but they are beyond the
+scope of this post.</p>
+
+<h2 id="termsandnoconditions">Terms (and no conditions)</h2>
+
+<ul>
+<li><strong>Ecosystem</strong>—collection of Perl 6 modules and scripts, viewable at <a href="http://modules.perl6.org/">modules.perl6.org</a> with META-data listed in the
+<a href="https://github.com/perl6/ecosystem/">perl6/ecosystem repo</a></li>
+<li><a href="https://github.com/tadzik/panda/"><strong>panda</strong></a>—a Perl 6 module installer</li>
+<li><a href="https://github.com/ugexe/zef"><strong>zef</strong></a>—an alternative Perl 6 module installer</li>
+<li><a href="https://en.wikipedia.org/wiki/Software_repository"><strong>repo</strong></a>—the files of a project hosted somewhere, like on GitHub</li>
+<li><strong>PR</strong>—abbreviation for "Pull Request"; a request on GitHub to apply a change to some files in a project</li>
+</ul>
+
+<h2 id="soyouwanttowriteaperl6module">So, you want to write a Perl 6 module?</h2>
+
+<p>If so, awesome! Congratulations on your decision to become a member of the elite, exclusive, limited-time, offer-expires-soon team of about 130 developers who currently own the 549 modules that comprise the
+<a href="http://modules.perl6.org/">Perl 6 Ecosystem</a>.</p>
+
+<p>There are plenty of things that need to be written and if you're still having
+trouble coming up with ideas for something to code, check out the
+<a href="https://github.com/perl6/perl6-most-wanted/blob/master/most-wanted/modules.md">Most Wanted list</a>.</p>
+
+<p>You can publish Perl 6 modules as well as scripts (executables).</p>
+
+<h2 id="thefiles">The Files</h2>
+
+<pre><code>META6.json
+README.md
+.travis.yml
+.gitignore
+bin/baker.p6
+lib/Bread/Baker.pm6
+resources/recipe.txt
+t/00-test-bake.t
+xt/00-ensure-bread-is-tasty.t
+</code></pre>
+
+<p>The above shows the possible files and directories your distribution would
+have. The <code>bin/</code> directory is for executables, <code>lib/</code> is for modules,
+<code>resources/</code> is for additional resources, such as images or templates,
+<code>t/</code> is for tests to be run by the user, and <code>xt/</code> is for your author tests
+that are not run as part of the installation process. The documentation can be
+included in the same file as code in POD6 format, but since the current system uses
+GitHub, a README.md makes it much easier to read the docs.</p>
+
+<p>Also, you are encouraged to enable <a href="https://travis-ci.org/">Travis</a> testing, hence the
+included <code>.travis.yml</code> file. You can use either a <a href="https://docs.travis-ci.com/user/languages/perl6">simple config file</a> or <a href="https://github.com/ugexe/P6TCI">a more advanced version written by ugexe</a>.</p>
+
+<p>Most important of all is the <code>META6.json</code> file. It's a distribution metafile
+in JSON format that specifies what stuff your distro provides, as well as its
+prerequisites and authorship information. You can learn what all the keys are for
+in <a href="http://design.perl6.org/S22.html#META6.json">S22 Speculation</a> or look at
+<a href="https://raw.githubusercontent.com/zoffixznet/perl6-IO-MiddleMan/master/META6.json">a sample META file</a>. This is a place where many errors happen, so I encourage you to use <a href="http://modules.perl6.org/dist/Test::META">Test::META</a> that will spot all the common mistakes.</p>
+
+<p>Lastly, <code>.gitignore</code> is a file where you can list things for <code>git</code> to ignore and not include in your repo. For a start, you'll want to add single line <code>lib/.precomp</code> into it. This is the directory created by Rakudo to store precompiled files when you run your tests, for example, and you don't need to store it anywhere.</p>
+
+<h2 id="addtoecosystemthenow">Add to Ecosystem (The Now)</h2>
+
+<p>Currently, the authors host their modules as repos on
+<a href="https://github.com/">GitHub</a>, so place your files there. It'll require some understanding of <a href="http://www.learnenough.com/git-tutorial">how to use git</a>.</p>
+
+<p>Grab a link to
+the <strong>raw</strong> view of your META file. You can get to it by clicking the <code>"Raw"</code>
+button in the top, right corner of the file view on GitHub. It'll be a link
+akin to <code>https://raw.githubusercontent.com/zoffixznet/perl6-IO-MiddleMan/master/META6.json</code></p>
+
+<p><img alt="arrow.png" src="http://blogs.perl.org/users/zoffix_znet/arrow.png" width="589" height="301" class="mt-image-none" style="" /></p>
+
+<p>Go to the <a href="https://github.com/perl6/ecosystem/blob/master/META.list">META.list file in perl6/ecosystem repo</a>. You can edit that file directly (and submit a PR) by clicking the pencil icon in top, right corner on GitHub, or fork the repo and submit a PR using other means. In that file, on a separate line, add the link to your dist's META file.</p>
+
+<p>After 1–2 hours after your PR is merged, the build cron job will list your
+module on <a href="http://modules.perl6.org">modules.perl6.org</a>. If it's still
+missing, check the <a href="http://modules.perl6.org/update.log">build log</a> for any
+errors; you can just search the page for term <code>[error]</code></p>
+
+<p>Keep in mind that <code>panda</code> doesn't fetch a new ecosystem list on each run,
+so if you want to install your freshly-added module, you need to run
+<code>panda update</code> first.</p>
+
+<h2 id="addtoecosystemthefuture">Add to Ecosystem (The Future)</h2>
+
+<p>Perl 5's model goes something like this: you upload stuff on PAUSE, it gets
+propagated to all sorts of mirrors (CPAN), you can search for things using
+<a href="https://metacpan.org/">MetaCPAN</a>, and you install those things from one
+of the mirrors using a CPAN client, like <code>cpanm</code>. Wouldn't it be sweet for
+Perl 6 folks to get in on that action?</p>
+
+<p>Well, you can! Unless you're reading this after
+the <a href="https://www.youtube.com/watch?v=SZTKyOj8gjM">world was destroyed by a nuclear catastrophe</a>, you can log in onto <a href="http://pause.perl.org/">PAUSE</a> <strong>right this second</strong> and upload a Perl 6 dist.</p>
+
+<p>Providing your dist looks proper and contains <code>META6.json</code> file, all you need
+to do is choose <code>Perl6</code> as the <code>Target Directory</code> on the <a href="https://pause.perl.org/pause/authenquery?ACTION=add_uri">dist upload page</a>.</p>
+
+<p>Now, just because you uploaded a Perl 6 dist doesn't mean it'll show up on
+<a href="https://metacpan.org/">MetaCPAN</a>; it's the whole point of specifying
+the <code>Perl6</code> target dir. There will be a Perl 6 version of the MetaCPAN hosted elsewhere. That MetaCPAN will be a modified version of the Perl 5's MetaCPAN under the hood.</p>
+
+<p>Currently, that work is being done by brave pioneers like jdv79, ranguard, and
+anyone else who I left out due to my ignorance. Having more Volunteers would
+certainly be helpful, and if you seek fame and recognition, you should stop
+by <a href="irc://irc.freenode.net/#perl6-toolchain">#perl6-toolchain channel on irc.Freenode.net</a> and offer a helping hand.</p>
+
+<p>Hopefully, you found this article helpful and I await your contributions to the Perl 6 Ecosystem!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

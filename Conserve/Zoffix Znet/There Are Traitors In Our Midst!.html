@@ -1,11 +1,281 @@
-https://perl6.party/<a href="/post/Perl-6-There-Are-Traitors-In-Our-Midst--Part-1
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-There-Are-Traitors-In-Our-Midst--Part-1
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>There Are Traitors In Our Midst! - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">There Are Traitors In Our Midst!</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-05-02 <span class="words-count">| 1360 words |</span> Examination of Perl 6&#39;s built-in traits.</p>
+  <p><em>Ahoy, matey! I heard thar be traitors in our ranks! We need t' search t' ship 'n find every last one o' them, put them through exquisite torture, 'n then make them swim t' plank. Now t' ye, I gift a task! Learn everythin' ye can 'bout these traitors 'n all o' t' "traits" they use. Ye succeed, a full barrel o' spiced rum gunna be me generous gift t' ye!</em></p>
+
+<h2 id="parti:built-intraits">PART I: Built-In Traits</h2>
+
+<p>Traits! In Perl 6, they're subs executed at compile time that make your code tight and sexy. Let's look at some of the traits you get from the bare Perl 6 and then learn how to create your very own!</p>
+
+<h3 id="is..."><code>is ...</code></h3>
+
+<pre><code>sub foo ($bar is copy) is export { ... }
+has $.foo is rw is required;
+class Foo is Bar { ... }
+</code></pre>
+
+<p>There are several built-in traits that you apply with the <code>is</code> keyword. Let's
+take a look some of the oft-used:</p>
+
+<h4 id="isexport"><code>is export</code></h4>
+
+<pre><code># In Foo.pm6
+unit module Foo;
+sub foo is export           { }
+sub bar is export(:special) { }
+
+# In foo.p6
+use Foo; # only foo() available for use
+use Foo :special; # only bar() available for use
+use Foo :ALL; # both foo() and bar() available for use
+</code></pre>
+
+<p>The <code>is export</code> trait makes your things automatically exported, for use by
+other packages that use yours. You can also create categories by giving a named
+argument to <code>export()</code>. That argument can be specified when <code>use</code>ing your
+module to export that specific category. Three predefined categories exist:
+<code>:ALL</code> that exports all of <code>is export</code> symbols, <code>:DEFAULT</code> that exports those
+with bare <code>is export</code> without arguments, and <code>:MANDATORY</code> marks symbols that will be exported regardless of what argument is given during <code>use</code>.</p>
+
+<p>Of course, you can export constants, variables, and classes too:</p>
+
+<pre><code>our constant Δ is export = 0.5;
+our $bar       is export = 10;
+our Class Bar is export { ... };
+</code></pre>
+
+<p>The trait is really just sugar for <a href="http://docs.perl6.org/language/modules#Exporting_and_Selective_Importing">UNIT::EXPORT::* magic</a>, which you can use
+directly if you need more control.</p>
+
+<h4 id="iscopy"><code>is copy</code></h4>
+
+<p>When your subroutine or method recieves parameters, they are read-only. Any
+attempt to modify them will result in a fatal error. At times when you do
+wish to fiddle with them, simply apply <code>is copy</code> trait to them in the
+signature:</p>
+
+<pre><code>sub foo ($x is copy) { $x = 42; }
+sub bar ($x        ) { $x = 42; }
+
+my $original = 72;
+foo $original; # works; $original is still 72
+bar $original; # fatal error;
+</code></pre>
+
+<p>And don't worry, that won't affect the caller's data. To do that,
+you'll need the <code>is rw</code> trait...</p>
+
+<h4 id="isrw"><code>is rw</code></h4>
+
+<p>The <code>rw</code> in <code>is rw</code> trait is short for "read-write" and this concise trait
+packs a ton of value. Let's break it up:</p>
+
+<h5 id="modifyingcallersvalues">modifying caller's values</h5>
+
+<pre><code>sub foo ($x is rw) { $x = 42 };
+
+my $original = 72;
+foo $original;
+say $original; # prints 42
+</code></pre>
+
+<p>If you apply <code>is rw</code> to a parameter of a sub or method, you'll have access
+to caller's variable. Modifying this parameter will affect the caller, as can
+be seen above, where we change the value of <code>$original</code> by assigning to the
+parameter inside the sub.</p>
+
+<h5 id="writableattributes">writable attributes</h5>
+
+<pre><code>class Foo {
+    has $.foo is rw;
+    has $.bar;
+}
+
+Foo.new.foo = 42; # works
+Foo.new.bar = 42; # fatal error
+</code></pre>
+
+<p>Your classes' <em>public</em> attributes are read-only by default. By simply applying
+the <code>is rw</code> trait, you can let the users of your class assign values to the
+attribute after the object has been created. Keep in mind: this is only
+relevant to the public interface; inside the class, you can still modify
+the values of even read-only attributes using the <code>$!</code> twigil
+(i.e. <code>$!bar = 42</code>).</p>
+
+<h5 id="lhssubroutinesmethods">LHS subroutines/methods</h5>
+
+<p>The <code>is rw</code> trait applied to attibutes, as you've seen in previous section,
+is just syntax sugar for automatically creating a private attribute and
+a method for it. Notice, in the code below we applied <code>is rw</code> trait on the
+<em>method</em>. This makes it return the writable container the caller can use to
+assign to:</p>
+
+<pre><code>class Foo {
+    has $!bar;
+    method bar is rw { $!bar }
+}
+Foo.new.bar = 42;
+</code></pre>
+
+<p>In the same manner, we can create subroutines that can be used on the left
+hand side and be assigned to. In the following example, we create a
+custom postcircumfix operator (which is just a special sub) for using
+fancy-pants "parentheses" to do hash look ups. The <code>is rw</code> trait makes the sub
+return a writable container which lets us assign a new value to a hash key:</p>
+
+<pre><code>sub postcircumfix:&lt;᚜  ᚛&gt; ($before, $inside) is rw {
+    $before{$inside};
+}
+my %hash = :foo&lt;bar&gt;;
+%hash᚜'foo'᚛ = 42;
+say %hash&lt;foo&gt;
+</code></pre>
+
+<p>NOTE: if you use explicit <code>return</code> in your sub, the <code>is rw</code> trait won't work.
+What you're supposed to be using is for this is <code>return-rw</code> keyword instead,
+and if you do use it, <code>is rw</code> trait is not needed.
+<a href="https://rt.perl.org/Ticket/Display.html?id=127924">I don't think that is the ideal behaviour</a>, but I've been wrong before.</p>
+
+<h4 id="isrequired"><code>is required</code></h4>
+
+<p>As the name suggests, <code>is required</code> trait marks class attributes and
+named parameters as mandatory. If those are not provided at object
+instantiation or method/sub call, a fatal error will be thrown:</p>
+
+<pre><code>class Foo {
+    has $.bar is required;
+}
+my $obj = Foo.new; # fatal error, asks for `bar`
+
+sub foo ( :$bar is required ) { }
+foo; # fatal error, asks for $bar named arg
+</code></pre>
+
+<h4 id="istypeclassrole"><code>is Type/Class/Role</code></h4>
+
+<pre><code>role  Foo { method zop { 'Foo' } }
+role  Bar { method zop { 'Bar' } }
+class Mer { method zop { 'Mer' } }
+
+class Meow is Int is Foo is Bar is Mer { };
+
+my $obj = Meow.new: 25;
+say $obj.sqrt; # 5
+say $obj.zop;  # Foo
+</code></pre>
+
+<p>First a note: this is NOT the way to apply Roles; you should use <code>does</code>. When
+you use <code>is</code>, they simply <a href="http://docs.perl6.org/language/objects#Automatic_Role_Punning">get punned</a> and applied as a class.</p>
+
+<p>Using <code>is</code> keyword followed by a Type or Class inherits from them. The <code>Meow</code>
+class constructed above is itself empty, but due to inherting from <code>Int</code> type
+takes an integer and provides <a href="http://docs.perl6.org/type/Int">all of <code>Int</code> methods</a>. We also get method <code>zop</code>, which is provided by the punned role <code>Foo</code>. And despite both roles providing it too, we don't get any errors,
+because those roles got punned.</p>
+
+<h4 id="does"><code>does</code></h4>
+
+<p>Let's try out our previous example, but this type compose the roles correctly,
+using the <code>does</code> trait:</p>
+
+<pre><code>role  Foo { method zop { 'Foo' } }
+role  Bar { method zop { 'Bar' } }
+class Mer { method zop { 'Mer' } }
+
+class Meow is Int does Foo does Bar is Mer { };
+
+# OUTPUT:
+# ===SORRY!=== Error while compiling
+# Method 'zop' must be resolved by class Meow because it exists in multiple roles (Bar, Foo)
+</code></pre>
+
+<p>This time the composition correctly fails. The <code>does</code> trait is what you use
+to compose roles.</p>
+
+<h4 id="of"><code>of</code></h4>
+
+<pre><code>subset Primes of Int where *.is-prime;
+my Array of Primes $foo;
+$foo.push: 2; # success
+$foo.push: 4; # fail, not a prime
+</code></pre>
+
+<p>The <code>of</code> trait gets an honourable mention. It's used in
+<a href="http://blogs.perl.org/users/zoffix_znet/2016/04/perl-6-types-made-for-humans.html">creation of subsets</a>
+or, for example, restricting elements of an array to a particular type.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This isn't an exhaustive list of
+<a href="https://github.com/rakudo/rakudo/blob/nom/src/core/traits.pm">traits in Rakudo Perl 6 compiler</a>, but these are the traits you'll likely use most often in your programs. Unmentioned are
+<a href="http://docs.perl6.org/routine/is%20DEPRECATED"><code>is DEPRECATED</code></a> to mark subs as deprecated, there's <a href="http://docs.perl6.org/routine/is%20default"><code>is default</code></a> that lets variables have a different value when they contain a <code>Nil</code>, and there's even a currently-experimental
+<a href="http://docs.perl6.org/routine/is%20cached"><code>is cached</code></a> trait that caches sub return values. Traits are prevalent in Perl 6 code and it's important to understand how to use them.</p>
+
+<hr />
+
+<p><em>Oi, Matey! Seems th' traitors be way more advanced than us 'n their code be much cleaner, powerful, 'n beautiful! It'd be suicide to be off against all 'o them! ye still want that spiced rum? Find out how we could use th' trators' methods 'n improve upon them! Do that 'n a chest 'o gold gunna be yours, as well as th' hooch!</em></p>
+
+<p>To be continued</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

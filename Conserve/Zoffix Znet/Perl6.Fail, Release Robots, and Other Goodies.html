@@ -1,11 +1,404 @@
-https://perl6.party/<a href="/post/Perl6-Fail-Release-Robots-And-Other-Goodies
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl6-Fail-Release-Robots-And-Other-Goodies
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl6.Fail, Release Robots, and Other Goodies - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl6.Fail, Release Robots, and Other Goodies</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-09-17 <span class="words-count">| 2069 words |</span> Description of work done to automate Perl 6 releases</p>
+  <p><em>Deconfusion note: if you're just a regular Perl 6 user, you likely use
+and only ever heard of Rakudo Star, which is a distribution that includes
+the Rakudo Perl 6 Compiler, some modules, and the docs. This post details a release
+of that compiler</em> <strong>only,</strong> <em>which gets released more often than Rakudo Star.
+So please don't think there's a new release, if Star is all you use.</em></p>
+
+<p>If you follow <a href="http://perl6.party">what I write</a>, you know that last month
+I messed up a Perl 6 release and vowed to <a href="/post/I-Botched-A-Perl-6-Release-And-Now-A-Robot-Is-Taking-My-Job">improve the
+process</a>,
+by making a release robot. Well, I didn't lie!</p>
+
+<blockquote>
+  <p><b>* Zoffix</b> dissapears for a couple of weeks<br>
+  <b>&lt;Zoffix&gt;</b> Can be reached via twitter if needed<br></p>
+</blockquote>
+
+<p>I popped in <a href="https://www.youtube.com/watch?v=2eRgh-dNjAk">some relaxing
+music</a> and
+got cracking. Today, I'll talk about the goodies I've made, which touch
+a much broader scope than just releasing Perl 6.</p>
+
+<p>Let the gift unwrapping begin!</p>
+
+<h2 id="perl6.fail:r6isthenewrt">Perl6.Fail: R6 Is The New RT</h2>
+
+<p>First thing I needed was a web app where a release manager could view new
+bug tickets since last release and mark them as release-blockers, if needed.
+The app needs to keep track of what tickets were already reviewed, so the
+release manager can spend just a couple of minutes of their time every few
+days, instead of cramming everything into a single sitting on release date.</p>
+
+<p>I named that app <strong>R6</strong>.
+The six fits the Perl 6 theme, and <code>6</code> is above <code>T</code>
+on the keyboard, which I found apropos, since my app is better than
+<a href="https://bestpractical.com/request-tracker">stock RT</a> we currently use 😜.
+With the name for the bug app in place, I went to hunt for neat domain names to
+host it on and nearly immediately found the perfectest one:
+<strong><a href="http://perl6.fail">perl6.fail</a></strong>.</p>
+
+<p>Helping release managers is the smaller side of the utility of the app and
+it aims to address some of the major pain points with RT (or rather with our
+particular instance of RT that we also have to share with Perl 5).</p>
+
+<h3 id="viewingtags">Viewing Tags</h3>
+
+<p>The RT version has <a href="/post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You--Part-2#lesson4:tagyourticketsandmakethemeasytofind">overly complicated
+interface</a> when it comes to trying
+to find a ticket tagged with a particular tag. Worse still, some tags
+are just special codes in ticket subject lines, while others use the actual
+tag interface. Annoying!</p>
+
+<p>This is one of the first things I solved in R6. The home page lists all
+available tags, along with ticket counts for each tag. Simply clicking the
+tag will show the tickets just for that tag.</p>
+
+<p><img src="/assets/pics/release-robots/r6.png" alt="" /></p>
+
+<p>Simple. Just the way it's supposed to be.</p>
+
+<h3 id="searchinganddecenteditor">Searching and Decent Editor</h3>
+
+<p>Once I get more tuits, I plan to also add full-text ticket search and a
+decent Markdown editor for ticket replies.</p>
+
+<h3 id="releasemanagers">Release Managers</h3>
+
+<p>If you log in as a release manager, you get extra bells and whistles in the
+interface that let you mark tickets as was the original plan, as well as
+mark commits as reviewed, when updating changelog.</p>
+
+<h3 id="api">API</h3>
+
+<p>The release robot has to fetch info from this app to know whether all tickets
+and commits have been reviewed. As such,
+<a href="http://perl6.fail/t/BUG.json">adding <code>.json</code> to the URL</a>
+of most pages will cause the app provide output in JSON format, rather than
+plain ol' HTML.</p>
+
+<p>Speaking of robots...</p>
+
+<h2 id="buggable">Buggable</h2>
+
+<p>Some of you have already seen my prototype bot <code>buggable</code>. It
+was... well, let's just say the name suits it.</p>
+
+<blockquote>
+  <p><b>&lt;buggable&gt;</b> ☠ [travis build above] One job failed but NOT due to the timeout.<br>
+  <b>&lt;lizmat&gt;</b> &quot;No output has been received in the last 10m0s, this potentially<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    indicates a stalled build or something wrong with the build itself.&quot;<br>
+  <b>&lt;lizmat&gt;</b> sounds like timeout to me<br></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+  <p><b>&lt;buggable&gt;</b> geekosaur, Found 2 tickets tagged with STAR.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    Details: http://bug.perl6.party/1470861574.html<br>
+  <b>&lt;geekosaur&gt;</b> o.O<br>
+  <b>&lt;geekosaur&gt;</b> buggable appears to have a math problem<br></p>
+</blockquote>
+
+<p>First, I fixed the Travis bogus-failure watcher and taught it to handle
+missing build logs and GitHub connectivity issues:</p>
+
+<blockquote>
+  <p><b>&lt;buggable&gt;</b> [travis build above] ✓ All failures are due to timeout (0),<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    missing build log (1), or GitHub connectivity (0)<br></p>
+</blockquote>
+
+<p>As for tags and tickets, I completely threw away the old backend that used
+RT API and its own database. Instead, the bot now uses the API of the R6
+app I made.</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> buggable, tags<br>
+  <b>&lt;buggable&gt;</b> Zoffix, <strong>Total: 439;</strong> <strong>BUG:</strong> 189; <strong>UNTAGGED:</strong> 58; <strong>LTA:</strong> 54; <strong>RFC:</strong> 40;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    <strong>CONC:</strong> 20; <strong>SEGV:</strong> 18; <strong>JVM:</strong> 14; <strong>UNI:</strong> 13; <strong>PERF:</strong> 12; <strong>TESTNEEDED:</strong> 12; <strong>POD:</strong> 9;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    <strong>PRECOMP:</strong> 9; <strong>@LARRY:</strong> 7; <strong>NATIVECALL:</strong> 7; <strong>NYI:</strong> 6; <strong>IO:</strong> 5; <strong>REGEX:</strong> 5; <strong>BUILD:</strong> 3;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    <strong>MATH:</strong> 3; <strong>REPL:</strong> 3; <strong>GLR:</strong> 2; <strong>OSX:</strong> 2; <strong>WEIRD:</strong> 2; <strong>BOOTSTRAP:</strong> 1; <strong>CONFIGURE:</strong> 1;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    <strong>OO:</strong> 1; <strong>RT:</strong> 1; <strong>SITE:</strong> 1; <strong>SPEC:</strong> 1; <strong>STAR:</strong> 1; <strong>TESTCOMMITTED:</strong> 1;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    See <a href="http://perl6.fail/">http://perl6.fail/</a> for details<br>
+  <b>&lt;Zoffix&gt;</b> buggable, tag bug,rfc<br>
+  <b>&lt;buggable&gt;</b> Zoffix, There are <strong>2 tickets</strong> tagged with <strong>BUG, RFC</strong>;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    See <a href="http://perl6.fail/t/BUG,RFC">http://perl6.fail/t/BUG,RFC</a> for details<br></p>
+</blockquote>
+
+<p>Not only all the issues are gone, it now picks up the proper RT tags too and
+not just the ones in the subject line. You can specify multiple tags with a
+comma, to find tickets with a combination of tags.</p>
+
+<p>Once ticket search is implemented in R6, <code>buggable</code> will be able to search for
+tickets, which can be handy in-chat when trying to decide whether something
+was or needs to be rakudobugged.</p>
+
+<h2 id="neuralanomaly">NeuralAnomaly</h2>
+
+<p>Finally, I'm proud to present the star of the hour and the newest member of the
+release team: <code>NeuralAnomaly</code>. It graciously made the release of the Rakudo
+Perl 6 Compiler this month, successfully replacing me at the job:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> NeuralAnomaly, yo<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, hey<br>
+  <b>&lt;Zoffix&gt;</b> NeuralAnomaly, it&#39;s time<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, Oh boy! Really?! We&#39;re doing a realease‽‽ YEY!<br>
+  <b>&lt;Zoffix&gt;</b> Yup<br>
+  <b>&lt;Zoffix&gt;</b> NeuralAnomaly, cut the release<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, Will do! If you&#39;re feeling particularly naughty, you can watch me at http://perl6.fail/release/progress or go look at some cats http://www.lolcats.com/<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Prep done<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ nqp tests OK<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ nqp release tarball tests OK<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ nqp release DONE<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Rakudo stresstest (master) OK<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Rakudo stresstest (6.c-errata) OK<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Rakudo release DONE<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Post: upload tarballs to rakudo.org<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, 🎺🎺🎺📯📯📯📯📯📯🌈🌈🌈📦📦📦<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, The release of <strong>Rakudo #103 2016.09</strong> has now been completed<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, 🎺🎺🎺📯📯📯📯📯📯🌈🌈🌈📦📦📦<br>
+  <b>* NeuralAnomaly</b> celebrates with an appropriate amount of fun<br></p>
+</blockquote>
+
+<h2 id="thetech">The Tech</h2>
+
+<p>The code for all of the deliverables is <a href="https://github.com/zoffixznet">available on
+GitHub</a>, in <a href="https://github.com/zoffixznet/r6">R6
+repo</a>, <a href="https://github.com/zoffixznet/perl6-buggable">Buggable
+repo</a>, and <a href="https://github.com/zoffixznet/na">NeuralAnomaly
+repo</a>.</p>
+
+<h3 id="r6">R6</h3>
+
+<p>The R6 app uses <a href="https://rt-wiki.bestpractical.com/wiki/REST">RT's REST API</a>
+to ask the running RT instance for updated tickets every 10 minutes.</p>
+
+<p>I chose Perl 5 as the weapon of choice, utilizing the talents of
+the <a href="http://mojolicious.org/">Mojolicious web framework</a> and
+<a href="https://metacpan.org/pod/DBIx::Class"><code>DBIx::Class</code> ORM</a>.</p>
+
+<p>I attempted to
+use <a href="https://metacpan.org/pod/RT::Client::REST"><code>RT::Client::REST</code></a> for API
+interfacing, but found the module oddly designed and requiring too many
+requests to obtain information I needed. So I implemented the
+relevant portions of the RT's REST API interface myself.</p>
+
+<p>For user accounts, I <s>stole</s> borrowed, <code>RT::Client::REST</code> authentication
+mechanism, although at the time of this writing, no user-account features
+are available to users (and perl6.fail still runs on plain HTTP). And
+Will "Coke" Coleda was very helpful in pointing out a relevant portion of the
+API that let me save making a huge number of requests. And current
+implementation makes
+just a single request every 10 minutes, asking only for updated tickets since
+last request.</p>
+
+<h3 id="buggable">Buggable</h3>
+
+<p>The bot uses my very own <a href="https://modules.perl6.org/dist/IRC::Client"><code>IRC::Client</code> Perl 6 module</a>
+and is pretty thin
+and isn't much to look at. Using <a href="https://modules.perl6.org/dist/JSON::Fast"><code>JSON::Fast</code></a> and <a href="https://modules.perl6.org/dist/HTTP::UserAgent"><code>HTTP::UserAgent</code></a>
+modules it accesses <a href="http://perl6.fail">R6</a> using its JSON endpoints to fetch
+the tag info and perform ticket searches.</p>
+
+<p>Travis features use <a href="https://docs.travis-ci.com/api">Travis API</a>. Since the
+stuff I use does not require authentication, this is nothing more than
+fetching data from an endpoint and decoding JSON.
+I found <a href="http://jsonviewer.stack.hu/">JSONViewer.Stack.Hu</a> helpful when
+figuring out what bits of data I wanted to keep.</p>
+
+<h3 id="neuralanomaly">NeuralAnomaly</h3>
+
+<p>When I planned this bot, I suspected developing it would be somewhat difficult,
+with lots of thinking... In reality, <em>writing code for it</em>
+turned out to be super easy.
+Popping <code>ssh</code> into <a href="https://docs.perl6.org/type/Proc::Async"><code>Proc::Async</code></a>
+was child's play, and the Proc bailed out on non-zero exit codes, which made
+it super easy for me to abort failing stages of the process. I basically
+ended up with Perl-6-super-charged bash scripts... quite literally:</p>
+
+<p><img src="/assets/pics/release-robots/perl6-bash.png" alt="" /></p>
+
+<p>However, when it came to giving <code>gpg</code> and <code>git tag</code> the passphrase for the
+key, that... is worth its own section.</p>
+
+<h4 id="wontyoutakemypassphraseplease"><em>Won't You Take My Passphrase Please</em></h4>
+
+<p>The major roadblock was trying to pass
+the GPG passphrase to the <code>gpg</code> (which was easy) and to the <code>git</code> when signing
+the tag (which got annoying quick).</p>
+
+<p>Avoiding <a href="http://stackoverflow.com/a/11270814">idiotic solutions that tell you to write your passphrase
+into world-readable files</a>, I went
+to enable the <code>gpg-agent</code> by installing <code>gnupg-agent</code>, uncommenting
+<code>use-agent</code> in <code>~/.gnupg/gpg.conf</code>,
+and running <code>eval $(gpg-agent --daemon --sh)</code></p>
+
+<p>That did the trick with starting the agent, <em>but</em> <code>git tag</code> was now outright
+choking when attempting to sign, telling me <code>'gpg: cancelled by user'</code>,
+even though
+I did naught.</p>
+
+<p>After several hours of trying things and getting a helping hand from mst,
+the solution was nowhere in sight:</p>
+
+<p><img src="/assets/pics/release-robots/mst.png" alt="" /></p>
+
+<p>However, after installing a program called <code>unbuffer</code>
+(<code>sudo apt-get install expect-dev</code>), reading its help page, and
+inserting an appropriate amount of sleeps, I ended up with these
+chunks of code in my release bot that seemed to do the trick when passing
+them to commands requiring keys:</p>
+
+<pre><code>constant $with-github-credentials is export
+    = "(sleep 6; echo -e '$github-user\\n';"
+    ~ " sleep 6; echo -e '$github-pass\\n'; sleep 12) | unbuffer -p";
+
+constant $with-gpg-passphrase     is export
+    = "(sleep 6; echo '$gpg-keyphrase'; sleep 12) | unbuffer -p";
+
+...
+
+gpg --batch --no-tty --passphrase-fd 0 -b \\
+    --armor rakudo-$rakudo-ver.tar.gz                           ||
+\{ echo '$na-fail Rakudo: Sign the tarball'; exit 1; \}
+$gpg-keyphrase
+
+...
+
+$with-github-credentials git push
+</code></pre>
+
+<p>Echoing like that is not ideal, but this is running in a single-user VM, so
+it'll do for now.</p>
+
+<p>The remaining bits of the scripting were easy.</p>
+
+<h4 id="steprightup">Step Right Up</h4>
+
+<p>After completing full release scripts for NQP and Rakudo and ensuring they
+work, it was time to break them. If a single spectest test fails in
+final tarball testing due to being floppy, you don't want to repeat the whole
+process from scratch. So I broke up release scripts into bite-size pieces
+and made the bot able to run individual pieces on command.</p>
+
+<p>That had a positive unintended effect:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> NeuralAnomaly, run pre r-clone r-build r-p5 r-stress r-stress-v6c<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Prep done<br>
+  <b>&lt;NeuralAnomaly&gt;</b> Zoffix, ♥♥♥♥♥♥ Rakudo stresstest (master) OK<br>
+  <b>&lt;NeuralAnomaly&gt;</b> ♥♥♥♥♥♥ Rakudo stresstest (6.c-errata) OK<br>
+  <b>&lt;NeuralAnomaly&gt;</b> ♥♥♥ All Done! ♥♥♥<br>
+  <b>&lt;Zoffix&gt;</b> :D<br>
+  <b>&lt;Zoffix&gt;</b> So the release bot doubles as a stresstester too :)<br></p>
+</blockquote>
+
+<h4 id="testing">Testing</h4>
+
+<p>The most <strike>difficult</strike> annoying phase was testing. Not only
+does the full build runs for about 40 minutes even on my 24-core VM, but I
+had to delete and then re-clone both NQP and Rakudo repos, because their state
+had to be pristine.</p>
+
+<p>After countless hours and hundreds of Rakudos built, I can now recite the build
+process with my eyes closed :)</p>
+
+<h2 id="thefuture">The Future</h2>
+
+<p>All of these goodies burnt me out a bit—stuff started to feel like "work"
+rather than enjoyment. It wasn't the code, but the testing. There's nothing
+quite like 40-minute test sessions, where a single typo sends you to square
+one. So I plan to take the next month or so "off," working on other
+things in Rakudo. But eventually, I plan to improve both R6 and the release
+robot.</p>
+
+<p>Currently, the bot does not send email announcements and I've not even checked
+whether Wikipedia has an API to make automated updates. R6 also has a ton of
+improvement potential by allowing to view and comment on existing tickets, as
+well as provide useful search features.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This month, Perl 6's release cycle received an awesome upgrade: release steps
+got abstracted into commands to be issued to an IRC bot. More to it, release
+managers no longer have to cram all of their work into a single day, but are
+now free to spread it out throughout the month.</p>
+
+<p>The new website <a href="http://perl6.fail">perl6.fail</a> makes it easy to locate
+tickets tagged with a particular tag and will be eventually expanded into a
+more usable bug tracker interface.</p>
+
+<p>More than getting just the release robot, the Perl 6 development team now
+also has a spectest robot that will regularly "practice" doing releases,
+spotting any of the issues much sooner than previously was possible.</p>
+
+<p>Things got better.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

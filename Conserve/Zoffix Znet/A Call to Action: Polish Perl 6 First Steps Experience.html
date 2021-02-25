@@ -1,11 +1,151 @@
-https://perl6.party/<a href="/post/A-Call-To-Action--Polish-Perl-6-First-Steps-Experience
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/A-Call-To-Action--Polish-Perl-6-First-Steps-Experience
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>A Call to Action: Polish Perl 6 First Steps Experience - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">A Call to Action: Polish Perl 6 First Steps Experience</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-06-13 <span class="words-count">| 814 words |</span> Help us make beginners&#39; Perl 6 experience better</p>
+  <p>If you follow the <a href="https://www.kickstarter.com/projects/1422827986/learning-perl-6?ref=user_menu">updates on KickStarter</a>, you may know the <a href="https://www.learningperl6.com/book/"><em>Learning Perl 6</em> book</a> is nearing completion, with the author planning to submit final manuscript to O'Reilly on
+June 18th.</p>
+
+<p>What this means is the July's Rakudo Star release will possibly be the release the first crop of readers of that book will be using (the next release after that is in October). I've seen several people say they're waiting for this book to get
+published before they give Perl 6 a try. Coupled with the marketing the author
+and O'Reilly will be doing for the book, I expect to see an influx of new
+users.</p>
+
+<p>For that reason, I'm making a call to action, for everyone to polish the
+experience of the first steps those users will make in Perl 6.</p>
+
+<h2 id="howtohelp">How to Help?</h2>
+
+<p>There are several things you can help with, depending on your skillset. And
+before anyone protests, don't worry, there's one thing <em>everyone</em> is able to
+do…</p>
+
+<h3 id="installperl6">Install Perl 6</h3>
+
+<p>The easiest thing you can do is grab a clean box and try to install Perl 6
+to it. This is especially useful if you've never done it before and have
+no idea what you're doing, as it'll be very easy for you to see things that
+need to be improved.</p>
+
+<p>Are you having trouble finding or choosing what to install? Getting installation errors? Having trouble finding support channels? Report it!</p>
+
+<p>Unless you can think of a better place, you can always report these things
+in our <a href="https://github.com/perl6/user-experience/issues"><em>User Experience</em>
+repo</a> by filing a <a href="https://github.com/perl6/user-experience/issues/new">new Issue</a>.</p>
+
+<h3 id="learnuseperl6">Learn/Use Perl 6</h3>
+
+<p>This, again, is the area where the less experience with Perl 6 you have, the
+better. Is there something you find difficult to use or hard to find? <a href="https://github.com/perl6/user-experience/issues">Let us know</a>.</p>
+
+<p>Code editors, books, documentation, modules, tutorials, excercises, contests, language news, support channels. If you were looking for any of those things and had a hard time finding them, the process will likely need to be addressed.</p>
+
+<h3 id="rakudoonwindows">Rakudo on Windows</h3>
+
+<p>This is the area where I hope we'll make a lot of progress before the next
+Rakudo Star release (it'll be in July, based on Rakudo compiler release scheduled for July 21st). Few, if any of the core devs use Windows as their
+development environment, so the state of Rakudo on Windows is slightly lagging
+behind.</p>
+
+<p>While <a href="https://github.com/perl6/roast/">6.d-proposals roast</a> stresstest
+is clean on Linux and MacOS, on Windows,
+<a href="https://github.com/perl6/roast/issues/320#issuecomment-379595368">there's a bunch of test failures</a>. Several of them are likely problematic tests themselves (e.g. those that shell out and expect
+<code>cmd.exe</code> to handle Unicode out of the box). When I last looked at the failing tests, some of them were failing due to how
+<a href="https://rt.perl.org/Ticket/Display.html?id=132258#ticket-history"><code>&amp;run</code> escapes arguments</a>; since <code>perl6</code> is launched with a batch file on
+Windows, using <code>$*EXECUTABLE</code> with <code>&amp;run</code> would require using <code>cmd.exe</code>-style
+escapes of command line arguments, which <code>&amp;run</code> doesn't use. There's some discussion for this issue on <a href="https://github.com/rakudo/rakudo/issues/1325">R#1325</a>, <a href="https://rt.perl.org/Ticket/Display.html?id=132258#ticket-history">RT#132258</a>, and self-rejected RFC <a href="https://github.com/rakudo/rakudo/issues/1306">R#1306</a>.</p>
+
+<p>If you'd like to look into these problems, you can <a href="https://rakudo.org/files/rakudo/source">install Rakudo from source</a> on Windows and then run <code>gmake stresstest</code> (or whatever <code>make</code> equivalent you have) to clone all the spectests into <code>t/spec</code> directory and run them, so you'll be able to see what's failing. You can run individual tests with <code>t/fudgeandrun t/spec/42-foobar/the-test-file.t</code></p>
+
+<p>There's also a second item of lesser importance: Rakudo Star build on 32-bit Windows. The latest build we have for that system is 2016.01, which is quite
+outdated. On occasion people do ask for 32-bit builds and currently we can
+only suggests to <a href="https://rakudo.org/files/rakudo/source">build from source</a>.</p>
+
+<p>It'd be nice to have a more recent build created. I'm unfamiliar with what's
+involved. If you're interested in helping, join our <a href="https://docs.perl6.org/webchat.html">IRC chat</a> and try to speak to <code>stmuk</code> or <code>FROGGS</code></p>
+
+<h2 id="helpresolveissues">Help Resolve Issues</h2>
+
+<p>Help us resolve open Issues. In the context of this call to action, the most pertinent repos would likely be <a href="https://github.com/perl6/user-experience/issues">User Experience</a>, <a href="https://github.com/perl6/perl6.org/issues">Perl6.org website</a>, <a href="https://github.com/perl6/modules.perl6.org/issues">Modules.Perl6.org website</a>, as well as <a href="https://github.com/perl6/doc/issues">Docs</a>,
+<a href="https://github.com/rakudo/star/issues">Rakudo Star</a>, <a href="https://github.com/rakudo/rakudo/issues">Rakudo itself</a>, and <a href="https://github.com/perl6/roast/issues/">Roast Test Suite</a>.</p>
+
+<p>For core hacking resources, there are some tutorials with "Core Hacking" in their titles on <a href="https://rakudo.party/">Rakudo.Party</a> website, the <a href="https://github.com/edumentab/rakudo-and-nqp-internals-course">NQP/Rakudo Internals Course</a> and <a href="https://6guts.wordpress.com/">6guts blog</a>. I also
+like to use <a href="https://github.com/zoffixznet/z">Z-Script</a> rakudo dev
+helper script.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The LP6 book is about to hit the shelves and will likely bring a crop of
+new Perl 6 users. We can improve the perception of the language by polishing
+the experience of those users. Let's see if there are any problems with obtaining the compiler or any resources a begginer would need to get started
+with the language.</p>
+
+<p>There are also some issues on Windows that need to be addressed, such as
+failing stresstests and 32-bit Rakudo Star builds.</p>
+
+<p>If you can give a hand with any of that, it'd be greatly appreciated. File
+<a href="https://github.com/perl6/user-experience/issues/new">a new Issue</a> in our User Experience repo or just <a href="https://docs.perl6.org/webchat.html">chat with us on IRC</a>.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,265 @@
-https://perl6.party/<a href="/post/Perl-6-Extra-Typical-Perl-6
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Extra-Typical-Perl-6
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Extra-Typical Perl 6 - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Extra-Typical Perl 6</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-04-27 <span class="words-count">| 1256 words |</span> Extending Perl 6&#39;s existing types.</p>
+  <p>Have you ever grabbed an <a href="http://docs.perl6.org/type/Int"><code>Int</code></a> and thought, <em>"Boy! I sure would enjoy having an .even method on it!"</em> Before you beg the core developers <a href="irc://irc.freenode.net/#perl6">on IRC</a> to add it to Perl 6, let's review some user-space recourse available to you.</p>
+
+<h2 id="mygrandpaleftmeafortune"><em>My Grandpa Left Me a Fortune</em></h2>
+
+<p>One way to go is to define your own custom Int-like class that knows how to perform the <code>.even</code> method. You don't have to reinvent the wheel, just <em>inherit</em> from the <code>Int</code> type. You can mix and match core Perl 6 types and roles any way that pleases you.</p>
+
+<pre><code>class BetterInt is Int {
+    method even { self %% 2 }
+}
+
+my BetterInt $x .= new: 42;
+say $x.even;
+
+$x .= new: 71;
+say $x.even;
+
+say $x + 42;
+
+# OUTPUT:
+# True
+# False
+# 113
+</code></pre>
+
+<p>We created a <code>BetterInt</code> class and inherited from <code>Int</code> using <code>is Int</code> trait. The class body has just
+the extra method <code>even</code> we want to add. Using such a class requires a bit of extra code, however.
+The <code>my BetterInt $x</code> part restricts <code>$x</code> to contain objects of just <code>BetterInt</code> or subclasses. The
+<code>.= new: 42</code> in this case is the same as <code>= BetterInt.new: 42</code> (it's a shorthand method-call-assign notation, same as <code>+=</code> is a shorthand to add to original value).</p>
+
+<p>If we ever want to change the value, we have to do the same <code>.= new:</code> trick again to get a <code>BetterInt</code> inside of our container or else we'll get a fatal error.
+The good news, however, is that math operators work just fine on our new
+class, and it's even accepted by anything that wants to have an <code>Int</code>. Here's a sub that expects an
+<code>Int</code> but happily gobbles up our <code>BetterInt</code>:</p>
+
+<pre><code>sub foo (Int $x) { say "\$x is $x" }
+
+my BetterInt $x .= new: 42;
+foo $x;
+
+# OUTPUT:
+# $x is 42
+</code></pre>
+
+<h2 id="but...but...but..."><em>But... But... But...</em></h2>
+
+<p>Another option is to mix in a role.
+The <code>but</code> infix operator creates a copy of an object and does just that:</p>
+
+<pre><code>my $x = 42 but role { method even { self %% 2 } };
+say $x.even;
+
+# OUTPUT:
+# True
+</code></pre>
+
+<p>The role doesn't have to be inlined, of course. Here's another example that uses a pre-defined role and also shows that our object is indeed a copy:</p>
+
+<pre><code>role Better {
+    method better { 'Yes, I am better' }
+}
+
+class Foo {
+    has $.attr is rw
+}
+
+my $original = Foo.new: :attr&lt;original&gt;;
+
+my $copy = $original but Better;
+$copy.attr = 'copy';
+
+say $original.attr;  # still 'original'
+say $copy.attr;      # this one is 'copy'
+
+say $copy.better;
+say $original.better; # fatal error: can't find method
+
+# OUTPUT:
+# original
+# copy
+# Yes, I am better
+# Method 'better' not found for invocant of class 'Foo'
+#   in block &lt;unit&gt; at test.p6 line 18
+</code></pre>
+
+<p>This is great and all, but as far as our original goal is concerned, this solution is rather weak:</p>
+
+<pre><code>my $x = 42 but role { method even { self %% 2 } };
+say $x.even; # True
+$x = 72;
+say $x.even; # No such method
+</code></pre>
+
+<p>The role is mixed into our object stored inside the container, so as soon as we put a new value into the container, our fancy-pants <code>.even</code> method is gone, unless we mix in the role again.</p>
+
+<h2 id="subitin"><em>Sub it in</em></h2>
+
+<p>Did you know you can call subs as methods? It's pretty neat! You receive the object as the first
+positional parameter and you can even continue the method chain, with a caveat that you can't break up those chains onto multiple lines if the &amp;sub method call doesn't remain on the first line:</p>
+
+<pre><code>sub even { $^a %% 2 };
+say 42.&amp;even.uc;
+
+# OUTPUT:
+# TRUE
+</code></pre>
+
+<p>This does serve as a decent way to add extra functionality to core types. The <code>$^a</code> inside our sub's
+definition refers to the first parameter (the object we're making the call on)
+and the entire sub can be written differently as <code>sub ($x) { $x %% 2 }</code>. And,
+of course, your sub-now-method can take arguments too.</p>
+
+<h2 id="herebedragons"><em>Here Be Dragons</em></h2>
+
+<p>The docs for what I'm about to describe contain words "don't do this" at the beggining. No matter what
+<a href="http://shop.oreilly.com/product/9780596517748.do">the JavaScript folks might tell you</a>, augmenting native
+types is dangerous, because you're affecting <em>all</em> parts of your program—<strong>even modules that don't
+see your augmentation.</strong></p>
+
+<p>Now that I have the right to tell you 'I told you so' when the nuclear plant you work at melts down, let's see some code:</p>
+
+<pre><code># Foo.pm6
+unit module Foo;
+sub fob is export {
+    say 42.even;
+}
+
+# Bar.pm6
+unit module Bar;
+use MONKEY-TYPING;
+augment class Int {
+    method even { self %% 2 }
+}
+
+# test.p6
+use Foo;
+use Bar;
+
+say 72.even;
+fob;
+
+# OUTPUT:
+# True
+# True
+</code></pre>
+
+<p>All of the action is happening inside <code>Bar.pm6</code>. First, we have to write a <code>use MONKEY-*</code> declaration, which is there to tell us we're doing something dangerous. Next, we use keyword <code>augment</code> before <code>class Int</code>
+to indicate we want to <em>augment</em> the existing class. Our augmentation adds method <code>even</code> that tells whether
+the Int is an even number.</p>
+
+<p>Now, let's look at the whole program. We have module <code>Foo</code> that gives us one sub that simply prints the result of a call of <code>.even</code> on <code>42</code> (which is an <code>Int</code>). We <code>use</code> <code>Foo</code> BEFORE we use <code>Bar</code>, the module with our augmentation. Lastly, in our script, we call method <code>.even</code> on an <code>Int</code> and then make a call to the sub exported by <code>Foo</code>.</p>
+
+<p>The scary thing? It all works! Both <code>72</code> in our main script and <code>42</code> inside the sub in <code>Foo</code> now have method <code>.even</code>, all thanks to our augmentation we performed inside <code>Bar.pm6</code>. We got what we wanted originally, but it's a dangerous method to use.</p>
+
+<h2 id="evilflowsthroughme"><em>Evil Flows Through Me</em></h2>
+
+<p>If you're still reading this, that means you're not above messing everything up, core or not. We augmented an <code>Int</code> type, but our numbers can exist as types other than that. Let's augment the <a href="http://docs.perl6.org/type/Cool"><code>Cool</code> type</a> to cover all of 'em:</p>
+
+<pre><code>use MONKEY-TYPING;
+augment class Cool {
+    method even { self %% 2 }
+}
+
+.say for 72.even, '72'.even, pi.even, ½.even;
+
+# OUTPUT:
+# Method 'even' not found for invocant of class 'Int'
+# in block &lt;unit&gt; at test.p6 line 8
+</code></pre>
+
+<p>Oops. That didn't work, did it? As soon as we hit our first attempt to call <code>.even</code> (on <code>Int</code> 72), the
+program crashed. The reason for that is all the types that derive from <code>Cool</code> were already composed by the
+time we augmented <code>Cool</code>. So, to make it work we have to re-compose them with <code>.^compose</code> Meta Object Protocol method:</p>
+
+<pre><code>use MONKEY-TYPING;
+augment class Cool {
+    method even { self %% 2 }
+}
+
+.^compose for Int, Num, Rat, Str, IntStr, NumStr, RatStr;
+
+.say for 72.even, '72'.even, pi.even, ½.even;
+
+# OUTPUT:
+# True
+# True
+# False
+# False
+</code></pre>
+
+<p>It worked! Now <code>Int, Num, Rat, Str, IntStr, NumStr, RatStr</code> types have an <code>.even</code> method
+(note: those aren't the only types that inherit <code>Cool</code>)! This is both equisitely evil and plesantly awesome.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>When extending functionality of Perl 6's core types or any other class, you have several options. You can use a subclass with <code>is Class</code>. You can mix in a role with <code>but Role</code>. You can call subroutines as
+methods with <code>$object.&amp;sub</code>. Or you can come to the dark side and use augmentation.</p>
+
+<p>Perl 6—There Is More Than One Way To Extend it.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

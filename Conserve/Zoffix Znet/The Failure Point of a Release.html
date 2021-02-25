@@ -1,11 +1,348 @@
-https://perl6.party/<a href="/post/The-Failure-Point-of-a-Release
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/The-Failure-Point-of-a-Release
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>The Failure Point of a Release - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">The Failure Point of a Release</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-04-23 <span class="words-count">| 1973 words |</span> The April Glitches in Rakudo Releases</p>
+  <p>If you've been awaiting April 2017's Rakudo release, you may have noticed
+something
+not quite right. Instead of a single release, there've been 4 already, and
+the 4th one is still not quite perfect. In this post, I'll explain what the
+hell's going on, for those who've not been following along for the past week,
+as well as share some ideas on how these issues can be avoided in the future.</p>
+
+<h2 id="thepast">The Past</h2>
+
+<h4 id="standardrelease">Standard Release</h4>
+
+<p>The standard release happens on 3rd Saturday of the month, after the MoarVM
+team makes their release. Aside from logging of all the commits to the changelog
+and checking for any release-blocker tickets, the entire release process
+is automated and <a href="https://irclog.perlgeek.de/perl6-dev/2017-03-18#i_14286422">is done by a
+bot</a>. The bot
+doesn't (yet) know how to do point releases, which caused one of the issues with
+April's release.</p>
+
+<h4 id="iodelayrakudostarstagingrepoanduncursebranch">IO, Delay, Rakudo Star, Staging Repo, And <code>uncurse</code> Branch</h4>
+
+<p>The April's Rakudo release was a bit specialer than normal releases, because
+Rakudo Star—the release of Perl 6 for end users—was supposed to be cut from it.
+Rakudo Star gets released only every 3 months, so there was some pressure to
+push big changes to be part of the release, just so that users wouldn't have
+to wait another 3 months to get them.</p>
+
+<p>The two groups of changes were IO Grant work and <code>uncurse</code> branch. The former
+<a href="http://blogs.perl.org/users/zoffix_znet/2017/04/perl-6-io-tpf-grant-monthly-report-april-2017.html">had some big and at-times breaking changes to IO
+routines</a>, while the latter is about merging <code>Cursor</code> and
+<code>Match</code> types into one, which will allow us to improve performance, among other
+things, in future work.</p>
+
+<p>To bring as many IO changes as possible into this release, I (Zoffix) decided to
+delay the release by 2 days and cut it on Monday. During that period, it was
+also decided that we should merge <code>uncurse</code> branch work, so that it's makes it
+into the Rakudo Star release. In addition, a bunch of fixes to Staging repo
+went in that allowed to easily create Linux packages.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>We rushed some work, due to lengthy Rakudo Star release cycles</li>
+</ul>
+
+<h4 id="thecutandrecut">The Cut and Recut</h4>
+
+<p>Most of IO work got completed. The <code>uncurse</code> branch got merged. And on
+Monday, April 17, 6:11pm EST <a href="https://irclog.perlgeek.de/perl6-dev/2017-04-17#i_14442193">I cut the
+2017.04 release</a> and
+called it a day.</p>
+
+<p>Tuesday, April 18th, around 4am EST, my notification bot pinged me, and I
+learned the release had a left over debug statement. Whenever the
+<code>method Type: $arg</code> calling form was used, the
+compiler dumped the AST onto the screen. This wasn't caught by our suite of
+140,000+ tests, because most of them check values rather than full STDOUT and
+STDERR output for every feature of the compiler.</p>
+
+<p>The commit fixing the issued already went in, so I went ahead and cut the
+2017.04.1 point release. Since the bot doesn't know how to do point releases,
+I did the release by hand. And since the issue was only in Rakudo itself,
+no NQP or MoarVM releases were done. Just Rakudo.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>Tests don't cover every possible thing in existence</li>
+<li>Some issues can be quickly found by users, even if uncaught by tests</li>
+</ul>
+
+<h4 id="theprecompstrikes">The Precomp Strikes</h4>
+
+<p>While the release cut was a smooth going, I did it a bit too fast, as
+<a href="https://irclog.perlgeek.de/perl6-dev/2017-04-18#i_14444573">merely three minutes
+later</a> it was
+discovered there was an issue with installation of
+<a href="https://modules.perl6.org/repo/Digest::SHA1::Native">Digest::SHA1::Native</a>
+due to the Staging repo work that went in shortly before the original release.</p>
+
+<p>The issue was fixed later in the day and I cut the 2017.04.2 release. Just
+as with the previous point release, the issue was in Rakudo only and did not
+require NQP or MoarVM point releases.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>Rakudo needs more coverage for <code>CompUnit::*</code> types</li>
+<li>Releases need to include installation and testing of a selection of Perl 6
+modules</li>
+</ul>
+
+<h4 id="thereplhistory">The REPL History</h4>
+
+<p>The next day, another issue cropped up. The combination required for its
+manifestation was: Rakudo's REPL + installed Linenoise or Readline module
++ OSX (or whatever it's called these days). Originally, it was thought the
+issue prevented users from using the REPL entirely, and talk of yet another
+point release followed. However, it was then found to affect only the saving of
+REPL history between separate invocations, and not the REPL itself, so it
+was left alone, without any point releases.</p>
+
+<p>The cause of the issue was the IO Grant changes to <code>&amp;mkdir</code>. It used to return
+an empty list on failure, but was now changed to behave the same way as
+<code>IO::Path.mkdir</code> does, and return a <code>Failure</code> object, which explodes when sunk.
+The REPL history file code was written using the assumption of empty list
+return value and
+that <code>mkdir</code> cannot create non-existent parent directories, so for a
+<code>/foo/bar.hist</code> file, it was attempting to create directories <code>/</code> and <code>/foo</code>.
+It turns out that on Linux, <code>mkdir("/")</code> silently succeeds, while on OSX it
+fails, which caused this bug to appear only on a specific OS.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>We need to test installation and use of ecosystem modules on multiple OSes</li>
+</ul>
+
+<h4 id="thecurseofuncurse">The Curse of <code>uncurse</code></h4>
+
+<p>Two days later, on April 21st, an issue due to the merged <code>uncurse</code> branch
+<a href="https://rt.perl.org/Public/Bug/Display.html?id=131187">was reported</a>. If
+Grammar action method exists for a token that uses <code>)&gt;</code> capture marker, the
+Match of the token ends up including the stuff outside the marker. This
+issue caused failure in <a href="https://modules.perl6.org/repo/File::Ignore">File::Ignore</a> module.</p>
+
+<p>The issue was found in NQP and was fixed later in the day. At this point,
+making yet another point release felt a bit embarrassing and I proposed
+declaring 2017.04 a lemon and basing Rakudo Star off 2017.05 instead.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>We rushed some work, due to lengthy Rakudo Star release cycles</li>
+<li>Releases need to include installation and testing of a selection of Perl 6
+modules</li>
+</ul>
+
+<h4 id="thecase-insensitiveregexbug">The CaSe-InSeNsItIvE Regex Bug</h4>
+
+<p>At this point we already realized we needed more thorough testing of ecosystem
+modules to be coupled with Rakudo's releases, so some of the core devs started
+going through all the 800+ modules and trying to fix their issues. The splatter
+from squashed uncurse bug barely dried out, when the module testing showed
+us another bug. This time involving case-insensitive regex matching:</p>
+
+<pre><code>say 'abcdefz' ~~ m:i/za/ # OUTPUT: «｢z｣»
+</code></pre>
+
+<p>Under some circumstances the match would succeed even when it shouldn't. This
+bug was actually introduced in 2017.03 release, and so wasn't a regression of
+2017.04 releases, but it gave more weight to the idea of us doing the
+2017.04.3 point release.</p>
+
+<p>The bug was found to be in MoarVM, and so after MoarVM and NQP bumps, it was
+fixed on Rakudo's nom HEAD, while I was sleeping.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>Tests don't cover every possible thing in existence</li>
+<li>Releases need to include installation and testing of a selection of Perl 6
+modules</li>
+</ul>
+
+<h4 id="themissingreleases">The Missing Releases</h4>
+
+<p>On Sunday morning, April 23rd, with the regex and uncurse bugs squashed
+on HEAD,
+but still present in latest Rakudo releases, I decided to cut yet another
+point release, the 2017.04.3.</p>
+
+<p>Having just done two point releases, earlier in the week, cutting the release
+was second nature to me. However, with the bot doing all the releases for the
+past 8 months and the previous 2017.04 point releases needing only a Rakudo
+point release, my second nature totally forgot that <em>this</em> point release
+also needed releases of MoarVM and NQP, since that's where the fixes for
+regex and uncurse were!</p>
+
+<p>About an hour after I released 2017.04.3, the Rakudo Star release manager
+asked whether NQP 2017.04.1 release was in the works. It wasn't. Moreover,
+to do it right, it would need a MoarVM 2017.04.1 release too, which is released
+by another team.</p>
+
+<p><strong>Points to note:</strong></p>
+
+<ul>
+<li>We need to expect exceptional circumstances</li>
+</ul>
+
+<h2 id="thepresent">The Present</h2>
+
+<p>So here's where we are right now:</p>
+
+<ul>
+<li><a href="http://rakudo.org/downloads/rakudo/">Latest Rakudo release</a> is 2017.04.3</li>
+<li>It has no horrible bugs, other than <a href="https://perl6.fail/">the usual ~1,500
+tickets</a></li>
+<li>However, it references a non-release NQP commit, namely <code>2017.04-24-g87501f7b</code></li>
+<li>It is unknown whether this issue impacts Rakudo Star</li>
+<li>It likely doesn't, and if it does, we might base Rakudo Star off 2017.05
+release instead</li>
+<li>There's clearly a lot of room for improvement and testing of Rakudo releases and commits</li>
+</ul>
+
+<p>With the next Rakudo compiler release just 4 weeks away, I would hope there's
+no need to cut yet another point release of all three projects.</p>
+
+<h2 id="thefuture">The Future</h2>
+
+<p>Looking at points of note above, we can figure out how we can avoid this
+type of issues in the future. The points are:</p>
+
+<ul>
+<li>We rushed some work, due to lengthy Rakudo Star release cycles</li>
+<li>Tests don't cover every possible thing in existence</li>
+<li>Some issues can be quickly found by users, even if uncaught by tests</li>
+<li>Rakudo needs more coverage for <code>CompUnit::*</code> types</li>
+<li>Releases need to include installation and testing of a selection of Perl 6
+modules</li>
+<li>We need to test installation and use of ecosystem modules on multiple OSes</li>
+<li>We need to expect exceptional circumstances</li>
+</ul>
+
+<p>So I think this is how we can avoid some of the release problems:</p>
+
+<h4 id="releaseoften-ner">Release Often-ner</h4>
+
+<p>Some of the issues were due to cramming work into a release, simply because
+the next user-facing release is far in the future. The <a href="https://perl6.vip/">Perl 6 VIP</a> distribution aims to be released monthly, and while
+its offers are a bit different from those of Rakudo Star, it will be a
+distribution meant for users, so core devs will have fewer reasons to cram all
+their work into a release.</p>
+
+<h4 id="expecttheunexpected">Expect the Unexpected</h4>
+
+<p>While point releases are rare, cutting them is error-prone due to lack of
+explicit "Point Release Release Guide" or a bot that knows how to do them.</p>
+
+<p>I plan to teach the release bot to be able to know how to cut a point release
+as well as add a guide for point releases to go along with the regular release
+guide.</p>
+
+<h4 id="testmore">Test More</h4>
+
+<p>The current test coverage needs to be improved. This month we saw resurrection
+of the tool that reports <a href="https://perl6.wtf/">Rakudo's coverage</a> as well as
+created a tool for <a href="https://moarvm.github.io/coverage/">MoarVM's coverage</a>, so
+the work in this area has already started.</p>
+
+<p>In addition, I plan to make a bot that daily tests the full build, runs
+stresstest, and installs a large selection of modules, reporting any of the
+new failures. This way, we'll spot problematic commits that affect ecosystem
+modules sooner.</p>
+
+<p>Lastly, more OSes will be used to test the release on. I will teach the release
+bot to automatically spin up VMs with different OSes and test on each of them,
+so there's no extra human labour added to the release process.</p>
+
+<h4 id="freezetherelease">Freeze The Release</h4>
+
+<p>One possible way to reduce release issues is to freeze the release branch, say,
+a week before actual release. Nothing but critical bug fixes get committed to
+it, so when the release date comes around, we'll have all the code with
+at least a week of usage.</p>
+
+<p>What makes this a bit problematic is dependence on NQP and MoarVM projects: a
+version bump
+in them brings all the previous commits in and MoarVM is even released
+by a different team. Keeping three release branches around while doing
+acrobatics with version bumps is less than ideal. Moreover, there's a 4th
+player in this all: the Roast repo. Any new tests added to it would fail on
+the frozen release branch, so there might be a need to make a "for release"
+branch of Roast as well.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>So that's the story of 3 point releases we made in April. There's plenty of work
+to be done to make the release process more robust and less likely to introduce
+issues. While all of it won't be done by the next release, we'll be sure to
+address all of the existing issues.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

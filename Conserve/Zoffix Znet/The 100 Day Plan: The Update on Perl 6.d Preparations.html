@@ -1,11 +1,133 @@
-https://perl6.party/<a href="/post/The-100-Day-Plan-The-6-d-Update
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/The-100-Day-Plan-The-6-d-Update
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>The 100 Day Plan: The Update on Perl 6.d Preparations - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">The 100 Day Plan: The Update on Perl 6.d Preparations</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-08-09 <span class="words-count">| 580 words |</span> Info on how 6.d release prep is going</p>
+  <p>Today's is a milestone of sorts: it's 100 days before the first scheduled Rakudo Perl 6 compiler release that will occur after this year's <a href="https://en.wikipedia.org/wiki/Diwali">festival of Diwali</a>. As some know, <em>Diwali</em> is also the code name for
+the next major release of the Perl&nbsp;6 language, version 6.d, which means there's
+a high chance that in about 100 days you'll be able to install and use that.</p>
+
+<p>I figured, I'd write a update on the subject.</p>
+
+<h2 id="when">When?</h2>
+
+<p>The oft-asked questions is when is 6.d going to be released. The plan is to have the 6.d specification good and ready to release on this year's Diwali,
+which is November 6–7.</p>
+
+<p>About 10 days later the Rakudo compiler will be
+released (compiler-only, not the Rakudo Star),
+with 6.d language enabled by default. That is, you'll no longer
+need to use <code>use v6.d.PREVIEW</code> pragma to get 6.d features, and if you wish to
+get old, 6.c behaviour you'll need to use an explicit <code>use v6.c</code> pragma.</p>
+
+<p>However, there's a ton of work to do and the work is largely done by volunteers, so we have no compunction about delaying the release of any of the
+deliverables indefinitely, if the need arises.</p>
+
+<h2 id="what">What?</h2>
+
+<p>The 6.d major version of the Perl&nbsp;6 programming language includes over 3,400 new commits
+in its specification. The vast majority of these are <a href="https://rakudo.party/post/Perl6-On-Specs-Versioning-Changes-And-Breakage"><strong>clarifications to 6.c spec</strong></a>. In other words, most of these define previously undefined
+behaviour, rather than specify entirely new features.</p>
+
+<p>Many of the clarifications and new features do not conflict with the 6.c
+specification. If you're using the Rakudo compiler, you are likely already
+reaping some of the benefits of the 6.d language, as such things do not require
+explicit <code>use v6.d.PREVIEW</code> pragma.</p>
+
+<p>Those who've seen the <a href="https://marketing.perl6.org/">6.d Teasers</a> frequently
+ask for the full list of 6.d changes. That list does not yet exist, as the spec
+is still in the process of being reviewed. The changelog will be available some time in October. You may have seen the 6.d prep repo, but that just contains guiding info for coredevs and isn't descriptive of the actual 6.d content.</p>
+
+<p>The aforementioned ton of work includes:</p>
+
+<ul>
+<li>Still have to review about 2,100 spec commits</li>
+<li>Still have ~95% of ChangeLog to write</li>
+<li>Still have to implement 7 TODO features, costing 110 hours</li>
+<li>Still have 0.3 policies to write (a draft already exists, but needs polishing)</li>
+<li>Review and spec of any new features that were implemented in Rakudo but were not specced in the language</li>
+<li>Marketing stuff regarding creation of marketing name alias for the language</li>
+</ul>
+
+<h2 id="thefuture">The Future</h2>
+
+<p>Going forward for future language releases, I foresee us doing a point release
+every 6 months, and 6.e being released 2 or 3 years after 6.d. The <a href="https://github.com/rakudo/rakudo/issues/1289">previously
+6.d-blocking Issue R#1289</a> still
+blocks a number of language changes, and all the 6.d changes blocked by
+that Issue were pushed to later language versions. So, if that Issue is
+resolved, that will likely be a reason to cut a language release soon
+thereafter.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The prep work for next major release of the Perl 6 Programming Language
+version 6.d (Diwali) is in a high gear. There's lots of work to do. Will likely
+release spec on November 7th, with compiler release following step and being released about 2 weeks after that. The list of changes will be ready in October
+and does not currently exist in any user-consumable form.</p>
+
+<p>Let the hype begin \o/</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

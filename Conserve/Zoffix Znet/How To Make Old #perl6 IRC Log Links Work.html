@@ -1,11 +1,144 @@
-https://perl6.party/<a href="/post/How-To-Make-Old-Perl-6-IRC-Log-Links-Work
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/How-To-Make-Old-Perl-6-IRC-Log-Links-Work
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>How To Make Old #perl6 IRC Log Links Work - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">How To Make Old #perl6 IRC Log Links Work</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-06-06 <span class="words-count">| 454 words |</span> Find out how where PerlGeek.De IRC log links link to</p>
+  <p>As you may know, recent European legislation
+<a href="https://twitter.com/nogoodnickleft/status/1003717165256728578">resulted</a>
+in our primary #perl6 channel logger going offline.</p>
+
+<p>Our <a href="http://colabti.org/irclogger/irclogger_log/perl6">secondary logger</a> is
+still available with a significant portion of the primary logger's data.
+However, the biggest problem is there are still a ton of links to the primary
+logger in things like <a href="https://github.com/search?q=irclog.perlgeek.de&amp;type=Commits">commit messages</a> and
+<a href="https://github.com/search?q=irclog.perlgeek.de&amp;type=Issues">Issues</a>.</p>
+
+<p>How to figure out what messages those links refer to now? I'm gonna tell you.</p>
+
+<h2 id="logmapper">Log Mapper</h2>
+
+<p>The owner of the primary logger was kind enough to provide me a dump SHA1
+hashes of #perl6 channel messages, together with their database IDs. The
+IDs are used as hash part of the URLs that link to specific lines in the old
+log. The URLs also contain the date and the channel.</p>
+
+<p>Given all of that info, the log mapper looks up the SHA hash in the database,
+then goes to the new loger and looks which messages for that date in that
+channel hashes to the same SHA hash. From that, the mapper knows which
+line on the <em>new logger</em> to link to, and it redirects there.</p>
+
+<p>So, say, we want to know what discussion <a href="https://github.com/perl6/doc/commit/792e1facdc2785ca1bac6180aef03a5d543513e4">message of commit <code>792e1fa</code></a>
+links to. We take the original URL:</p>
+
+<pre><code>https://irclog.perlgeek.de/perl6/2018-05-23#i_16195729
+</code></pre>
+
+<p>And change the domain to <code>irc.perl6.party</code>:</p>
+
+<pre><code>https://irc.perl6.party/perl6/2018-05-23#i_16195729
+</code></pre>
+
+<p>The mapper does its thing, and redirects us to:</p>
+
+<pre><code>http://colabti.org/irclogger/irclogger_log/perl6?date=2018-05-23#l138
+</code></pre>
+
+<p>Which is the message the commit links to.</p>
+
+<p><strike>In fact, if you add this to your hosts file (<code>/etc/hosts</code> on *nix;
+<code>C:\Windows\System32\drivers\etc\hosts</code> on Windows):</strike></p>
+
+<pre><code>69.164.222.157 irclog.perlgeek.de
+</code></pre>
+
+<p><strike>Then you can simply visit the original URL in your browser (confirm SSL
+cert exception, because I couldn't figure out how to make it work with
+proper SSL), and that's it. You can now just click the original URLs to logs
+and get proper content.</strike></p>
+
+<p><strong>UPDATE: the above redirect is no longer needed. The old log site now
+redirects to the mapper automatically.</strong></p>
+
+<h2 id="whatsavailable">What's Available</h2>
+
+<p>The available data is the intersection of sets of when the secondary logger
+became active, which for <code>#perl6</code> channel is 2005-02-26, and when the primary
+logger was disabled, which is around 2018-06-04.</p>
+
+<p><strike>Only the <code>#perl6</code> channel data is available. Despite the primary logger being
+in operation in <code>#perl6-dev</code> and <code>#moarvm</code>, the secondary logger was enabled
+in them only a few days ago, so sadly a lot of the more recentish dev commits
+won't have working URLs.</strike></p>
+
+<p><strong>UPDATE: we're working on the final piece required to bring back the logs from
+the rest of Perl&nbsp;6/MoarVM channels.</strong></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Some of the logs are now available. If more alternative loggers to map to are
+available, I'm sure the owner of the now-disabled will dump the hashes for
+other channels, so we can restore those logs too.</p>
+
+<p>If you have those loggers, <a href="https://twitter.com/zoffix">ping me on Twitter</a>.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

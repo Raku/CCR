@@ -1,11 +1,234 @@
-https://perl6.party/<a href="/post/Perl-6-S---Substitution-Operator
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
+https://perl6.party//post/Perl-6-S---Substitution-Operator
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>The S/// Operator - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">The S/// Operator</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-04-28 <span class="words-count">| 1158 words |</span> Everything about how to use the S/// non-destructive substitution operator.</p>
+  <p>Coming from a Perl 5 background, my first experience with Perl 6's non-destructive substitution operator <code>S///</code> looked something like this:</p>
+
+<p style="text-align: center">
+    <small><i>(artist's impression)</i></small><br>
+    <img src="/assets/stock/20160428-Substitutions.gif" style="display: block; margin: 20px auto;">
 </p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+
+<p>You'll fare better, I'm sure. Not only have the error messages improved, but I'll also explain everything right here and now.</p>
+
+<h2 id="thesmartmatch">The Smartmatch</h2>
+
+<p>The reason I had issues is because, seeing familiar-looking operators, I
+simply translated Perl 5's <em>binding</em> operator (<code>=~</code>) to Perl 6's
+<em>smartmatch</em> operator (<code>~~</code>) and expected things to work. The <code>S///</code> was not documented and, combined with the confusing (at the time) warning message, this was the source of my pain:</p>
+
+<pre><code>my $orig = 'meowmix';
+my $new = $orig ~~ S/me/c/;
+say $new;
+
+# OUTPUT warning:
+# Smartmatch with S/// can never succeed
+</code></pre>
+
+<p>The old warning suggests the <code>~~</code> operator is the wrong choice here and it is.
+The <code>~~</code> isn't the equivalent of Perl 5's <code>=~</code>. It aliases the left hand side
+to <code>$_</code>, evaluates the right hand side, and then calls <code>.ACCEPTS($_)</code> on it. That is all there is to its magic.</p>
+
+<p>So what's actually happening in the example above:</p>
+
+<ul>
+<li>By the time we get to <code>S///</code>, <code>$orig</code> is aliased to <code>$_</code></li>
+<li>The <code>S///</code> non-destructively executes substitution on <code>$_</code> and <strong>returns the resulting string</strong>. This is what the smartmatch will operate on</li>
+<li>The smartmatch, following the <a href="http://docs.perl6.org/routine/~~">rules</a> for
+match of <code>Str</code> against <code>Str</code>, will give <code>True</code> or <code>False</code> depending on whether
+substitution happened (<code>True</code>, confusingly, meaning it didn't)</li>
+</ul>
+
+<p>At the end of it all, we aren't getting what we actually want: the version of the string with substitution applied.</p>
+
+<h2 id="withthegiven">With The Given</h2>
+
+<p>Now that we know that <code>S///</code> always works on <code>$_</code> and returns the result, it's
+easy to come up with <em>a whole bunch</em> of ways that set <code>$_</code> to our original
+string and gather back the return value of <code>S///</code>, but let's look
+at just a couple of them:</p>
+
+<pre><code>my $orig = 'meowmix';
+my $new = S/me/c/ given $orig;
+say $orig;
+say $new;
+
+my @orig = &lt;meow cow sow vow&gt;;
+my @new = do for @orig { S/\w+ &lt;?before 'ow'&gt;/w/ };
+say @orig;
+say @new;
+
+# OUTPUT:
+# meowmix
+# cowmix
+# [meow cow sow vow]
+# [wow wow wow wow]
+</code></pre>
+
+<p>The first one operates on a single value. We use the postfix form of the
+<code>given</code> block, which lets us avoid the curlies (you can use <code>with</code> in place of <code>given</code> with the same results). From the output, you can see the original string remained intact.</p>
+
+<p>The second example operates on a whole bunch of strings from an <code>Array</code> and we
+use the <code>do</code> keyword to execute a regular <code>for</code> loop (that aliases to <code>$_</code> in this case) and assign the result to the <code>@new</code> array. Again, the output shows
+the originals were not touched.</p>
+
+<h2 id="adverbs">Adverbs</h2>
+
+<p>The <code>S///</code> operator—just like <code>s///</code> and some methods—lets you use regex adverbs:</p>
+
+<pre><code>given 'Lörem Ipsum Dolor Sit Amet' {
+    say S:g      /m/g/;  # Löreg Ipsug Dolor Sit Aget
+    say S:i      /l/b/;  # börem Ipsum Dolor Sit Amet
+    say S:ii     /l/b/;  # Börem Ipsum Dolor Sit Amet
+    say S:mm     /o/u/;  # Lürem Ipsum Dolor Sit Amet
+    say S:nth(2) /m /g/; # Lörem Ipsug Dolor Sit Amet
+    say S:x(2)   /m /g/; # Löreg Ipsug Dolor Sit Amet
+    say S:ss/Ipsum Dolor/Gipsum\nColor/; # Lörem Gipsum Color Sit Amet
+    say S:g:ii:nth(2) /m/g/; # Lörem Ipsug Dolor Sit Amet
+}
+</code></pre>
+
+<p>As you can see, they are in the form of <code>:foo</code> that is added after the <code>S</code> part of the operator. You can
+use whitespace liberally and several adverbs can be used at the same time. Here are their
+meanings:</p>
+
+<ul>
+<li><code>:g</code>—(long alternative: <code>:global</code>) global match: replace all occurances</li>
+<li><code>:i</code>—case insentive match</li>
+<li><code>:ii</code>—(long alternative: <code>:samecase</code>) preserve case: regardless of the case of letter used as a substitute, the original case of the letter being replaced will be used</li>
+<li><code>:mm</code>—(long alternative: <code>:samemark</code>) preserve mark: in the example above, the diaeresis that was on letter <code>o</code> was preserved and applied to the replacement letter <code>u</code></li>
+<li><code>:nth(n)</code>—replace only <code>nth</code> occurance</li>
+<li><code>:x(n)</code>—replace at most <code>n</code> occurances (mnemonic: "x as in times")</li>
+<li><code>:ss</code>—(long alternative: <code>:samespace</code>) preserve space type: the type of whitespace character is preserved, regardless of whitespace characters used in the replacement string. In the example above, we replaced with a new line, but the original space was kept</li>
+</ul>
+
+<h2 id="methodform">Method Form</h2>
+
+<p>Operator <code>S///</code> is nice, but using it is somewhat awkward at times. Don't fear, Perl 6 provides
+<code>.subst</code> method for all your substitution needs and delightful <code>.subst</code>/<code>.substr</code> confusion. Here's
+what its use looks like:</p>
+
+<pre><code>say 'meowmix'.subst: 'me', 'c';
+say 'meowmix'.subst: /m./, 'c';
+
+# OUTPUT:
+# cowmix
+# cowmix
+</code></pre>
+
+<p>The method takes either a regex or a plain string as the first positional argument, which is the thing it'll
+look for in its invocant. The second argument is the replacement string.</p>
+
+<p>You can use the adverbs as well, by simply listing them as named <code>Bool</code> arguments,
+with a slight caveat. In <code>S///</code> form, adverbs <code>:ss</code> and <code>:ii</code> imply
+the presence of <code>:s</code> (make whitepsace significant) and <code>:i</code> (case-insensitive match) adverbs respectively.
+In method form, you have to apply those to the regex itself:</p>
+
+<pre><code>given 'Lorem Ipsum Dolor Sit Amet' {
+    say .subst: /:i l/, 'b', :ii;
+    say .subst: /:s Ipsum Dolor/, "Gipsum\nColor", :ss;
+}
+
+# OUTPUT:
+# Borem Ipsum Dolor Sit Amet
+# Lorem Gipsum Color Sit Amet
+</code></pre>
+
+<h2 id="methodformcaptures">Method Form Captures</h2>
+
+<p>Captures aren't alien to substitution operations, so let's try one out with the method call form
+of substitution:</p>
+
+<pre><code>say 'meowmix'.subst: /me (.+)/, "c$0";
+
+# OUTPUT:
+# Use of Nil in string context  in block &lt;unit&gt; at test.p6 line 1
+# c
+</code></pre>
+
+<p>Not quite what we were looking for. Our replacement string is constructed even before it reaches the <code>.subst</code> method and the <code>$0</code> variable inside of it actually refers to whatever it is before the
+method call, not the capture in the <code>.subst</code> regex. So how do we fix this?</p>
+
+<p>The second argument to <code>.subst</code> can also take a <a href="http://docs.perl6.org/type/Callable"><code>Callable</code></a>. Inside
+of it, you can use the <code>$0, $1, ... $n</code> variables the way they were meant to and get correct values from
+captures:</p>
+
+<pre><code>say 'meowmix'.subst: /me (.+)/, -&gt; { "c$0" };
+
+# OUTPUT:
+# cowmix
+</code></pre>
+
+<p>Here, we've used a pointy block for our Callable, but WhateverCode and subs will work too. They will
+be called for each substitution, with the <a href="http://docs.perl6.org/type/Match"><code>Match</code></a> object passed
+as the first positional argument, if you need to access it.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>The <code>S///</code> operator in Perl 6 is the brother of <code>s///</code> operator that instead of modifying the original
+string, copies it, modifies, and returns the modified version. The way to use this operator differs from
+the way non-destructive substitution operator works in Perl 5. As an alternative, a method version <code>.subst</code> is available as well. Both method and operator form of substitution can take a number of adverbs that
+modify the behaviour of it, to suit your needs.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

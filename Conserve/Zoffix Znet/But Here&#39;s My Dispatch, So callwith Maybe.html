@@ -1,11 +1,636 @@
-https://perl6.party/<a href="/post/Perl6-But-Heres-My-Dispatch-So-Callwith-Maybe
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl6-But-Heres-My-Dispatch-So-Callwith-Maybe
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>But Here&#39;s My Dispatch, So callwith Maybe - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">But Here&#39;s My Dispatch, So callwith Maybe</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-03-28 <span class="words-count">| 3432 words |</span> All about nextwith, nextsame, samewith, callwith, callsame, nextcallee, and lastcall</p>
+  <p>One of the great features of Perl 6 is multi-dispatch. It lets you use the
+same name for your functions, methods, or <a href="https://docs.perl6.org/language/grammars">Grammar</a> tokens and let type of
+data they're dealing with to determine which version gets executed. Here's
+a <a href="https://en.wikipedia.org/wiki/Factorial">factorial</a> postfix operator,
+implemented using two multies:</p>
+
+<pre><code>multi postfix:&lt;!&gt; (0) { 1 }
+multi postfix:&lt;!&gt; (UInt \n) { n × samewith n − 1 }
+
+say 5!
+
+# OUTPUT: 120
+</code></pre>
+
+<p>While the subject of multi-dispatch is broad
+and <a href="https://docs.perl6.org/language/functions#Multi-dispatch">there are some docs on it</a>, there are 7 special routines I'd
+like to talk about that let you navigate the dispatch maze. They're
+<code>nextwith</code>, <code>nextsame</code>, <code>samewith</code>, <code>callwith</code>, <code>callsame</code>, <code>nextcallee</code>, and
+<code>lastcall</code>.</p>
+
+<h2 id="setupthelab">Setup The Lab</h2>
+
+<p>Multies get sorted from narrowest to widest candidate and when a multi is called, the binder tries to find a match and calls the first matching
+candidate. Sometimes, you may wish to call or simply move to the next matching candidate in the chain, optionally using different arguments. To observe effects of such operations, we'll use the following setup:</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+multi foo (Narrow $v) { say 'Narrow ', $v; 'from Narrow' }
+multi foo (Middle $v) { say 'Middle ', $v; 'from Middle' }
+multi foo (Wide   $v) { say 'Wide   ', $v; 'from Wide'   }
+
+foo Narrow; # OUTPUT: Narrow (Narrow)
+foo Middle; # OUTPUT: Middle (Middle)
+foo Wide;   # OUTPUT: Wide   (Wide)
+</code></pre>
+
+<p>We have three classes, each inheriting from the previous one, so that way
+our <code>Narrow</code> class can fit into both <code>Middle</code> and <code>Wide</code> multi candidates;
+<code>Middle</code> can also fit into <code>Wide</code>, but not into <code>Narrow</code>; and <code>Wide</code>
+fits neither
+into <code>Middle</code> nor into <code>Narrow</code>. Remember that all classes in Perl 6
+are of type <a href="https://docs.perl6.org/type/Any"><code>Any</code></a> as well, and so will fit
+into any candidate that accepts an <a href="https://docs.perl6.org/type/Any"><code>Any</code></a>.</p>
+
+<p>For our <a href="https://docs.perl6.org/type/Callable.html">Callables</a>,
+we use three multi candidates for routine <code>foo</code>:
+one for each of the classes.
+In their bodies, we print what type of multi we called, along with the
+value that was passed as the argument. For their return value, we just use
+a string that tells us which multi the return value came from; we'll use these
+a bit later.</p>
+
+<p>Finally, we make three calls to routine <code>foo</code>, using three type objects with
+our custom classes. From the output, we can see each of the three candidates
+got called as expected.</p>
+
+<p>This is all plain and boring. However, we can spice it up! While inside of these routines we can call <code>nextwith</code>, <code>nextsame</code>, <code>samewith</code>,
+<code>callwith</code>, or <code>callsame</code> to call another candidate with either the same or different arguments. But first, let's figure out which one does what...</p>
+
+<h2 id="thesubject">The Subject</h2>
+
+<p>The naming of the first five routines we'll examine follows this convention:</p>
+
+<ul>
+<li><code>call____</code> — <strong>call</strong> next matching candidate in the chain
+and come back here</li>
+<li><code>next____</code> — just go to <strong>next</strong> matching candidate in the chain and <em>don't</em> come back</li>
+<li><code>____same</code> — use the <strong>same</strong> arguments as were used for current candidate</li>
+<li><code>____with</code> — make the operation <strong>with</strong> these new arguments provided</li>
+<li><code>samewith</code> — make the <strong>same</strong> call from scratch, following a new dispatch
+chain, <strong>with</strong> these new arguments, and come back</li>
+</ul>
+
+<p>The <code>samesame</code> is not a thing, as that case is best replaced by a regular loop.
+The main takeaway is "call" means you call the candidate and come back and
+use its return value or do more things; "next" means to just proceed to the
+next candidate and use its return value as the return value of the current
+candidate; while <code>same</code> and <code>with</code> at the end simply control
+whether you want to use the same args as were used for current candidate
+or provide a new set.</p>
+
+<p>Let's play with these!</p>
+
+<h2 id="itsallcalledthesame...">It's all called the same...</h2>
+
+<p>The first routine we'll try out is <code>callsame</code>. It <strong>call</strong>s the next matching
+candidate with the <strong>same</strong> arguments that were used for the current candidate
+and returns that candidate's return value.</p>
+
+<p>Let's modify our <code>Middle</code> candidate to call <code>callsame</code> and then print out
+its return value:</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+multi foo (Narrow $v) { say 'Narrow ', $v; 'from Narrow' }
+multi foo (Middle $v) {
+    say 'Middle ', $v;
+
+    my $result = callsame;
+    say "We're back! The return value is $result";
+
+    'from Middle'
+}
+multi foo (Wide   $v) { say 'Wide   ', $v; 'from Wide'   }
+
+foo Middle;
+
+# OUTPUT:
+# Middle (Middle)
+# Wide   (Middle)
+# We're back! The return value is from Wide
+</code></pre>
+
+<p>We can now see that our single <code>foo</code> invocation resulted in two calls. First
+to <code>Middle</code>, since it's the type object we gave to our <code>foo</code> call. Then, to
+<code>Wide</code>, as that is the next candidate that can take a <code>Middle</code> type; in the
+output we can see that <code>Wide</code> was still called with our original <code>Middle</code>
+type object. Lastly, we returned back to our <code>Middle</code> candidate, with the
+<code>$result</code> variable set to <code>Wide</code> candidate's return value.</p>
+
+<p>So far so clear, let's try modifying the arguments!</p>
+
+<h2 id="haveyoutriedtocallthemwith...">Have you tried to call them with...</h2>
+
+<p>As we've learned, the <code>__with</code> variants let us use different args. We'll use
+the same code as in the previous example, except now we'll execute <code>callwith</code>,
+using the <code>Narrow</code> type object as the new argument:</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+multi foo (Narrow $v) { say 'Narrow ', $v; 'from Narrow' }
+multi foo (Middle $v) {
+    say 'Middle ', $v;
+
+    my $result = callwith Narrow;
+    say "We're back! The return value is $result";
+
+    'from Middle'
+}
+multi foo (Wide   $v) { say 'Wide   ', $v; 'from Wide'   }
+
+foo Middle;
+
+# OUTPUT:
+# Middle (Middle)
+# Wide   (Narrow)
+# We're back! The return value is from Wide
+</code></pre>
+
+<p>The first portion of the output is clear: we still call <code>foo</code> with <code>Middle</code>
+and hit the <code>Middle</code> candidate first. However, something's odd with the next
+line. We used <code>Narrow</code> in <code>callwith</code>, so how come the <code>Wide</code> candidate
+got called with it and not the <code>Narrow</code> candidate?</p>
+
+<p>The reason is that <code>call____</code> and <code>next____</code> routines use <em>the same dispatch
+chain</em> the original call followed. Since the <code>Narrow</code> candidate is narrower
+than <code>Middle</code> candidate, it was rejected and won't be considered in the
+current chain. The next candidate <code>callwith</code>
+will call will be the next candidate that matches <strong><code>Middle</code></strong>—and that's not
+a typo: <code>Middle</code> is the argument we used to initiate the dispatch and so the
+next candidate will be the one that can still take the arguments of that
+original call. Once
+it is found, the <strong>new</strong> arguments that were given to <code>callwith</code> will be bound
+to it, and it's your job to ensure they can be.</p>
+
+<p>Let's see that in action with a bit more elaborate example.</p>
+
+<h2 id="kickingitupanotch">Kicking It Up a Notch</h2>
+
+<p>We'll expand our original base example with a few more multies and types:</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+subset    Prime where     .?is-prime;
+subset NotPrime where not .?is-prime;
+
+multi foo (Narrow   $v) { say 'Narrow    ', $v; 'from Narrow'   }
+multi foo (Middle   $v) { say 'Middle    ', $v; 'from Middle'   }
+multi foo (Wide     $v) { say 'Wide      ', $v; 'from Wide'     }
+multi foo (Prime    $v) { say 'Prime     ', $v; 'from Prime'    }
+multi foo (NotPrime $v) { say 'Non-Prime ', $v; 'from NotPrime' }
+
+foo Narrow; # OUTPUT: Narrow    (Narrow)
+foo Middle; # OUTPUT: Middle    (Middle)
+foo Wide;   # OUTPUT: Wide      (Wide)
+foo 42;     # OUTPUT: Non-Prime 42
+foo 31337;  # OUTPUT: Prime     31337
+</code></pre>
+
+<p>All three of our original classes are of type
+<a href="https://docs.perl6.org/type/Any"><code>Any</code></a> and we also created two
+<a href="https://perl6.party/post/Perl-6-Types--Made-for-Humans"><code>subset</code></a>s
+of
+<a href="https://docs.perl6.org/type/Any"><code>Any</code></a>: <code>Prime</code> and <code>NotPrime</code>. The <code>Prime</code> type-matches with numbers that
+are prime and <code>NotPrime</code> type-matches with numbers that are not prime or with
+types that don't have an <a href="https://docs.perl6.org/routine/is-prime"><code>.is-prime</code></a> method. Since our three custom classes
+don't have it, they all type-match with <code>NotPrime</code>.</p>
+
+<p>If we recreate the previous example in this new setup, we'll get the same
+output as before:</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+subset    Prime where     .?is-prime;
+subset NotPrime where not .?is-prime;
+
+multi foo (Narrow   $v) { say 'Narrow    ', $v; 'from Narrow'   }
+multi foo (Middle   $v) {
+    say 'Middle    ', $v;
+
+    my $result = callwith Narrow;
+    say "We're back! The return value is $result";
+
+    'from Middle'
+}
+multi foo (Wide     $v) { say 'Wide      ', $v; 'from Wide'     }
+multi foo (Prime    $v) { say 'Prime     ', $v; 'from Prime'    }
+multi foo (NotPrime $v) { say 'Non-Prime ', $v; 'from NotPrime' }
+
+foo Middle;
+
+# OUTPUT:
+# Middle    (Middle)
+# Wide      (Narrow)
+# We're back! The return value is from Wide
+</code></pre>
+
+<p>The original call goes to <code>Middle</code> candidate, it <code>callwith</code> into <code>Wide</code>
+candidate with the <code>Narrow</code> type object.</p>
+
+<p>Now, let's mix it up a bit and <code>callwith</code> with <code>42</code> instead of <code>Narrow</code>. We
+<em>do</em> have a <code>NotPrime</code> candidate. Both <code>42</code> and the original <code>Middle</code> can
+fit into that candidate. And it's wider than the original <code>Middle</code> candidate,
+and so is still up in the dispatch chain. What could possibly go wrong!</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+subset    Prime where     .?is-prime;
+subset NotPrime where not .?is-prime;
+
+multi foo (Narrow   $v) { say 'Narrow    ', $v; 'from Narrow'   }
+multi foo (Middle   $v) {
+    say 'Middle    ', $v;
+
+    my $result = callwith 42;
+    say "We're back! The return value is $result";
+
+    'from Middle'
+}
+multi foo (Wide     $v) { say 'Wide      ', $v; 'from Wide'     }
+multi foo (Prime    $v) { say 'Prime     ', $v; 'from Prime'    }
+multi foo (NotPrime $v) { say 'Non-Prime ', $v; 'from NotPrime' }
+
+foo Middle;
+
+# OUTPUT:
+# Middle    (Middle)
+# Type check failed in binding to $v; expected Wide but got Int (42)
+#   in sub foo at z2.p6 line 15
+#   in sub foo at z2.p6 line 11
+#   in block &lt;unit&gt; at z2.p6 line 19
+</code></pre>
+
+<p>Oh, right, that! The new arguments we gave to <code>callwith</code> <em>do not affect the
+dispatch,</em> so despite there being a candidate that can handle our new arg
+further up the chain, it's not the <strong>next</strong> candidate that can handle
+<strong>the original args</strong>, which is what <code>callwith</code> calls. The result is throwage
+due to failed binding of our new args to the... next callee...</p>
+
+<h2 id="whosnext">Who's Next?</h2>
+
+<p>The handy little routine that lets us grab the next matching
+candidate up the dispatch chain is <code>nextcallee</code>. Not only it returns the
+<code>Callable</code> for that candidate, it shifts it off the chain, so that the next
+<code>next____</code> and <code>call____</code> will go the next-next candidate, and
+the next <code>nextcallee</code> call will shift-off and return the next-next candidate.
+So... let's go back to our previous example and cheat a bit!</p>
+
+<pre><code>class Wide             { }
+class Middle is Wide   { }
+class Narrow is Middle { }
+
+subset    Prime where     .?is-prime;
+subset NotPrime where not .?is-prime;
+
+multi foo (Narrow   $v) { say 'Narrow    ', $v; 'from Narrow'   }
+multi foo (Middle   $v) {
+    say 'Middle    ', $v;
+
+    nextcallee;
+    my $result = callwith 42;
+    say "We're back! The return value is $result";
+
+    'from Middle'
+}
+multi foo (Wide     $v) { say 'Wide      ', $v; 'from Wide'     }
+multi foo (Prime    $v) { say 'Prime     ', $v; 'from Prime'    }
+multi foo (NotPrime $v) { say 'Non-Prime ', $v; 'from NotPrime' }
+
+foo Middle;
+
+# OUTPUT:
+# Middle    (Middle)
+# Non-Prime 42
+# We're back! The return value is from NotPrime
+</code></pre>
+
+<p>Aha! It works! The code is almost entirely the same. The only change is we
+popped <code>nextcallee</code> call right before our <code>callwith</code> call. It shifted off
+the <code>Wide</code> candidate that couldn't handle the new <code>42</code> arg, and so, as can
+be seen from the output, our call went into <code>NotPrime</code> candidate.</p>
+
+<p>The <code>nexcallee</code> is finicky and so looping with it is a challenge, since it'd
+use the loop's or thunk's dispatcher to look for callees in. So the most
+common and saner way to use it is to just get the... next callee. You'd
+primarily need to do that if you need to pass the next callee around, e.g. in:</p>
+
+<pre><code>multi pick-winner (Int \s) {
+    my &amp;nextone = nextcallee;
+    Promise.in(π²).then: { nextone s }
+}
+multi pick-winner { say "Woot! $^w won" }
+
+with pick-winner ^5 .pick -&gt; \result {
+    say "And the winner is...";
+    await result;
+}
+
+# OUTPUT:
+# And the winner is...
+# Woot! 3 won
+</code></pre>
+
+<p>The <code>Int</code> candidate takes the <code>nextcallee</code> and then fires up a
+<a href="https://docs.perl6.org/language/concurrency"><code>Promise</code></a> to be executed in
+parallel, after some timeout, and then returns. We can't use <code>nextsame</code> here,
+because it'd be trying to <code>nextsame</code> the Promise's block instead of our
+original routine, and so, the <code>nextcallee</code> saves the day.</p>
+
+<p>I think we've reached the summit of convoluted examples now and I can hear
+cries in the audience. "What's this stuff's good for, anyway? Just make more
+subs instead of messing with multies!"
+So, let's take a look at more real-worldish examples
+as well as meet the <code>nextsame</code> and <code>nextwith</code>!</p>
+
+<h2 id="nextoneinlineplease">Next one in line, please</h2>
+
+<p>Let's make a class! A class that does Things!</p>
+
+<pre><code>role Things {
+    multi method do-it ($place) {
+        say "I am {&lt;eating  sleeping  coding  weeping&gt;.pick} at $place"
+    }
+}
+
+class Doer does Things { }
+
+Doer.do-it: 'home' # OUTPUT: I am coding at home
+</code></pre>
+
+<p>We can't touch the <a href="https://docs.perl6.org/language/objects#Roles"><code>role</code></a>,
+since someone else made it for us and they like it
+the way it is. However, we want our class to do more! For some <code>$place</code>s, we
+want it to tell us something more specific. In addition, if the place is
+<code>'my new place'</code> we want to tell which of our places we consider new. Here's
+the code:</p>
+
+<pre><code>role Things {
+    multi method do-it ($place) {
+        say "I am {&lt;eating  sleeping  coding  weeping&gt;.pick} at $place"
+    }
+}
+
+class Doer does Things {
+    multi method do-it ($place where .contains: 'home' ) {
+        nextsame if $place.contains: 'large';
+        nextwith "home with $&lt;color&gt; roof"
+            if $place ~~ /$&lt;color&gt;=[red | green | blue]/;
+        samewith 'my new place';
+    }
+    multi method do-it ('my new place') {
+        nextwith 'red home'
+    }
+}
+
+Doer.do-it: 'the bus';       # OUTPUT: I am eating at the bus
+Doer.do-it: 'home';          # OUTPUT: I am sleeping at red home
+Doer.do-it: 'large home';    # OUTPUT: I am sleeping at large home
+Doer.do-it: 'red home';      # OUTPUT: I am eating at home with red roof
+Doer.do-it: 'some new home'; # OUTPUT: I am eating at red home
+Doer.do-it: 'my new place';  # OUTPUT: I am coding at red home
+</code></pre>
+
+<p>With a little bit of extra code and without making a single change in the
+role that provides the method, we added a whole bunch of new functionality.
+Let's examine the three new dispatch-altering routines we've used.</p>
+
+<p>The <code>nextsame</code> and <code>nextwith</code> function very similar to their <code>callsame</code> and
+<code>callwith</code> counterparts, except <strong>they don't come back</strong> to where they
+were called and their return value
+will be used as the return value of the current routine. So using
+<code>nextsame</code> is like using <code>return callsame</code>, but with less typing and with the
+compiler being able to do more optimizations.</p>
+
+<p>Our first multi method we added to the class gets dispatched to when the
+<code>$place</code> <a href="https://docs.perl6.org/routine/contains"><code>.contains</code></a> word <code>home</code>.
+In the method's body, if <code>$place</code>
+also <a href="https://docs.perl6.org/routine/contains"><code>.contains</code></a> word <code>large</code>, we use <code>nextsame</code>—that is, call
+the <em>next</em> matching candidate with the same argument as the current method. This
+is the key here. We can't just call our method all over again, since it'd enter an infinite
+loop redispatching to itself. However, since <code>nextsame</code> uses the next
+candidate in the same dispatch chain, no loop occurs, and we get to the
+candidate in <code>role Things</code> just fine.</p>
+
+<p>Further down in the code, we also take <code>nextwith</code> for a spin. We use it
+when <code>$place</code> mentions one of three colours. Similar to <code>nextsame</code>, it
+goes to the next
+candidate, except we give it a new argument to use.</p>
+
+<p>Lastly, we come to <code>samewith</code>. Unlike the routines we've used earlier, this
+one <strong>restarts</strong> the dispatch from scratch, so it's basically like calling
+the method again, except you don't have to know or use the actual name of it.
+We call <code>samewith</code> with a new set of arguments to use, and from the output we
+can see the
+new dispatch path took it via the second multi we added to our class, instead
+of continuing from the role's multi as our <code>next____</code> versions did.</p>
+
+<h2 id="lastcall">Last Call!</h2>
+
+<p>The last method in the bag of tricks is <code>lastcall</code>. Calling it truncates the
+current dispatch chain, so that <code>next____</code> and <code>call____</code> routines won't have
+anything else to go to. Here's an example:</p>
+
+<pre><code>multi foo (Int $_) {
+    say "Int: $_";
+    lastcall   when *.is-prime;
+    nextsame   when *  %% 2;
+    samewith 6 when * !%% 2;
+}
+multi foo (Any $x) { say "Any $x" }
+
+foo 6; say '----';
+foo 2; say '----';
+foo 1;
+
+# OUTPUT:
+# Int: 6
+# Any 6
+# ----
+# Int: 2
+# ----
+# Int: 1
+# Int: 6
+# Any 6
+</code></pre>
+
+<p>All of our invocations to <code>foo</code> go to the <code>Int</code> candidate first. When the
+number <a href="https://docs.perl6.org/routine/is-prime"><code>.is-prime</code></a>, we invoke <code>lastcall</code>; when it's an even number, we
+invoke <code>nextsame</code>; and when it's an odd number, we invoke <code>samewith</code>
+using <code>6</code> as the argument.</p>
+
+<p>The first number we call <code>foo</code> with is <code>6</code>, which
+isn't prime, so <code>lastcall</code> is never called. It is an even
+number, so we invoke <code>nextsame</code> and from the output we see that we've reached
+the <a href="https://docs.perl6.org/type/Any"><code>Any</code></a> candidate.</p>
+
+<p>Next, when we invoke <code>foo</code> with <code>2</code>, which is both a prime and an even
+number, we call <code>lastcall</code> and <code>nextcall</code>. However, <em>because</em> <code>lastcall</code> was
+called and truncated the dispatch chain, <code>nextcall</code> never sees the
+<a href="https://docs.perl6.org/type/Any"><code>Any</code></a>
+candidate and so we only have the call to
+<a href="https://docs.perl6.org/type/Int"><code>Int</code></a> candidate in the output.</p>
+
+<p>In the last example, we again use a prime number, so <code>lastcall</code> gets called
+once more. However, the number is an odd number, so we use <code>samewith</code> instead
+of <code>nextwith</code>. Since <code>samewith</code> re-dispatches from scratch, it doesn't care
+that we truncated the previous chain with <code>lastcall</code>. And so, the output shows
+we go through
+<a href="https://docs.perl6.org/type/Int"><code>Int</code></a> candidate twice, with the second call using <code>nextsame</code>
+to reach the
+<a href="https://docs.perl6.org/type/Any"><code>Any</code></a>
+ candidate, since the number we used with <code>samewith</code> is not
+a prime and is even.</p>
+
+<h2 id="wrappingitup">Wrapping It Up</h2>
+
+<p>To wrap up this article, we'll examine another area where the routines
+we've learned about can come in handy: the wrapping of stuff! Here's the code:</p>
+
+<pre><code>use soft;
+
+sub meower (\ッ, |c) {
+    nextwith "🐱 says {ッ}", |c when ッ.gist.contains: 'meow';
+    nextsame
+}
+
+&amp;say.wrap: &amp;meower;
+say 'chirp';
+say 'moo';
+say 'meows!';
+
+# OUTPUT:
+# chirp
+# moo
+# 🐱 says meows!
+</code></pre>
+
+<p>We use the <code>soft</code> pragma to disable inlining so our wrapping is sane. We have
+a <code>meower</code> sub that modifies the first argument with <code>nextwith</code>
+if it <a href="https://docs.perl6.org/routine/contains"><code>.contains</code></a> word <code>meow</code>, passing along the rest of the arguments, if any,
+unmodified via a <a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a>
+(that's the <code>|c</code> bit). All the rest of the calls are passed as is, using
+<code>nextsame</code>. We <a href="https://docs.perl6.org/routine/wrap"><code>.wrap</code></a> the <code>meower</code> onto the <a href="https://docs.perl6.org/routine/say"><code>say</code></a> routine and, as we can
+see from the output, everything works as advertised.</p>
+
+<p>Here's the key feature of this code: the <code>meower</code> <strong>has no idea what sub
+it's being wrapped onto!</strong> However, it still manages to call it without
+problems.</p>
+
+<p>Here, we wrap it around
+<a href="https://docs.perl6.org/routine/put"><code>put</code></a> routine instead,
+and it works just fine without any changes:</p>
+
+<pre><code>use soft;
+
+sub meower (\ッ, |c) {
+    nextwith "🐱 says {ッ}", |c when ッ.gist.contains: 'meow';
+    nextsame
+}
+
+&amp;put.wrap: &amp;meower;
+put 'chirp';
+put 'moo';
+put 'meows!';
+
+# OUTPUT:
+# chirp
+# moo
+# 🐱 says meows!
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Today, we've learned about powerful routines that let you re-use existing
+multi candidates from within other candidates. The <code>callsame</code> and <code>callwith</code>
+let you call the next matching candidate in the current dispatch
+chain, either using the same arguments or a new set. The <code>nextsame</code> and
+<code>nextwith</code> accomplish the same, without returning back to the callsite.</p>
+
+<p>The <code>samewith</code> sub lets you restart the dispatch chain from the start, without
+having to know the name of the current routine. While <code>lastcall</code> and
+<code>nextcallee</code> let you manipulate the current dispatch chain by truncating
+it, or shifting and manipulating the next callee.</p>
+
+<p>Put them to good use!</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

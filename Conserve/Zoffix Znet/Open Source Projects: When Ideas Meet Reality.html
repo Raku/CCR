@@ -1,11 +1,216 @@
-https://perl6.party/<a href="/post/Open-Source-Projects--When-Ideas-Meet-Reality
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Open-Source-Projects--When-Ideas-Meet-Reality
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Open Source Projects: When Ideas Meet Reality - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Open Source Projects: When Ideas Meet Reality</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-08-28 <span class="words-count">| 1078 words |</span> Discussion about proposal of ideas in open source communities</p>
+  <p>Perl 6 is a brand new language, so there's plenty of <a href="https://github.com/perl6/perl6-most-wanted/blob/master/most-wanted/modules.md">opportunity for
+improvement</a>:</p>
+
+<blockquote>
+  <p><b>&lt;redacted&gt;</b> [...] Perl 6 is comparatively new with many programming paradigms<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    and powerful capabilities. Until we teach these features in an exciting way<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    in such open course platforms (MOOC) we are doing less for &quot;want to learn<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    Perl 6 newcomers&quot;. We urgently need Perl 6 courses!!<br></p>
+</blockquote>
+
+<p>It's easy to come up with ideas of what should be there and how it should work,
+but said the wrong way, your message may come across not how you intended it,
+and then we end up with a <a href="https://www.facebook.com/groups/1595443877388632/permalink/1780124605587224/">bit of a
+conflict</a> for no good reason:</p>
+
+<blockquote>
+  <p><b>&lt;Jeff Goff&gt;</b> [...] By all means, write some Perl 6 code, come back and write some<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    course material, and publish that. Telling the group what to do without any<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    experience, and in a condescending tone is not appreciated.<br></p>
+</blockquote>
+
+<p>Since I've been on both sides and am skillful in pretending I know stuff,
+I figured I'll write about this, in an attempt to avoid such conflict
+in the future.</p>
+
+<p>Let's begin!</p>
+
+<h2 id="parti:solittletimesomuchundone">Part I: So Little Time, So Much Undone</h2>
+
+<p>Most of Perl 6 was and is made <em>by volunteers</em>, in their free time—you
+know, that thing people use to relax and not write code in?</p>
+
+<p>Having ideas is great, but keep in mind you aren't sitting in a boardroom
+meeting, trying to figure out the direction of your company for the next
+quarter. You are more like in a big mob on a street with everyone doing
+their own thing—if you just randomly start shouting ideas, you'll get ignored
+or piss someone off.</p>
+
+<h3 id="wearealreadygiving110">We Are Already Giving 110%</h3>
+
+<p>I code so much, sometimes I have dreams where I'm still coding, and I've
+spent well over $1,000 at the local bar, writing Perl6.Party blog posts. I have
+plans for Perl 6 I could fill two lives with, but I have to manage with just
+one I have. Many of the contributors have jobs, spouses, and kids, and
+they still contribute enourmous amounts of work.</p>
+
+<p>Jeff Goff, quoted at the start of this article, just gave a <a href="https://www.safaribooksonline.com/library/view/oscon-2016-video/9781491965153/part242.html">9-hour Perl 6
+training seminar</a>, raising €500 for <a href="http://www.perlfoundation.org/perl_6_core_development_fund">the Perl 6 core
+fund</a>.
+Elizabeth Mattijsen pushed a <a href="https://github.com/rakudo/rakudo/commits?author=lizmat">huge number of commits</a>
+and is the primary person responsible for making
+Rakudo <strong>twice as fast</strong> than it was 4 months ago. Jonathan Worthington
+<a href="https://6guts.wordpress.com/2016/08/22/concurrency-bug-squishing-part-1/">spent hours hunting down tricky concurrency
+bugs</a>
+after <a href="https://6guts.wordpress.com/2016/07/23/assorted-fixes/">squishing a ton of other
+bugs</a>.</p>
+
+<p>With what you just learned in this section, if you were one of the
+aforementioned people, how would this read to you:</p>
+
+<blockquote>
+  <p><b>* redacted</b> joined #perl6<br>
+  <b>&lt;redacted&gt;</b> another possible p6 marketing project: API support<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    for backendless.com<br>
+  <b>&lt;redacted&gt;</b> If we want to get p6 being used by the world, someone has to start<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    providing hooks that will interest devs that want to make money.<br></p>
+</blockquote>
+
+<p>The <code>someone has to start</code> bit makes it seem like we're all just sitting on
+our asses all day long, dying to know what to do with our time, which brings
+me to...</p>
+
+<h3 id="wehaveenoughideas">We Have Enough Ideas</h3>
+
+<p>Trust me, we're not short on ideas for what to spend our time on. Literally
+nothing is achieved by people who offer "ideas," especially if those
+are offered under the useless "for marketing reasons" reason.</p>
+
+<p>People who are interested in Backendless.com API and with time to
+make it <strong>and provide support for it</strong> would have already made it. So why
+mention it?</p>
+
+<p>Are you the one who wants to make it? Are you checking to
+see if someone is already working on it? Do you need help with it? This
+leads me nicely to...</p>
+
+<h2 id="partii:ideasarepeopletoo">Part II: Ideas Are People Too</h2>
+
+<p>I'm not a gambler, but I bet 99.99% of the time someone offers such ideas,
+they aren't actually telling other people what to do. They don't mean to,
+they may just come across as such. So there's little reason for getting hostile
+and telling them to stop doing what <em>they aren't doing!</em></p>
+
+<blockquote>
+  <p><b>&lt;other-redacted&gt;</b> redacted: so spark interest by writing something<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    not by telling other people how to spend their spare time<br>
+  <b>&lt;redacted&gt;</b> don&#39;t shoot the messenger, please<br></p>
+</blockquote>
+
+<p>Shutting down people like that is a good way to discourage them, or worse
+alienate them from the community. There's a better way!</p>
+
+<h3 id="thanksforvolunteering">Thanks for Volunteering!</h3>
+
+<p>Instead of engaging in shit-flinging, pretend the person with all of the
+ideas is just thinking aloud about what to spend their time on. They are the
+volunteer who will make the idea become reality, whether they
+know it yet or not. Offer some encouragement!</p>
+
+<p>There are three likely outcomes with such an approach: (1) the person will
+actually do the work and we all win; (2) they will agree to do the work,
+start, realize it's really damn hard and time consuming, give up, think
+twice before proposing more ideas;
+(3) the person will offer a reason for why they can't do it, which can
+then nicely double as the reason for why no one else did the
+thing yet, putting the conversation at swift and amicable end
+(<em>no time? yeah, well, join the club</em>).</p>
+
+<blockquote>
+  <p><b>&lt;bioduds&gt;</b> do you guys know about koans?<br>
+  <b>&lt;bioduds&gt;</b> any for perl6?<br>
+  <b class='irc-alt'>&lt;Zoffix&gt;</b> bioduds, yeah, I know about them, but am not aware of any<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    Perl 6 ones. You should definitely make some!<br>
+  <b>&lt;bioduds&gt;</b> definitely<br>
+  <b>&lt;bioduds&gt;</b> I bet if we join we can put up one. I&#39;m still learning P6<br>
+  <b class='irc-alt'>&lt;Zoffix&gt;</b> \o/<br>
+  <b class='irc-alt'>&lt;Zoffix&gt;</b> bioduds, that&#39;s the best time to write them. You can still see<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;    them for how good they are from the perspective of someone new to P6<br>
+  <b class='irc-alt'>&lt;Zoffix&gt;</b> And if you need space to host them, I&#39;m sure we can find one.<br>
+  <b>&lt;bioduds&gt;</b> well<br>
+  <b>&lt;bioduds&gt;</b> I will then<br></p>
+</blockquote>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>It's easy to get carried away and to start proposing ideas left, right, and
+center. However, all of the contributors are already giving all they can,
+so your ideas can come off as commandments for the lazy, insensitively
+ignoring those contributors' already-substantial work.
+If you have a cool idea, great! Start working on it! Tell people about
+<em>you working on it</em>, to get them excited and join your efforts.</p>
+
+<p>And if you are on the receiving end of such ideas, don't stifle them,
+redirect them. Every person who proposes the idea is the primary candidate
+to be the volunteer to implement it. Don't reprimand them; encourage them!</p>
+
+<p>In the end, it's all about having fun!</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

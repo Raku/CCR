@@ -1,11 +1,212 @@
-https://perl6.party/<a href="/post/Perl-6-Release-Quality-Assurance-Full-Ecosystem-Toaster
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Release-Quality-Assurance-Full-Ecosystem-Toaster
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Release Quality Assurance: Full Ecosystem Toaster - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Release Quality Assurance: Full Ecosystem Toaster</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-06-14 <span class="words-count">| 1418 words |</span> How devs are ensuring quality of Rakudo compiler releases</p>
+  <p>As some recall, <a href="https://perl6.party/post/The-Failure-Point-of-a-Release">Rakudo's 2017.04 release was somewhat of a
+trainwreck</a>. It was
+clear the quality assurance of releases needed to be kicked up a notch. So
+today, I'll talk about what progress we've made in that area.</p>
+
+<h2 id="definetheproblem">Define The Problem</h2>
+
+<p>A particular problem that plagued the 2017.04 release were big changes and
+refactors made in the compiler that passed all the 150,000+ stresstests, however
+still caused issues in some ecosystem modules and users' code.</p>
+
+<p>The upcoming 2017.06 has many, many more big changes:</p>
+
+<ul>
+<li>IO::ArgFiles were entirely replaced with the new IO::CatHandle implementation</li>
+<li>IO::Socket got a refactor and sync sockets no longer use libuv</li>
+<li>IO::Handle got a refactor with encoding and sync IO no longer uses libuv</li>
+<li>Sets/Bags/Mixes got optimization polish and op semantics finalizations</li>
+<li>Proc was refactored to be in terms of Proc::Async</li>
+</ul>
+
+<p>The IO and Proc stuff is especially impactful, as it affects precomp and
+module loading as well. Merely passing stresstests just wouldn't give me enough
+of peace of mind of a solid release. It was time to extend the testing.</p>
+
+<h2 id="goingallin">Going All In</h2>
+
+<p>The good news is I didn't actually have to <em>write</em> any new tests. With
+<a href="http://modules.perl6.org/">836 modules in the Perl 6 ecosystem</a>, the tests
+were already there for the taking. Best of all, they were mostly written
+without bias due to implementation knowledge of core code, as well as have
+personal style variations from hundreds of different coders. This is all
+perfect for testing for any regressions of core code. The only problem is
+running all that.</p>
+
+<p>While there's a <a href="http://ugexe.com/perl-toolchain-summit-2017-cpan-and-perl6/">budding effort to get CPANTesters to smoke
+Perl 6 dists</a>,
+it's not quite the data I need. I need to smoke a whole ton of modules on
+a particular <em>pre-release</em> commit, while also smoking them on a previous release
+on the same box, eliminating setup issues that might contribute to failures, as
+well as ensuring the results were for the same <em>versions</em> of modules.</p>
+
+<p>My first crude attempt involved firing up a <a href="https://console.cloud.google.com/compute">32-core Google Compute Engine VM</a> and writing
+<a href="https://github.com/zoffixznet/zefyr/blob/master/bin/zefyr.p6">a 60-line script</a> that launched 836 <a href="https://docs.perl6.org/type/Proc::Async">Proc::Asyncs</a>—one for each module.</p>
+
+<p>Other than <a href="https://twitter.com/zoffix/status/870108245502853120">chewing through 125 GB of RAM with a single Perl 6 program</a>, the experiment didn't
+yield any useful data. Each module had to wait for locks, before being
+installed, and all the Procs were asking <a href="https://modules.perl6.org/repo/zef"><code>zef</code></a> to install to the same location, so dependency handling was iffy. I
+needed a more refined solution...</p>
+
+<h2 id="procskernelsandmurder">Procs, Kernels, and Murder</h2>
+
+<p>So, I started to polish my code. First, I wrote <a href="https://modules.perl6.org/dist/Proc::Q"><code>Proc::Q</code> module</a> that let me queue up a bunch of Procs, and scale the number of them running at the same time, based on the number of cores the box had. <a href="https://docs.perl6.org/type/Supply.html#method_throttle"><code>Supply.throttle</code></a> core feature made the job a piece of cake.</p>
+
+<p>However, some modules are naughty or broken and I needed a way to kill Procs that take too long to run. Alas, I discovered that
+<a href="https://docs.perl6.org/type/Proc::Async#method_kill"><code>Proc::Async.kill</code></a> had a bug in it, where trying to simultaneously kill a bunch of Procs was failing. After some digging I found out the cause was <a href="https://docs.perl6.org/language/variables#index-entry-%24*KERNEL"><code>$*KERNEL.signal</code></a> method the <code>.kill</code> was
+using isn't actually thread safe and the bug was due to a data race in initialization of the signal table.</p>
+
+<p>After <a href="https://github.com/rakudo/rakudo/commit/79b8ab9d3f9a5499e8a7859f34b4499fb352ac13">refactoring Kernel.signal</a>, and <a href="https://github.com/rakudo/rakudo/commit/99421d4caa05ae952020a6d918f94fc7b68f2305">fixing Proc::Async.kill</a>, I released <a href="https://modules.perl6.org/dist/Proc::Q"><code>Proc::Q</code> module</a>—my first module
+<a href="https://modules.perl6.org/repo/RakudoPrereq">to require</a> (at the time) the bleedest of bleeding edges: a HEAD commit.</p>
+
+<h2 id="goingatomic">Going Atomic</h2>
+
+<p>After cooking up <a href="https://github.com/zoffixznet/perl6-Toaster">boilerplate DB and Proc::Q</a> code, I was ready to toast the ecosystem.
+However, it appeared <a href="https://modules.perl6.org/repo/zef"><code>zef</code></a> wasn't
+designed, or at least well-tested, in scenarious where up to 40 instances were running module installations simultaneously. I was getting JSON errors from
+reading ecosystem JSON, broken cache files (due to lack of file locking),
+and false positives in installations because modules claimed they were already installed.</p>
+
+<p>I initially attempted to solve the JSON errors by <a href="https://github.com/perl6/ecosystem/issues/345">looking at an Issue</a> in the ecosystem repo about the updater script not writing atomically. However, even after
+<a href="https://github.com/perl6/ecosystem/commit/ffe71f7583e5ec8ca8ee38f438d00ff78ade6444">fixing the updater script</a>, I was still getting invalid JSON errors from <code>zef</code> when reading ecosystem data.</p>
+
+<p>It might be due to something in <code>zef</code>, but instead of investigating it further, I followed ugexe++'s advice and told zef not to fetch ecosystem in each Proc.
+The broken cache issues were similarly eliminated by disabling caching support.
+And the false positives were eliminated telling each zef instance to install
+the tested module into a separate location.</p>
+
+<p>The final solution involved <a href="https://github.com/zoffixznet/perl6-Toaster/blob/3d8d217a925be3272f6633c18f4ec22c59c87b32/lib/Toaster.pm6#L104-L116">programatically editing zef's config file</a> before a toast run to disable
+auto-updates of CPAN and p6c ecosystem data, and then in individual Procs <code>zef</code> module install command ended up being:</p>
+
+<pre><code>«zef --/cached --debug install "$module" "--install-to=inst#$where"»
+</code></pre>
+
+<p>Where <code>$where</code> is a per-module, per-rakudo-commit location. The final issue
+was floppy test runs, which I resolved by re-testing failed modules one more time, to see if the new run succeeds.</p>
+
+<h2 id="timeiseverything">Time is Everything</h2>
+
+<p>The toasting of the entire ecosystem on HEAD and 2017.05 releases took about three hours on a 24-core VM, while being unattended. While watching over it and
+killing the few hanging modules at the end without waiting for them to time out
+makes a single-commit run take about 65 minutes.</p>
+
+<p>I also did a toast run on a 64-core VM...</p>
+
+<p><a href="/assets/pics/toaster/htop.png"><img class="img-thumbnail"
+    src="/assets/pics/toaster/htop.png" alt=""></a></p>
+
+<p>Overall, the run took me 50 minutes, and I had to manually kill some modules'
+tests. However, looking at CPU utilization charts, it seems the run sat idle
+for dozens of minutes before I came along to kill stuff:</p>
+
+<p><a href="/assets/pics/toaster/cpu-utilization.png"><img class="img-thumbnail"
+    src="/assets/pics/toaster/cpu-utilization.png" alt=""></a></p>
+
+<p>So I think after some polish of avoiding hanging modules and figuring out why (apparently) Proc::Async.kill still doesn't kill everything, the runs can be entirely automated and a single run can be completed in about 20-30 minutes.</p>
+
+<p>This means that even with last-minute big changes pushed to Rakudo, I can still toast the entire ecosystem reasonably fast, detect any potential regressions, fix them, and re-test again.</p>
+
+<h2 id="reelinginthecatch">Reeling In The Catch</h2>
+
+<p>The <a href="https://toast.perl6.party/">Toaster database is available for viewing at toast.perl6.party</a>. As more commits get toasted, they get added to the database. I plan to clear them out after each release.</p>
+
+<p>The toasting runs I did so far weren't just a chance to play with powerful hardware.
+The <a href="https://rt.perl.org/Ticket/Display.html?id=131561">very first issue</a> was
+detected when toasting <a href="http://modules.perl6.org/dist/Clifford"><code>Clifford</code> module</a>.</p>
+
+<p>The issue was to do with <a href="https://docs.perl6.org/type/List"><code>Lists</code></a> of <a href="https://docs.perl6.org/type/Pair"><code>Pairs</code></a> with same keys coerced into
+a <a href="https://docs.perl6.org/type/MixHash"><code>MixHash</code></a>, when the final accumulative
+weight was zero. The issue was introduced on June 7th and it took me about an
+hour of digging through the module's guts to find it. Considering it's quite
+an edge case, I imagine without the toaster runs it would take a lot longer
+to identify this bug. <a href="https://github.com/rakudo/rakudo/commit/bf95bcb6c050bf7fbaa80d0754defc9d003fd072">lizmat++ squashed this bug</a> hours after identification
+and it never made it into any releases.</p>
+
+<p>The other issue detected by toasting had to do with the VM-backed decoder serialization introduced during IO refactor
+and <a href="https://github.com/MoarVM/MoarVM/commit/c4dbebe119d6c0bafaf11607caba083314322871">jnthn++ fixed it</a> a day after detection. One more bug had to do with Proc
+refactor making Proc not
+synchronous-enough. It was <a href="https://github.com/rakudo/rakudo/commit/e4468c610c1565be267dc6688d050c985e056afc">mercilessly squashed, while fixing a couple of longstanding issues with Proc</a>.</p>
+
+<p>All of these issues weren't detected by the 150,000+ tests in the testsuite and while an argument can be made that the tests are sparse in places, there's no doubt the Toaster has paid off for the effort in making it by catching bugs that might've otherwise made it into the release.</p>
+
+<h2 id="thefuture">The Future</h2>
+
+<p>The future plans for the Toaster would be first to make it toast on more platforms, like Windows and MacOS. Eventually, I hope to make toast runs continuous, on less-powerful VMs that are entirely automated. An IRC bot would watch for any failures and report them to the <a href="https://webchat.freenode.net/?channels=#perl6-dev">dev channel</a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The ecosystem Toaster lets core devs test a Rakudo commit on hundreds of software pieces, made by hundreds of different developers, all within a single hour. During its short existence, the Toaster already found issues with ecosystem infrastructure, highly-multi-threaded Perl 6 programs, as well as detected regressions and new bugs that we were able to fix before the release.</p>
+
+<p>The extra testing lets core devs deliver higher-quality releases, which makes
+Perl 6 more trustworthy to use in production-quality software. The future will see the Toaster improved to test on a wider range of systems, as well as being automated for continued extended testing.</p>
+
+<p>And most importantly, the Toaster makes it possible for any Perl 6 programmer to help core development of Perl 6, by simply <a href="https://docs.perl6.org/language/modules">publishing a module</a>.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

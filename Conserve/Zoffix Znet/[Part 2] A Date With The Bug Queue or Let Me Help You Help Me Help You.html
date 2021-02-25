@@ -1,11 +1,274 @@
-https://perl6.party/<a href="/post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You--Part-2
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You--Part-2
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>[Part 2] A Date With The Bug Queue or Let Me Help You Help Me Help You - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">[Part 2] A Date With The Bug Queue or Let Me Help You Help Me Help You</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-07-15 <span class="words-count">| 1512 words |</span> Lessons learned from going through 1,300+ bug reports</p>
+  <p><em>Be sure to read <a href="/post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You">Part I</a> of this series.</em></p>
+
+<p>As I was tagging tickets in my <a href="https://github.com/zoffixznet/perl6-Ticket-Trakr">bug ticket helper
+app</a>, I was surprised by how
+often I was tagging tickets with this particular tag:</p>
+
+<p><img src="/assets/pics/date-with-bug-queue/core-button.png" alt="Needs core member decision" id="needscorememberdecision" /></p>
+
+<p>It may have been the most used tag of them all. And so, it made be think
+about...</p>
+
+<h2 id="partii:theexperiencedcontributor">PART II: The Experienced Contributor</h2>
+
+<p>I will be referring to "core developers," but this generally applies to any
+person who has great familarity with the project, how it should, does, and
+will work —The Experienced Contributor. When it comes to bug queues, can
+this type of people do more than just pick the bug they like the most and fix
+it?</p>
+
+<h3 id="lesson3:manyticketscanbefixedwithasinglecomment">LESSON 3: Many Tickets Can Be Fixed With A Single Comment</h3>
+
+<p>On my date with the bug queue, I found many tickets that looked relatively
+easy to fix, from a technological point of view, but I couldn't even begin
+working on them for a simple reason: I didn't know what the correct behaviour
+should be.</p>
+
+<p>Here's a good example:</p>
+
+<pre><code>&gt; "345".Int
+345
+&gt; "3z5".Int
+Cannot convert string to number: trailing characters after number in '3^z5'
+&gt; "34\x[308]5".Int
+3
+</code></pre>
+
+<p>When non-numeric characters are found, the conversion from <code>Str</code> to <code>Int</code>
+fails with an error message, but if a diacritic is present on a digit,
+the conversion stops and returns only a partial number. The issue sounds
+simple enough, so let's get cracking? But wait!</p>
+
+<p>What is the correct behaviour here? Should it fail with the same error message
+as <code>"3z5"</code> fails with, since a diacritic isn't a digit, or should it be
+silently ignored? After all, the entire string <em>does</em> match <code>\d+</code>:</p>
+
+<pre><code>say "34\x[308]5" ~~ /^ \d+ $/
+# OUTPUT:
+# ｢34̈5｣
+</code></pre>
+
+<p>In this case, we have a contributor ready to resolve the ticket, but they are
+stimied by the lack of direction. When a core member sees a ticket like that,
+and they don't have the time to fix the bug, <strong>they should comment</strong> on the
+ticket, indicating what the expected behaviour is. Now, a different
+contributor who <em>does</em> have the time can proceed to fix the bug with great
+confidence their patch will be accepted.</p>
+
+<p>And just like that, with a single comment from a core developer the ticket became much easier to fix! And speaking of easy things to fix...</p>
+
+<h3 id="lesson4:tagyourticketsandmakethemeasytofind">LESSON 4: Tag Your Tickets and Make Them Easy to Find!</h3>
+
+<p>When it comes to your bug ticket queue, this is probably something you don't
+want to see:</p>
+
+<blockquote>
+  <p><strong>&lt;BrokenRobot&gt;</strong> [Coke]: I've no idea how to locate them and now RT
+  pissed me off enough that I gone off the idea of doing those tickets ~_~<br>
+      ...<br>
+  <strong>&lt;BrokenRobot&gt;</strong> 18 minutes to find tickets. Retarded</p>
+</blockquote>
+
+<p>And when a contributor is trying to find some bugs to fix, this is something
+they don't want to see:</p>
+
+<p><img src="/assets/pics/date-with-bug-queue/rt-search.png" alt="" /></p>
+
+<p>This isn't the interface for the latest NASA space probe. It's the search page
+for the RT ticket system. And that's not even the full story, because
+if the contributor wants to find tagged tickets, they have to use
+"Advanced" version that is nothing more than a textbox asking for what may or
+may not be a SQL query.</p>
+
+<p>Sure, if you've used it a few times, it becomes simple enough to use, but a
+new contributor who's beggining to learn the guts of your project probably
+doesn't want to spend their entire afternoon learning how to search for
+tickets. They probably wouldn't be too sure about what to search for anyway.</p>
+
+<p>So what's the solution? Tags! Categorize your tickets with tags and then you
+can have a Wiki or page on your project's website linking to search queries
+for specific tags. Here are some ideas to consider when deciding on ticket
+tags:</p>
+
+<h4 id="forcorememberreviewbikeshed">For Core Member Review / Bikeshed</h4>
+
+<p>Consider this comment on a ticket:</p>
+
+<blockquote>
+  <p>This should probably return a List instead of a Hash.</p>
+</blockquote>
+
+<p>The problem with it is that it's unclear whether or not there needs to be
+a discussion or if the ticket should be resolved following the suggestion.
+So you have one group of people who wait for more comments before doing
+anything and another group who agree with the suggestion and move on without
+further comments. In the end, you have a stalled ticket and nothing gets fixed.</p>
+
+<p>For that reason, you should use more direct language in your comments. State
+explicitly whether you're just sharing your opinion/vote on the issue,
+inviting discussion, or giving direction for how the ticket should be resolved.</p>
+
+<p>For core member reviews, discussions, and general
+<a href="http://bikeshed.com/">bikeshed</a>, tags can be very useful. For example,
+<a href="http://mojolicious.org/">the Mojolicious project</a> uses <code>needs feedback</code> Issue
+labels to invite discussion from its users. The Perl 6 ticket queue has
+<code>[@LARRY]</code> tag for tickets that need review by the core team members—and core
+members should review such tickets regularly, because as we've learned in the
+previous Lesson, some bugs are just a comment away from being fixed!</p>
+
+<h4 id="areaofexpertise">Area of Expertise</h4>
+
+<p>Different issues may require different expertise. For example,
+an issue with the <a href="https://docs.perl6.org">Perl 6 documentation website</a> may
+require someone experienced with:</p>
+
+<ul>
+<li><strong>Design:</strong> the look of the website</li>
+<li><strong>UX:</strong> usability of the website</li>
+<li><strong>CSS/HTML/JS:</strong> the front-end of the website</li>
+<li><strong>Perl 6:</strong> scripts for site generation</li>
+<li><strong>Advanced Perl 6:</strong> documenting arcane features</li>
+<li><strong>Pod6:</strong> documentation format writing and parsing</li>
+<li><strong>English:</strong> ensuring correct grammar and good writing style</li>
+<li><strong>Other languages:</strong> translation</li>
+</ul>
+
+<p>All that just for a static website. Imagine one that's driven by a web app
+with a SQL backend!</p>
+
+<p>Not everyone will be an expert in all the areas, so
+tagging by area of expertise will let a person pick tickets that are easy for
+them to resolve, depending on what sort of knowledge and training they possess.</p>
+
+<h4 id="easylowhangingfruit">Easy / Low Hanging Fruit</h4>
+
+<p>These are pretty common in projects: tags that indicate the ticket is very
+easy to solve. This is typically what new contributors will look for.</p>
+
+<p>However, developers often mistake this tag to mean <em>so easy a blind monkey
+could do it</em>, and the result potential new contributors see when they view
+the tag is often:</p>
+
+<p><img src="/assets/pics/date-with-bug-queue/zero-tickets.png" alt="Found 0 tickets" id="found0tickets" /></p>
+
+<p>Easy tickets should not mean brain-dead tickets. Text editing is a task I
+often see listed as Low Hanging Fruit tickets, but it's booooring. New
+contributors don't want to get bored. They want to fix things. And there's
+nothing wrong with requiring to do a bit of learning while they're at it.</p>
+
+<p>The tickets tagged as easy can simply have a comment narrowing down the
+potential hiding spot of the bug with, perhaps, some guidance on how to
+debug and fix it. And speaking of guidance...</p>
+
+<h2 id="lesson5:mentoringconvertsnewcontributorsintoexperiencedcontributors">LESSON 5: Mentoring Converts New Contributors into Experienced Contributors</h2>
+
+<p>So you have 20 devs on the team and 1,000 tickets in the bug queue. With
+50 tickets per a pair of hands, you sure are busy! The devs never see the
+light of day and rarely appear on chat channels or comment on mailing lists,
+bug tickets, and other commentables. That's what busy people do.</p>
+
+<p>However, what would happen if you also spend a bit of time writing
+tutorials and <a href="https://github.com/edumentab/rakudo-and-nqp-internals-course">project internals
+courses</a>, or
+training specific people?</p>
+
+<blockquote>
+  <p><strong>&lt;psch&gt;</strong> i can also guide you how i figured out what to change where to throw a typed Exception there, because as i said, i think it's a great ticket for getting used to the Grammar and Actions
+  <br><strong>&lt;BrokenRobot&gt;</strong> psch: sure, I'd love to learn that
+  <br><strong>&lt;psch&gt;</strong> BrokenRobot: the most important thing is --target=parse
+  <br>BrokenRobot: as in, the start for any bug that most likely is Grammar or
+  <br>Actions based is by isolating it as far as possible - in this case a bare
+  <br>'&amp;0' - and running that through ./perl6 --target=parse -e
+  <br><a href="https://gist.github.com/peschwa/1e6a9f84a4c9e67638ff93e5b79f86d9">https://gist.github.com/peschwa/1e6a9f84a4c9e67638ff93e5b79f86d9</a> # like this
+  <br>EXPR is a scary place, i don't go there
+  <br>so it's about variable
+  <br><strong>&lt;psch&gt;</strong> <a href="https://github.com/rakudo/rakudo/blob/nom/src/Perl6/Grammar.nqp#L2017">https://github.com/rakudo/rakudo/blob/nom/src/Perl6/Grammar.nqp#L2017</a> so this
+  <br><strong>&lt;BrokenRobot&gt;</strong> So <sigil> needs to exclude '&amp;'  on here?
+  <br><a href="https://github.com/rakudo/rakudo/blob/nom/src/Perl6/Grammar.nqp#L2025">https://github.com/rakudo/rakudo/bl​ob/nom/src/Perl6/Grammar.nqp#L2025</a></p>
+</blockquote>
+
+<p>It's the old adage: teach a person to fish... and you'll turn a profit.
+Don't think of it as a <em>team of 20 devs</em>. Think of it as a team of 20 devs
+<em>and several trainees</em>. By dedicating some time on training new contributors
+you'll be growing your team and reducing the number of bugs per pair of hands.
+The time you won't spend on fixing bugs right now is an investment into
+people who will fix more bugs for you later on.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>And so ends our date with the bug queue. Whether you're a <a href="/post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You">newbie
+contributor</a> or a seasoned core hacker, the bug queue is a valuable place to spend
+your time at.</p>
+
+<p>New contributors help core developers by filtering out the queue,
+doing preliminary debugging, and writing tests. Core developers help new
+contribitors by tagging tickets, giving direction for how tickets should be
+resolved, and providing training. This in turn, lets new contributors help
+back by fixing bugs and... eventually becoming core contributors themselves.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,192 @@
-https://perl6.party/<a href="/post/Wow-Perl-6-Talk--Slides-Recording-and-Answers-to-Questions
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Wow-Perl-6-Talk--Slides-Recording-and-Answers-to-Questions
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>&quot;Wow, Perl 6!&quot; Talk: Slides, Recording, and Answers to Questions - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">&quot;Wow, Perl 6!&quot; Talk: Slides, Recording, and Answers to Questions</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-03-31 <span class="words-count">| 684 words |</span> The overview of cool bits of Perl 6.</p>
+  <p>Last night I gave a "Wow, Perl 6!" talk at the Toronto Perl Mongers, whom I thank for letting me speak, even after I got lost for 15 minutes in the building the event was hosted at and was subsequently late.</p>
+
+<p>The talk is an overview of some of the cool features Perl 6 offers. If you didn't get a chance to be at the talk or to watch it via a Google Hangout, you can still get a recording of it.</p>
+
+<p>You can view the slides at <a href="http://tpm2016.zoffix.com/">http://tpm2016.zoffix.com/</a> and <a href="https://www.youtube.com/watch?v=paa3niF72Nw">the recording of the talk is on YouTube</a>:</p>
+
+<p><iframe width="560" height="315" src="https://www.youtube.com/embed/paa3niF72Nw" frameborder="0" allowfullscreen></iframe></p>
+
+<h2 id="synopsis">Synopsis</h2>
+
+<p><strong>Couch Potato:</strong></p>
+
+<ul>
+<li>Lazy lists and their uses</li>
+</ul>
+
+<p><strong>Molding Your Own:</strong></p>
+
+<ul>
+<li>Subsets</li>
+<li>Custom operators</li>
+<li>Muti-dispatch</li>
+</ul>
+
+<p><strong>Hyperspace: Multi-core processing at a touch of a button</strong></p>
+
+<ul>
+<li>Hyper operators</li>
+<li>Hyper sequence methods</li>
+<li>Autothreaded junctions</li>
+<li>Promises, Supplies, and Channels</li>
+</ul>
+
+<p><strong>How's Your Spellin'?</strong></p>
+
+<ul>
+<li>Grammars: Parsing made easy</li>
+</ul>
+
+<p><strong>Whatever, man!:</strong></p>
+
+<ul>
+<li>Whatever Code</li>
+<li>Meta operators</li>
+<li>Model6 Object Model (very brief "teaser" overview)</li>
+<li>MOP: Meta Object Protocol</li>
+<li>Sets, bags, and mixes</li>
+</ul>
+
+<p><strong>Polyglot:</strong></p>
+
+<ul>
+<li>NativeCall</li>
+<li>Inline::Perl5</li>
+</ul>
+
+<p><strong>Not Really Advanced Things:</strong></p>
+
+<ul>
+<li>Hacking on the Perl 6 Compiler</li>
+</ul>
+
+<p><strong>Bonus Slides:</strong></p>
+
+<ul>
+<li>Backtraces for failures in concurrent code</li>
+<li>Peculiarities with Rats</li>
+<li>Proc::Async</li>
+<li><code>say</code> is for humans <code>put</code> is for computers</li>
+<li>More useful objects</li>
+<li>Built in profiler</li>
+</ul>
+
+<h2 id="answerstoquestions">Answers to Questions</h2>
+
+<p>During the talk a couple of questions were asked and I didn't know the answer at the time. I do now:</p>
+
+<h3 id="isthereawaytohavebettererrormessageswhenasubsetdoesntmatchavaluegiven">Is there a way to have better error messages when a subset doesn't match a value given?</h3>
+
+<p>The code in the <code>where</code> can be anything you want, so you can <code>warn</code> or <code>fail</code> inside the check to get a better error message. Once caveat: the argument given to <code>callframe</code> might be different depending on where you're performing the check. Try adjusting it:</p>
+
+<pre><code>subset Foo of Int where {
+    $_ &gt; 10_000
+        or fail "You need a number more than 10,000 on "
+            ~ "line {(callframe 4).line}, but you passed $_";
+};
+
+my Foo $x = 1000;
+
+# OUTPUT:
+#  You need a number more than 10,000 on line 7, but you passed 1000
+#  in block &lt;unit&gt; at test.p6 line 2
+</code></pre>
+
+<h3 id="canyoucheckwhetherornotavaluefitsthesubset">Can you check whether or not a value fits the subset?</h3>
+
+<p>Yes, just smartmatch against the type/subset:</p>
+
+<pre><code>subset Even where * %% 2;
+say 3 ~~ Even;
+say 42 ~~ Even
+
+# OUTPUT:
+# False
+# True
+</code></pre>
+
+<h3 id="canyouhaveaninfinitecodesetcode">Can you have an infinite <code>Set</code>?</h3>
+
+<p>No, it tries to actually create one. Makes sense, since a Set cares about the elements in it. Sure, it's possible to special-case some forms of sequences to figure out whether an element is part of the sequence or not, but it's probably not worth it. In a more general case, you are faced with the Halting Problem. Speaking of which, here is a gotcha with the sequence operator and the upper limit:</p>
+
+<pre><code>my @seq = 0, 2 ... * == 1001;
+</code></pre>
+
+<p>Here, I'm using the sequence operator to create a sequence of even numbers, and I'm limiting the upper bound by when it'd be equal to 1001. But it won't ever be equal to that. To human brain, it might seem obvious that once you're over 1001, you should stop here, but to a computer it's a Halting Problem and it'll keep trying to find the end point (so it'll never complete here).</p>
+
+<h3 id="canyoukillarunningpromise">Can you kill a running Promise?</h3>
+
+<p>Not possible. If you need that kind of thing, you'll have to use processes, or you'll have to build the code inside the Promise so that it exposes some kind of a "should I continue working?" flag.</p>
+
+<h3 id="linksforlearningmaterialsandecosystem">Links for Learning Materials and Ecosystem</h3>
+
+<p>Along with <a href="http://perl6intro.com/">http://perl6intro.com/</a> that I mentioned during the talk, there's also <a href="https://learnxinyminutes.com/docs/perl6/">Learn X in Y Minues Perl 6 page</a>, which I personally found very useful when just starting out with Perl 6.</p>
+
+<p>The Ecosystem is at <a href="http://modules.perl6.org/">http://modules.perl6.org/</a>  you should have <code>panda</code> program installed, and you can install modules from the Ecosystem by typing <code>panda install Foo::Bar</code></p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

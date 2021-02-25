@@ -1,11 +1,280 @@
-https://perl6.party/<a href="/post/Perl6-On-Specs-Versioning-Changes-And-Breakage
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl6-On-Specs-Versioning-Changes-And-Breakage
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6: On Specs, Versioning, Changes, and… Breakage - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6: On Specs, Versioning, Changes, and… Breakage</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-02-20 <span class="words-count">| 1981 words |</span> Details on how Perl 6 language changes.</p>
+  <p>Recently, I came across a <a href="https://stackoverflow.com/questions/48488381/perl6-comparison-operator#comment83973425_48489204">somewhat-frantic comment</a> on StackOverflow that describes a 2017.01 change to the type of return value of <a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a>:</p>
+
+<blockquote>
+  <p><em>"you just can't be sure what <code>~~</code> returns"</em> Ouch. […] <code>.list</code> the result of a
+    <code>sort</code> is presumably an appropriate work around. But, still, ouch. I don't know
+    of a blog post or whatever that explains how P6 approaches changes to the
+    language; and to roast; and to Rakudo. Perhaps someone will write one that also
+    explains how this aspect of 2017.01 was conceived, considered and applied;
+    what was right about the change; what was wrong; etc.</p>
+</blockquote>
+
+<p>Today, I decided to answer that call to write a blog post and reply to all of the
+questions posed in the comment, as well as explain how it's possible that such an "ouch"
+change made it in.</p>
+
+<h2 id="onversioning">On Versioning</h2>
+
+<p>The '6' in Perl 6 is just part of the name. The language version itself is encoded
+by a sequential letter, which is also the starting letter of a codename for that
+release. For example, the current stable language version is <code>6.c "Christmas"</code>. The
+next language release will be <code>6.d</code> with one of the proposed codenames being
+<code>"Diwali"</code>. The version after that will be <code>6.e</code>, then <code>6.f</code>, and so on.</p>
+
+<p>If you've used Perl 6 sometime between 2015 and 2018, you likely used the "Rakudo"
+compiler, which is often packaged as "Rakudo Star" distribution and is versioned
+with the year and the month of the release, e.g. release <code>2017.01</code>.</p>
+
+<p>In some languages, like Perl 6's sister language Perl 5, what the compiler does <em>is</em> what the language itself is. Bugs aside, if the latest (2017.09) Perl 5 compiler gives 4 for 2+2, then that's the definition of what 2+2 is in the Perl 5 language.</p>
+
+<p>In Perl 6, however, how a compiler (e.g. "Rakudo") behaves or what it implements does <strong>not</strong> define the Perl 6 language. The <a href="https://github.com/perl6/roast/">Perl 6 language
+specification</a> does. The specification consists of
+a test suite of about 155,000 tests and anything that passes that test suite can
+call itself a "Perl 6 compiler".</p>
+
+<p>It's to <em>this</em> specification version <code>6.c "Christmas"</code> refers. It was released
+on December 25, 2015 and at the time of this writing, it's the first and only
+release of a stable language spec. Aside from a few error corrections, there
+were <em>no changes to that specification</em>… The latest version of Rakudo still passes
+every single test—it's a release requirement.</p>
+
+<h2 id="onchanges">On Changes</h2>
+
+<p>Ardent Perl 6 users would likely recall that there <em>have</em> been many changes in
+the Rakudo compiler since Christmas 2015. Including the "ouch" change referenced by
+that StackOverflow comment. If the specification did not change and core devs are not allowed to make
+changes that break 6.c specification, how is it possible that the return type
+of <a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a> could have changed?</p>
+
+<p>The reason is—and I hope the other core devs will forgive me for my choice of
+imagery—the specification is full of holes!</p>
+
+<p><img class="img-thumbnail img-responsive center-block"
+    src="/assets/pics/specs-and-versions/cheese1.jpg" alt=""></p>
+
+<p>It doesn't (yet) cover every imaginable use and combination of features.
+What happens when you try to <a href="https://docs.perl6.org/routine/print"><code>print</code></a>
+a <a href="https://docs.perl6.org/type/Junction"><code>Junction</code></a> of strings? As far as 6.c
+version of Perl 6 language is concerned, that's undefined behaviour. What object do
+you get if you call <a href="https://docs.perl6.org/routine/Numeric"><code>.Numeric</code></a> on an <a href="https://docs.perl6.org/type/Rat"><code>Rat</code></a> <em>type object</em> rather than an instance?
+Undefined behaviour. What about the return value of <a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a>? You'll get sorted values in an <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a> type, but whether that type is a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> or a <a href="https://docs.perl6.org/type/List"><code>List</code></a> is
+not specified by the 6.c specification.</p>
+
+<p>This is how 2017.01 version of Rakudo managed to change the return type of
+<a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a>, despite being a compliant implementation of the 6.c language—the spec was not precise about what <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a> type <a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a> must return; both <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> and <a href="https://docs.perl6.org/type/List"><code>List</code></a> are <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a>, thus both conform to the spec. (It's
+worth noting that since 2017.01 we implemented <a href="https://rakudo.party/post/Perl-6-Release-Quality-Assurance-Full-Ecosystem-Toaster">an extended testing
+framework</a> that also guides our decisions on whether we actually allow changes that don't
+violate the spec).</p>
+
+<p>In my personal opinion, the 6.c spec is overly sparse in places, which is why we
+saw a number of large changes in 2016 and early 2017, including the "ouch" change
+the commenter on StackOverlow referred to. But… it won't stay that way forever.</p>
+
+<h2 id="thefutureofthespec">The Future of the Spec</h2>
+
+<p>At the time of this writing, there have been 3,129
+commits to the spec, since 6.c language release. These
+are the proposals for the 6.d language specification. While some of these commits
+address new features, a lot of them close those holes the 6.c spec contains.
+The main goal is not to write a "whole new spec" but to refine and clarify the previous
+version.</p>
+
+<p>Thus, when 6.d is released, it'll look something like this:</p>
+
+<p><img class="img-thumbnail img-responsive center-block"
+    src="/assets/pics/specs-and-versions/cheese2.jpg" alt=""></p>
+
+<p>A few more slices of new features, but largely the same thing. Still some holes (undefined behaviour) in it, but a lot less than in 6.c language. It
+now defines that <a href="https://docs.perl6.org/routine/print"><code>print</code></a>ing a <a href="https://docs.perl6.org/type/Junction"><code>Junction</code></a> will thread it; that calling
+<a href="https://docs.perl6.org/routine/Numeric"><code>.Numeric</code></a> on a <a href="https://docs.perl6.org/type/Numeric"><code>Numeric</code></a> type object gives a numeric equivalent of zero of
+that type and a warning; and that the <a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a>'s <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a> return type is a
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>, not a <a href="https://docs.perl6.org/type/List"><code>List</code></a>.</p>
+
+<p>As more uses of combinations original designers haven't thought of come around,
+even more holes will be covered in future language versions.</p>
+
+<h2 id="breakingthings">Breaking Things</h2>
+
+<p>The cheese metaphor covers refinements to the specification, but there's another
+set of changes the core developers sometimes have to make: changes that violate
+previous versions of the specification. For 6.d language, the list of such changes is available in <a href="https://github.com/perl6/6.d-prep/blob/master/TODO/FEATURES.md">our 6.d-prep repository</a> (some of the listed changes don't violate 6.c spec, but still have significant impact so we pushed them to the next language version).</p>
+
+<p>This may seem to be a contradiction: didn't I say earlier that passing 6.c
+specification is part of the compiler's release requirements? The key to resolving
+that contradiction lies in ability to request different language versions in
+different comp units (e.g. in different modules) that are used <strong>by the same</strong>
+program.</p>
+
+<p>A single compiler can support multiple language versions.
+Specifying <code>use v6.c</code> pragma loads 6.c language. Specifying <code>use v6.d</code> (currently
+available as <code>use v6.d.PREVIEW</code>) loads 6.d language. Not specifying anything
+loads the newest version the compiler supports.</p>
+
+<p>One of the changes between 6.c and 6.d languages is that <code>await</code> no longer blocks
+the thread in 6.d. We can observe this change using a single small script that loads
+two modules. The code between the two modules is the same, except they request
+different language versions:</p>
+
+<pre><code># file ./C.pm6
+use v6.c;
+sub await-c is export {
+    await ^10 .map: {
+        start await ^5 .map: { start await Promise.in: 1 }
+    }
+    say "6.c version took $(now - ENTER now) secs";
+}
+
+# file ./D.pm6
+use v6.d.PREVIEW;
+sub await-d is export {
+    await ^10 .map: {
+        start await ^5 .map: { start await Promise.in: 1 }
+    }
+    say "6.d version took $(now - ENTER now) secs";
+}
+
+# $ perl6 -I. -MC -MD -e 'await-c; await-d'
+# 6.c version took 2.05268528 secs
+# 6.d version took 1.038609 secs
+</code></pre>
+
+<p>When we run the program, we see that no-longer blocked threads let 6.d version
+complete a lot faster
+(in fact, if you bump the loop numbers by a factor, 6.d would still complete,
+while 6.c would deadlock).</p>
+
+<p>So this is the Perl 6 mechanism that lets the core developers make breaking
+changes without breaking user's programs. There are some limitations to it
+(e.g. methods on classes)—so for some things there still will be standard
+deprecation procedures. We also try to limit the number of such spec-breaking
+changes, to reduce the maintenance burden and impact on users who don't want to
+lock their code down to some older version. Thus, don't worry about getting some
+weird new language on the next language release—the differences will be minimal.</p>
+
+<h2 id="whodecides">Who Decides?</h2>
+
+<p>This all brings us to one of the questions posed by that StackOverflow user:
+how do language changes get conceived, considered, and applied—in short: who
+decides what the behaviour is to be like? What is the process?</p>
+
+<p>As far as conception goes, many of the current ideas are based on seeing what
+our users need. Some proposals <a href="https://github.com/rakudo/rakudo/issues/1245">come directly from users</a>; others <a href="https://github.com/rakudo/rakudo/issues/1546">get
+inspired</a> as more elegant solutions
+to problems users showed they were trying to solve.
+<a href="https://github.com/perl6/6.d-prep/blob/master/TODO/FEATURES.md#make-start-blocks-in-sink-context-attach-an-error-handler">Some</a> of the
+<a href="https://github.com/perl6/6.d-prep/blob/master/TODO/FEATURES.md#make-argfiles--in-or-ioargfilesnewin-inside-main">changes</a> proposed for 6.d language were informed by
+problematic areas of currently-implemented features that weren't foreseen during
+original implementation.</p>
+
+<p>When it comes to implementation, the scope of the feature and core developer's
+expertise with the given area of the codebase generally drive the process.
+With the "ouch" change, the expert in the area of <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code></a>s deemed <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>
+to  be a superior type for <a href="https://docs.perl6.org/routine/sort"><code>.sort</code></a> to return, due to its non-caching
+behaviour as well as its ease of degenerating into a caching <a href="https://docs.perl6.org/type/List"><code>List</code></a>.</p>
+
+<p>Some changes <a href="https://github.com/rakudo/rakudo/issues/1546">get opened as an Issue on the bugtracker</a> first, to notify other devs of the impending change. Large changes usually get <a href="https://github.com/rakudo/rakudo/blob/master/docs/archive/constants-type-constraints-proposal-2018-02-10.md">a proposed design</a> written down first. The proposal is shared with the core devs and feedback is gathered before the proposal is actually implemented.
+The implementation of significant things is also merged far away from the date of the next release, to let the bleeding-edge users find any potential problems in the work.</p>
+
+<p><a href="https://github.com/perl6/geth"><em>Geth</em></a>, our IRC bot, <a href="https://irclog.perlgeek.de/perl6-dev/2018-02-20#i_15838016">announces</a> all commits in our <a href="https://webchat.freenode.net/?channels=#perl6-dev">development IRC channel</a>. Most of the core devs backlog that channel, so any of the potentially problematic commits—even if one of the devs goes ahead and commits the change—get discussed and at times reverted.</p>
+
+<p>The Perl 6 <a href="https://perldoc.perl.org/perlhist.html#THE-KEEPERS-OF-THE-PUMPKIN">pumpking</a> (Jonathan Worthington) and the <a href="https://en.wikipedia.org/wiki/Benevolent_dictator_for_life">BDFL</a> (Larry Wall) are
+available to provide feedback on controversial, questionable, or large
+changes being proposed. They also have the veto power on any changes. Our messaging bot helps us request feedback from them, even if they're currently not in the chat.</p>
+
+<p>When it comes to errata to previous specifications, unless the test to be changed
+is "obviously wrong", the decision on whether the errata can be applied is
+delegated to the Release Manager (AlexDaniel), and informed by the pumpking/BDFL,
+if required.</p>
+
+<h2 id="thefuture">The Future</h2>
+
+<p>The current process is a bit loose in places. A test that's "obviously wrong" to one person might have some valid reasons behind it to someone else. This is why the TODO for 6.d
+release lists <a href="https://github.com/perl6/6.d-prep/tree/master/TODO#define-more-concrete-spec-errata-rules">several documents</a> to be written that will refine the procedures for various types of changes.</p>
+
+<p>It won't be on the scale of <a href="https://www.python.org/dev/peps/pep-0001/">PEP</a>, but simply something more concrete for the core devs to refer to, when performing changes that have some impact on the users. It's a balancing act between organization and procedure and letting through a consistent flow of contributions.</p>
+
+<p>And if breaking changes have to be made, an alert will be pushed to the the <a href="https://rakudo.party/post/Announcing-P6lert-Perl-6-Alerts-Directly-From-Core-Developers">P6lert service</a> for users of Perl 6 to get informed of them in advance.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Today, we gleaned an insight into how Perl 6 core devs introduce changes to the
+compiler and the language.</p>
+
+<p>The language specification and the compiler's behaviour are separate entities. The 6.c language specification has places of unspecified behaviour, which is how changes that have large impact on the users slipped through in the past.</p>
+
+<p>The extended testing framework as well as specification clarifications offered
+by 6.d language proposal tests that refine the specification and close the
+holes with undefined behaviour reduce unforeseen impact on the users.</p>
+
+<p>The core dev team informs their decisions based on user's feedback and the way the language is used by the community. Large changes get written up as proposals and the pumking/BDFL offer advise on anything controversial.</p>
+
+<p>In the future, more refined practices for how changes are made will be defined, as we work on making upgrade experience more predictable and non-breaking for our users. The <a href="https://rakudo.party/post/Announcing-P6lert-Perl-6-Alerts-Directly-From-Core-Developers">P6lert service</a> helps that goal and is already available today.</p>
+
+<p>Hope this answers all the questions :)</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,706 @@
-https://perl6.party/<a href="/post/Perl-6-Core-Hacking-Grammatical-Babble
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Core-Hacking-Grammatical-Babble
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Core Hacking: Grammatical Babble - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Core Hacking: Grammatical Babble</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-09-12 <span class="words-count">| 3163 words |</span> Following along with fixing a grammar bug</p>
+  <p>Feelin' like bugfixing the Perl 6 compiler? Here's a <a href="https://rt.perl.org/Ticket/Display.html?id=128304">great grammar
+bugglet</a>: the <code>„”</code> quotes don't appear to work right when used in quoted white-space separated words
+list constructor:</p>
+
+<pre><code>say „hello world”;
+.say for qww&lt;„hello world”&gt;;
+.say for qww&lt;"hello world"&gt;;
+
+# OUTPUT:
+# hello world
+# „hello
+# world”
+# hello world
+</code></pre>
+
+<p>The quotes should not be in the output and we should have just 3 lines in the
+output; all <code>hello world</code>. Sounds like a fun bug to fix! Let's jump in.</p>
+
+<h2 id="howdoyouspellthat">How do you spell that?</h2>
+
+<p>The fact that this piece of code doesn't parse right suggests this is a grammar
+bug. Most of the grammar lives in <a href="https://github.com/rakudo/rakudo/blob/83b8b1a/src/Perl6/Grammar.nqp">src/Perl6/Grammar.nqp</a>, but before we get
+our hands dirty, let's figure out what we should be looking for.</p>
+
+<p>The <code>perl6</code> binary has a <code>--target</code> command line parameter that takes one of
+the compilation stages and will cause the output for that stage to be
+produced. What stages are there? They will differ, depending on which
+backend you're using, but you can just run <code>perl6 --stagestats -e ''</code> to
+print them all:</p>
+
+<pre><code>zoffix@leliana:~$ perl6 --stagestats -e ''
+Stage start      :   0.000
+Stage parse      :   0.077
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.001
+Stage mast       :   0.004
+Stage mbc        :   0.000
+Stage moar       :   0.000
+</code></pre>
+
+<p>Grammars are about parsing, so we'll ask for the <code>parse</code> target. As for the
+code to execute, we'll give it just the problematic bit; the <code>qww&lt;&gt;</code>:</p>
+
+<pre><code>zoffix@leliana:~$ perl6 --target=parse -e 'qww&lt;„hello world”&gt;'
+- statementlist: qww&lt;„hello world”&gt;
+  - statement: 1 matches
+    - EXPR: qww&lt;„hello world”&gt;
+      - value: qww&lt;„hello world”&gt;
+        - quote: qww&lt;„hello world”&gt;
+          - quibble: &lt;„hello world”&gt;
+            - babble:
+              - B:
+            - nibble: „hello world”
+          - quote_mod: ww
+            - sym: ww
+</code></pre>
+
+<p>That's great! Each of the lines is prefixed by the name of a token we can find in the grammar, so now we know where to look for the problem.</p>
+
+<p>We also know that basic quotes work correctly, so let's dump
+the parse stage for them as well, to see if there is any difference between
+the two outputs:</p>
+
+<pre><code>zoffix@leliana:~$ perl6 --target=parse -e 'qww&lt;"hello world"&gt;'
+- statementlist: qww&lt;"hello world"&gt;
+  - statement: 1 matches
+    - EXPR: qww&lt;"hello world"&gt;
+      - value: qww&lt;"hello world"&gt;
+        - quote: qww&lt;"hello world"&gt;
+          - quibble: &lt;"hello world"&gt;
+            - babble:
+              - B:
+            - nibble: "hello world"
+          - quote_mod: ww
+            - sym: ww
+</code></pre>
+
+<p>And... well, other than different quotes, the parse tree is the same. So it
+looks like all of the tokens involved are the same, but what is done by those
+tokens differs.</p>
+
+<p>We don't have to examine each of the tokens we see in the output.
+The <code>statementlist</code>
+and <code>statement</code> are tokens matching general statements, the <code>EXPR</code> is the
+precedence parser, and <code>value</code> is one of the values it's operating on. We'll
+ignore those, leaving us with this list of suspects:</p>
+
+<pre><code>- quote: qww&lt;„hello world”&gt;
+  - quibble: &lt;„hello world”&gt;
+    - babble:
+      - B:
+    - nibble: „hello world”
+  - quote_mod: ww
+    - sym: ww
+</code></pre>
+
+<p>Let's start interrogating them.</p>
+
+<h2 id="downtherabbitholewego...">Down the rabbit hole we go...</h2>
+
+<p>Get yourself a local <a href="https://github.com/rakudo/rakudo/">Rakudo repo</a> checkout,
+if you don't already have one, pop open
+<a href="https://github.com/rakudo/rakudo/blob/83b8b1a/src/Perl6/Grammar.nqp">src/Perl6/Grammar.nqp</a>, and get comfortable.</p>
+
+<p>We'll follow our tokens from the top of the tree down, so the first thing
+we need to find is <code>token quote</code>, <code>rule quote</code>, <code>regex quote</code>, or <code>method
+quote</code>;
+search in that order, as the first items are more likely to be the right thing.</p>
+
+<p>In this case, it's <a href="https://github.com/rakudo/rakudo/blob/83b8b1a/src/Perl6/Grammar.nqp#L3555">a <code>token quote</code></a> which is a
+<a href="https://docs.perl6.org/language/grammars#Protoregexes">proto regex</a>. Our code
+uses the <code>q</code> version of it and you can spot the <code>qq</code> and <code>Q</code> versions next to
+it as well:</p>
+
+<pre><code>token quote:sym&lt;q&gt; {
+    :my $qm;
+    'q'
+    [
+    | &lt;quote_mod&gt; {} &lt;.qok($/)&gt; { $qm := $&lt;quote_mod&gt;.Str }
+        &lt;quibble(%*LANG&lt;Quote&gt;, 'q', $qm)&gt;
+    | {} &lt;.qok($/)&gt; &lt;quibble(%*LANG&lt;Quote&gt;, 'q')&gt;
+    ]
+}
+token quote:sym&lt;qq&gt; {
+    :my $qm;
+    'qq'
+    [
+    | &lt;quote_mod&gt; { $qm := $&lt;quote_mod&gt;.Str } &lt;.qok($/)&gt;
+        &lt;quibble(%*LANG&lt;Quote&gt;, 'qq', $qm)&gt;
+    | {} &lt;.qok($/)&gt; &lt;quibble(%*LANG&lt;Quote&gt;, 'qq')&gt;
+    ]
+}
+token quote:sym&lt;Q&gt; {
+    :my $qm;
+    'Q'
+    [
+    | &lt;quote_mod&gt; { $qm := $&lt;quote_mod&gt;.Str } &lt;.qok($/)&gt;
+        &lt;quibble(%*LANG&lt;Quote&gt;, $qm)&gt;
+    | {} &lt;.qok($/)&gt; &lt;quibble(%*LANG&lt;Quote&gt;)&gt;
+    ]
+}
+</code></pre>
+
+<p>Seeing that bodies of <code>qq</code> and <code>Q</code> look similar to <code>q</code>, let's see if they have
+the bug as well:</p>
+
+<pre><code>zoffix@leliana:~$ perl6 -e '.say for qqww&lt;„hello world”&gt;'
+„hello
+world”
+zoffix@leliana:~$ perl6 -e '.say for Qww&lt;„hello world”&gt;'
+„hello
+world”
+</code></pre>
+
+<p>Yup, it's there as well, so <code>token quote</code> is unlikely to be the problem.
+Let's break down what the <code>token quote:sym&lt;q&gt;</code> is doing, to figure out how to proceed next; one of its alternations is not used by our current code, so I'll
+omit it:</p>
+
+<pre><code>token quote:sym&lt;q&gt; {
+    :my $qm;
+    'q'
+    [
+    | &lt;quote_mod&gt; {} &lt;.qok($/)&gt; { $qm := $&lt;quote_mod&gt;.Str }
+        &lt;quibble(%*LANG&lt;Quote&gt;, 'q', $qm)&gt;
+    | # (this branch omited)
+    ]
+}
+</code></pre>
+
+<p>On line 2, we create a variable, then match literal <code>q</code> and then the
+<code>quote_mod</code> token. That one was part of our <code>--target=parse</code> output and if you
+do locate it the same way we located the <code>quote</code> token, you'll notice it's
+a proto regex that, in this case, matches the <code>ww</code> bit of our code. The empty
+<code>{}</code> block that follows we can ignore (it's a workaround for a bug that may
+have already been fixed when you read this). So far we've matched the <code>qww</code>
+bit of our code.</p>
+
+<p>Moving further, we encounter the call to <code>qok</code> token with the current
+<a href="https://docs.perl6.org/type/Match"><code>Match</code></a> object as argument. The dot in
+<code>&lt;.qok</code> signifies this is a non-capturing token match, which is why it did
+not show up in our <code>--target=parse</code> dump. Let's locate that token and see
+what it's about:</p>
+
+<pre><code>token qok($x) {
+    » &lt;![(]&gt;
+    [
+        &lt;?[:]&gt; || &lt;!{
+            my $n := ~$x; $*W.is_name([$n]) || $*W.is_name(['&amp;' ~ $n])
+        }&gt;
+    ]
+    [ \s* '#' &lt;.panic: "# not allowed as delimiter"&gt; ]?
+    &lt;.ws&gt;
+}
+</code></pre>
+
+<p>Boy! Lots of symbols, but this shit's easy: <code>»</code> is a <a href="https://docs.perl6.org/language/regexes#%3C%3C_and_%3E%3E_,_left_and_right_word_boundary">right word
+boundary</a> that is <em>not</em> followed by an opening
+parenthesis (<code>&lt;![(]&gt;</code>), followed by an alternation (<code>[]</code>), followed by a
+check that we aren't trying to use <code>#</code> as delimiters (<code>[...]?</code>),
+followed by <a href="https://docs.perl6.org/language/grammars#ws"><code>&lt;.ws&gt;</code>
+token</a> that gobbles up all kinds
+of whitespace.</p>
+
+<p>Inside the alternation, we use the first-token-match <code>||</code> alternation (as
+opposed to longest-token-match <code>|</code> one), and the first token is a lookahead
+for a colon <code>&lt;?[:]&gt;</code>. If that fails, we stringify the given argument (<code>~$x</code>)
+and then call <code>is_name</code> method on the <a href="https://github.com/rakudo/rakudo/blob/83b8b1a/src/Perl6/World.nqp">World
+object</a>
+passing it the stringified argument as is and with <code>&amp;</code> prepended. The passed
+<code>~$x</code> is what our <code>token quote:sym&lt;q&gt;</code> token has matched so far (and that is
+string <code>qww</code>). The <code>is_name</code> method simply checks if the given symbol is
+declared and our token match will pass or fail based on that return
+value. The <code>&lt;!{ ... }&gt;</code> construct we're using
+will fail if the evaluated code returns a truthy value.</p>
+
+<p>All said and done, all this token does is check we're not using <code>#</code> as a
+delimiter and aren't trying to call a method or a sub. No signs of the bug
+in this corner of the room. Let's get back up to our <code>token quote:sym&lt;q&gt;</code>
+and see what it's doing next:</p>
+
+<pre><code>token quote:sym&lt;q&gt; {
+    :my $qm;
+    'q'
+    [
+    | &lt;quote_mod&gt; {} &lt;.qok($/)&gt; { $qm := $&lt;quote_mod&gt;.Str }
+        &lt;quibble(%*LANG&lt;Quote&gt;, 'q', $qm)&gt;
+    | # (this branch omited)
+    ]
+}
+</code></pre>
+
+<p>We've just finished looking over the <code>&lt;.qok()&gt;</code>, so next up is
+<code>{ $qm := $&lt;quote_mod&gt;.Str }</code> that merely assigns the string value of the
+matched <code>&lt;quote_mod&gt;</code> token into the <code>$qm</code> variable. In our case, that value
+is the string <code>ww</code>.</p>
+
+<p>What follows is another token that showed up in our <code>--target=parse</code> output:</p>
+
+<pre><code>&lt;quibble(%*LANG&lt;Quote&gt;, 'q', $qm)&gt;
+</code></pre>
+
+<p>Here, we're invoking that token with
+three positional arguments: the <a href="https://github.com/rakudo/rakudo/blob/04af57c3b3d32353e36614de53396d2b4a08b7be/src/Perl6/Grammar.nqp#L424"><code>Quote</code> language
+braid</a>, string <code>q</code>, and string
+<code>ww</code> that we saved in the <code>$qm</code> variable. I wonder what it's doing with 'em.
+That's our next stop. Full speed ahead!</p>
+
+<h2 id="nibblequibblebabblingnibbler">Nibble Quibble Babbling Nibbler</h2>
+
+<p>Here's the full <code>token quibble</code> and you can see right away we'd have to
+dig deeper from the get-go, as fifth line is another token match:</p>
+
+<pre><code>token quibble($l, *@base_tweaks) {
+    :my $lang;
+    :my $start;
+    :my $stop;
+    &lt;babble($l, @base_tweaks)&gt;
+    {
+        my $B  := $&lt;babble&gt;&lt;B&gt;.ast;
+        $lang  := $B[0];
+        $start := $B[1];
+        $stop  := $B[2];
+    }
+
+    $start &lt;nibble($lang)&gt;
+    [
+        $stop
+        || {
+            $/.CURSOR.typed_panic(
+                'X::Comp::AdHoc',
+                payload =&gt; "Couldn't find terminator $stop (corresponding $start was at line {
+                    HLL::Compiler.lineof(
+                        $&lt;babble&gt;&lt;B&gt;.orig(), $&lt;babble&gt;&lt;B&gt;.from()
+                    )
+                })",
+                expected =&gt; [$stop],
+            )
+        }
+    ]
+
+    {
+        nqp::can($lang, 'herelang')
+        &amp;&amp; self.queue_heredoc(
+            $*W.nibble_to_str(
+                $/,
+                $&lt;nibble&gt;.ast[1], -&gt; {
+                    "Stopper '" ~ $&lt;nibble&gt; ~ "' too complex for heredoc"
+                }
+            ),
+            $lang.herelang,
+        )
+    }
+}
+</code></pre>
+
+<p>We define three variables and then invoke the <code>babble</code> token with the
+same arguments we invoked <code>quibble</code> with. Let's find it the same way we
+found all the previous tokens and peek at its guts. For the sake of brevity,
+I removed <a href="https://github.com/rakudo/rakudo/blob/bc35922/src/Perl6/Grammar.nqp#L111-L125">about half of it</a>: that portion
+deals with adverbs, which we aren't using in our code at the moment.</p>
+
+<pre><code>token babble($l, @base_tweaks?) {
+    :my @extra_tweaks;
+
+    # &lt;irrelevant portion redacted&gt;
+
+    $&lt;B&gt;=[&lt;?before .&gt;]
+    {
+        # Work out the delimeters.
+        my $c := $/.CURSOR;
+        my @delims := $c.peek_delimiters($c.target, $c.pos);
+        my $start := @delims[0];
+        my $stop  := @delims[1];
+
+        # Get the language.
+        my $lang := self.quote_lang($l, $start, $stop, @base_tweaks, @extra_tweaks);
+        $&lt;B&gt;.'!make'([$lang, $start, $stop]);
+    }
+}
+</code></pre>
+
+<p>We start by capturing a lookahead into the <code>$&lt;B&gt;</code> capture, which serves to
+update the current Cursor postion,
+and then go in to execute the code block. We store the current Cursor
+into <code>$c</code>, and then call <code>.peek_delimiters</code> method on it. If we <code>grep</code>
+in a built rakudo directory for it, we'll see it's defined <a href="https://github.com/perl6/nqp/blob/4fd4b48afb45c8b25ccf7cfc5e39cb4bd658901d/src/HLL/Grammar.nqp#L200">in
+NQP, in <code>nqp/src/HLL/Grammar.nqp</code></a>, but before we rush out to read its code, notice how it returns
+two delimiters. Let's just print them out?</p>
+
+<p>The <code>.nqp</code> extension of the <code>src/Perl6/Grammar.nqp</code> we are in signifies we're
+in NQP land, so we need to use <a href="https://github.com/perl6/nqp/blob/master/docs/ops.markdown">NQP ops</a> only and not full-blown Perl 6
+code. By adding this line after
+the lines where <code>@delim</code> is assigned to <code>$start</code> and <code>$stop</code>, we can find what
+<code>.peek_delimiters</code> gives us:</p>
+
+<pre><code>nqp::say("$start $stop");
+</code></pre>
+
+<p>Compile!</p>
+
+<pre><code>$ perl Configure.pl --gen-moar --gen-nqp --backends=moar &amp;&amp;
+  make &amp;&amp;
+  make test &amp;&amp;
+  make install
+</code></pre>
+
+<p>Even during compilation, by spewing extra stuff, our debug line
+already gives us an idea what these delimiters are all about. Run our
+problematic code again:</p>
+
+<pre><code>$ ./perl6 -e '.say for qww&lt;„hello world”&gt;;'
+&lt; &gt;
+hello world
+</code></pre>
+
+<p>The delimiters are the angled bracket delimiters of the <code>qww</code>. We're not
+interested in those, so we can ignore <code>.peek_delimiters</code> and move on. Next
+up is the <code>.quote_lang</code> method. It's got "quote" in the name and we have a
+problem with quotes... sounds like we're getting closer. Let's take a note
+of what arguments we're passing to it:</p>
+
+<ul>
+<li><code>$l</code>—the <a href="https://github.com/rakudo/rakudo/blob/04af57c3b3d32353e36614de53396d2b4a08b7be/src/Perl6/Grammar.nqp#L4752"><code>Quote</code> language braid</a></li>
+<li><code>$start</code>/<code>$stop</code>—angled bracket delimiters</li>
+<li><code>@base_tweaks</code>—contains one element: string <code>ww</code></li>
+<li><code>@extra_tweaks</code>—extra adverbs, which we do not have, so the array is empty</li>
+</ul>
+
+<p>Locate <code>method quote_lang</code>; it's still in the <a href="https://github.com/rakudo/rakudo/blob/04af57c3b3d32353e36614de53396d2b4a08b7be/src/Perl6/Grammar.nqp#L65"><code>src/Perl6/Grammar.nqp</code>
+file</a>:</p>
+
+<pre><code>method quote_lang($l, $start, $stop, @base_tweaks?, @extra_tweaks?) {
+    sub lang_key() {
+        # &lt;body redacted&gt;
+    }
+    sub con_lang() {
+        # &lt;body redacted&gt;
+    }
+
+    # Get language from cache or derive it.
+    my $key := lang_key();
+    nqp::existskey(%quote_lang_cache, $key) &amp;&amp; $key ne 'NOCACHE'
+        ?? %quote_lang_cache{$key}
+        !! (%quote_lang_cache{$key} := con_lang());
+}
+</code></pre>
+
+<p>We have two lexical subroutines <code>lang_key</code> and <code>con_lang</code>, below them
+we store the output of <code>lang_key</code> into <code>$key</code> which is used in the whole cache
+dance in <code>%quote_lang_cache</code>, so we can ignore the <code>lang_key</code> sub and go
+straight to <code>con_lang</code>, which is called to generate the return value of
+our <code>quote_lang</code> method:</p>
+
+<pre><code>sub con_lang() {
+    my $lang := $l.'!cursor_init'(self.orig(), :p(self.pos()), :shared(self.'!shared'()));
+    for @base_tweaks {
+        $lang := $lang."tweak_$_"(1);
+    }
+
+    for @extra_tweaks {
+        my $t := $_[0];
+        if nqp::can($lang, "tweak_$t") {
+            $lang := $lang."tweak_$t"($_[1]);
+        }
+        else {
+            self.sorry("Unrecognized adverb: :$t");
+        }
+    }
+    nqp::istype($stop,VMArray) ||
+    $start ne $stop ?? $lang.balanced($start, $stop)
+                    !! $lang.unbalanced($stop);
+}
+</code></pre>
+
+<p>After initializing Cursor position, <code>$lang</code> contains our Quote language braid
+and then we descend into a <code>for</code> loop over <code>@base_tweaks</code>. For each of them,
+we call method <code>tweak_$_</code>, passing it a truthy value <code>1</code>. Since we have just
+one base tweak, this means we're calling method <code>tweak_ww</code> on the Quote braid.
+Let's see what that method is about.</p>
+
+<p>Since the Quote braid is defined in the same file, just search for
+<code>method tweak_ww</code>:</p>
+
+<pre><code>method tweak_ww($v) {
+    $v ?? self.add-postproc("quotewords").apply_tweak(ww)
+       !! self
+}
+</code></pre>
+
+<p>Great. The <code>$v</code> we gave it is true, so we call <code>.add-postproc</code> and then
+<code>.apply_tweak(ww)</code>. Looking above and below that method, we
+see <code>.add-postproc</code> is also used in
+other, non-buggy, quoters, so let's ignore it and jump straight to
+<code>.apply_tweak</code>:</p>
+
+<pre><code>method apply_tweak($role) {
+    my $target := nqp::can(self, 'herelang') ?? self.herelang !! self;
+    $target.HOW.mixin($target, $role);
+    self
+}
+</code></pre>
+
+<p>Aha! Its argument is a role and it mixes it into our Quote braid. Let's see
+what that role is about (again, just search the file for <a href="https://github.com/rakudo/rakudo/blob/94b09ab9280d39438f84cb467d4b3d3042b8f672/src/Perl6/Grammar.nqp#L4846"><code>role ww</code></a>,
+or simply scroll up a bit):</p>
+
+<pre><code>role ww {
+    token escape:sym&lt;' '&gt; {
+        &lt;?[']&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+    }
+    token escape:sym&lt;‘ ’&gt; {
+        &lt;?[‘]&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+    }
+    token escape:sym&lt;" "&gt; {
+        &lt;?["]&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+    }
+    token escape:sym&lt;“ ”&gt; {
+        &lt;?[“]&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+    }
+    token escape:sym&lt;colonpair&gt; {
+        &lt;?[:]&gt; &lt;!RESTRICTED&gt; &lt;colonpair=.LANG('MAIN','colonpair')&gt;
+    }
+    token escape:sym&lt;#&gt; {
+        &lt;?[#]&gt; &lt;.LANG('MAIN', 'comment')&gt;
+    }
+}
+</code></pre>
+
+<p>Oh, boy! Quotes! If this isn't the place were we fix our bug, then I'm a
+ballerina. We found it!</p>
+
+<p>The role we located mixes in some tokens into the Quote braid we are using
+to parse the <code>qww</code>'s contents. Our buggy combination of <code>„”</code> quotes is
+conspicuously absent from the list. Let's add it!</p>
+
+<pre><code>token escape:sym&lt;„ ”&gt; {
+    &lt;?[„]&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+}
+</code></pre>
+
+<p>Compile! Run our buggy code:</p>
+
+<pre><code>$ ./perl6 -e '.say for qww&lt;foo „hello world” bar&gt;'
+foo
+bar
+</code></pre>
+
+<p>Oopsie! Well, we certainly found the right place for quote handling, but we
+made the problem worse. What's happening?</p>
+
+<h2 id="quotasticinaction">Quotastic Inaction</h2>
+
+<p>Our new token sure parses the quotes, but we never added the Actions to...
+well, act on it. Action classes live next door to Grammars, in
+<code>src/Perl6/Actions.nqp</code>. Pop it open and locate the matching method; let's
+say <a href="https://github.com/rakudo/rakudo/blob/94b09ab9280d39438f84cb467d4b3d3042b8f672/src/Perl6/Actions.nqp#L9243"><code>method escape:sym&lt;“ ”&gt;</code></a>.</p>
+
+<pre><code>method escape:sym&lt;' '&gt;($/) { make mark_ww_atom($&lt;quote&gt;.ast); }
+method escape:sym&lt;" "&gt;($/) { make mark_ww_atom($&lt;quote&gt;.ast); }
+method escape:sym&lt;‘ ’&gt;($/) { make mark_ww_atom($&lt;quote&gt;.ast); }
+method escape:sym&lt;“ ”&gt;($/) { make mark_ww_atom($&lt;quote&gt;.ast); }
+</code></pre>
+
+<p>Let's add our version to the list:</p>
+
+<pre><code>method escape:sym&lt;„ ”&gt;($/) { make mark_ww_atom($&lt;quote&gt;.ast); }
+</code></pre>
+
+<p>Compile! Run our buggy code:</p>
+
+<pre><code>$ ./perl6 -e '.say for qww&lt;foo „hello world” bar&gt;'
+foo
+hello world
+bar
+</code></pre>
+
+<p>Woohoo! Success! It's no longer buggy. We fixed it! 🎊🎉</p>
+
+<p>But, wait...</p>
+
+<h2 id="leftoutbutnotforgotten">Left out, but not forgotten</h2>
+
+<p>Take a look at the <a href="https://docs.perl6.org/language/unicode_texas#Other_acceptable_single_codepoints">list of all the possible fancy-pants
+quotes</a>. Even though our bug report only mentioned the <code>„”</code> pair, neither
+<code>‚‘</code> nor <code>｢｣</code> are in the list of our <code>role ww</code> tokens. More than that,
+some left/right quotes, when swapped, work just fine when quoting strings,
+so they should work in <code>qww</code> too. However, adding a whole bunch of extra
+tokens and a whole 'nother bunch of actions methods is quite un-awesome.
+Is there a better way?</p>
+
+<p>Let's take a closer look at our tokens:</p>
+
+<pre><code>token escape:sym&lt;“ ”&gt; {
+    &lt;?[“]&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+}
+</code></pre>
+
+<p>The <code>sym&lt;“ ”&gt;</code> we can ignore—here it's functioning just as a name. What we
+are left with is a look-ahead for a <code>“</code> quote and the assigment of the result
+of the <code>quote</code> token from MAIN language braid to <code>$&lt;quote&gt;</code> capture. So we can
+look-ahead for all of the opening quotes we care about and let the MAIN braid
+take care of all the details.</p>
+
+<p>So, let's replace all of the quote handling tokens with this single one:</p>
+
+<pre><code>token escape:sym&lt;'&gt; {
+    &lt;?[ ' " ‘ ‚ ’ “ „ ” ｢ ]&gt; &lt;quote=.LANG('MAIN','quote')&gt;
+}
+</code></pre>
+
+<p>And replace all of the matching actions methods with this single one:</p>
+
+<pre><code>method escape:sym&lt;'&gt;($/) { make mark_ww_atom($&lt;quote&gt;.ast); }
+</code></pre>
+
+<p>Compile! Run our code with some quote variations:</p>
+
+<pre><code>$ ./perl6 -e '.say for qww&lt;„looks like” ‚we fixed‘ ｢this thing｣&gt;'
+looks like
+we fixed
+this thing
+</code></pre>
+
+<p>Awesome! Not only did we make all of the quotes work right, we also managed to
+clean up the existing tokens and action methods. All we need now is a test for
+our fix and we're ready to commit.</p>
+
+<h2 id="feastingonthebugroast">Feasting on The Bug Roast</h2>
+
+<p>The <a href="https://github.com/perl6/roast">Official Perl 6 Test Suite (Roast)</a> is
+in <code>t/spec</code> inside of the Rakudo build dir. If it's missing, just run
+<code>make spectest</code> and abort it after it clones the roast repo into <code>t/spec</code>.
+We need to find where to stick our test and <code>grep</code> is a good friend at that
+task:</p>
+
+<pre><code>zoffix@VirtualBox:~/CPANPRC/rakudo/t/spec$ grep -R 'qww' .
+Binary file ./.git/objects/pack/pack-5bdee39f28283fef4b500859f5b288ea4eec20d7.pack matches
+./S02-literals/allomorphic.t:    my @wordlist = qqww[1 2/3 4.5 6e7 8+9i] Z (IntStr, RatStr, RatStr, NumStr, ComplexStr);
+./S02-literals/allomorphic.t:        isa-ok $val, Str, "'$val' from qqww[] is a Str";
+./S02-literals/allomorphic.t:        nok $val.isa($wrong-type), "'$val' from qqww[] is not a $wrong-type.perl()";
+./S02-literals/allomorphic.t:    my @wordlist  = qqww:v[1 2/3 4.5 6e7 8+9i];
+./S02-literals/allomorphic.t:    my @written = qqww:v[1 2/3 $num 6e7 8+9i ten];
+./S02-literals/allomorphic.t:    is-deeply @angled, @written, "«...» is equivalent to qqww:v[...]";
+./S02-literals/quoting.t:    is(qqww[$alpha $beta], &lt;foo bar&gt;, 'qqww');
+./S02-literals/quoting.t:    for (&lt;&lt;$a b c&gt;&gt;, qqww{$a b c}, qqw{$a b c}).kv -&gt; $i, $_ {
+./S02-literals/quoting.t:    is-deeply qww&lt;a a ‘b b’ ‚b b’ ’b b‘ ’b b‘ ’b b’ ‚b b‘ ‚b b’ “b b” „b b”
+./S02-literals/quoting.t:    'fancy quotes in qww work just like regular quotes';
+./integration/advent2014-day16.t:    for flat qww/ foo bar 'first second' / Z @a -&gt; $string, $result {
+</code></pre>
+
+<p>It appears <code>S02-literals/quoting.t</code> is a good place for it. Pop open the file.
+At the top of it, increase <code>plan</code> number by the number of tests we're
+adding—in this case just one. Then scroll to the end and create a block, with
+a comment in front of it, referencing the RT ticket number for the <a href="https://rt.perl.org/Ticket/Display.html?id=128304">bug
+report</a> we're fixing.</p>
+
+<p>Inside of it, we'll use <a href="https://docs.perl6.org/language/testing#index-entry-is-deeply-is-deeply%28%24value%2C_%24expected%2C_%24description%3F%29"><code>is-deeply</code></a> test function that
+uses <a href="https://docs.perl6.org/routine/eqv"><code>eqv</code> operator</a> semantics to do the
+test. We'll give it a <code>qww&lt;&gt;</code> line with whole bunch of quotes and then tell
+it what list of items we expect to get in return. Write the test description
+as well:</p>
+
+<pre><code># RT #128304
+{
+    is-deeply qww&lt;a a ‘b b’ ‚b b’ ’b b‘ ’b b‘ ’b b’ ‚b b‘ ‚b b’ “b b” „b b”
+            ”b b“ ”b b“ ”b b” „b b“ „b b” ｢b b｣ ｢b b｣&gt;,
+        ('a', 'a', |('b b' xx 16)),
+    'fancy quotes in qww work just like regular quotes';
+}
+</code></pre>
+
+<p>Back in the Rakudo checkout, run the modified test and ensure it passes:</p>
+
+<pre><code>$ make t/spec/S02-literals/quoting.t
+# &lt;lots of output&gt;
+All tests successful.
+Files=1, Tests=185,  3 wallclock secs ( 0.03 usr  0.01 sys +  2.76 cusr  0.11 csys =  2.91 CPU)
+Result: PASS
+</code></pre>
+
+<p>Sweet. Commit the tests and the bug fix and ship them off! We're done!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>When fixing parsing bugs in Perl 6, it's useful to reduce the program to the
+minimum that still reproduces the bug and then use the <code>--target=parse</code> command
+line argument, to get the output of the parse tree, finding which tokens are
+being matched.</p>
+
+<p>Then, follow those tokens in <a href="https://github.com/rakudo/rakudo/blob/04af57c3b3d32353e36614de53396d2b4a08b7be/src/Perl6/Grammar.nqp"><code>src/Perl6/Grammar.nqp</code></a>,
+which also inherits from <a href="https://github.com/perl6/nqp/blob/4fd4b48afb45c8b25ccf7cfc5e39cb4bd658901d/src/HLL/Grammar.nqp">NQP's <code>src/HLL/Grammar.nqp</code></a>. In conjunction with the actions classes located in
+<a href="https://github.com/rakudo/rakudo/blob/04af57c3b3d32353e36614de53396d2b4a08b7be/src/Perl6/Actions.nqp"><code>src/Perl6/Actions.nqp</code></a>,
+follow the code to figure out what it is doing and hopefully find where the
+problem is located.</p>
+
+<p>Fix it. Test it. Ship it.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

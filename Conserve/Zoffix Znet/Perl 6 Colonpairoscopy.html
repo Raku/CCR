@@ -1,11 +1,616 @@
-https://perl6.party/<a href="/post/Perl-6-Colonpairoscopy
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Colonpairoscopy
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Colonpairoscopy - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Colonpairoscopy</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-06-18 <span class="words-count">| 3280 words |</span> Everything to know about colonpairs in Perl 6</p>
+  <p>If I were to pick the most ubiquitous construct in the Perl 6 programming
+language, it'd most definitely be the <strong>colonpair</strong>. Hash constructors,
+named arguments and parameters, adverbs, and regex modifiers—all involve the
+colonpair. It's not surprising that with such breadth there would be many
+shortcuts when it comes to constructing colonpairs.</p>
+
+<p>Today, we'll learn about all of those! Doing so will have us looking at the simplest as well as some of the more advanced language constructs, so if
+parts of this article make you scratch your head, don't worry—you don't
+have to learn all of it at once!</p>
+
+<h2 id="parti:creation">PART I: Creation</h2>
+
+<h3 id="colonwhaaaa">Colonwhaaaa?</h3>
+
+<p>The colonpair gets its name from (usually) being a <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> object constructor
+and (usually) having a colon in it. Here are some examples of colonpairs:</p>
+
+<pre><code>:foo,
+:$bar,
+:meow&lt;moo&gt;,
+heh =&gt; hah
+</code></pre>
+
+<p>The last one doesn't have a colon in it, but since it's basically the same
+thing as other colonpairs, I personally consider it a colonpair as well.</p>
+
+<p>We can see the colonpairs make <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> objects by dumping their
+<a href="https://docs.perl6.org/routine/name#(Metamodel::Naming)_method_name"><code>.^name</code></a>:</p>
+
+<pre><code>say :foo.^name; # OUTPUT: «Pair␤»
+</code></pre>
+
+<p>However, when used in argument lists, the colonpairs are specially handled
+to represent named arguments. We'll get to that part later in the article.</p>
+
+<h3 id="theshortcuts">The Shortcuts</h3>
+
+<p>Here's a mostly-complete list of available ways to write a colonpair you can
+glance over before we dive in. I know,
+it looks like a huge list, but that's why we're reading this article—to learn
+the general patterns that make up all of these permutations.</p>
+
+<pre><code># Standard, take-any-type, non-shortcut form
+:nd(2).say;             # OUTPUT: «nd =&gt; 2␤»
+:foo('foo', 'bar').say; # OUTPUT: «foo =&gt; (foo bar)␤»
+:foo( %(:42a, :foo&lt;a b c&gt;) ).say;
+# OUTPUT: «foo =&gt; {a =&gt; 42, foo =&gt; (a b c)}␤»
+
+# Can use fat-arrow notation too:
+# (parentheses around them are here just for the .say call)
+(nd =&gt; 2).say; # OUTPUT: «nd =&gt; 2␤»
+(foo =&gt; ('foo', 'bar') ).say; # OUTPUT: «foo =&gt; (foo bar)␤»
+(foo =&gt; %(:42a, :foo&lt;a b c&gt;) ).say;
+# OUTPUT: «foo =&gt; {a =&gt; 42, foo =&gt; (a b c)}␤»
+
+# Booleans
+:foo .say; # OUTPUT: «foo =&gt; True␤»
+:!foo.say; # OUTPUT: «foo =&gt; False␤»
+
+# Unsigned integers:
+:2nd   .say; # OUTPUT: «nd =&gt; 2␤»
+:1000th.say; # OUTPUT: «th =&gt; 1000␤»
+
+# Strings and Allomorphs (stings that look like numbers are Str + numeric type)
+:foo&lt;bar&gt;      .say; # OUTPUT: «foo =&gt; bar␤»
+:bar&lt;42.5&gt;     .say; # OUTPUT: «bar =&gt; 42.5␤»
+:bar&lt;42.5&gt;.perl.say; # OUTPUT: «:bar(RatStr.new(42.5, "42.5"))␤»
+
+# Positionals
+:foo['foo', 42.5] .say; # A mutable Array:   OUTPUT: «foo =&gt; [foo 42.5]␤»
+:foo&lt;foo bar 42.5&gt;.say; # An immutable List: OUTPUT: «foo =&gt; (foo bar 42.5)␤»
+# angled brackets give you allomorphs!
+
+# Callables
+:foo{ say "Hello, World!" }.say;
+# OUTPUT: «foo =&gt; -&gt; ;; $_? is raw { #`(Block|82978224) ... }␤»
+
+# Hashes; keep 'em simple so it doesn't get parsed as a Callable
+:foo{ :42a, :foo&lt;a b c&gt; }.say; # OUTPUT: «foo =&gt; {a =&gt; 42, foo =&gt; (a b c)}␤»
+
+# Name and value from variable
+:$foo;  # same as :foo($foo)
+:$*foo; # same as :foo($*foo)
+:$?foo; # same as :foo($?foo)
+:$.foo; # same as :foo($.foo)
+:$!foo; # same as :foo($!foo)
+:@foo;  # same as :foo(@foo)
+:@*foo; # same as :foo(@*foo)
+:@?foo; # same as :foo(@?foo)
+:@.foo; # same as :foo(@.foo)
+:@!foo; # same as :foo(@!foo)
+:%foo;  # same as :foo(%foo)
+:%*foo; # same as :foo(%*foo)
+:%?foo; # same as :foo(%?foo)
+:%.foo; # same as :foo(%.foo)
+:%!foo; # same as :foo(%!foo)
+:&amp;foo;  # same as :foo(&amp;foo)
+:&amp;*foo; # same as :foo(&amp;*foo)
+:&amp;?foo; # same as :foo(&amp;?foo)
+:&amp;.foo; # same as :foo(&amp;.foo)
+:&amp;!foo; # same as :foo(&amp;!foo)
+</code></pre>
+
+<p>Let's break these up and take a closer look!</p>
+
+<h4 id="standardtake-any-typenon-shortcutform">Standard, Take-any-Type, Non-Shortcut Form</h4>
+
+<p>The "standard" form of the colonpair consists of a colon (<code>:</code>), a valid term
+that functions as the <a href="https://docs.perl6.org/routine/key"><code>.key</code></a> of the created <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> object, and then
+a set of parentheses inside of which is the expression with the <a href="https://docs.perl6.org/routine/value"><code>.value</code></a>
+for the <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a>:</p>
+
+<pre><code>:nd(2).say;                       # OUTPUT: «nd =&gt; 2␤»
+:foo('foo', 'bar').say;           # OUTPUT: «foo =&gt; (foo bar)␤»
+:foo( %(:42a, :foo&lt;a b c&gt;) ).say;
+# OUTPUT: «foo =&gt; {a =&gt; 42, foo =&gt; (a b c)}␤»
+</code></pre>
+
+<p>As long as the key is a valid identifier, all other forms of colonpairs can be
+written using this way. And for non-valid identifiers, you can simply use
+the <code>.new</code> method—<code>Pair.new('the key','value')</code>—or the "fat arrow" syntax.</p>
+
+<h4 id="fatarrowsyntax">Fat Arrow Syntax</h4>
+
+<p>If you ever used Perl 5, you need no introductions to this syntax: you write
+the key—which will get auto-quoted if it's a valid identifier, so in those
+cases you can omit the quotes—then you write <code>=&gt;</code> and then you write the value.
+The quotes around the key are required if the key is not a valid identifier
+and the fat arrow is the only operator-involved syntax that will let
+you construct <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a>s with such keys:</p>
+
+<pre><code># (outer parentheses are here just for the .say call)
+(nd =&gt; 2).say; # OUTPUT: «nd =&gt; 2␤»
+(foo =&gt; ('foo', 'bar') ).say; # OUTPUT: «foo =&gt; (foo bar)␤»
+(foo =&gt; %(:42a, :foo&lt;a b c&gt;) ).say;
+# OUTPUT: «foo =&gt; {a =&gt; 42, foo =&gt; (a b c)}␤»
+("the key" =&gt; "the value").say; # OUTPUT: «the key =&gt; the value␤»
+</code></pre>
+
+<p>There are some extra rules with how this form behaves in argument lists as
+well as sigilless variables and constants, which we'll see later in the article.</p>
+
+<h4 id="booleanshortcut">Boolean Shortcut</h4>
+
+<p>Now we start getting into shortcuts! What would the most common use
+of named parameters be? Probably, to specify boolean flags.</p>
+
+<p>It'd be pretty annoying to
+always have to write those as <code>:foo(True)</code>, so there's a shortcut: simply omit
+the value entirely, and if you want <code>:foo(False)</code>, omit the value and put the
+<a href="/language/operators#index-entry-!_(negation_metaoperator)">negation operator</a>
+right after the colon:</p>
+
+<pre><code># Booleans
+:foo .say; # OUTPUT: «foo =&gt; True␤»
+:!foo.say; # OUTPUT: «foo =&gt; False␤»
+
+# Equivalent calls:
+some-sub :foo :!bar :ber;
+some-sub foo =&gt; True, bar =&gt; False, ber =&gt; True;
+</code></pre>
+
+<p>The shortcut form is a lot shorter. This is also the form you may see
+in adverbs and regex syntax, such as the <code>:g</code> adverb on the <code>m//</code> quoter
+and <code>:s</code>/<code>:!s</code> significant whitespace modifier inside the regex:</p>
+
+<pre><code>say "a b c def g h i" ~~ m:g/:s \S \S [:!s \S \s+ \S]/;
+# OUTPUT: «(｢a b c d｣ ｢f g h i｣)␤»
+</code></pre>
+
+<p>Here's also another trick from my personal bag: since <a href="https://docs.perl6.org/type/Bool"><code>Bool</code></a> type is
+an <a href="https://docs.perl6.org/type/Int"><code>Int</code></a>, you can use boolean shortcuts to
+specify <a href="https://docs.perl6.org/type/Int"><code>Int</code></a> values <code>1</code> and <code>0</code>:</p>
+
+<pre><code># set `batch` to `1`:
+^4 .race(:batch).map: { sleep 1 };
+say now - ENTER now; # OUTPUT: «1.144883␤»
+</code></pre>
+
+<p>However, for clarity you may wish to use unsigned integer colonpair shortcut
+instead, which isn't much longer.</p>
+
+<h4 id="unsignedintegershortcut">Unsigned Integer Shortcut</h4>
+
+<p>The Perl 6 programming language lets you grab an nth match when you're
+matching stuff with a regex:</p>
+
+<pre><code>say "first second third" ~~ m:3rd/\S+/;
+# OUTPUT: «｢third｣␤»
+</code></pre>
+
+<p>As you can probably surmise by now, the <code>:3rd</code> after the <code>m</code> in <code>m//</code> quoter
+is the adverb, written as a colonpair in unsigned integer shortcut. This
+form consist of a colon and the name of the key with unquoted unsigned integer value placed
+between them. No signs, no decimal dots, and not even underscore separators
+between digits are permitted.</p>
+
+<p>The primary use of this shortcut is for things with ordinal suffixes
+like <code>:1st</code>, <code>:2nd</code>, <code>:9th</code>, etc. It offers great readability there, but
+personally I have no reservations about using this syntax for <em>all</em> unsigned
+integer values, regardless of what the name of the key is. It feels slightly
+offcolour when you first encounter such syntax, but it quickly grows on you:</p>
+
+<pre><code>some-sub :1st :2nd :3rd :42foo :100bar;
+^4 .race(:1batch).map: { sleep 1 };
+</code></pre>
+
+<h4 id="hasharraycallableshortcuts">Hash/Array/Callable Shortcuts</h4>
+
+<p>Using standard colonpair format you may notice some forms are too
+parentheses-heavy:</p>
+
+<pre><code>:foo(&lt;42&gt;)                 # value is an IntStr allomorph
+:foo(&lt;a b c&gt;)              # value is a List
+:foo([&lt;a b c&gt;])            # value is an Array
+:foo({:42foo, :100bar})    # value is a Hash
+:foo({.contains: 'meows'}) # the value is a Callable
+</code></pre>
+
+<p>In these form, you can simply omit the outer parentheses and let the inner
+brackets and curlies do their job:</p>
+
+<pre><code>:foo&lt;42&gt;                   # value is an IntStr allomorph
+:foo&lt;a b c&gt;                # value is a List
+:foo[&lt;a b c&gt;]              # value is an Array
+:foo{:42foo, :100bar}      # value is a Hash
+:foo{.contains: 'meows'}   # the value is a Callable
+</code></pre>
+
+<p>It looks a lot cleaner and is simpler to write. Both the <a href="https://docs.perl6.org/type/Hash"><code>Hash</code></a> and
+<a href="https://docs.perl6.org/type/Callable"><code>Callable</code></a> use the same set of curlies and the same simple rules as used by
+the <code>{…}</code> construct elsewhere in the language: if the content is empty,
+or contains a single list that starts with a <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> literal or <code>%</code>-sigiled
+variable, and the <code>$_</code> variable or placeholder parameters are not used,
+a <a href="https://docs.perl6.org/type/Hash"><code>Hash</code></a> is created; otherwise a <a href="https://docs.perl6.org/type/Block"><code>Block</code></a> (<a href="https://docs.perl6.org/type/Callable"><code>Callable</code></a>) is created.</p>
+
+<p>The angle bracket form (<code>:foo&lt;…&gt;</code>) follows the same rules as the
+<a href="https://docs.perl6.org/language/quoting#Word_quoting:_%3C_%3E">angle bracket quoter</a> used elsewhere in the language:</p>
+
+<pre><code>:foo&lt; 42  &gt;.value.^name.say; # OUTPUT: «IntStr␤»
+:foo&lt;meows&gt;.value.^name.say; # OUTPUT: «Str␤»
+:foo&lt;a b c&gt;.value.^name.say; # OUTPUT: «List␤»
+</code></pre>
+
+<p>And keep in mind that these two forms are <strong>not</strong> equivalent:</p>
+
+<pre><code>:42foo
+:foo&lt;42&gt;
+</code></pre>
+
+<p>The first creates an <a href="https://docs.perl6.org/type/Int"><code>Int</code></a> object, while the second one creates an
+<a href="https://docs.perl6.org/type/IntStr"><code>IntStr</code></a> object, which is an <a href="https://docs.perl6.org/language/glossary#index-entry-Allomorph">allomorph</a>. This difference is important
+for things that care about object identity, such as
+<a href="https://docs.perl6.org/language/setbagmix">set operators</a></p>
+
+<h4 id="sigiledshortcut">Sigiled Shortcut</h4>
+
+<p>The one thing I find a pain in the bit to write in other languages is
+constructs like this:</p>
+
+<pre><code>my $the-thing-with-a-thing = …
+…
+some-sub the-thing-with-a-thing =&gt; $the-thing-with-a-thing;
+</code></pre>
+
+<p>It's fairly common to name your variables the same as some named argument
+to which you wish to pass that variable as a value. The Perl 6 programming language
+offers a colonpair shortcut precisely for that case. Simply prepend a colon
+to the variable name to construct a colonpair with the key named the same
+as the variable (without including the sigil) and the value being the value
+of that variable. The only
+catch is the variable must have a sigil, so you can't use this shortcut with
+<a href="https://docs.perl6.org/language/variables#Sigilless_variables">sigilless variables</a>
+or constants.</p>
+
+<pre><code>my $the-thing-with-a-thing = …
+…
+some-sub :$the-thing-with-a-thing;
+</code></pre>
+
+<p>You'll notice that the syntax above looks exactly like how you'd declare
+a <em>parameter</em> that takes such a named argument—consistency is a good thing.
+All available <a href="https://docs.perl6.org/language/variables">sigils and twigils</a>
+are supported, which makes the full list of variants for this shortcut look
+something like this:</p>
+
+<pre><code># Name and value from variable
+:$foo;  # same as :foo($foo)
+:$*foo; # same as :foo($*foo)
+:$?foo; # same as :foo($?foo)
+:$.foo; # same as :foo($.foo)
+:$!foo; # same as :foo($!foo)
+:@foo;  # same as :foo(@foo)
+:@*foo; # same as :foo(@*foo)
+:@?foo; # same as :foo(@?foo)
+:@.foo; # same as :foo(@.foo)
+:@!foo; # same as :foo(@!foo)
+:%foo;  # same as :foo(%foo)
+:%*foo; # same as :foo(%*foo)
+:%?foo; # same as :foo(%?foo)
+:%.foo; # same as :foo(%.foo)
+:%!foo; # same as :foo(%!foo)
+:&amp;foo;  # same as :foo(&amp;foo)
+:&amp;*foo; # same as :foo(&amp;*foo)
+:&amp;?foo; # same as :foo(&amp;?foo)
+:&amp;.foo; # same as :foo(&amp;.foo)
+:&amp;!foo; # same as :foo(&amp;!foo)
+</code></pre>
+
+<p>This about wraps up the list of currently available colonpair shortcuts. As
+you can see, the huge list of shortcuts was reduced to a few simple patterns
+to follow. However, this might not be all the shortcuts that will exist for
+all the time…</p>
+
+<h4 id="thefuture">The Future!</h4>
+
+<p>While currently aren't available, the following two shortcuts might become part of the language in future language versions.</p>
+
+<p>The first one is the indirect lookup shortcut. If you have a named variable
+and the name of that variable in another variable, you can access the value
+of the first variable using the indirect lookup construct:</p>
+
+<pre><code>my $foo = "bar";
+my %bar = :42foo, :70bar;
+say %::($foo); # OUTPUT: «{bar =&gt; 70, foo =&gt; 42}␤»
+</code></pre>
+
+<p>If you squint, the indirect lookup is sort'f like a sigilled variable and colonpair shortcuts
+for sigilled variables exist, so it makes sense for the language to be
+consistent and support indirect lookup colonpair shortcut, which would look
+something like this, where the <strong>value</strong> of <code>$foo</code> contains the name of
+the key for the colonpair.</p>
+
+<pre><code>:%::($foo)
+</code></pre>
+
+<p>This form is currently listed as simply unimplemented feature in <a href="https://github.com/rakudo/rakudo/issues/1532">R#1532</a>, so it'll likely see life some day.</p>
+
+<p>The second possible future construct is the <code>:.foo</code> form, which was proposed
+in <a href="https://github.com/rakudo/rakudo/issues/1462">RFC R#1462</a>.
+This form calls method <code>.foo</code> on the <code>$_</code> topical variable and uses the return
+value as the value for the created <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a>, with the name of the method being
+the name of the key.</p>
+
+<p>This form comes up semi-frequently when you're passing values of attributes
+of one object to another with similarly-named attributes, so something like
+this:</p>
+
+<pre><code>Some::Other.new: :foo(.foo) :bar(.bar) :ber(.ber) with $obj
+</code></pre>
+
+<p>Would in shortcut form be written like this:</p>
+
+<pre><code>Some::Other.new: :.foo :.bar :.ber with $obj
+</code></pre>
+
+<p>At the time of this writing, this RFC has been self-rejected, but you never
+know if there'd be more calls for introduction of this syntax.</p>
+
+<h2 id="partii:use">PART II: Use</h2>
+
+<p>Now that we're familiar with how to write all the forms of colonpairs, let's
+take a look at some of their available uses, especially those with special
+rules.</p>
+
+<h3 id="parameters">Parameters</h3>
+
+<p>To specify that a parameter should be a named rather than a positional
+parameter, simply use the sigilled variable colonpair shortcut:</p>
+
+<pre><code>sub meow($foo, :$bar) {
+    say "$foo is positional and $bar is named";
+}
+meow 42, :100bar; # 42 is positional and 100 is named
+meow :100bar, 42; # 42 is positional and 100 is named
+</code></pre>
+
+<p>Since parameters need some sort of a variable to bind their stuff to, pretty
+much all other forms of colonpairs are not available for use in parameters.
+This means that you can't, for example, declare sigilless named parameters
+and must instead explicitly use the <a href="https://docs.perl6.org/type/Signature#index-entry-trait__is_raw"><code>is raw</code> trait</a> to get the rawness:</p>
+
+<pre><code>sub meow (\foo, :$bar is raw) {
+    (foo, $bar) = ($bar, foo)
+}
+my $foo = 42;
+my $bar = 100;
+meow $foo, :$bar;
+say [$foo, $bar]; # OUTPUT: «[100 42]»
+</code></pre>
+
+<p>The one other colonpair form available in parameters is the standard form
+that is used for aliasing
+multiple named params to the same name and <a href="https://docs.perl6.org/type/Signature#Destructuring_Parameters">parameter descructuring</a>:</p>
+
+<pre><code>sub meow (:st(:nd(:rd(:$nth))), Positional :list(($, $second, |))) {
+    say [$nth, $second];
+}
+meow :3rd, :list&lt;a b c&gt;; # OUTPUT: «[3 b]»
+</code></pre>
+
+<p>Pro-tip: if you're using the Rakudo compiler you may wish to take it easy with
+aliasing. Using aliases more than 1 level deep will cause the compiler to
+switch to the slow-path binder, which, as the name suggests, is about 10x slower.</p>
+
+<p>A trick you can use is to use more than one parameter, each with aliases
+at most 1 level deep, and then merge them in the body:</p>
+
+<pre><code>sub meow (:st(:$nd is copy), :rd(:$nth)) {
+    $nd //= $nth;
+}
+</code></pre>
+
+<h3 id="argumentlists">Argument Lists</h3>
+
+<p>Use of colonpairs in argument lists deserves a separate section due to a rule
+that's subtle enough to earn a spot in <a href="https://docs.perl6.org/language/traps#Named_Parameters">language's traps section</a>. The rule involves the problem
+that a programmer may wish to pass <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> objects in argument lists as
+either a named or a positional argument.</p>
+
+<p>In majority of cases, the colonpairs will be passed as named arguments:</p>
+
+<pre><code>sub args {
+    say "Positional args are: @_.perl()";
+    say "Named      args are: %_.perl()";
+}
+
+args :foo, :50bar, e =&gt; 42;
+# OUTPUT:
+# Positional args are: []
+# Named      args are: {:bar(50), :e(42), :foo}
+</code></pre>
+
+<p>To pass a <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> object as a positional argument, you can do any of the
+following:</p>
+
+<ol>
+<li>Wrap the entire colonpair in parentheses</li>
+<li>Call some method on the colonpair, such as <a href="https://docs.perl6.org/routine/self"><code>.self</code></a> or <a href="https://docs.perl6.org/routine/Pair"><code>.Pair</code></a>; weird stuff like using <a href="https://docs.perl6.org/language/operators#index-entry-R_reverse_metaoperator"><code>R</code> meta op</a> on the <code>=&gt;</code> operator applies as well</li>
+<li>Quote the key in <code>foo =&gt; bar</code> syntax</li>
+<li>In <code>foo =&gt; bar</code> syntax, use a key that is not a valid identifier</li>
+<li>Put your <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a>s in a list and slip it in with the <code>|</code> "operator"</li>
+</ol>
+
+<p>Here's that list of options in code form:</p>
+
+<pre><code>my @pairs := :42foo, :70meow;
+args :foo.Pair, (:50bar), "baz" =&gt; "ber", e R=&gt; 42, 42 =&gt; 42, |@pairs;
+
+# OUTPUT:
+# Positional args are: [:foo, :bar(50), :baz("ber"),
+#   42 =&gt; 2.718281828459045e0, 42 =&gt; 42, :foo(42), :meow(70)]
+# Named      args are: {}
+</code></pre>
+
+<p>Number (3) is especially worth keeping in mind if you're coming from other
+languages, like Perl 5, that use the fat arrow (<code>=&gt;</code>) for key/value separation.
+This construct gets passed as a named argument only if the key is unquoted and
+only if it's a valid identifier.</p>
+
+<p>Should it happen that you <em>have</em> to use one of these constructs, yet wish
+to pass them as named arguments instead of positionals, simply wrap them in
+parentheses and use the <code>|</code> prefix to "slip" them in. For the list of <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a>s
+we were already slipping in in previous example, you'll need to coerce it into a <a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a> object first, as <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a>s stuffed into a <a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a>—unlike a list—end up being named parameters, when the <a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a> is slipped into the
+argument list:</p>
+
+<pre><code>my @pairs := :42foo, :70meow;
+args |(:foo.Pair), |(:50bar),   |("baz" =&gt; "ber"),
+     |(e R=&gt; 42),  |(42 =&gt; 42), |@pairs.Capture;
+
+# OUTPUT:
+# Positional args are: []
+# Named      args are: {"42" =&gt; 42, :bar(50),
+#                      :baz("ber"), :foo(42), :meow(70)}
+</code></pre>
+
+<p>The same slipping trick can be used to provide named arguments conditionally:</p>
+
+<pre><code>sub foo (:$bar = 'the default') { say $bar }
+
+my $bar;
+foo |(:bar($_) with $bar);  # OUTPUT: «the default␤»
+$bar = 42;
+foo |(:bar($_) with $bar);  # OUTPUT: «42␤»
+</code></pre>
+
+<p>If <code>$bar</code> is not <a href="https://docs.perl6.org/routine/defined"><code>defined</code></a>, the <a href="https://docs.perl6.org/language/control#index-entry-control_flow_with_orwith_without-with%2C_orwith%2C_without"><code>with</code> statement modifier</a> will return <a href="https://docs.perl6.org/type/Empty"><code>Empty</code></a>, which when slipped with <code>|</code>
+will end up being empty, allowing the parameter to attain its default value.
+Since <code>|(:)</code> looks like a sideways ninja, I call this technique
+"ninja-ing the arg".</p>
+
+<h3 id="auto-quotinginform">Auto-Quoting in <code>=&gt;</code> Form</h3>
+
+<p>The sharp-eyed in the audience might have noticed the <code>e =&gt; 42</code> colonpair
+in the previous section used letter <code>e</code> as a key, yet in reversed form
+<code>e R=&gt; 42</code>, the <code>e</code> became <code>2.718281828459045e0</code>, because the core language
+has <code>e</code> defined as <a href="https://en.wikipedia.org/wiki/E_%28mathematical_constant%29">Euler's number</a>.</p>
+
+<p>The reason it remained a plain string <code>e</code> in the <code>e =&gt; 42</code> form is because
+this construct auto-quotes keys that are valid identifiers and so they will
+always end up as strings, even if a constant, a sigilless variable, or
+a routine with the same name exists:</p>
+
+<pre><code>my \meows = '🐱';
+sub ehh { rand }
+say %(
+    meows =&gt; 'moo',
+    ehh   =&gt; 42,
+    τ     =&gt; 'meow',
+); # OUTPUT: «{ehh =&gt; 42, meows =&gt; moo, τ =&gt; meow}␤»
+</code></pre>
+
+<p>A multitude of ways exist to avoid this autoquoting behaviour, but I'll show
+you just one that's good enough: slap a pair of parentheses around the key:</p>
+
+<pre><code>my \meows = '🐱';
+sub ehh { rand }
+say %(
+    (meows) =&gt; 'moo',
+    (ehh)   =&gt; 42,
+    (τ)     =&gt; 'meow',
+);
+# OUTPUT: «{0.58437052771857 =&gt; 42, 6.283185307179586 =&gt; meow,
+#           🐱 =&gt; moo}␤»
+</code></pre>
+
+<p>Simple!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>That's pretty much all there is to know about colonpairs. We learned
+they can be used to construct <a href="https://docs.perl6.org/type/Pair"><code>Pair</code></a> objects, used as adverbs, and used
+to specify named arguments and parameters.</p>
+
+<p>We learned about various shortcuts, such as using key only for boolean
+<code>True</code>, sticking the negation operator or an unsigned integer between the
+colon and the key to specify boolean <code>False</code> or an <code>Int</code> value. We also learned
+that parentheses can be omited on colonpair values if there's already a set
+of curly, square, or angle brackets around the value and that prepending
+a colon to a sigilled variable name will create a colonpair that will use the
+name of that variable as the key.</p>
+
+<p>In the second half of the article, we went over available colonpair syntaxes when specifying named paramaters, the pecularities in passing
+colonpairs as either named or positional arguments, as well as how to avoid
+auto-quoting of the key by wrapping it in parentheses.</p>
+
+<p>I hope you found this informative.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

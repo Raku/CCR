@@ -1,11 +1,265 @@
-https://perl6.party/<a href="/post/Perl-6-Schrodinger-Certified-Junctions
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Schrodinger-Certified-Junctions
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6&#39;s Schrödinger-Certified Junctions - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6&#39;s Schrödinger-Certified Junctions</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-09-05 <span class="words-count">| 1045 words |</span> Using Junction types in Perl 6</p>
+  <p><a href="https://en.wikipedia.org/wiki/Erwin_Schr%C3%B6dinger">Erwin Schrödinger</a> would
+have loved Perl 6, because the famous <a href="https://en.wikipedia.org/wiki/Schr%C3%B6dinger%27s_cat">cat
+gedanken</a> can be
+expressed in a Perl 6 <a href="https://docs.perl6.org/type/Junction">Junction</a>:</p>
+
+<pre><code>my $cat = 'dead' | 'alive';
+say "cat is both dead and alive" if $cat eq 'dead' and $cat eq 'alive';
+
+# OUTPUT:
+# cat is both dead and alive
+</code></pre>
+
+<p>What's happening here? I'll tell ya all about it!</p>
+
+<h2 id="anyonegame">Anyone game?</h2>
+
+<p>At their simplest, Junctions let you treat a bunch of values as a single one.
+For example, you can use an <code>any</code> Junction to test if a variable equals
+to any of the given values:</p>
+
+<pre><code>say 'it matches!' if 'foo' eq 'foo' | 'bar' | 'ber';
+
+say 'single-digit prime' if 5 == any ^9 .grep: *.is-prime;
+
+my @values = ^100;
+say ’it's in 'ere!‘ if 42 == @values.any;
+
+# OUTPUT:
+# it matches!
+# single-digit prime
+# it's in 'ere!
+</code></pre>
+
+<p>To create an <code>any</code> Junction from a bunch of values, you can use the <code>|</code> infix
+operator, call the <code>any</code> function, or use the <code>.any</code> method. The conditionals
+above will return True if <code>any</code> of the values in a Junction match the given
+one. In fact, nothing's stopping you from using a Junction on both ends:</p>
+
+<pre><code>my @one = 1..10;
+my @two = 5..15;
+say ’there's overlap!‘ if @one.any == @two.any;
+
+# OUTPUT:
+# there's overlap!
+</code></pre>
+
+<p>The operator will return True if <code>.any</code> of the values in <code>@one</code> numerically
+equal to <code>.any</code> of the values in <code>@two</code>. Pretty sweet, but we can do more.</p>
+
+<h2 id="allforoneandanyfornone">All for One and Any for None</h2>
+
+<p>The <code>any</code> Junction isn't the only one available. You have a choice of
+<code>all</code>, <code>any</code>, <code>one</code>, and <code>none</code>.  When collapsing into Boolean context, their
+meaning is as follows; function/method names to construct the Junction
+are the same as the name of the Junction itself and the infix operators to
+construct the Junction are listed below as well:</p>
+
+<ul>
+<li><code>all</code>—<em>all</em> values evaluate to True (use infix <code>&amp;</code>)</li>
+<li><code>any</code>—<em>at least one</em> of the values evaluate to True (use infix <code>|</code>)</li>
+<li><code>one</code>—<em>exactly one</em> of the values evaluate to True (use infix <code>^</code>)</li>
+<li><code>none</code>—<em>none</em> of the values evaluate to True (no infix available)</li>
+</ul>
+
+<p>Take special care when using the <code>all</code> Junction:</p>
+
+<pre><code>my @values = 2, 3, 5;
+say 'all primes' if @values.all ~~ *.is-prime;
+
+my @moar-values;
+say 'also all primes' if @moar-values.all ~~ *.is-prime;
+</code></pre>
+
+<p>It will return <code>True</code> even when it has no values, which may not be what
+you intended. In those cases, you can use:</p>
+
+<pre><code>my @moar-values;
+say 'also all primes' if @moar-values and @moar-values.all ~~ *.is-prime;
+</code></pre>
+
+<h2 id="callmebaby">Call Me, Baby</h2>
+
+<p>You can use Junctions as arguments to Routines that don't expect them. What
+happens then? The Routine will be called with each Junctioned value, and the
+return will be a Junction:</p>
+
+<pre><code>sub calculate-things ($n) {
+    say "$n is a prime"        if $n.is-prime;
+    say "$n is an even number" if $n %% 2;
+    say "$n is pretty big"     if $n &gt; 1e6;
+    $n²;
+}
+
+my @values = 1, 5, 42, 1e10.Int;
+say 'EXACTLY ONE square is larger than 1e10'
+    if 1e10 &lt; calculate-things @values.one;
+
+# OUTPUT:
+# 5 is a prime
+# 42 is an even number
+# 10000000000 is an even number
+# 10000000000 is pretty big
+# EXACTLY ONE square is larger than 1e10
+</code></pre>
+
+<p>Exploiting side-effects might be a bit too magical and not something you'd
+want to see in production code, but using a subroutine to alter the original
+Junctioned value is quite acceptable. How about performing a database lookup
+to obtain the "actual" value and then evaluating the conditional:</p>
+
+<pre><code>use v6;
+use DBIish;
+my $dbh = DBIish.connect: 'SQLite', :database&lt;test.db&gt;;
+
+sub lookup ($id) {
+    given $dbh.prepare: 'SELECT id, text FROM stuff WHERE id = ?' {
+        .execute: $id;
+        .allrows[0][1] // '';
+    }
+}
+
+my @ids = 3, 5, 10;
+say 'yeah, it got it, bruh' if 'meow' eq lookup @ids.any;
+
+# OUTPUT (the database has a row with id = 5 and text = 'meow'):
+# yeah, it got it, bruh
+</code></pre>
+
+<h2 id="wevebeenexpectingyou.pleasehaveaseat.">We've been expecting you. Please, have a seat.</h2>
+
+<p>The game changes when your Routine explicitly expects a Junction</p>
+
+<pre><code>sub do-stuff (Junction $n) {
+    say 'value is even'  if $n %% 2;
+    say 'value is prime' if $n.is-prime;
+    say 'value is large' if $n &gt; 1e10;
+}
+
+do-stuff (2, 3, 1e11.Int).one;
+say '---';
+do-stuff (2, 3, 1e11.Int).any;
+
+# OUTPUT:
+# value is large
+# ---
+# value is even
+# value is prime
+# value is large
+</code></pre>
+
+<p>When we provide a <code>one</code> Junction, only the conditions that satisfy exactly
+<em>one</em> of the given values trigger. When we provide an <code>any</code> Junction, they
+trigger when any of the given values satisfy the condition.</p>
+
+<p>But! You don't have to wait for the world to hand out Junctions for you.
+How about you make one yourself, and save up on code when testing the conditions:</p>
+
+<pre><code>sub do-stuff (*@v) {
+    my $n = @v.one;
+    say "$n is even"  if $n %% 2;
+    say "$n is prime" if $n.is-prime;
+    say "$n is large" if $n &gt; 1e10;
+}
+
+do-stuff 2, 3, 1e11.Int;
+say '---';
+do-stuff 42;
+
+# OUTPUT:
+# one(2, 3, 100000000000) is large
+# ---
+# one(42) is even
+</code></pre>
+
+<h2 id="wontsomeonethinkofthefuture">Won't Someone Think of The Future?</h2>
+
+<p>Here's a little secret: Junctions are designed to be
+<a href="https://en.wikipedia.org/wiki/Automatic_parallelization">auto-threaded</a>. Even
+though at the time of this writing they will use just one thread, you should
+not rely on them being executed in any predictable order. The auto-threading
+will be implemented by some time in 2018, so stay tuned... your complex
+Junctioned operations that deserve it might get much faster in a couple
+of years without you doing anything.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Perl 6 Junctions are superpositions of values that let you test multiple
+values as if they were one. Apart from offering fantastically short and readable
+syntax for doing so, Junctions also pack a punch by letting you use
+Routines to transform the superimposed values or make use of the side effects.</p>
+
+<p>You can also make routines that explicitly operate on Junctions or transform
+the multiple provided values <em>into</em> Junctions to simplify your code.</p>
+
+<p>Lastly, Junctions are designed to use all of the available power your computer
+offers and will be made autothreaded in the short future.</p>
+
+<p>Junctions are awesome! Use them. And have fun!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

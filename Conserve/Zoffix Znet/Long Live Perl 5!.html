@@ -1,11 +1,150 @@
-https://perl6.party/<a href="/post/Long-Live-Perl-5
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Long-Live-Perl-5
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Long Live Perl 5! - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Long Live Perl 5!</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-01-19 <span class="words-count">| 810 words |</span> Thoughts on the open letter to Perl community</p>
+  <p>You probably have read a recent <a href="https://www.perl.com/article/an-open-letter-to-the-perl-community/">Open Letter to the Perl
+Community</a>. The letter has
+generated a lot of response (<a href="https://www.reddit.com/r/perl/comments/7r1b33/an_open_letter_to_the_perl_community/">173 reddit
+comments</a> as I
+write this). Unfortunately, a lot of the responses are quite negative and do not match my
+understanding of the letter.</p>
+
+<p>I figured I share my interpretation of the words and if that interpretation does not match the
+author's intent, I hope my interpretation captures the mood of the community on the matter.</p>
+
+<h2 id="aradicalidea">A Radical Idea</h2>
+
+<p>The first thing the letter talks about is what it calls a "radical idea". The suggestion is for Perl 5 compiler to upgrade its backend. Instead of the current Perl VM the <code>perl</code> compiler uses, it would be ported to <a href="https://github.com/perl6/nqp/">NQP compiler toolkit</a> and will support all of the backends NQP supports, which currently is <a href="https://github.com/MoarVM/MoarVM/">MoarVM</a>, as the leading option, with JVM and JavaScript backends at various stages of completion as alternatives.</p>
+
+<p><em>Perl 5 the language would remain as is,</em> but the new backend would allow the compiler to make use of modern features such as JIT compilation and good threading support. So to clarify, this wasn't a suggestion to port Perl 5 to Perl 6, but merely to swap the backend Perl 5 compiler uses.</p>
+
+<p><a href="https://www.nntp.perl.org/group/perl.perl5.porters/2018/01/msg248863.html">Perl 5 Porters view this radical idea as
+a non-starter</a> at the
+moment, so I think we can safely bury it and move on to the second idea the letter talks about</p>
+
+<h2 id="portingmodules">Porting Modules</h2>
+
+<p>As I write this, the Perl 6 ecosystem <a href="http://modules.perl6.org/search/?q=">is 8 modules short of 1000 modules
+total</a>. A lot of the needed features are currently missing
+native Perl 6 implementation and many users choose to use <a href="https://metacpan.org/">Perl 5's CPAN ecosystem</a> via
+<a href="https://github.com/niner/Inline-Perl5#title"><code>Inline::Perl5</code></a> module.</p>
+
+<p>While <code>Inline::Perl5</code> works rather well, it's not an ideal option for many developers. Thus, the
+Letter's author proposed an incentive for people to port much-needed Perl 5 modules to Perl 6 in
+the form of a leaderboard and potential support from sponsors who would donate to <a href="http://www.perlfoundation.org/perl_6_core_development_fund">Perl 6 Core
+development fund</a> in exchange for
+ported modules.</p>
+
+<p>So to clarify, the goal behind the porting of modules is merely to beef up Perl 6's ecosystem and is
+not an implication that Perl 5 users have to or even might want to move to any other language.</p>
+
+<h2 id="theelephantintheroom">The Elephant in The Room</h2>
+
+<p>While not mentioned in the original Letter, a frequent theme <a href="https://www.reddit.com/r/perl/comments/7r1b33/an_open_letter_to_the_perl_community/">in the
+comments</a> was
+that Perl 6 should be renamed, as the name is inaccurate or is damaging.</p>
+
+<p>This is the topic on which I wrote
+<a href="https://rakudo.party/post/The-Hot-New-Language-Named-Rakudo">more</a> than
+<a href="https://rakudo.party/post/6lang-The-Naming-Discussion-Update">once</a> and those who have been
+following closely know that, yes, many (but by no means all) in the Perl 6 community acknowledge
+the name is detrimental to both Perl 6 and Perl 5 projects.</p>
+
+<p>This is why with <a href="https://www.youtube.com/watch?time_continue=4885&amp;v=E5t8qaAGw9w">a nod of approval from
+Larry</a> we're <a href="https://github.com/perl6/6.d-prep/tree/master/TODO#language-extended-naming">moving
+to</a> create an <em>alias</em>
+to Perl 6 name during <a href="https://github.com/perl6/6.d-prep">6.d language release</a>, to be available for marketing in areas where "Perl 6" is not a desirable name.</p>
+
+<p>While some may feel an alias—as opposed to a full rename—is not quite what they desired, I believe
+if the alternate name is as beneficial as the proponents of the rename believe it to be, the alias
+will naturally be able to overtake "Perl 6" name in usage and become the primary name through sheer
+amount of use. Thus, the alias can be seen as the chance for the rename crowd to prove their claims.</p>
+
+<h2 id="longliveperl5">Long Live Perl 5!</h2>
+
+<p>Perl 6 isn't a desirable language for many Perl 5 users, for various reasons. That's perfectly valid
+and is understandable. Perl 6 is quite different from its sister language and the choice to switch
+to it isn't much different than choosing whether to switch to Ruby, Go, Rust, or any other of
+the multitude of languages available.</p>
+
+<p>Since Perl 5 is actively maintained, its users should not feel compelled to migrate to anything
+else, and should continue using what works for them, regardless of what opinions members of other
+programming communities might hold.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The Letter suggested a radical idea that the <code>perl</code> compiler's backend be ported from Perl VM to
+NQP that supports multiple modern VMs. Based on the response to the proposal, it does not appear to
+be viable at the current time. The more prominent suggestion in the Letter is the call to port
+Perl 5 modules to Perl 6, to help Perl 6 users get native-Perl 6 access to valuable Perl 5 modules.</p>
+
+<p>While there are Perl 6 users who believe Perl 6 is superiour to Perl 5, it does not mean Perl 5
+users should feel compelled to upgrade to anything but the <a href="https://www.perl.org/get.html">latest stable version
+of Perl 5</a>.</p>
+
+<p>I hope that regardless of which flavour of Perl we choose to use and call our favourite, we can
+unite and exist together as <a href="https://www.youtube.com/watch?v=E5t8qaAGw9w&amp;feature=youtu.be&amp;t=1h22m9s">The Perl
+Community</a>.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

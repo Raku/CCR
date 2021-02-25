@@ -1,11 +1,380 @@
-https://perl6.party/<a href="/post/Perl-6-Seqs-Drugs-and-Rock-n-Roll
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Seqs-Drugs-and-Rock-n-Roll
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6: Seqs, Drugs, And Rock&#39;n&#39;Roll - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6: Seqs, Drugs, And Rock&#39;n&#39;Roll</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-06-20 <span class="words-count">| 1715 words |</span> Seq type and its caching mechanism</p>
+  <p>I vividly recall my first steps in Perl&nbsp;6 were just a couple of months
+before
+the first stable release of the language in December 2015. Around that time,
+Larry Wall was making a presentation and showed a neat feature—the sequence
+operator—and it got me amazed about just how powerful the language is:</p>
+
+<pre><code># First 12 even numbers:
+say (2, 4 … ∞)[^12];      # OUTPUT: (2 4 6 8 10 12 14 16 18 20 22 24)
+
+# First 10 powers of 2:
+say (2, 2², 2³ … ∞)[^10]; # OUTPUT: (2 4 8 16 32 64 128 256 512 1024)
+
+# First 13 Fibonacci numbers:
+say (1, 1, *+* … ∞)[^13]; # OUTPUT: (1 1 2 3 5 8 13 21 34 55 89 144 233)
+</code></pre>
+
+<p>The ellipsis (<code>…</code>) is the sequence operator and the stuff it makes is the
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>
+object. And now, a year and a half after Perl&nbsp;6's first release, I hope to
+pass on my amazement to a new batch of future Perl&nbsp;6 programmers.</p>
+
+<p>This is a 3-part series. In PART I of this article we'll talk about what
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>
+s are and how to make them without the sequence operator. In PART II, we'll
+look at the thing-behind-the-curtain of <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>'s</a>: the <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> type and
+how to make <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> from our own <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code>s</a>. Lastly, in PART III, we'll
+examine the sequence operator in all of its glory.</p>
+
+<p>Note: I will be using all sorts of fancy Unicode operators and symbols in this
+article. If you don't like them, consult with the
+<a href="https://docs.perl6.org/language/unicode_texas">Texas Equivalents page</a>
+for the equivalent ASCII-only way to type those elements.</p>
+
+<h1 id="parti:whattheseqisallthisabout">PART I: What the <code>Seq</code> is all this about?</h1>
+
+<p>The <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> stands for <em>Sequence</em> and the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> object provides a one-shot
+way to iterate over a sequence of stuff. New values can be generated on
+demand—in fact, it's perfectly possible to create infinite sequences—and already-generated values are discarded, never to be seen again,
+although, there's a way to cache them, as we'll see.</p>
+
+<p>Sequences are driven by <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> objects that are responsible for
+generating
+values. However, in many cases you don't have to create <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a>s directly
+or use their methods while iterating a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>. There are several ways to
+make a <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> and in this section,
+we'll talk about <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a>/<a href="https://docs.perl6.org/routine/take"><code>take</code></a> construct.</p>
+
+<h2 id="igatheryoulltakeusto...">I <code>gather</code> you'll <code>take</code> us to...</h2>
+
+<p>The <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> statement and <a href="https://docs.perl6.org/routine/take"><code>take</code></a> routine are similar to "generators" and "yield" statement in some other languages:</p>
+
+<pre><code>my $seq-full-of-sunshine := gather {
+    say  'And nobody cries';
+    say  'there’s only butterflies';
+
+    take 'me away';
+    say  'A secret place';
+    say  'A sweet escape';
+
+    take 'meee awaaay';
+    say  'To better days'    ;
+
+    take 'MEEE AWAAAAYYYY';
+    say  'A hiding place';
+}
+</code></pre>
+
+<p>Above, we have a code block with lines of <a href="https://www.youtube.com/watch?v=0btXhLdAuAc">song lyrics</a>, some of which we
+<a href="https://docs.perl6.org/routine/say"><code>say</code></a> (print to the screen) and others we
+<a href="https://docs.perl6.org/routine/take"><code>take</code></a> (to be <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a>ed). Just like,
+<a href="https://docs.perl6.org/routine/say"><code>.say</code></a> can be used as either a method or a subroutine, so you can use
+<a href="https://docs.perl6.org/routine/take"><code>.take</code></a> as a method or subroutine, there's no real difference; merely
+convenience.</p>
+
+<p>Now, let's iterate over <code>$seq-full-of-sunshine</code> and watch the output:</p>
+
+<pre><code>for $seq-full-of-sunshine {
+    ENTER say '▬▬▶ Entering';
+    LEAVE say '◀▬▬ Leaving';
+
+    say "❚❚ $_";
+}
+
+# OUTPUT:
+# And nobody cries
+# there’s only butterflies
+# ▬▬▶ Entering
+# ❚❚ me away
+# ◀▬▬ Leaving
+# A secret place
+# A sweet escape
+# ▬▬▶ Entering
+# ❚❚ meee awaaay
+# ◀▬▬ Leaving
+# To better days
+# ▬▬▶ Entering
+# ❚❚ MEEE AWAAAAYYYY
+# ◀▬▬ Leaving
+# A hiding place
+</code></pre>
+
+<p>Notice how the <a href="https://docs.perl6.org/routine/say"><code>say</code></a> statements we had inside the <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> statement didn't
+actualy get executed until we needed to iterate over a value that
+<a href="https://docs.perl6.org/routine/take"><code>take</code></a> routines took after those particular <a href="https://docs.perl6.org/routine/say"><code>say</code></a> lines. The block got stopped
+and then continued only when more values from the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> were requested. The
+last <a href="https://docs.perl6.org/routine/say"><code>say</code></a> call didn't have any more <a href="https://docs.perl6.org/routine/take"><code>take</code>s</a> after it, and it got executed
+when the iterator was asked for more values after the last <a href="https://docs.perl6.org/routine/take"><code>take</code></a>.</p>
+
+<h2 id="thatsexceptional">That's exceptional!</h2>
+
+<p>The <a href="https://docs.perl6.org/routine/take"><code>take</code></a> routine works by throwing a <code>CX::Take</code>
+<a href="https://docs.perl6.org/syntax/CONTROL">control exception</a> that will
+percolate up the call stack until something takes care of it. This means you
+can feed a <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> not just from an immediate block, but from a bunch of different sources, such as routine calls:</p>
+
+<pre><code>multi what's-that (42)                     { take 'The Answer'            }
+multi what's-that (Int $ where *.is-prime) { take 'Tis a prime!'          }
+multi what's-that (Numeric)                { take 'Some kind of a number' }
+
+multi what's-that   { how-good-is $^it                   }
+sub how-good-is ($) { take rand &gt; ½ ?? 'Tis OK' !! 'Eww' }
+
+my $seq := gather map &amp;what's-that, 1, 31337, 42, 'meows';
+
+.say for $seq;
+
+# OUTPUT:
+# Some kind of a number
+# Tis a prime!
+# The Answer
+# Eww
+</code></pre>
+
+<p>Once again, we iterated over our new <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> with a <a href="https://docs.perl6.org/syntax/for"><code>for</code> loop</a>, and you can see
+that <a href="https://docs.perl6.org/routine/take"><code>take</code></a> called from different multies and even nested sub calls still
+delivered the value to our <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> successfully:</p>
+
+<p>The only limitation is you can't <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> <a href="https://docs.perl6.org/routine/take"><code>take</code></a>s done in another <a href="https://docs.perl6.org/type/Promise"><code>Promise</code></a>
+or in code manually <a href="https://docs.perl6.org/routine/cue">cued</a> in the scheduler:</p>
+
+<pre><code>gather await start take 42;
+# OUTPUT:
+# Tried to get the result of a broken Promise
+#   in block &lt;unit&gt; at test.p6 line 2
+#
+# Original exception:
+#     take without gather
+
+gather $*SCHEDULER.cue: { take 42 }
+await Promise.in: 2;
+# OUTPUT: Unhandled exception: take without gather
+</code></pre>
+
+<p>However, nothing's stopping you from using a <a href="https://docs.perl6.org/type/Channel"><code>Channel</code></a> to proxy your data
+to be <a href="https://docs.perl6.org/routine/take"><code>take</code></a>n in a <a href="https://docs.perl6.org/language/concurrency#index-entry-react"><code>react</code> block</a>.</p>
+
+<pre><code>my Channel $chan .= new;
+my $promise = start gather react whenever $chan { .take }
+
+say "Sending stuff to Channel to gather...";
+await start {
+    $chan.send: $_ for &lt;a b c&gt;;
+    $chan.close;
+}
+dd await $promise;
+
+# OUTPUT:
+# Sending stuff to Channel to gather...
+# ("a", "b", "c").Seq
+</code></pre>
+
+<p>Or gathering <a href="https://docs.perl6.org/routine/take"><code>take</code>s</a> from within a <a href="https://docs.perl6.org/type/Supply"><code>Supply</code></a>:</p>
+
+<pre><code>my $supply = supply {
+    take 42;
+    emit 'Took 42!';
+}
+
+my $x := gather react whenever $supply { .say }
+say $x;
+
+# OUTPUT: Took 42!
+# (42)
+</code></pre>
+
+<h2 id="stashintothecache">Stash into the <code>cache</code></h2>
+
+<p>I mentioned earlier that <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> are one-shot <a href="https://docs.perl6.org/type/Iterable"><code>Iterables</code></a> that can be iterated only once. So what exactly happens
+when we try to iterate them the second time?</p>
+
+<pre><code>my $seq := gather take 42;
+.say for $seq;
+.say for $seq;
+
+# OUTPUT:
+# 42
+# This Seq has already been iterated, and its values consumed
+# (you might solve this by adding .cache on usages of the Seq, or
+# by assigning the Seq into an array)
+</code></pre>
+
+<p>A <code>X::Seq::Consumed</code> <a href="https://docs.perl6.org/type/Exception">exception</a> gets
+thrown. In fact, <code>Seqs</code> do not even
+<a href="https://docs.perl6.org/routine/does.html">do</a>
+the <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> role, which is why
+we didn't use the <code>@</code>
+<a href="https://docs.perl6.org/language/glossary#index-entry-Sigil">sigil</a> that type-
+checks for <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> on the variables we stored <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> in.</p>
+
+<p>The <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> is deemed consumed whenever something asks it for its
+<a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> after another thing grabbed it, like the <code>for</code> loop would.
+For example, even if in the first <code>for</code> loop above we would've iterated over
+just 1 item, we wouldn't be able to resume taking more items in the next <code>for</code> loop, as it'd try to ask for the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>'s</a> iterator that was already taken
+by the first <code>for</code> loop.</p>
+
+<p>As you can imagine, having <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> <em>always</em> be one-shot would be somewhat of
+a pain in the butt. A lot of times you can afford to keep the entire sequence
+around, which is the price for being able to access its values more than once,
+and that's precisely what the <a href="https://docs.perl6.org/type/Seq#%28PositionalBindFailover%29_method_cache"><code>Seq.cache</code>method</a> does:</p>
+
+<pre><code>my $seq := gather { take 42; take 70 };
+$seq.cache;
+
+.say for $seq;
+.say for $seq;
+
+# OUTPUT:
+# 42
+# 70
+# 42
+# 70
+</code></pre>
+
+<p>As long as you call <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> before you fetch the first item of the
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>, you're good to go iterating over it until the heat death of the
+Universe (or until its cache noms all of your RAM). However, often you do not
+even need to call <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> yourself.</p>
+
+<p>Many methods will automatically <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> for you:</p>
+
+<ul>
+<li><a href="https://docs.perl6.org/routine/Str"><code>.Str</code></a>, <a href="https://docs.perl6.org/routine/Stringy"><code>.Stringy</code></a>, <a href="https://docs.perl6.org/routine/fmt"><code>.fmt</code></a>, <a href="https://docs.perl6.org/routine/gist"><code>.gist</code></a>, <a href="https://docs.perl6.org/routine/perl"><code>.perl</code></a> methods always
+<a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a></li>
+<li><a href="https://docs.perl6.org/routine/AT-POS"><code>.AT-POS</code></a> and <a href="https://docs.perl6.org/routine/EXISTS-POS"><code>.EXISTS-POS</code></a> methods, or in other words, <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a>
+indexing like <code>$seq[^10]</code>, always <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a></li>
+<li><a href="https://docs.perl6.org/routine/elems"><code>.elems</code></a>, <a href="https://docs.perl6.org/routine/Numeric"><code>.Numeric</code></a>, and <a href="https://docs.perl6.org/routine/Int"><code>.Int</code></a> will <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a>, unless the underlying <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> provides a <a href="https://docs.perl6.org/routine/count-only"><code>.count-only</code></a> method (we'll
+get to those in PART II)</li>
+<li><a href="https://docs.perl6.org/routine/Bool"><code>.Bool</code></a> will <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> unless the underlying <a href="https://docs.perl6.org/type/Iterator"><code>Iterator</code></a> provides
+<a href="https://docs.perl6.org/routine/bool-only"><code>.bool-only</code></a> or <a href="https://docs.perl6.org/routine/count-only"><code>.count-only</code></a> methods</li>
+</ul>
+
+<p>There's one more nicety with <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> losing their one-shotness that you may
+see refered to as
+<a href="https://docs.perl6.org/type/PositionalBindFailover"><code>PositionalBindFailover</code></a>.
+It's a <a href="https://docs.perl6.org/syntax/role">role</a> that indicates to the
+parameter binder that the type can still be converted into a <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a>,
+even when it doesn't do <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> role. In plain English, it
+means you can do this:</p>
+
+<pre><code>sub foo (@pos) { say @pos[1, 3, 5] }
+
+my $seq := 2, 4 … ∞;
+foo $seq; # OUTPUT: (4 8 12)
+</code></pre>
+
+<p>We have a <code>sub</code> that expects a <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> argument and we give it a
+<a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> which isn't <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a>, yet it all works out, because the binder
+<a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a>s our <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> and uses the <code>List</code> the <a href="https://docs.perl6.org/routine/cache"><code>.cache</code></a> method returns
+to be the <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> to be used, thanks to it doing the
+<a href="https://docs.perl6.org/type/PositionalBindFailover"><code>PositionalBindFailover</code></a> role.</p>
+
+<p>Last, but not least, if you don't care about <em>all</em> of your <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>'s</a> values
+being generated and cached right there and then, you can simply assign it
+to a <code>@</code> <a href="https://docs.perl6.org/language/glossary#index-entry-Sigil">sigiled</a>
+variable, which will <a href="https://docs.perl6.org/language/glossary#index-entry-Reify">reify</a>
+the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> and store it as an <a href="https://docs.perl6.org/type/Array"><code>Array</code></a>:</p>
+
+<pre><code>my @stuff = gather {
+    take 42;
+    say "meow";
+    take 70;
+}
+
+say "Starting to iterate:";
+.say for @stuff;
+
+# OUTPUT:
+# meow
+# Starting to iterate:
+# 42
+# 70
+</code></pre>
+
+<p>From the output, we can see <code>say "meow"</code> was executed on assignment to <code>@stuff</code>
+and not when we actually iterated over the value in the <code>for</code> loop.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In Perl&nbsp;6, <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a> are one-shot <a href="https://docs.perl6.org/type/Iterable"><code>Iterable</code>s</a> that don't keep their
+values around, which makes them very useful for iterating over huge, or even
+infinite, sequences. However, it's perfectly possible to cache <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> values
+and re-use them, if that is needed. In fact, many of the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>'s</a> methods
+will automatically cache the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code></a> for you.</p>
+
+<p>There are several ways to create <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a>, one of which is to use the
+<a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> and <a href="https://docs.perl6.org/routine/take"><code>take</code></a> where
+a <a href="https://docs.perl6.org/syntax/gather%20take"><code>gather</code></a> block will stop
+its execution and continue it only when more values are needed.</p>
+
+<p>In parts <a href="/post/Perl-6-Seqs-Drugs-and-Rock-n-Roll--Part-2">II</a> and III, we'll look at other, more exciting, ways of
+creating <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>s</a>. Stay tuned!</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

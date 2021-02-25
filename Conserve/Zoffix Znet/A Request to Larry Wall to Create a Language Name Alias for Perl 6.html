@@ -1,11 +1,230 @@
-https://perl6.party/<a href="/post/A-Request-to-Larry-Wall-to-Create-a-Language-Name-Alias-for-Perl-6
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/A-Request-to-Larry-Wall-to-Create-a-Language-Name-Alias-for-Perl-6
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>A Request to Larry Wall to Create a Language Name Alias for Perl 6 - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">A Request to Larry Wall to Create a Language Name Alias for Perl 6</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2018-10-07 <span class="words-count">| 1875 words |</span> The culmination of the naming discussion</p>
+  <p>I (Zoffix Znet) am writing this document to Larry&nbsp;Wall to request the creation of a second name for the <em>"Perl&nbsp;6"</em> language. This name is <em>not</em> a rename of the language, but is simply an alternative name, an alias. Similar to how <em>TimToady</em> is an alias for <em>Larry&nbsp;Wall</em>.</p>
+
+<p>It's been a year and a half since the time when I first re-opened this issue with a blog post, and in this document, I compiled the argumentation for creation of the alias, the community suggestions for what that alias might look like, along with the observations of discussions on the topic that occured during that time period.</p>
+
+<p>I ask that Larry&nbsp;Wall renders his decision on the alias by November 1, 2018, so we would have the time to create proper informational materials for the 6.d language release, during which time, the name alias would be officially announced, if one is chosen.</p>
+
+<h2 id="communityalias">Community Alias</h2>
+
+<p>The <a href="https://www.youtube.com/watch?time_continue=4885&amp;v=E5t8qaAGw9w">original idea for the alias</a> came in the form of creating a "marketing alias", for markets where Perl "is a swear word." However, I believe such an alias has a more immediate application closer to home, by improving the wellbeing of the existing community and the interactions of its members with other programming communities, including the Perl 5 community.</p>
+
+<p>The idea of Perl&nbsp;6 was birthed in the form of the community rewrite of the Perl language. This name alias, then, is the Community Alias for that language.</p>
+
+<h2 id="reasoningforalias">Reasoning for Alias</h2>
+
+<p>The current language name "Perl&nbsp;6" comes with a set of built-in assumptions that do not apply either to the language or to currently-available compilers for it. The assumptions encoded in the name are:</p>
+
+<ul>
+<li>It is similar to earlier Perl language (and thus comes with all the negative connotations attributed to it)</li>
+<li>It is the next version of Perl language</li>
+<li>It is faster, more stable, and "better" than earlier Perl language</li>
+</ul>
+
+<p>In reality, what we have is an entirely brand new language. Different, and with all the caveats typical of brand new software.</p>
+
+<h4 id="similarity">Similarity</h4>
+
+<p>Other than the "spirit" some claim the Perl&nbsp;5 and Perl&nbsp;6 languages share, they're dissimilar in many ways.</p>
+
+<pre><code>$ perl  -e 'print "I am a Perl ", "0" &amp;&amp; 6||5, " program\n"'
+I am a Perl 5 program
+$ perl6 -e 'print "I am a Perl ", "0" &amp;&amp; 6||5, " program\n"'
+I am a Perl 6 program
+</code></pre>
+
+<p>In Perl&nbsp;5 you choose your own OO system, concurrency/parallelism system, your list processing utilities, etc; in Perl&nbsp;6, many of these features are a large part of the standard language itself. In Perl&nbsp;5, you're told to never <code>use threads</code>; in Perl&nbsp;6, even an empty program is multi-threaded (JIT runs on a separate thread). In Perl&nbsp;5, lists autoflatten; In Perl&nbsp;6, they don't and you have a choice of multiple core list types.</p>
+
+<p><em>Thus, we lose on two fronts: those who love Perl&nbsp;5 and come to Perl&nbsp;6 get disappointed because they get a different language; and those who hate Perl&nbsp;5 never bother trying out Perl&nbsp;6, assuming it's the same language they hate.</em></p>
+
+<h4 id="nextversion">Next Version</h4>
+
+<p>The naming of "Perl&nbsp;6" has a strong suggestion that "6" is the version number rather than a part of the name. Some suggested it's easy to explain this caveat of naming, but my personal experience was quite the opposite of that. First, it's hard to wedge this information during a real-time meatspace conversation:</p>
+
+<blockquote>
+  <p>— What are you working on?
+  <br>
+  — Writing an AI for a game in Python.
+  <br>
+  — You?
+  <br>
+  — Hacking on Rasperry Pi with C.
+  <br>
+  — You?
+  <br>
+  — Making a media center for my car in Perl&nbsp;6. YES. YOU MAY HAVE HEARD OF PERL, BUT PERL&nbsp;6 IS NOT PERL BUT A RELATED LANGUAGE.
+  <br>
+  — ...</p>
+</blockquote>
+
+<p>Second, even after you make that clarification, people still continue to shorten the name to just Perl (<em>"You're the Perl guy, right?"</em>). Moreover, some media, such as banners and posters, often do not allow for adding a suitable clarification.</p>
+
+<p>Lastly, similar shortening of the name occurs with some software, such as DuckDuckGo search engine producing results for Perl&nbsp;5 instead of Perl&nbsp;6 when searching for "perl6 argv".</p>
+
+<p>The biggest issue here, however, is the relationship with the Perl&nbsp;5 community. The mere existence of a "Perl&nbsp;6" language paints Perl&nbsp;5 as obsolete. While the Perl&nbsp;6 community has to make clarifications to distance itself from Perl&nbsp;5's negatives that don't apply to Perl&nbsp;6, the Perl&nbsp;5 community must make the same clarifications just to convince people they're not dead. This brews understandable animosity towards Perl&nbsp;6.</p>
+
+<p>The Perl&nbsp;5 language is effectively blocked from releasing the next "major version", because Perl&nbsp;6 is squatting on it. And were Perl&nbsp;5 to release a "Perl&nbsp;7", that would immediatelly paint Perl&nbsp;6 as obsolete. The lack of any established alternate names leaves Perl&nbsp;6 vulnerable to such a scenario.</p>
+
+<p><em>Thus, we have three community issues: difficulty for community to explain what language they're using; difficulty for community to find information about the language; and difficulty of amicable existence beside the Perl&nbsp;5 community.</em></p>
+
+<h4 id="speedandstability">Speed and Stability</h4>
+
+<p>The Christmas release of Perl&nbsp;6 came with a caveat that it's the <em>language spec</em> that's stable now, and the compiler itself needed more work. That is exactly the sort of a caveat you'd expect to come with a brand new language.</p>
+
+<p>However, our brand new language is not named that way. The current name suggests it's the next version of Perl and thus it should be slightly different, and faster and more stable. None of which is currently true. By using the name to associate ourselves so closely with Perl&nbsp;5, we effectively set a performance target to surpass. Yet, due to how new our language is, there is still a lot of work needed to reach that target, and due to significant differences between the languages, some of these targets might not be met when comparing exactly the same constructs (e.g. Perl 6 regexes produce a much more complex data structure—a tree of <code>Match</code> objects).</p>
+
+<p><em>Thus, by mislabeling our brand new language with a next-version language, we suffer disproportionally when our compiler does not perform as well or is not as stable as a well-established language.</em></p>
+
+<h4 id="summary">Summary</h4>
+
+<p>In summation, the name "Perl&nbsp;6" is a misrepresentation. It's a wrong label on a can. It causes friction within the broad Perl community and confusion or difficulty when communicating with those outside the Perl community.</p>
+
+<p>It sets incorrect expectations of performance, stability, and features of the language.</p>
+
+<p>It is detrimental to our future.</p>
+
+<h2 id="nofullrename">No Full Rename</h2>
+
+<p>While numerous members of the community would have liked to see a full language rename, there are also those who believe a full rename would be detrimental. The full rename at this point in time is also a lot more challenging due to the existence of books, websites, documentation, environmental variables, and dynamic variables in the language—all with the name "Perl" in them.</p>
+
+<p>As such, we are creating an alias only. One that does not have any reference to Perl in it (i.e. no "Perl++"). If another name is truly as superior as the full-rename proponents claim it would be, I believe the alias can become a defacto name through its sheer amount of use. Thus, the creation of the alias can be seen as a means for the full-rename proponents to prove their claims.</p>
+
+<h2 id="references">References</h2>
+
+<p>What follows are references to real-world examples of confusion and problems due to the current name, additional community discussions on the naming along with suggestions for what that name can be, and other resources relevant to the topic.</p>
+
+<h4 id="namingconfusion">Naming Confusion</h4>
+
+<p>The <em>(parentheticals)</em> indicate what issue was encountered in an item. The issues refer to issues examined in <em>Reasoning for Alias</em> section above.</p>
+
+<ul>
+<li><em>(next version)</em> The first paragraph of <em>Learning Perl&nbsp;6</em>: "Welcome to the first edition of Learning Perl&nbsp;6, a book title that sounds similar to others you may have read and I may have written. This one, however, is my first book about the language called “Perl&nbsp;6.” I know the name is a bit confusing; I'm not in charge of that part. I'm just the book writer."</li>
+<li><em>(next version)</em> "I thought perl6 was meant to be a natural upgrade, but if there is a competition between them, why hijack its name and version path?"
+<a href="https://twitter.com/nicomen/status/1045997248645976064">https://twitter.com/nicomen/status/1045997248645976064</a></li>
+<li><em>(similarity)</em> "&lt;JJJ&gt; I think this chatroom is as dead as the perl language. ouch!"
+<a href="http://colabti.org/irclogger/irclogger_log/perl6?date=2018-08-14#l241">http://colabti.org/irclogger/irclogger_log/perl6?date=2018-08-14#l241</a></li>
+<li><em>(next version)</em> Confusion that Perl&nbsp;6 is older than Python, <a href="https://twitter.com/brentsaner/status/1028737133064998913">https://twitter.com/brentsaner/status/1028737133064998913</a>
+when naming was clarified, followed by <em>(similarity)</em> by claiming it's
+"still" unreadable
+<a href="https://twitter.com/brentsaner/status/1028738466161610752">https://twitter.com/brentsaner/status/1028738466161610752</a></li>
+<li><em>(next version)</em> Interview about CommaIDE, with people surprised Perl is "still" a thing <a href="https://www.facebook.com/JetBrains/posts/1893431294013449">https://www.facebook.com/JetBrains/posts/1893431294013449</a>
+and <em>(similarity)</em> as well, with people cracking jokes thinking Perl 6 is outdated.</li>
+<li><em>(next version)</em> in a book <a href="https://www.reddit.com/r/perl/comments/72u6g5/we_suggest_avoiding_perl_for_new_work_at_this/">https://www.reddit.com/r/perl/comments/72u6g5/we_suggest_avoiding_perl_for_new_work_at_this/</a></li>
+<li><em>(next version)</em> in an Issue about broken Perl&nbsp;6 GitHub highlights: <a href="https://github.com/github/linguist/issues/3637#issuecomment-319026186">https://github.com/github/linguist/issues/3637#issuecomment-319026186</a></li>
+<li><em>(next version)</em> question about "moving to" Perl&nbsp;6: <a href="https://www.reddit.com/r/perl/comments/6qsv6k/how_many_people_plan_to_move_to_perl_6/">https://www.reddit.com/r/perl/comments/6qsv6k/how_many_people_plan_to_move_to_perl_6/</a></li>
+<li><em>(similarity)</em> search results for wrong language <a href="http://colabti.org/irclogger/irclogger_log/perl6?date=2017-08-02#l447">http://colabti.org/irclogger/irclogger_log/perl6?date=2017-08-02#l447</a></li>
+</ul>
+
+<h4 id="namingsuggestions">Naming Suggestions</h4>
+
+<ul>
+<li>Damian's email in response to my earlier articles on naming:
+<a href="https://gist.github.com/zoffixznet/522abeb84debe64041ea70afeebc058a">https://gist.github.com/zoffixznet/522abeb84debe64041ea70afeebc058a</a></li>
+<li>Damian's comments on the naming in the middle of the article:
+(search: "if you got to choose what Perl 6 be called"):
+<a href="https://www.mappingthejourney.com/single-post/2017/11/09/episode-13-interview-with-damian-conway-designer-of-perl-6-programming-language/">https://www.mappingthejourney.com/single-post/2017/11/09/episode-13-interview-with-damian-conway-designer-of-perl-6-programming-language/</a></li>
+<li>Discussion Thread 1: <a href="https://www.reddit.com/r/perl/comments/6lstqu/the_hot_new_language_named_rakudo/">https://www.reddit.com/r/perl/comments/6lstqu/the_hot_new_language_named_rakudo/</a></li>
+<li>Discussion Thread 2: <a href="https://www.reddit.com/r/perl6/comments/6lstq3/the_hot_new_language_named_rakudo/">https://www.reddit.com/r/perl6/comments/6lstq3/the_hot_new_language_named_rakudo/</a></li>
+<li>Discussion Thread 3: <a href="http://blogs.perl.org/users/zoffix_znet/2017/07/the-hot-new-language-named-rakudo.html#comments">http://blogs.perl.org/users/zoffix_znet/2017/07/the-hot-new-language-named-rakudo.html#comments</a></li>
+<li>Discussion Thread 4: <a href="https://www.reddit.com/r/perl6/comments/70ojde/the_rakudo_book_project/dna3ayb/">https://www.reddit.com/r/perl6/comments/70ojde/the_rakudo_book_project/dna3ayb/</a></li>
+<li>Reddit thread asking for names, with upvotes as poll: <a href="https://www.reddit.com/r/perl/comments/7rjr8u/new_name_for_perl_6_languageenvironment/">https://www.reddit.com/r/perl/comments/7rjr8u/new_name_for_perl_6_languageenvironment/</a></li>
+<li>Branding Proposal/Collection of proposed names <a href="http://nigelhamilton.com/perl-branding-proposal.html">http://nigelhamilton.com/perl-branding-proposal.html</a> and some discussion that followed <a href="http://colabti.org/irclogger/irclogger_log/perl6?date=2018-03-16#l532">http://colabti.org/irclogger/irclogger_log/perl6?date=2018-03-16#l532</a> <em>(Editor's note: all the names with "Perl" in them would only have merit in a full language rename; they miss the point when it comes to alias creation)</em></li>
+<li>"Lusk" -> "mollusk" -> "makes pearls" suggestion: <a href="https://www.reddit.com/r/perl6/comments/8987l1/perl6_renaming_status/dwppvd7/">https://www.reddit.com/r/perl6/comments/8987l1/perl6_renaming_status/dwppvd7/</a></li>
+<li>"6lang" (suggested on IRC)</li>
+<li>"+-1" as name: <a href="https://mail.pm.org/pipermail/toronto-pm/2017-November/004023.html">https://mail.pm.org/pipermail/toronto-pm/2017-November/004023.html</a></li>
+</ul>
+
+<h4 id="other">Other</h4>
+
+<ul>
+<li>Calls for a revolt:
+<a href="https://www.reddit.com/r/perl/comments/8b5yoh/why_do_you_have_to_be_afraid_of_the_programming/dx63nq2/">https://www.reddit.com/r/perl/comments/8b5yoh/why_do_you_have_to_be_afraid_of_the_programming/dx63nq2/</a></li>
+<li>Mail list thread on naming debate: <a href="https://www.nntp.perl.org/group/perl.perl6.language/2018/02/msg36759.html">https://www.nntp.perl.org/group/perl.perl6.language/2018/02/msg36759.html</a></li>
+<li>Naming bikeshed in comments on Issue: <a href="https://github.com/perl6/doc/issues/1807">https://github.com/perl6/doc/issues/1807</a></li>
+<li>Lots of bits in the comments about bad name: <a href="https://www.reddit.com/r/perl/comments/7r1b33/an_open_letter_to_the_perl_community/">https://www.reddit.com/r/perl/comments/7r1b33/an_open_letter_to_the_perl_community/</a></li>
+<li>Larry's answer to question about naming: <a href="https://youtu.be/E5t8qaAGw9w?t=1h21m25s">https://youtu.be/E5t8qaAGw9w?t=1h21m25s</a></li>
+<li>Having space in the name broke GitHub highligher: <a href="http://colabti.org/irclogger/irclogger_log/perl6?date=2018-01-06#l687">http://colabti.org/irclogger/irclogger_log/perl6?date=2018-01-06#l687</a></li>
+<li>Weekly from when first (recent) blog post on naming went out: <a href="https://p6weekly.wordpress.com/2017/07/10/2017-28-rakudo-is-hot/">https://p6weekly.wordpress.com/2017/07/10/2017-28-rakudo-is-hot/</a></li>
+<li>Even a positive article about Perl 6 starts with:
+"Want to hear a programming joke?     Perl 6."
+<a href="http://www.evanmiller.org/why-im-learning-perl-6.html">http://www.evanmiller.org/why-im-learning-perl-6.html</a></li>
+<li>Request for examples of why "Perl 6" is a good name: <a href="https://twitter.com/zoffix/status/1028977967454666758">https://twitter.com/zoffix/status/1028977967454666758</a></li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>With the 6.d release around the corner, we have approached the point where a direct request to Larry Wall is made with the matter of assuaging the problem of the naming of the language.</p>
+
+<p>Through a year and a half worth of discussions, we came to a conclusion that a second name to the language should be created, as opposed to a full rename. This will let the proponents of a rename to prove their claims, without severely upsetting those who believe the current name is beneficial.</p>
+
+<p>This document presented argumentation for why a second name is beneficial, as well as compiled the discussions and suggestions that occured during that year and a half.</p>
+
+<p>It is now up to <em>TimToady</em> to reach the final decision on whether the official alias is to be created during the 6.d language release and what that alias is to be.</p>
+
+<p>See you at the 6.d release party! Bring your own virtual beer.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,180 @@
-https://perl6.party/<a href="/post/Announcing-P6lert-Perl-6-Alerts-Directly-From-Core-Developers
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Announcing-P6lert-Perl-6-Alerts-Directly-From-Core-Developers
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Announcing P6lert: Perl 6 Alerts Directly From Core Developers - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Announcing P6lert: Perl 6 Alerts Directly From Core Developers</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2017-12-29 <span class="words-count">| 869 words |</span> Info about P6lert service</p>
+  <p>Development of Rakudo Perl 6 is quite fast-paced, with hundreds of
+commits made each month to its five core repositories. Users undoubtedly feel
+some impact from those commits: bug fixes may break code that relied on them,
+backend changes may have unforeseen impact on the user code, new useful features
+may be implemented that users would want to know about.</p>
+
+<p>In the past, for things with very large impact, we made blog
+posts, but there
+are lots of small things that fly under the radar, unless you actively
+pay a lot of attention to <a href="https://p6weekly.wordpress.com/">Rakudo Perl 6's core
+development</a>.</p>
+
+<p>To help <em>all</em> of our users to be aware of important issues, we're
+announcing introduction of <em>P6lert</em> service: tweet-sized alerts from Perl 6 Core Developers.</p>
+
+<h2 id="thegoods">The Goods</h2>
+
+<p>The <em>P6lert</em> service primarily consists
+of <a href="https://alerts.perl6.org">alerts.perl6.org</a> website, but with it come
+a variety of ways to receive alerts posted on it:</p>
+
+<ul>
+<li>All alerts are automatically tweeted by unmonitored <a href="https://twitter.com/p6lert">@p6lert Twitter
+account</a>; all tweets include <a href="https://twitter.com/search?q=%23p6lert&amp;src=typd">#p6lert
+hashtag</a></li>
+<li>There is an <a href="https://alerts.perl6.org/rss">RSS feed</a> you can subscribe to</li>
+<li>The site offers an <a href="https://alerts.perl6.org/api">API</a>, which you can use
+in Perl 6 via <a href="https://modules.perl6.org/repo/WWW::P6lert"><code>WWW::P6lert</code>
+module</a>.</li>
+<li>Command line <a href="https://modules.perl6.org/repo/p6lert"><code>p6lert</code> script</a> gets
+you access to alerts from command line and can even be integrated into
+compiler upgrade scripts.</li>
+<li>An embeddable <a href="https://alerts.perl6.org/api#widget">HTML Widget</a> can show
+alerts on your blog or any other useful place.</li>
+</ul>
+
+<h2 id="thecontent">The Content</h2>
+
+<p>While we'll make adjustments as we move forward, I foresee most of the non-critical alerts will largely include things that are: (a) more important
+than simply hoping users-who-care will read about it in the ChangeLog; (b) not
+as important to warrant a notification blog post.</p>
+
+<p>As a rule-of-thumb, if you picture a user who added <a href="https://modules.perl6.org/repo/p6lert"><code>p6lert</code> script</a> to their compiler upgrade
+procedure, the alerts the script will show will inform that user on everything
+they need to know to perform that upgrade safely.</p>
+
+<p>The alerts are also deliberately length-limited to be easy to process
+and fast to digest. As they're <a href="https://github.com/perl6/alerts#posting-alerts">posted via an IRC
+bot</a>, the poster has at most
+about 400 characters to work with.</p>
+
+<p>Each alert has an <code>affects</code> field for it, giving additional info what the
+alert applies to. I think it'll often be empty, as alerts affecting latest
+compiler versions imply they affect whatever latest release is at the time
+alert was posted.</p>
+
+<p>The alerts have a <code>severity</code> rating: <code>low</code>, <code>normal</code>, and <code>high</code> indicating how
+important an alert is. Along with those, come two out-of-band ratings: <code>info</code>
+and <code>critical</code>. Info alerts will usually be something the users don't need
+to act upon, while critical alerts will often simply contain a link to
+a blog post that details a critical issue.</p>
+
+<p>Of the top of my head, here are some real-life examples from the past and
+how I'd rate their severity on the P6lert service:</p>
+
+<ul>
+<li><strong>info</strong> - <a href="https://docs.perl6.org/type/Telemetry"><code>Telemetry</code></a>
+implementation. This was a fairly large implementation
+of a feature in the core and some users may be interested in it. At the same
+time, they don't have to act on this alert. Rakudo and Rakudo Star release
+may also be <code>info</code> alert material.</li>
+<li><strong>low</strong> - implementation of output buffering on IO handles. Once that was
+implemented, we noticed some minor fallout in code that assumed lack of
+buffering. A low-severity alert could notify users about this.</li>
+<li><strong>normal</strong> - A real-life <code>normal</code>-severity alert is <a href="https://alerts.perl6.org/">already
+posted</a>
+on the site. During 6.d spec pre-release review, the <code>Str.parse-names</code>
+method was placed under deprecation and its functionality was moved to live
+under <code>Str.uniparse</code>. While this method always existed as a 6.d-proposal,
+it's known to us that some users already use it and an alert will help
+them ensure their code keeps working past 6.e language release.</li>
+<li><strong>high</strong> - a while ago, <code>.subst</code> was briefly made to die if it couldn't
+write to <code>$/</code>; same as some methods already do. Upon examination of
+ecosystem fallout, this change was reverted, pending further review.
+However, were it to stay, a high-severity alert would be in order.</li>
+<li><strong>critical</strong> - when we finished work on lexical require, conditional loading
+of modules many users used was silently failing and the users needed to
+change their code to correct reliance on the old, buggy behavour. We
+issued <a href="http://rakudo.org/2017/03/18/lexical-require-upgrade-info/">a blog
+post</a> with
+upgrade instructions. A critical alert would be a link to this blog post.</li>
+</ul>
+
+<p>That's my vision for host the system will be used, but it'll evolve to suit our
+needs as more core devs and more of our users start using it. The core dev
+docs for the system along with code for all the pieces is available
+<a href="https://github.com/perl6/alerts#posting-alerts">in perl6/alerts repo</a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>As part of improving using user experience, Perl 6 core devs now offer
+<a href="https://alerts.perl6.org">alerts.perl6.org</a> service that will list important
+information about latest developments in the land of Perl 6. There are numerous
+ways to consume those alerts, such as an RSS or Tweeter feeds, a command line
+utility, and an easy-to-use API.</p>
+
+<p>The alerts will come in 5 different severity ratings, indicating their
+importance. We'll continue to improve the system to best suit our users' needs.</p>
+
+<p>If you have any questions or feedback, you can always talk to the core devs
+<a href="https://webchat.freenode.net/?channels=#perl6-dev">on #perl6-dev IRC chat</a>.</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

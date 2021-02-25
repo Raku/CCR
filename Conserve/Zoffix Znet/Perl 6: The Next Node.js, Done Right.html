@@ -1,11 +1,84 @@
-https://perl6.party/<a href="/post/The-Next-Node.js-Done-Right
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/The-Next-Node.js-Done-Right
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6: The Next Node.js, Done Right - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6: The Next Node.js, Done Right</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-03-23 <span class="words-count">| 634 words |</span> Discussion on Perl 6&#39;s JavaScript backend work in progress.</p>
+  <p>If you've been a programmer for more than a couple of years, then you remember when Node.js first appeared. Some folks were raging about how insanely fast their ecosystem was growing, while others confusedly shrugged, wondering why anyone would want to use a language made for scripting browsers for server side work.</p>
+
+<p>I can easily dismiss Node's large ecosystem of <a href="https://www.npmjs.com/search?q=alert">reinvented wheels</a>, but the underlying point of why it got popular is valid: the fewer languages you need for an app, the fewer (or less experienced) programmers you have to hire, the cheaper it is to make your app. The self-proclaimed "HTML programmer" who was copy-pasting JS snippets from blogs and forums, now of all a sudden became a full-stack Web developer. But is using a made-for-browsers language for all-purpose work the right approach?</p>
+
+<p>If you follow news or social media, today you definitely saw <a href="http://www.theregister.co.uk/2016/03/23/npm_left_pad_chaos/?mt=1458771801504">an article that invariably had a stock photo of someone playing Jenga</a>. To sum up: lawyers pressured a developer to rename an NPM package. Developer refused. Lawyers came to NPM admins, who obliged to do so. The enraged developer then unpublished all of their NPM packages and the huge swath of the Interweb that depended on those packages chaotically crumbled and sufficient mocking of the whole system ensued.</p>
+
+<p>The whole ordeal made me think of how such a situation might have played out in the Perl community. Would PAUSE admins remove an indexed module due to a request from lawyers, even when the author is responsive? Knowing personalities of a few of them, I doubt so. A communication channel among the involved parties would've been established instead.</p>
+
+<p>And were a critical package actually deleted by someone, we have <a href="http://backpan.cpantesters.org/authors/id/">BackPAN</a>, <a href="https://github.com/gitpan">GitPAN</a>, and dozens of slow-refreshing mirrors. We wouldn't need to take NPM's "an unprecedented step" to restore order to chaos. The system would've worked fine for awhile, and the breakage would be restricted to telling people to specify an actual package URL to the <code>cpanm</code> client. Not to mention, the NPM package that caused most of the breakage was tiny and <a href="https://twitter.com/jnthnwrthngtn/status/712781354652581888">some question</a> why that little bit of code was even a dependency in the first place.</p>
+
+<p>Going back to ecosystems. Browsing NPM, I can barely find packages with documentation, let alone tests for them; and <a href="https://twitter.com/danlyke/status/712777222701117440">I'm not the only one questioning quality</a>. The Perl community, on the other hand, is a community of comprehensive tests. The quality of packages without tests is viewed with inherent suspicion and I've participated in many group mockings of packages that had no tests. Not to mention things like <a href="http://cpants.cpanauthors.org/ranking">CPANTS Kwalitee Game</a> that has "has tests" metric.</p>
+
+<p>So what does my rambling have to do with Perl 6? The answer is the <a href="https://p6weekly.wordpress.com/2016/03/14/2016-11-js-fueling-up/">Perl 6 JavaScript Backend</a>. Lead by Paweł Murias, the project was recently accepted for a grant and is well on its way to being usable.</p>
+
+<p>You write Perl 6 code for both your backend and your frontend. The Perl 6 meant for the frontend gets compiled to JavaScript, so it can run in any browser that hasn't yet implemented native Perl 6 scripting in its core (c'mon, I can dream!). This is a complete inversion of the Node's paradigm: instead of a limited browser language made all-purpose, an all-purpose language's subset is made available in browsers. Throw into the mix the maturity and test-oriented culture of Perl, and I think you've got Node.js, Done Right.</p>
+
+<p>So is the Jenga of Node starting to tumble down? Are we starting to realize the fad popularity of a language isn't the sole reason why your company should use it? Is there a successor ready to replace Node? Right now, I can only speculate, but in a couple of years, I'm sure Perl 6 will be the shiny new tool of a full-stack Web developer.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

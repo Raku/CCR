@@ -1,11 +1,314 @@
-https://perl6.party/<a href="/post/Anguish--Invisible-Programming-Language-and-Invisible-Data-Theft
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Anguish--Invisible-Programming-Language-and-Invisible-Data-Theft
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>&quot;Anguish&quot;: Invisible Programming Language and Invisible Data Theft - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">&quot;Anguish&quot;: Invisible Programming Language and Invisible Data Theft</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-05-16 <span class="words-count">| 1417 words |</span> Description of a variant of Brainfuck that uses invisible Unicode characters for its operators and examination of the implication of invisible code on security.</p>
+  <p><em>DISCLAIMER: data theft is a serious crime in many jurisdictions. The author does not condone or encourage anyone to break laws. The information provided here is for educational purposes only.</em></p>
+
+<h2 id="parti:anguish:theinvisibleprogramminglanguage">PART I: <em>Anguish</em>: The Invisible Programming Language</h2>
+
+<p>You may be familiar with funky esoteric languages like <a href="http://esolangs.org/wiki/Ook!">Ook</a> or even <a href="https://en.wikipedia.org/wiki/Whitespace_%28programming_language%29">Whitespace</a>. Those are fun and neat, but I've decided to dial up the crazy a notch and make a completely invisible programming language!</p>
+
+<p>I named it <em>Anguish</em> and, based on my quick googling, I may be a lone wolf at this depth of insanity. In this article, I'll describe the language, go over my implementation of its interpreter, and then talk about some security implications that come with invisible code.</p>
+
+<h3 id="thecode">The Code</h3>
+
+<p>Here's an Anguish program that prints <code>Hello World</code>:</p>
+
+<pre><code>‌﻿⁣‌⁣‍﻿⁣⁣﻿﻿﻿⁡﻿⁢﻿​⁠﻿‌‍⁣⁣‍⁡⁡⁡⁡⁡⁡⁡⁡‌⁠⁡⁡⁡⁡‌⁠⁡⁡⁠⁡⁡⁡⁠⁡⁡⁡⁠⁡​​​​⁢‍⁠⁡⁠⁡⁠⁢⁠⁠⁡‌​‍​⁢‍⁠⁠⁣⁠⁢⁢⁢⁣⁡⁡⁡⁡⁡⁡⁡⁣⁣⁡⁡⁡⁣⁠⁠⁣​⁢⁣​⁣⁡⁡⁡⁣⁢⁢⁢⁢⁢⁢⁣⁢⁢⁢⁢⁢⁢⁢⁢⁣⁠⁠⁡⁣⁠⁡⁡⁣
+</code></pre>
+
+<p>Here's another one that reads in a 4-character string and prints it back out:</p>
+
+<pre><code>⁠﻿⁠﻿⁠﻿​​​⁣⁠⁣⁠⁣⁠⁣
+</code></pre>
+
+<p>Here's code for a full-featured web browser:</p>
+
+<pre><code>⁠
+</code></pre>
+
+<p>OK, the last one I lied about, but the first two <em>are</em> real programs and, if your Unicode support is decent, completely invisible to the human eye (as opposed to, say, spaces and tabs, which are "transparent").</p>
+
+<p><em>Anguish</em> is based on <a href="https://en.wikipedia.org/wiki/Brainfuck">Brainf#%k</a> (BF) except instead of using visible characters, it uses invisible ones. This
+also means we can easily convert any BF program into an <em>Anguish</em> one using
+this simple one-liner:</p>
+
+<pre><code>perl -C -pi -e 'tr/&gt;&lt;+.,[]-/\x{2060}\x{200B}\x{2061}\x{2063}\x{FEFF}\x{200C}\x{200D}\x{2062}/'
+</code></pre>
+
+<p>Here's the character mapping I chose with BF operators on the left
+and Anguish versions of them on the right:</p>
+
+<pre><code>&gt;   [⁠] U+2060 WORD JOINER [Cf]
+&lt;   [​] U+200B ZERO WIDTH SPACE [Cf]
++   [⁡] U+2061 FUNCTION APPLICATION [Cf]
+-   [⁢] U+2062 INVISIBLE TIMES [Cf]
+.   [⁣] U+2063 INVISIBLE SEPARATOR [Cf]
+,   [﻿] U+FEFF ZERO WIDTH NO-BREAK SPACE [Cf]
+[   [‌] U+200C ZERO WIDTH NON-JOINER [Cf]
+]   [‍] U+200D ZERO WIDTH JOINER [Cf]
+</code></pre>
+
+<p>These are—by far—not the only invisible Unicode characters and my choice was
+more or less arbitrary. However, most of the ones I chose can actually be
+abused into Perl 6 terms and operators, which I'll show in Part II.</p>
+
+<h3 id="theinterpreter">The Interpreter</h3>
+
+<p>For the interpreter, I chose the awesome Perl 6 programming language
+and I merely copied over the guts of my
+<a href="http://modules.perl6.org/repo/Inline::Brainfuck">Inline::Brainf#%k</a> Perl 6
+module and changed it to look for <em>Anguish</em> characters.</p>
+
+<p>You can <a href="https://github.com/zoffixznet/perl6-Acme-Anguish/">get the full distro in my repo</a>. Here, I'm replicating the main code:</p>
+
+<pre><code>01: unit module Acme::Anguish;
+02: use Term::termios;
+03:
+04: sub anguish (Str:D $code) is export {
+05:     check-matching-loop $code;
+06:     my $saved-term;
+07:     try {
+08:         $saved-term = Term::termios.new(:1fd).getattr;
+09:         given Term::termios.new(:1fd).getattr {
+10:             .makeraw;
+11:             .setattr(:DRAIN);
+12:         }
+13:     };
+14:     LEAVE { try $saved-term.setattr(:DRAIN) }
+15:
+16:     my @code    = $code.NFC.map(*.chr).grep:
+17:                     * eq "\x2062"|"\x200B"|"\x2060"
+18:                         |"\x2061"|"\x2063"|"\xFEFF"|"\x200C"|"\x200D";
+19:     my $ꜛ       = 0;
+20:     my $cursor  = 0;
+21:     my $stack   = Buf[uint8].new: 0;
+22:     loop {
+23:         given @code[$cursor] {
+24:             when "\x2060" { $stack.append: 0 if $stack.elems == ++$ꜛ;       }
+25:             when "\x200B" { $ꜛ--; fail "Negative cell pointer\n" if $ꜛ &lt; 0; }
+26:             when "\x2061" { $stack[$ꜛ]++;               }
+27:             when "\x2062" { $stack[$ꜛ]--;               }
+28:             when "\x2063" { $stack[$ꜛ].chr.print;       }
+29:             when "\xFEFF" { $stack[$ꜛ] = $*IN.getc.ord; }
+30:             when "\x200C" {
+31:                 $cursor++; next if $stack[$ꜛ];
+32:                 loop {
+33:                     state $level = 1;
+34:                     $level++ if @code[$cursor] eq "\x200C";
+35:                     $level-- if @code[$cursor] eq "\x200D";
+36:                     last unless $level;
+37:                     $cursor++;
+38:                 }
+39:             }
+40:             when "\x200D" {
+41:                 unless $stack[$ꜛ] { $cursor++; next; }
+42:                 loop {
+43:                     state $level = 1;
+44:                     $cursor--;
+45:                     $level-- if @code[$cursor] eq "\x200C";
+46:                     $level++ if @code[$cursor] eq "\x200D";
+47:                     last unless $level;
+48:                 }
+49:             }
+50:         }
+51:         last if ++$cursor &gt; @code.elems;
+52:     }
+53: }
+54:
+55: sub check-matching-loop ($code) {
+56:     my $level = 0;
+57:     for $code.NFC.map: *.chr {
+58:         $level++ if $_ eq "\x200C";
+59:         $level-- if $_ eq "\x200D";
+60:         fail qq{Closing "\\x200D" found without matching "\\x200C"\n}
+61:             if $level &lt; 0;
+62:         LAST { fail 'Unmatched \\x200C \\x200D' if $level &gt; 0 }
+63:     }
+64: }
+</code></pre>
+
+<p>On line 5 (and 55-64), we simply check our loops are matching. Lines 7-14
+set the terminal into non-buffering mode so we can read input by characters.
+On lines 16-21, we prepare our code, stack, and pointers. And the loop on
+lines 22-52 simply iterates over the Anguish code and does things according
+to the operator being processed.</p>
+
+<p>One thing to note is lines 16-18, as well as line 57. You'll notice the
+curious use of <a href="http://docs.perl6.org/routine/NFC#class_Uni"><code>.NFC</code> method</a>.
+It converts our input code into Normal Form Composed.</p>
+
+<p>Perl 6 has advanced Unicode support and, under normal use, the characters we're
+attempting to go over would be made into graphemes in strings
+and some of the codepoints we're abusing would get
+"merged" together when we loop over them. The same would happen with my
+<code>.grep</code> on line 16, had I used a regex, <a href="https://github.com/zoffixznet/perl6-Inline-Brainfuck/blob/4e7a6739a544df079baa8a42d149b1ff1f0e7078/lib/Inline/Brainfuck.pm6#L16">as in my BF interpreter</a>. To avoid the creation of graphemes, I used <code>eq</code> against a
+<a href="http://docs.perl6.org/type/Junction">Junction</a> instead.</p>
+
+<p>This wraps it up for the <em>Anguish</em> language and those with intent can go and
+try to write a full-featured browser in it now. As for the rest of us, let's
+abuse our invisible Unicode chars some more and steal some data!</p>
+
+<h2 id="partii:invisibledatatheft">PART II: Invisible Data Theft</h2>
+
+<p>The beauty of the invisible <em>Anguish</em> characters we used is they aren't
+"spacey", but are formatting characters. This means in Perl 6 we can
+abuse them and create invisible terms and operators. The innocuous version
+may look rather cute:</p>
+
+<pre><code>sub infix:&lt;⁣&gt; { $^a + $^b };
+say 2⁣2;
+
+# OUTPUT:
+# 4
+</code></pre>
+
+<p>Here is where I placed the INVISIBLE SEPARATOR character that produced
+the effect:</p>
+
+<pre><code>sub infix:&lt;&lt;U+2063&gt;&gt; { $^a + $^b };
+say 2&lt;U+2063&gt;2;
+</code></pre>
+
+<p>If we now consider the expression:</p>
+
+<pre><code>my $x = 42;
+</code></pre>
+
+<p>We can silently add code to that expression that will steal the assigned value.
+We'll create a very loose invisible prefix operator and pop it at the start
+of the line. Let's observe the results:</p>
+
+<pre><code>sub prefix:&lt;⁣&gt; is tighter(&amp;infix:&lt;or&gt;) { say $^a };
+⁣my $x = 42;
+
+# OUTPUT
+# 42
+</code></pre>
+
+<p>Again, here's the visible version of the program, with the placement of the
+invisible char included:</p>
+
+<pre><code>sub prefix:&lt;&lt;U+2063&gt;&gt; is tighter(&amp;infix:&lt;or&gt;) { say $^a };
+&lt;U+2063&gt;my $x = 42;
+</code></pre>
+
+<p>Let's get evil!</p>
+
+<h3 id="exportingmaliciousoperators">Exporting Malicious Operators</h3>
+
+<p>Now, if we just plop down our data thieving code in the middle of an
+important piece of software, someone will likely notice it. Instead, we'll
+insert it into and export from some auxiliary module no one's likely to
+start poking in. We'll also disguise our code with a clever comment to make
+it look rather innocent:</p>
+
+<pre><code># In SomethingInnocent.pm6:
+unit module SomethingInnocent;
+
+... code ...
+
+# Debugging helper
+sub prefix:&lt;⁣&gt; is tighter(&amp;infix:&lt;or&gt;) is export {spurt 'DEBUG.txt', $^a, :append};
+
+... code ...
+</code></pre>
+
+<p>It's a debug helper and it just prints into a DEBUG.txt file. Feels like
+something that could easily slip in. Once again, I'm using
+<code>U+2063</code> character for the name of the operator.
+Alright, now we're set to steal some data from an important piece of code:</p>
+
+<pre><code># In ReallyImportantAndSecretCode.p6
+use SomethingInnocent;
+⁣my $credit_card = '3333-4444-4444-4444'; # pretend this is coming in from DB
+</code></pre>
+
+<p>As with the earlier example, I've inserted <code>U+2063</code> character right before
+<code>my</code> in this code. It's our malicious operator that gets automatically
+imported from <code>SomethingInnocent</code>. When the code is run, our operator
+gets called with the value of <code>$credit_card</code> and we dump it to our secret
+file <code>DEBUG.txt</code>. Data theft completed.</p>
+
+<h3 id="waitaminutewhataboutgitcommits">Wait a minute! What about git commits?</h3>
+
+<p>It's true, the change we made in <code>ReallyImportantAndSecretCode.p6</code> <em>will</em> show
+up as a changed line in the commit... but it's a change involving an
+invisible character. Depending on the tooling used, it might just look
+like ditched whitespace at the end of the line. It's certainly not something
+I'd pay too much attention to were I reviewing the commit.
+While my command line tools revealed the
+invisible characters as their Unicode numbers, here's what my adding a bunch
+of invisible characters to text looks like on GitHub:</p>
+
+<p><img src="/assets/stock/20160516-Anguish-language.jpg" alt="" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p><em>Anguish</em> is a language for true computer masochists who would love to question whether their program actually exists. However, the language does point out to us the reality of existence of Unicode characters that make sense
+in one domain but are outright dangerous in another. We already avoid some
+abusable characters in domain names and it's time to apply the same practice
+in other domains, such as programming languages.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

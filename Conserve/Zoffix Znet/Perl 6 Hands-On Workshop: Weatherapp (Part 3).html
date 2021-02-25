@@ -1,11 +1,421 @@
-https://perl6.party/<a href="/post/Perl-6-Hands-On-Workshop--Weatherapp--Part-3
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Hands-On-Workshop--Weatherapp--Part-3
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Hands-On Workshop: Weatherapp (Part 3) - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Hands-On Workshop: Weatherapp (Part 3)</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-05-29 <span class="words-count">| 2243 words |</span> Developing a weather reporting application. Part 3: writing tests</p>
+  <p><em>Be sure to read <a href="/post/Perl-6-Hands-On-Workshop--Weatherapp--Part-1">Part 1</a> and <a href="/post/Perl-6-Hands-On-Workshop--Weatherapp--Part-2">Part 2</a>
+of this workshop first.</em></p>
+
+<p>There is black box testing, glass box testing, unit testing, integration testing, functional testing, system testing, end-to-end testing, sanity testing, regression testing, acceptance testing, load testing, stress testing, performance testing, usability testing, and many more types of testing.</p>
+
+<p>I'll leave it for people with thicker glasses to <a href="http://www.testingexcellence.com/types-of-software-testing-complete-list/">explain all of the
+types</a>. Today, we'll write tests that ensure our weather reporting module
+works as expected, and as a bonus, you get to pick your own label for what
+type of tests these are. Let's dive in!</p>
+
+<h2 id="tdd">TDD</h2>
+
+<p>TDD (Test-Driven Development) is where you write a bunch of tests
+before you write the actual code, ensure they
+fail—because code to satisfy them isn't there yet—and then you write code
+until the tests succeed. Now you can safely refactor your code or add new
+features without worrying you'll break something. Rinse and repeat.</p>
+
+<p>Not only do you avoid having to convince yourself to bother writing tests after
+your code seems to work, you also get a feel for how comfortable your interface
+is to use before you even create it.</p>
+
+<h2 id="testingmodules">Testing Modules</h2>
+
+<p>Perl 6 comes with a number of standard modules included, one of which is
+a module called <a href="https://docs.perl6.org/language/testing"><code>Test</code></a>
+that we'll use. The Ecosystem also has dozens of
+<a href="https://modules.perl6.org/#q=Test">other test related modules</a> and we'll use
+two called <a href="https://modules.perl6.org/dist/Test::When"><code>Test::When</code></a> and
+<a href="https://modules.perl6.org/dist/Test::META"><code>Test::META</code></a></p>
+
+<p><code>Test</code> provides all the generic testing routines we'll use, <code>Test::When</code> will
+let us watch for when the user actually agreed to run specific types of tests,
+and <code>Test::META</code> will keep an eye on the sanity of our distribution's META file
+(more on that later).</p>
+
+<p>To install <code>Test::When</code> and <code>Test::META</code>, run
+<code>zef install Test::When Test::META</code> or
+<code>panda install Test::When Test::META</code>,
+depending on which module manager you're using.</p>
+
+<h2 id="testingfiles">Testing Files</h2>
+
+<p>Our testing files are named with the extension <code>.t</code> and go into
+<code>t/</code> directory. They will be automatically discovered and run
+by module managers during installation of our module.</p>
+
+<p>You are free to organize your tests under subdirectories; they will still
+be automatically found. It's also common to prefix the names of tests with a
+sequential number, e.g. <code>00-init.t</code>, <code>01-methods.t</code>, etc. It's more of an
+organizational practice and in no way should your tests in one file depend on
+whether tests in another file ran first.</p>
+
+<h2 id="boilerplate">Boilerplate</h2>
+
+<pre><code>use Test;
+
+use My::Module;
+is get-stuff(), 'the right stuff', 'The stuff we received is correct';
+
+done-testing;
+
+# or
+
+use Test;
+
+plan 1;
+
+use My::Module;
+is get-stuff(), 'the right stuff', 'The stuff we received is correct';
+</code></pre>
+
+<p>The two versions above differ in that the first doesn't care how many tests
+you run and the second expects exactly one test to run. The former knows
+all tests ran when <code>done-testing</code> is called while the latter counts how
+many ran and complains if the count doesn't match the plan.</p>
+
+<p>The version without a plan is generally easier to use, especially in a
+highly collaborative environment where multiple people might be adding
+tests to the file, so keeping an accurate test count becomes annoying. The
+one thing to be careful with planless method is this:</p>
+
+<pre><code>my @results = get-results;
+for @results.kv -&gt; $i, $v {
+    is $v, 'expected', "result #{$i+1} is correct";
+}
+</code></pre>
+
+<p>This test will run correctly regardless of how many results we get in
+<code>@results</code>, even if it is none! We should add an additional test that
+ensures <code>@results</code> contains the correct number of results:</p>
+
+<pre><code>is @results.elems, 5, 'got five results';
+</code></pre>
+
+<h2 id="ourfiles">Our Files</h2>
+
+<p>We'll create two test files and our directory structure will look like this:</p>
+
+<pre><code>t
+├── key
+├── 01-use.t
+├── author
+│   └── 01-meta.t
+└── online
+    └── 01-weather-for.t
+</code></pre>
+
+<p>We placed our META file test into an <code>author</code> subdirectory because that test
+is useful only for us and not the user, so there's no point in having to
+require them to install the extra modules. The same logic should apply to
+other tests, like ones that test documentation completeness or any other test
+failing which does not mean the module itself is broken. No one wants their
+build to stall just because you didn't document a new experimental method, so
+we should avoid running those tests on the installer's machine.</p>
+
+<p>Our main test file goes into <code>online</code> directory, as it will be run only when the
+installer requests online tests. The names of these subdirectories are arbitrary
+and their existence is purely for organizational purposes. Whether the tests are
+actually run is controlled by <code>Test::When</code> module.</p>
+
+<p>Last but not least, we have the <code>key</code> file containing our API key. This
+way, we don't hardcode it into any one test, it's more obvious that this
+sort of data is present in our codebase, and we know where to go if
+we have to replace it (even if we add multiple files that need the key).
+Depending on the service you are using, you may choose to make the key
+entirely private and ask the installer to enter their own key. Some services
+offer tester keys or sandboxed endpoints precisely for the purposes of users
+running tests.</p>
+
+<p>The <code>01-use.t</code> and <code>author/01-meta.t</code> tests are rather unspectacular.</p>
+
+<pre><code># t/01-use.t
+use Test;
+
+use-ok 'WebService::Weather';
+
+done-testing;
+</code></pre>
+
+<p>We call <a href="https://docs.perl6.org/language/testing#Testing_modules"><code>use-ok</code></a>
+that tests whether the module can be loaded and we give it the name of
+our future module as the argument. Generally, this test isn't needed,
+since you're going to <code>use</code> your module to bring in the functionality for
+testing anyway. In this particular case, however, all of our other tests
+may get skipped (installer doesn't ask for author/online tests),
+resulting in <code>Result: NOTESTS</code> output,
+which I don't entirely trust for all module installers to know to interpret as
+success.</p>
+
+<p>The Meta file test is just a copy-paste from
+<a href="https://github.com/jonathanstowe/Test-META#synopsis">the docs</a>, which works
+for any distribution:</p>
+
+<pre><code># t/author/01-meta.t
+use Test::When &lt;author&gt;;
+use Test;
+use Test::META;
+
+meta-ok;
+
+done-testing;
+</code></pre>
+
+<p>In both tests we include <code>Test</code> module and call <code>done-testing</code> at the end.
+In the Meta file test we've used <code>use Test::When &lt;author&gt;</code> to indicate
+this test
+<a href="https://github.com/zoffixznet/perl6-Test-When#author">is an author test</a>
+and we'll need to set an environmental variable for it to run—more on that
+later.</p>
+
+<h2 id="maintest">Main Test</h2>
+
+<p>To write the main test, we'll peak into what sort of values
+<a href="http://api.openweathermap.org/data/2.5/weather?q=London&amp;appid=4f5572bc11dda69c43a0114ce5ce4116">the API returns</a> and try to model them. We need to strike a balance
+between knowing we received a legit value from our subroutine or method, while
+not making the test so precise that it fails the minute the valid value we
+receive decided to wear a hat and put on makeup.</p>
+
+<p>Here's the code for the test:</p>
+
+<pre><code># t/online/01-weather-for.t
+use Test::When &lt;online&gt;;
+use Test;
+use WebService::Weather;
+
+for ('London'), ('London', 'ca') -&gt; $args {
+    subtest {
+        my $result = weather-for |$args;
+
+        isa-ok $result, 'WebService::Weather::Result',
+            'result is of a correct data type';
+
+        does-ok $result."$_"(), Numeric, "$_ is numerical"
+            for &lt;temp wind precip&gt;;
+
+        cmp-ok $result.temp,   &amp;[&lt;],  70,   'temperature is not too high';
+        cmp-ok $result.temp,   &amp;[&gt;],  -100, 'temperature is not too low';
+        cmp-ok $result.wind,   &amp;[&lt;],  120,  'wind speed is not too high';
+        cmp-ok $result.wind,   &amp;[&gt;=], 0,    'wind speed is not too low';
+        cmp-ok $result.precip, &amp;[&lt;],  3200, 'precipitation is not too high';
+        cmp-ok $result.precip, &amp;[&gt;=], 0,    'precipitation is not too low';
+    }, "Testing with args: $args";
+}
+
+isa-ok weather-for('blargs' x 12), Failure,
+    'we get a Failure for unknown city';
+
+done-testing;
+</code></pre>
+
+<p>We use <code>Test::When</code> to mark this test as requiring an active Internet
+connection, so the test will only run when the installer explicitly
+requests to do so via an environmental variable. We also <code>use</code> the module we'll
+make.</p>
+
+<p>In the first <code>for</code> loop, we're iterating over two sets of arguments:
+city only and city + country. The loop executes a <code>subtest</code> on each
+iteration, delineating our results in the output nicely. When we call
+<code>weather-for</code> we <a href="https://docs.perl6.org/type/Slip"><code>Slip</code></a> each set of
+arguments in and save the return value into our <code>$result</code>.</p>
+
+<p>We follow the interface described in <a href="https://github.com/zoffixznet/perl6-Workshop-1-Weatherapp/blob/master/DESIGN.md#interface-details">our DESIGN doc</a> to write the tests for the result. It needs
+to be an object and it has <code>.temp</code>, <code>.wind</code>, and <code>.precip</code> methods and
+their values are <a href="https://docs.perl6.org/type/Numeric"><code>Numeric</code></a>.</p>
+
+<p>The <a href="https://docs.perl6.org/language/testing#By_object_type"><code>isa-ok</code> sub</a> tests
+our result is of the correct class and
+<a href="https://docs.perl6.org/language/testing#By_role"><code>does-ok</code> sub</a> checks
+all of the return values do the <a href="https://docs.perl6.org/type/Numeric"><code>Numeric</code> role</a>—note how we simply used another
+<code>for</code> loop there, to avoid duplicating the test code.</p>
+
+<p>The last segment of the test uses a bunch of <a href="https://docs.perl6.org/language/testing#By_arbitrary_comparison"><code>cmp-ok</code></a>
+tests to check the sanity of the range of the returned values. Since we
+don't know what the weather is like on the day we're running the test, we
+can't check for the exact values. I've consulted with the
+<a href="https://en.wikipedia.org/wiki/List_of_weather_records">list of weather records</a>
+to get an idea for the range of the values we're expecting.</p>
+
+<p>Lastly, outside our main <code>for</code> loop, we have one more test that gives
+<code>weather-for</code> a garbage city name and tests that it returns a
+<a href="http://docs.perl6.org/type/Failure"><code>Failure</code> object</a>.</p>
+
+<p>We're done with our tests, so let's commit them:</p>
+
+<pre><code>git add t
+git commit -m 'Write tests'
+git push
+</code></pre>
+
+<p>Your distribution structure should look <a href="https://github.com/zoffixznet/perl6-Workshop-1-Weatherapp/tree/bfdd41d052e5f909125d65a01ddf63be8d0145a7">something like this</a> now.</p>
+
+<h2 id="extratesting">Extra Testing</h2>
+
+<p>Our tests did not test absolutely everything that can be tested. What
+happens when a city is an empty string? What happens when it's not
+a string? What happens when we give a garbage value for the country? What
+happens when network connection fails?</p>
+
+<p>We could add that, but keep one thing in mind: tests are code and code needs
+maintenance. If adding a couple lines of code to your program requires you
+to also dig through thousands of lines of tests, you're going to have a
+bad day.</p>
+
+<p>So how much testing is enough? It depends on the type of the software
+you're writing. If your software failing will result in the loss of human
+life (e.g. medical software) or loss of a large investment (e.g. software
+for space probes) you better make sure you test every possible case. On the
+other end, if you're writing a <a href="https://en.wikipedia.org/wiki/Cowsay">cowsay</a>
+clone, you may scrimp on tests for the sake of easier maintenance.</p>
+
+<h2 id="runningthetests">Running The Tests</h2>
+
+<p>To run the tests, we use the <code>prove</code> command and pass <code>perl6</code> as executable
+to use. Since the modules we're writing tend to live in <code>lib/</code> directory, we
+should also pass the <code>-I</code> command line switch to include that directory in the
+module search path. We'll also tell it to find test files recursively and be
+verbose with its output. Thus, the full command is:</p>
+
+<pre><code>prove -e 'perl6 -Ilib' -vr t/
+</code></pre>
+
+<p>Where <code>t/</code> is the directory with our tests, but we can give it individual
+test files as well. For convenience, I aliased the above command in my
+<code>.bash_aliases</code> file:</p>
+
+<pre><code>alias prove6="prove -e 'perl6 -Ilib' -vr"
+</code></pre>
+
+<p>And then I just use it as</p>
+
+<pre><code>prove6 t/
+</code></pre>
+
+<p>Try running the tests right now. Unsurprisingly, they fail!</p>
+
+<pre><code>...
+# Failed test 'The module can be use-d ok'
+...
+</code></pre>
+
+<p>These failures will be our instructions on what to do next while implementing
+the module, which we'll cover in the next post!</p>
+
+<h2 id="refiningthedesign">Refining the Design</h2>
+
+<p>At this point, we got a feel for using the code we haven't even written yet and
+that type of code is much cheaper to change than one we've written and shipped.
+Does anything feel off or awkward to use? Are we missing anything? Does
+anything seem redundant? If yes, we probably should alter our design.</p>
+
+<p>Three things jump out with our weather module:</p>
+
+<ul>
+<li>We don't know why we failed. Was the city name wrong? Did the service change and now we're not giving it the correct arguments? Was it a network error?
+Perhaps, we should add some exception classes and throw one of them, depending
+on the error.</li>
+<li>We don't know whether we got the weather for the correct city. Calling with
+<code>('London')</code> gives weather for London in Britain, but calling with
+<code>('London', 'ca')</code> gives weather for London in Ontario, Canada. Perhaps,
+we could add a <code>.location</code> method to our result object that would return
+City + Country of the actual location we received the weather for.</li>
+<li>An astute reader will notice we never specced how <code>weather-for</code> obtains
+<strong>the API key!</strong> There are several approaches. We can specify it on the
+<code>use</code> line or call a <code>key</code> subroutine and store it in a class variable—both of
+which will restrict your program to use just one API key. Another way may be
+to pass a <code>:key</code> named argument to <code>weather-for</code> or even redesign the interface
+to be Object Oriented, with key specified as an attribute to the
+<code>WebService::Weather</code> object.</li>
+</ul>
+
+<h2 id="homework">Homework</h2>
+
+<p>Several problems with our code/design were brought up in this articles: we
+don't know how to specify the API key to use,
+tests don't test for everything, and we could use some extra features, such
+as precise failure mode indicators and providing the location of in the result.</p>
+
+<p>Try to alter the design and modify the tests to accommodate that stuff.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Today, we broke ground by laying down the first code for our app. This code
+tests the functionality of the actual app code we're yet to write.</p>
+
+<p>Ensuring your code works is important and having automated tests do that
+for you lets you modify your code without fear that you'll break something.
+The amount of tests you write depends on the type of your application. As
+tests require maintenance and you need to strike a balance between
+having your application work "correctly enough" and adding extra maintenance
+work for you.</p>
+
+<p>In the next post, we'll write the actual code to fetch weather information.
+Get excited!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

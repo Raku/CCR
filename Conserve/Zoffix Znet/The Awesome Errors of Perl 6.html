@@ -1,11 +1,541 @@
-https://perl6.party/<a href="/post/The-Awesome-Errors-of-Perl-6
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/The-Awesome-Errors-of-Perl-6
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>The Awesome Errors of Perl 6 - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">The Awesome Errors of Perl 6</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-08-15 <span class="words-count">| 2762 words |</span> The show off and the explanation of Perl 6 errors.</p>
+  <p>If you're following tech stuff, you probably know by now about the folks
+at Rust land working on <a href="https://internals.rust-lang.org/t/new-error-format/3438">some totally awesome error reporting
+capabilities</a>. Since
+Perl 6 is also known for its Awesome Errors,
+<a href="https://twitter.com/shadowcat_mst">mst</a> inquired for some examples to show
+off to the rustaceans, and unfortunately I drew a blank...</p>
+
+<p>Errors are something I try to avoid and rarely read in full. So I figured I'll
+hunt down some cool examples of Awesome Errors and write about them. While
+I could just bash my head on the keyboard and paste the output, that'd be quite
+boring to read, so I'll talk about some of the tricky errors that might not
+be obvious to beginners, and how to fix them.</p>
+
+<p>Let the head bashing begin!</p>
+
+<h2 id="thebasics">The Basics</h2>
+
+<p>Here's some code with an error in it;</p>
+
+<pre><code>say "Hello world!;
+say "Local time is {DateTime.now}";
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Two terms in a row (runaway multi-line "" quote starting at line 1 maybe?)
+# at /home/zoffix/test.p6:2
+# ------&gt; say "⏏Local time is {DateTime.now}";
+#     expecting any of:
+#         infix
+#         infix stopper
+#         postfix
+#         statement end
+#         statement modifier
+#         statement modifier loop
+</code></pre>
+
+<p>The first line is missing the closing quote on the string, so everything
+until the opening quote on the second line is still considered part of the
+string. Once the supposedly closing quote is found, Perl 6 sees word "Local,"
+which it identifies as a term. Since two terms in a row are not allowed in
+Perl 6, the compiler throws an error, offering some suggestions on what it was
+expecting, and it detects we're in a string and suggests we check we didn't
+forget a closing quote on line 1.</p>
+
+<p>The <code>===SORRY!===</code> part doesn't mean you're running the Canadian version
+of the compiler, but rather that the error is a compile-time (as compared
+to a run-time) error.</p>
+
+<h2 id="nom-nom-nom-nom">Nom-nom-nom-nom</h2>
+
+<p>Here's an amusing error. We have a subroutine that returns things, so we call
+it and use a <code>for</code> loop to iterate over the values:</p>
+
+<pre><code>sub things { 1 … ∞ }
+
+for things {
+    say "Current stuff is $_";
+}
+
+# ===SORRY!===
+# Function 'things' needs parens to avoid gobbling block
+# at /home/zoffix/test.p6:5
+# ------&gt; }⏏&lt;EOL&gt;
+# Missing block (apparently claimed by 'things')
+# at /home/zoffix/test.p6:5
+# ------&gt; }⏏&lt;EOL&gt;
+</code></pre>
+
+<p>Perl 6 lets you omit parentheses when calling subroutines. The error talks
+about gobbling blocks. What happens is the block we were hoping to
+give to the <code>for</code> loop is actually being passed to the subroutine as an
+argument instead. The second error in the output corroborates by saying
+the <code>for</code> loop is missing its block (and makes a suggestion it was taken by
+the our <code>things</code> subroutine).</p>
+
+<p>The first error tells us how to fix the issue: <code>Function 'things' needs parens</code>,
+so our loop needs to be:</p>
+
+<pre><code>for things() {
+    say "Current stuff is $_";
+}
+</code></pre>
+
+<p>However, were our subroutine actually expecting a block to be passed, no
+parentheses would be necessary. Two code blocks side by side would result in
+"two terms in a row" error we've seen above, so Perl 6 knows to pass the first
+block to the subroutine and use the second block as the body of the <code>for</code> loop:</p>
+
+<pre><code>sub things (&amp;code) { code }
+
+for things { 1 … ∞ } {
+    say "Current stuff is $_";
+}
+</code></pre>
+
+<h2 id="didyoumeanlevestein">Did You Mean Levestein?</h2>
+
+<p>Here's a cool feature that will not only tell you you're wrong, but also
+point out what you might've meant:</p>
+
+<pre><code>sub levenshtein {}
+levestein;
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Undeclared routine:
+#     levestein used at line 2. Did you mean 'levenshtein'?
+</code></pre>
+
+<p>When Perl 6 encounters names it doesn't recognize it computes
+<a href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein distance</a> for
+the things it <em>does</em> know to try to offer a useful suggestion. In the instance
+above it encountered an invocation of a subroutine it didn't know about. It
+noticed we do have a similar subroutine, so it offered it as an alternative.
+No more staring at the screen, trying to figure out where you made the typo!</p>
+
+<p>The feature doesn't consider everything under the moon each time it's
+triggered, however. Were we to capitalize the sub's name to <code>Levenshtein</code>, we
+would no longer get the suggestion, because for things that start with a
+capital letter, the compiler figures it's likely a type name and not a
+subroutine name, so it checks for those instead:</p>
+
+<pre><code>class Levenshtein {}
+Lvnshtein.new;
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Undeclared name:
+#    Lvnshtein used at line 2. Did you mean 'Levenshtein'?
+</code></pre>
+
+<h2 id="onceyougoseqyounevergoback">Once You Go Seq, You Never Go Back</h2>
+
+<p>Let's say you make a short sequence of Fibonacci numbers. You print it and
+then you'd like to print it again, but this time square each member. What
+happens?</p>
+
+<pre><code>my $seq = (1, 1, * + * … * &gt; 100);
+$seq             .join(', ').say;
+$seq.map({ $_² }).join(', ').say;
+
+# 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144
+# This Seq has already been iterated, and its values consumed
+# (you might solve this by adding .cache on usages of the Seq, or
+# by assigning the Seq into an array)
+#   in block &lt;unit&gt; at test.p6 line 3
+</code></pre>
+
+<p>Ouch! A run-time error. What's happening is the <a href="https://docs.perl6.org/type/Seq"><code>Seq</code>
+type</a>
+we get from the <a href="https://docs.perl6.org/language/operators#index-entry-..._operators">the sequence
+operator</a>
+doesn't keep stuff around. When you iterate over it, each time it gives you
+a value, it discards it, so once you've iterated over the entire <code>Seq</code>, you're
+done.</p>
+
+<p>Above, we're attempting to iterate over it again, and so the Rakudo runtime
+cries and complains, because it can't do it. The error message does offer two
+possible solutions.
+We can either use the <a href="https://docs.perl6.org/routine/cache"><code>.cache</code> method</a>
+to obtain a <code>List</code> we'll iterate over:</p>
+
+<pre><code>my $seq = (1, 1, * + * … * &gt; 100).cache;
+$seq             .join(', ').say;
+$seq.map({ $_² }).join(', ').say;
+</code></pre>
+
+<p>Or we can use an <a href="https://docs.perl6.org/type/Array">Array</a> from the get
+go:</p>
+
+<pre><code>my @seq = 1, 1, * + * … * &gt; 100;
+@seq             .join(', ').say;
+@seq.map({ $_² }).join(', ').say;
+</code></pre>
+
+<p>And even though we're storing the <code>Seq</code> in an <code>Array</code>, it won't get reified
+until it's actually needed:</p>
+
+<pre><code>my @a = 1 … ∞;
+say @a[^10];
+
+# OUTPUT:
+# (1 2 3 4 5 6 7 8 9 10)
+</code></pre>
+
+<h2 id="thesearenttheattributesyourelookingfor">These Aren't The Attributes You're Looking For</h2>
+
+<p>Imagine you have a class. In it, you have some private attributes and you've
+got a method that does a regex match using the value of that attribute as part
+of it:</p>
+
+<pre><code>class {
+    has $!prefix = 'foo';
+    method has-prefix ($text) {
+        so $text ~~ /^ $!prefix/;
+    }
+}.new.has-prefix('foobar').say;
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Attribute $!prefix not available inside of a regex, since regexes are methods on Cursor.
+# Consider storing the attribute in a lexical, and using that in the regex.
+# at /home/zoffix/test.p6:4
+# ------&gt;         so $text ~~ /^ $!prefix⏏/;
+#     expecting any of:
+#         infix stopper
+</code></pre>
+
+<p>Oops! What happened?</p>
+
+<p>It's useful to understand that as far as the parser is concerned, Perl 6 is
+actually braided from several languages: Perl 6, Quote, and Regex languages
+are parts of that braiding. This is why stuff like this Just Works™:</p>
+
+<pre><code>say "foo { "bar" ~ "meow" } ber ";
+
+# OUTPUT:
+# foo barmeow ber
+</code></pre>
+
+<p>Despite the interpolated code block using the same <code>"</code> quotes to delimit the
+strings within it as the quotes on our original string, there's no conflict.
+However, the same mechanism presents us with a limitation in regexes, because
+in them, the looked up attributes belong to the <code>Cursor</code> object responsible
+for the regex.</p>
+
+<p>To avoid the error, simply use a temporary variable to store the <code>$!prefix</code>
+in—as suggested by the error message—or use the <code>given</code> block:</p>
+
+<pre><code>class {
+    has $!prefix = 'foo';
+    method has-prefix ($text) {
+        given $!prefix { so $text ~~ /^ $_/ }
+    }
+}.new.has-prefix('foobar').say;
+</code></pre>
+
+<h2 id="de-ranged">De-Ranged</h2>
+
+<p>Ever tried to access an element of a list that's out of range?</p>
+
+<pre><code>my @a = &lt;foo bar ber&gt;;
+say @a[*-42];
+
+# Effective index out of range. Is: -39, should be in 0..Inf
+#  in block &lt;unit&gt; at test.p6 line 2
+</code></pre>
+
+<p>In Perl 6, to index an item from the end of a list, you use funky syntax:
+<code>[*-42]</code>. That's actually a closure that takes an argument (which is the
+number of elements in the list), subtracts 42 from it, and the return value
+is used as an actual index. You could use <code>@a[sub ($total) { $total - 42 }]</code>
+instead, if you were particularly bored.</p>
+
+<p>In the error above, that index ends up being <code>3 - 42</code>, or <code>-39</code>, which is
+the value we see in the error message. Since indexes cannot be negative,
+we receive the error, which also tells us the index must be 0 to positive
+infinity (with any indexes above what the list contains returning <code>Any</code> when
+looked up).</p>
+
+<h2 id="arosebyanyothernamewouldcodeassweet">A Rose By Any Other Name, Would Code As Sweet</h2>
+
+<p>If you're an active user of Perl 6's sister language, the Perl 5, you may
+sometimes write Perl-5-isms in your Perl 6 code:</p>
+
+<pre><code>say "foo" . "bar";
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Unsupported use of . to concatenate strings; in Perl 6 please use ~
+# at /home/zoffix/test.p6:1
+# ------&gt; say "foo" .⏏ "bar";
+</code></pre>
+
+<p>Above, we're attempting to use Perl 5's concatenation operator to concatenate
+two strings. The error mechanism is smart enough to detect such usage
+and to recommend the use of the correct <code>~</code> operator instead.</p>
+
+<p>This is not the only case of such detection. There are many. Here's another
+example, detecting accidental use of Perl 5's diamond operator, with
+several suggestions of what the programmer may have meant:</p>
+
+<pre><code>while &lt;&gt; {}
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Unsupported use of &lt;&gt;; in Perl 6 please use lines() to read input, ('') to
+# represent a null string or () to represent an empty list
+# at /home/zoffix/test.p6:1
+# ------&gt; while &lt;⏏&gt; {}
+</code></pre>
+
+<h2 id="heredoctheredoceverywheredoc">Heredoc, Theredoc, Everywheredoc</h2>
+
+<p>Here's an evil error and there's nothing awesome about it, but I figured I'd
+mention it, since it's easy to debug if you know about it, and quite annoying
+if you don't. The error is evil enough that it may have been already improved
+if you're reading this far enough in the future from when I'm writing this.</p>
+
+<p>Try to spot what the problem is... read the error at the bottom first, as if
+you were the one who wrote (and so, are familiar with) the code:</p>
+
+<pre><code>my $stuff = qq:to/END/;
+Blah blah blah
+END;
+
+for ^10 {
+    say 'things';
+}
+
+for ^20 {
+    say 'moar things';
+}
+
+sub foo ($wtf) {
+    say 'oh my!';
+}
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# Variable '$wtf' is not declared
+# at /home/zoffix/test.p6:13
+# ------&gt; sub foo (⏏$wtf) {
+</code></pre>
+
+<p>Huh? It's crying about an undeclared variable, but it's pointing to a
+signature of a subroutine. Of course it won't be declared. What sort of
+e-Crack is the compiler smoking?</p>
+
+<p>For those who didn't spot the problem: it's the spurious semicolon after
+the closing <code>END</code> of the heredoc. The heredoc ends where the closing delimiter
+appears on a line all by itself. As far as the compiler is concerned, we've
+not seen the delimiter
+at <code>END;</code>, so it <em>continues</em> parsing as if it were still parsing the heredoc.
+A <code>qq</code> heredoc lets you interpolate variables, so when the parser gets to the
+<code>$wtf</code> variable in the signature, it has no idea it's in a signature of an
+actual code and not just some random text, so it cries about the variable
+being undeclared.</p>
+
+<h2 id="wontsomeonethinkofthereader">Won't Someone Think of The Reader?</h2>
+
+<p>Here's a great error that prevents you from writing horrid code:</p>
+
+<pre><code>my $a;
+sub {
+    $a.say;
+    $^a.say;
+}
+
+# ===SORRY!=== Error while compiling /home/zoffix/test.p6
+# $a has already been used as a non-placeholder in the surrounding sub block,
+#   so you will confuse the reader if you suddenly declare $^a here
+# at /home/zoffix/test.p6:4
+# ------&gt;         $^a⏏.say;
+</code></pre>
+
+<p>Here's a bit of a background: you can use the
+<a href="https://docs.perl6.org/language/variables#index-entry-%24^"><code>$^</code> twigil</a>
+on variables to create an implicit signature. To make it possible to use such
+variables in nested blocks, this syntax actually creates the same variable
+without the twigil, so <code>$^a</code> and <code>$a</code> are the same thing, and the signature
+of the sub above is <code>($a)</code>.</p>
+
+<p>In our code, we also have an <code>$a</code> in outer scope and supposedly we print it
+first, before using the <code>$^</code> twigil to create another <code>$a</code> in the same scope,
+but one that contains the argument to the sub... complete brain-screw! To
+avoid this, just rename your variables to something that doesn't clash. How
+about some Thai?</p>
+
+<pre><code>my $ความสงบ = 'peace';
+sub {
+    $ความสงบ.say;
+    $^กับตัวแปรของคุณ.say;
+}('to your variables');
+
+# OUTPUT:
+# peace
+# to your variables
+</code></pre>
+
+<h2 id="wellcolourmeerrpressed">Well, Colour Me Errpressed!</h2>
+
+<p>If your terminal supports it, the compiler will emit ANSI codes to colourize
+the output a bit:</p>
+
+<pre><code>for ^5 {
+    say meow";
+}
+</code></pre>
+
+<p><img src="/assets/pics/awesome-errors.png" alt="" /></p>
+
+<p>That's all nice and spiffy, but if you're, say, capturing output from the
+compiler to display it elsewhere, you may get the ANSI code as is, like
+<code>31m===[0mSORRY![31m===[0m</code>.</p>
+
+<p>That's awful, but luckily, it's easy to disable the colours: just set
+<code>RAKUDO_ERROR_COLOR</code> environmental variable to <code>0</code>:</p>
+
+<p><img src="/assets/pics/awesome-errors2.png" alt="" /></p>
+
+<p>You can set it from within the program too. You just have to do it early
+enough, so put it somewhere at the start of the program and use the
+<a href="https://docs.perl6.org/language/phasers#BEGIN"><code>BEGIN</code> phaser</a> to set it
+as soon as the assignment is compiled:</p>
+
+<pre><code>BEGIN %*ENV&lt;RAKUDO_ERROR_COLOR&gt; = 0;
+
+for ^5 {
+    say meow";
+}
+</code></pre>
+
+<h2 id="anexceptionalfailure">An Exceptional Failure</h2>
+
+<p>Perl 6 has a special exception—<a href="https://docs.perl6.org/type/Failure"><code>Failure</code></a>—that
+doesn't explode until you try to use it as a value, and you can even defuse it
+entirely by using it in boolean context. You can produce your own Failures
+by calling the <a href="https://docs.perl6.org/routine/fail"><code>fail</code></a> subroutine and
+Perl 6 uses them in core whenever it can.</p>
+
+<p>Here's a piece of code where we define a prefix operator for calculating the
+circumference of an object, given its radius. If the radius is negative,
+it calls <code>fail</code>, returning a <code>Failure</code> object:</p>
+
+<pre><code>sub prefix:&lt;⟳&gt; (\𝐫) {
+    𝐫 &lt; 0 and fail 'Your object warps the Universe a new one';
+    τ × 𝐫;
+}
+
+say 'Calculating the circumference of the mystery object';
+my $cₘ = ⟳ −𝑒;
+
+say 'Calculating the circumference of the Earth';
+my $cₑ = ⟳ 6.3781 × 10⁶;
+
+say 'Calculating the circumference of the Sun';
+my $cₛ = ⟳ 6.957 × 10⁸;
+
+say "The circumference of the largest object is {max $cₘ, $cₑ, $cₛ} metres";
+
+# OUTPUT:
+# Calculating the circumference of the mystery object
+# Calculating the circumference of the Earth
+# Calculating the circumference of the Sun
+# Your object warps the Universe a new one
+#   in sub prefix:&lt;⟳&gt; at test.p6 line 2
+#   in block &lt;unit&gt; at test.p6 line 7
+#
+# Actually thrown at:
+#   in block &lt;unit&gt; at test.p6 line 15
+</code></pre>
+
+<p>We're calculating the circumference for a negative radius on line 7, so if
+it were just a regular exception, our code would die there and then. Instead,
+by the output we can see that we <em>continue</em> to calculate the circumference
+of the Earth and the Sun, until we get to the last line.</p>
+
+<p>There we try to use the <code>Failure</code> in <code>$cₘ</code> variable as one of the arguments to
+the <a href="https://docs.perl6.org/routine/max"><code>max</code> routine</a>. Since we're asking for
+the actual value, the Failure explodes and gives us a nice backtrace. The
+error message includes the point where our Failure blew up (line 15), where
+we received it (line 7) as well as where it came from (line 2). Pretty sweet!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Useful, descriptive errors are becoming the industry standard and
+Perl 6 and <a href="https://doc.rust-lang.org/book/README.html">Rust</a> languages
+are leading that effort. The errors must go beyond merely telling you the
+line number to look at. They should point to a piece of code you wrote.
+They should make a guess at what you meant. They should be referencing your
+code, even if they originate in some third party library you're using.</p>
+
+<p>Most of Perl 6 errors display the piece of code containing the error. They
+use algorithms to offer valid suggestions when you mistyped a subroutine name.
+If you're used to other languages, Perl 6 will detect your "accent," and offer
+the correct way to pronounce your code in Perl 6. And instead of immediately
+blowing up, Perl 6 offers a mechanism to propagate errors right to the code the
+programmer is writing.</p>
+
+<p>Perl 6 has Awesome Errors.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

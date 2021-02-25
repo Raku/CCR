@@ -1,11 +1,421 @@
-https://perl6.party/<a href="/post/Perl-6-Core-Hacking-Wrong-Address-Return-To-Sender
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Core-Hacking-Wrong-Address-Return-To-Sender
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Core Hacking: Wrong Address; Return To Sender - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Core Hacking: Wrong Address; Return To Sender</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-09-14 <span class="words-count">| 1919 words |</span> Following along with debugging dispatch bugs</p>
+  <p>Just as a Christmas present you mailed someone can get misplaced or
+misdelivered, so can the arguments be re-dispatched to the wrong method or lost
+entirely. Let's fix a couple of <a href="http://rakudo.org/">Perl 6 compiler</a> bugs
+involving just that. It's fun!</p>
+
+<h2 id="bug1:lostintransit">Bug 1: Lost In Transit</h2>
+
+<p>The <a href="https://rt.perl.org/Public/Bug/Display.html?id=129242">first one</a> involves
+the <code>.split</code> method and the different results produced, depending on whether
+it was called on a <a href="https://docs.perl6.org/type/Str"><code>Str</code></a> object or on
+an <a href="https://docs.perl6.org/type/Int"><code>Int</code></a>:</p>
+
+<pre><code>dd 123456.split("", :skip-empty)
+# ("", "1", "2", "3", "4", "5", "6", "")
+
+dd "123456".split("", :skip-empty)
+# ("1", "2", "3", "4", "5", "6")
+</code></pre>
+
+<p>Even though we asked the .split to <code>:skip-empty</code> elements, it didn't do that
+for the <code>Int</code>. Let's see what piece of code gets called for each variant.</p>
+
+<p>For that, you can use my <a href="http://modules.perl6.org/dist/CoreHackers::Sourcery"><code>CoreHackers::Sourcery</code>
+module</a> that I detailed
+<a href="/post/Perl-6-Core-Hacking-Wheres-Da-Sauce-Boss">elsewhere</a>, and that's
+also available for use via the <code>SourceBaby</code> IRC bot in <a href="https://webchat.freenode.net/?channels=#perl6-dev"><code>#perl6-dev</code></a>:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> s: '123456', 'split', ("", :skip-empty)<br>
+  <b class="irc-alt">&lt;SourceBaby&gt;</b> Zoffix, Sauce is at <a href="https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Str.pm#L863">https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Str.pm#L863</a><br>
+  <b>&lt;Zoffix&gt;</b> s: 123456, 'split', ("", :skip-empty)<br>
+  <b class="irc-alt">&lt;SourceBaby&gt;</b> Zoffix, Sauce is at <a href="https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Cool.pm#L180">https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Cool.pm#L180</a><br></p>
+</blockquote>
+
+<p>The bot is triggered with the <code>s:</code> trigger and takes the arguments to give
+to the <a href="https://github.com/zoffixznet/perl6-CoreHackers-Sourcery#sourcery-1"><code>sourcery</code> subroutine</a>. In this case, the first argument is the object of
+interest, second is a string with the method name we want to call, and third
+argument is a <a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a> with arguments
+for that method.</p>
+
+<p>The bot gave different places for each variant, so let's take a look at the
+sauce. First, the <a href="https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Str.pm#L863">working <code>Str</code>
+version</a>:</p>
+
+<pre><code>multi method split(Str:D: Str(Cool) $match;;
+    :$v is copy, :$k, :$kv, :$p, :$skip-empty) {
+    ...
+</code></pre>
+
+<p>All good, the sub takes things and a bunch of named parameters that include
+the <code>:skip-empty</code> we are attempting to use. How does that compare to
+the <a href="https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Cool.pm#L180">broken <code>Int</code> version</a>:</p>
+
+<pre><code>multi method split(Cool: Regex:D $pat, $limit = Inf;; :$all) {
+    self.Stringy.split($pat, $limit, :$all);
+}
+
+multi method split(Cool: Cool:D $pat, $limit = Inf;; :$all) {
+    self.Stringy.split($pat.Stringy, $limit, :$all);
+}
+</code></pre>
+
+<p>Well, there's your problem! Calling <code>.split</code> on <code>Int</code> uses the <a href="https://docs.perl6.org/type/Cool"><code>Cool</code>
+candidate</a> that stringifies the invocant
+then calls its <code>.split</code> with the arguments it received... but it does a
+very poor job of it.</p>
+
+<p>It's not taking our <code>:skip-empty</code> named argument—in fact, it takes none of the
+named args <code>Str.split</code> accepts—and a keen eye can also spot that there's no
+candidate to replicate <a href="https://github.com/rakudo/rakudo/blob/20ed9e2/src/core/Str.pm#L1083"><code>Str.split</code> that takes a list of
+delimiters</a></p>
+
+<h4 id="fixit">Fix It!</h4>
+
+<p>A naïve fix would be to replicate all of the <code>Str.split</code> candidates in <code>Cool</code>,
+but such duplication is exactly why this bug occured in the first place. If the
+job of the method is to simply make the invocant <a href="https://docs.perl6.org/type/Stringy"><code>Stringy</code></a>, that's all it should be doing.</p>
+
+<p>We can stop caring what arguments we have if we use a <a href="https://docs.perl6.org/type/Capture"><code>Capture</code></a>, and so we'll replace all of the <code>Cool.split</code>
+candidates with just a single method:</p>
+
+<pre><code>method split(Cool: |c) { self.Stringy.split(|c) }
+</code></pre>
+
+<p>The <code>|c</code> in the <a href="https://docs.perl6.org/type/Signature"><code>Signature</code></a> creates
+a <code>Capture</code>. We then coerce the invocant to <code>Stringy</code> and call the <code>.split</code>
+method on the result, <a href="https://docs.perl6.org/type/Slip">slipping</a> that
+<code>Capture</code> in, which results in all of the arguments we received being
+sent to the <code>Str.split</code> as-is.</p>
+
+<h4 id="testit">Test It!</h4>
+
+<p>No bug fix comes without a test for it, so we'll grab the <a href="https://github.com/perl6/roast/">roast repo</a> (it'll auto-clone to <code>t/spec/</code>if you run <code>make spectest</code>) and use <code>grep -R split .</code> to find where to put our tests into.</p>
+
+<p>In this case, <a href="https://github.com/perl6/roast/blob/25168ae7cfd822c8dc7ffdda7a7095a0de09abaa/S32-str/split.t"><code>S32-str/split.t</code></a>
+looks like the perfect fit. Pop the file open,
+increase the <a href="https://github.com/perl6/roast/blob/25168ae7cfd822c8dc7ffdda7a7095a0de09abaa/S32-str/split.t#L7"><code>plan</code> number of planned tests to run</a> by one, then at the end
+of the file add a <a href="https://docs.perl6.org/language/testing#index-entry-subtest-subtest%28%26subtests%2C_%24description%3F%29"><code>subtest</code></a>.
+Subtests count as one test and function as a
+mini-test suite with their own plans.</p>
+
+<p>Since now we know that all of the named arguments and even some positonals did
+not work on <code>Cool</code>, we need to test all of them. We'll make use of the
+<a href="https://docs.perl6.org/language/testing#index-entry-is-deeply-is-deeply%28%24value%2C_%24expected%2C_%24description%3F%29"><code>is-deeply</code></a> test routine to which
+we'll give the result of our split and the expected list of elements we
+wish to receive, along with the test's description:</p>
+
+<pre><code># RT #129242
+subtest '.split works on Cool same as it works on Str' =&gt; {
+    plan 11;
+
+    my $m = Match.new(
+        ast =&gt; Any,    list =&gt; (), hash =&gt; Map.new(()),
+        orig =&gt; "123", to =&gt; 2,    from =&gt; 1,
+    );
+
+    is-deeply 123.split('2', :v),  ('1', '2',      '3'), ':v; Cool';
+    is-deeply 123.split(/2/, :v),  ('1', $m,       '3'), ':v; Regex';
+    is-deeply 123.split('2', :kv), ('1', 0, '2',   '3'), ':kv; Cool';
+    is-deeply 123.split(/2/, :kv), ('1', 0, $m,    '3'), ':kv; Regex';
+    is-deeply 123.split('2', :p),  ('1', 0 =&gt; '2', '3'), ':p; Cool';
+    is-deeply 123.split(/2/, :p),  ('1', 0 =&gt; $m,  '3'), ':p; Regex';
+    is-deeply 123.split('2', :k),  ('1', 0,        '3'), ':k; Cool';
+    is-deeply 123.split(/2/, :k),  ('1', 0,        '3'), ':k; Regex';
+    is-deeply 4.split('',      :skip-empty), ('4',),     ':skip-empty; Cool';
+    is-deeply 4.split(/&lt;&lt;|&gt;&gt;/, :skip-empty), ('4',),     ':skip-empty; Regex';
+    is-deeply 12345.split(('2', /4/)), ("1", "3", "5"),  '@needles form';
+}
+</code></pre>
+
+<p>Ensure our new test passes:</p>
+
+<pre><code>make t/spec/S32-str/split.t
+# ... lots of output ...
+All PASS!
+</code></pre>
+
+<p>And now we need to ensure our fix did not break any of the other tests. Run
+the full spectest:</p>
+
+<pre><code>TEST_JOBS=8 make spectest
+# ... looooots of output ...
+All PASS!
+</code></pre>
+
+<p>Wonderful. Both the test and the fix are ready to ship.</p>
+
+<h2 id="bug2:wrongaddressreturntosender">Bug 2: Wrong Address; Return To Sender</h2>
+
+<p>Another <a href="https://rt.perl.org/Public/Bug/Display.html?id=129256">bugglet of the same category</a> involves the creation of a <code>CArray</code> when using <a href="https://docs.perl6.org/language/nativecall">NativeCall module</a> included with Rakudo.
+NativeCall lets you use
+C libraries directly in Perl 6, without requiring a C compiler, and <code>CArray</code>
+is a <a href="https://docs.perl6.org/language/nativecall#Arrays">representation of a C array</a>.</p>
+
+<p>The bug involves an edge case where an empty <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> passed as a source of values for the <code>CArray</code> ended up
+creating an infinite loop:</p>
+
+<pre><code>use NativeCall;
+CArray[uint8].new(())  # hangs
+</code></pre>
+
+<p>The author of the report was kind enough to include a small untested patch:</p>
+
+<pre><code>--- a/lib/NativeCall/Types.pm6
++++ b/lib/NativeCall/Types.pm6
+@@ -162,7 +162,7 @@ our class CArray is repr('CArray') is array_type(Pointer) {
+     multi method new() { nqp::create(self) }
+     multi method new(*@values) { self.new(@values) }
+     multi method new(@values) {
+-        nextsame unless @values;
++        nextsame unless @values &amp;&amp; @values.elems &gt; 0;
+         my $result := self.new();
+         my int $n = @values.elems;
+         my int $i;
+</code></pre>
+
+<p>While the suggested fix itself is a no-op—because an empty array is falsy,
+so explicitly checking its <code>.elems</code> doesn't add anything—it tells us
+the location of where the problematic code likely is, so let's pop <a href="https://github.com/rakudo/rakudo/blob/a9ed671/lib/NativeCall/Types.pm6#L164">that file</a> open and locate the culprit:</p>
+
+<pre><code>multi method new() { nqp::create(self) }
+multi method new(*@values) { self.new(@values) }
+multi method new(@values) {
+    nextsame unless @values;
+    my $result := self.new();
+    my int $n = @values.elems;
+    my int $i;
+    $result.ASSIGN-POS($n - 1, @values.AT-POS($n - 1));
+    while $i &lt; $n {
+        $result.ASSIGN-POS($i, @values.AT-POS($i));
+        $i = $i + 1;
+    }
+    $result;
+}
+</code></pre>
+
+<p>We have three multi candidates:</p>
+
+<ul>
+<li>Candidate for no arguments</li>
+<li>Candidate for any number of arguments</li>
+<li>Candidate for one <a href="https://docs.perl6.org/type/Positional"><code>Positional</code></a> argument</li>
+</ul>
+
+<p>Our problematic case fits into the last candidate, which gets called with
+an empty <code>Positional</code> as <code>@values</code>. Right away, we detect that <code>@values</code> is
+empty and call <a href="https://docs.perl6.org/language/functions#index-entry-nextsame-nextsame"><code>nextsame</code></a>, which redispatches to the next candidate, using...
+<strong>the same arguments...</strong></p>
+
+<p>While the idea was to end up calling the candidate that takes no arguments,
+we end up calling the second candidate with a slurpy <code>*@values</code>, which then
+obliges to make a call to a candidate with a single <code>Positional</code>, so we're
+back at square 1, with an empty <code>Positional</code> on our hands, ready to
+<code>nextsame</code> it again, to continue the infinite loop our bug is all about.</p>
+
+<h4 id="fixit">Fix It!</h4>
+
+<p>One way to fix this is to use <a href="https://docs.perl6.org/language/functions#index-entry-nextwith-nextwith"><code>nextwith</code></a> with no arguments to land
+at the correct dispatch. However, since the slurpy candidate matches all the
+cases, my original approach involved getting rid of the re-dispatch maze
+entirely and just having a single method:</p>
+
+<pre><code>method new(*@values) {
+    return nqp::create(self) unless @values;
+    my $result := self.new();
+    my int $n = @values.elems;
+    my int $i;
+    $result.ASSIGN-POS($n - 1, @values.AT-POS($n - 1));
+    while $i &lt; $n {
+        $result.ASSIGN-POS($i, @values.AT-POS($i));
+        $i = $i + 1;
+    }
+    $result;
+}
+</code></pre>
+
+<p>The slurpy takes any arguments. If none were given, it creates an empty
+array, otherwise proceeds to create one with the given elements. Since we made
+the change
+in a <em>module,</em> we don't need to recompile Rakudo, but simply need to explicitly
+tell Rakudo to look for that module in <code>lib/</code> directory with the <code>-I</code> switch.
+Test the fix:</p>
+
+<pre><code>$ ./perl6-m -Ilib -MNativeCall -e 'CArray[uint8].new(()).elems.say'
+0
+</code></pre>
+
+<p>Simple and brilliant... or is it?</p>
+
+<p>Shortly after my commit went in, our resident optimization expert
+Elizabeth Mattijsen <a href="http://irclog.perlgeek.de/perl6-dev/2016-09-14#i_13208241">pointed out</a> my version made things 600% slower for 1-positional-arg case,
+whereas having an explict candidate that shuttles the values has only a
+16% overhead.</p>
+
+<p>So she put the multies back in for performance and along the way also added a
+few extra optimizations by reducing the the number of  calls to <code>.elems</code> by
+saving the value (into <code>$n</code>) after the check, as well as using some <a href="https://github.com/perl6/nqp/blob/master/docs/ops.markdown">NQP
+ops</a> instead
+of pure Perl 6. Instead of redispatching the empty-Positional case, we simply
+call <code>nqp::create(self)</code> directly, just as we do it in the no-arg case:</p>
+
+<pre><code>multi method new() { nqp::create(self) }
+multi method new(*@values) { self.new(@values) }
+multi method new(@values) {
+    if @values.elems -&gt; $n {
+        my int $elems = $n - 1;
+        my $result   := nqp::create(self);  # XXX setelems would be nice
+        $result.ASSIGN-POS($elems,@values.AT-POS($elems)); # fake setelems
+        my int $i = -1;
+        nqp::while(
+          nqp::islt_i(($i = nqp::add_i($i,1)),$elems),
+          $result.ASSIGN-POS($i,@values.AT-POS($i)),
+        );
+        $result
+    }
+    else {
+        nqp::create(self)
+    }
+}
+</code></pre>
+
+<p>Bug fix AND perfomance improvement. Awesome!</p>
+
+<h4 id="testit">Test It!</h4>
+
+<p>Once again, we need tests for the bug. Since NativeCall is not part of the
+Perl 6 <em>language</em> specification, but a module included with Rakudo compiler,
+the test doesn't go into the <a href="https://github.com/perl6/roast/">roast</a>, but
+into Rakudo's test suite.</p>
+
+<p>The suite is part of the Rakudo's repo code and all the files live in <code>t/</code>
+(except for <code>t/spec</code>, which is where the roast gets cloned into during
+spectests). The NativeCall tests live in <code>t/04-nativecall/</code> and we
+are interested in <a href="https://github.com/rakudo/rakudo/blob/nom/t/04-nativecall/05-arrays.t"><code>t/04-nativecall/05-arrays.t</code></a> specifically.</p>
+
+<p>Once again, bump <a href="https://github.com/rakudo/rakudo/blob/43b4f3d02faff225ec0930f7a9fc3f31b3677986/t/04-nativecall/05-arrays.t#L8">the planned number of tests</a>, then scroll to the bottom. Since we messed around
+with candidates, it's worth adding a test for each case to ensure the dispatch
+is still fine, along with no hanging happening any more:</p>
+
+<pre><code># RT #129256
+{
+    is CArray[uint8].new.elems, 0, 'creating CArray with no arguments works';
+    is CArray[uint8].new(()).elems, 0,
+        'creating CArray with () as argument does not hang';
+    is-deeply CArray[uint8].new(1, 2, 3)[^3], (1, 2, 3),
+        'creating CArray with several positionals works';
+
+    my @arg = 1..3;
+    is-deeply CArray[uint8].new(@arg)[^3], (1, 2, 3),
+        'creating CArray with one Positional positional works';
+}
+</code></pre>
+
+<p>We use the <a href="https://docs.perl6.org/language/testing#index-entry-is_testing"><code>is</code> testing routine</a> to check the element counts for
+argless and empty-arg case that used to hang and the <a href="https://docs.perl6.org/language/testing#index-entry-is-deeply-is-deeply%28%24value%2C_%24expected%2C_%24description%3F%29"><code>is-deeply</code>
+routine</a> to check the versions
+with arguments get created correctly.</p>
+
+<p>Check the new test passes:</p>
+
+<pre><code>make t/04-nativecall/05-arrays.t
+# ... lots of output ...
+All PASS!
+</code></pre>
+
+<p>And that all the other tests are still fine:</p>
+
+<pre><code>make test
+# ... looooots of output ...
+All PASS!
+
+TEST_JOBS=8 make spectest
+# ... loooooooooots of output ...
+All PASS!
+</code></pre>
+
+<p>And this finishes off another bug for the day. Job well done!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Bugs that appear only with a specific crop of arguments or a specific type of
+an invocant may be due to incorrect dispatch. Ensure the correct candidates
+get called by examining the code and using <a href="http://modules.perl6.org/dist/CoreHackers::Sourcery"><code>CoreHackers::Sourcery</code>
+module</a>/SourceBaby robot
+to locate the called code.</p>
+
+<p>When shuttling arguments, make use of <a href="https://docs.perl6.org/type/Capture">Captures</a> rather than duplicating individual arguments, but also keep
+in mind that a well-placed multi candidate can offer decent performance
+benefits.</p>
+
+<p>Be sure to check out the <a href="http://rakudo.org/rt/open-all">Perl 6's bug queue</a>
+for game to hunt. Happy fixing!</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

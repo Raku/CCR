@@ -1,11 +1,226 @@
-https://perl6.party/<a href="/post/Perl6-Comb-It
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl6-Comb-It
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Comb It! - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Comb It!</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-04-25 <span class="words-count">| 875 words |</span> Everything about .comb method.</p>
+  <p>In Perl 5, I always appreciated the convenience of constructs like these two:</p>
+
+<pre><code>my @things = $text =~ /thing/g;
+my %things = $text =~ /(key)...(value)/g;
+</code></pre>
+
+<p>You take some nice, predictable text, pop a regex next to it, and BOOM! You get
+a nice list of things or a pretty hash. Magical!</p>
+
+<p>There are some similarities to this construct in Perl 6, but if you're a new
+programmer, with Perl 5 background, there might be some confusion. First,
+using several captures doesn't result in nice hashes right off the bat. Second,
+you don't get strings, you get <a href="http://docs.perl6.org/type/Match"><code>Match</code> objects</a>.</p>
+
+<p>While Matches are fine, let's look at a tool more suited for the job:
+<a href="http://docs.perl6.org/routine/comb">The <code>comb</code></a></p>
+
+<p><img src="/assets/stock/20160425-Perl6-Comb-It.jpg" height=400></p>
+
+<h2 id="plainolcharacters">Plain 'Ol Characters</h2>
+
+<p>You can use <code>comb</code> as a subroutine or as a method. In its basic form, <code>comb</code>
+simply breaks up strings into characters:</p>
+
+<pre><code>'foobar moobar 駱駝道bar'.comb.join('|').say;
+'foobar moobar 駱駝道bar'.comb(6).join('|').say;
+
+# OUTPUT:
+# f|o|o|b|a|r| |m|o|o|b|a|r| |駱|駝|道|b|a|r
+# foobar| mooba|r 駱駝道b|ar
+</code></pre>
+
+<p>Without arguments, you get individual characters. Supply an integer and you'll
+get a list of strings at most that many characters long, receiving a
+shorter string when there are not enough characters left. This method is
+also about 30x faster than using a regex for the job.</p>
+
+<h2 id="limits">Limits</h2>
+
+<p>You can also provide a second integer, the limit, to indicate that you want
+at most that many items in the final list:</p>
+
+<pre><code>'foobar moobar 駱駝道bar'.comb(1, 5).join('|').say;
+'foobar moobar 駱駝道bar'.comb(6, 2).join('|').say;
+
+# OUTPUT:
+# f|o|o|b|a
+# foobar| mooba
+</code></pre>
+
+<p>This applies to all forms of using <code>comb</code>, not just the one shown above.</p>
+
+<h2 id="countingthings">Counting Things</h2>
+
+<p>The <code>comb</code> also takes a regular <a href="http://docs.perl6.org/type/Str"><code>Str</code></a> as an
+argument, returning a list of matches
+containing... that string. So this is useful to get the total number the
+substring appears inside a string:</p>
+
+<pre><code>'The 🐈 ran after a 🐁, but the 🐁 ran away'.comb('🐈').Int.say;
+'The 🐈 ran after a 🐁, but the 🐁 ran away'.comb('ran').Int.say;
+
+# OUTPUT:
+# 1
+# 2
+</code></pre>
+
+<h2 id="simplematching">Simple Matching</h2>
+
+<p>Moving onto the realm of <a href="http://docs.perl6.org/language/regexes">regexes</a>,
+there are several ways to obtain what you want using <code>comb</code>. The simplest
+way is to just match what you want. The entire match will be returned as an
+item by the comb:</p>
+
+<pre><code>'foobar moobar 駱駝道bar'.comb(/&lt;[a..z]&gt;+ 'bar'/).join('|').say;
+
+# OUTPUT:
+# foobar|moobar
+</code></pre>
+
+<p>The <code>bar</code> with <a href="https://en.wikipedia.org/wiki/Rakudo_Perl_6#Name">Rakuda-dō Japaneese characters</a> did not match our <code>a</code> through
+<code>z</code> character class and so was excluded from the list.</p>
+
+<p>The wildcard match can be useful, but sometimes you don't want to include
+the wildcard in the resulting strings... Well, good news!</p>
+
+<h2 id="limitwhatscaptured">Limit What's Captured</h2>
+
+<p>You could use <a href="http://docs.perl6.org/language/regexes#Look-around_assertions">look-around assertions</a> but an even simpler way is to
+use <code>&lt;(</code> and <code>)&gt;</code> regex capture markers (<code>&lt;(</code> is similar to <code>\K</code> in Perl 5):</p>
+
+<pre><code>'moo=meow ping=pong'.comb(/\w+    '=' &lt;( \w**4/).join('|').say; # values
+'moo=meow ping=pong'.comb(/\w+ )&gt; '='    \w**4/).join('|').say; # keys
+
+# OUTPUT:
+# meow|pong
+# moo|ping
+</code></pre>
+
+<p>You can use one or the other or both of them.<code>&lt;(</code> will exclude from the match
+anything described before it and <code>)&gt;</code> anything that follows it. That is,
+<code>/'foo' &lt;('bar')&gt; 'ber'/</code>, will match things containing <code>foobarber</code>, but
+the returned string from <code>comb</code> would only be string <code>bar</code>.</p>
+
+<h2 id="multicaptures">Multi Captures</h2>
+
+<p>As powerful as <code>comb</code> has been so far, we still haven't seen the compliment
+to Perl 5's way of fishing out key/value pairs out of text using regex. We
+won't be able to achieve the same clarity and elegance, but we can still
+use <code>comb</code>... we'll just ask it to give us <a href="http://docs.perl6.org/type/Match"><code>Match</code> objects</a>:</p>
+
+<pre><code>my %things = 'moo=meow ping=pong'.comb(/(\w+) '=' (\w+)/, :match)».Slip».Str;
+say %things;
+
+# OUTPUT:
+# moo =&gt; meow, ping =&gt; pong
+</code></pre>
+
+<p>Let's break that code down:
+it uses the same old <code>.comb</code> to look for a sequence of word characters, followed by
+the <code>=</code> character, followed by another sequence of word characters. We use
+<code>()</code> parentheses to capture both of those sequences in separate captures. Also,
+notice we added <code>:match</code> argument to <code>.comb</code>, this causes it to return a list
+of <code>Match</code> objects instead of strings. Next, we use two hyper operators (») to
+first convert the <code>Matches</code> to <a href="http://docs.perl6.org/type/Slip"><code>Slips</code></a>, which gives us a list of captures, but they're still <code>Match</code> objects, which is
+why we convert them to <a href="http://docs.perl6.org/type/Str"><code>Str</code></a> as well.</p>
+
+<p>An even more verbose, but much clearer, method is to use named captures instead
+and then <code>.map</code> them into <a href="http://docs.perl6.org/type/Pair"><code>Pairs</code></a>:</p>
+
+<pre><code>my %things = 'moo=meow ping=pong'
+    .comb(/$&lt;key&gt;=\w+ '=' $&lt;value&gt;=\w+/, :match)
+    .map({ .&lt;key&gt; =&gt; .&lt;value&gt;.Str });
+say %things;
+
+# OUTPUT:
+# moo =&gt; meow, ping =&gt; pong
+</code></pre>
+
+<p>Lastly, an astute reader will rember I mentioned at the beginning that
+simply using Perl 5's method
+will result in a list of <code>Match</code> objects... the same <code>Match</code> objects we're
+asking <code>.comb</code> to give us above. Thus, you can also write the above code like
+this, without <code>.comb</code>:</p>
+
+<pre><code>my %things = ('moo=meow ping=pong' ~~ m:g/(\w+) '=' (\w+)/)».Slip».Str;
+say %things;
+
+# OUTPUT:
+# moo =&gt; meow, ping =&gt; pong
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>We've learned how break up a string into bits any way we want to. Be it one or more characters. Be it simple strings or regex matches. Be it partial captures
+or multiple ones. You can use <code>comb</code> for all. Combined with <a href="http://blogs.perl.org/users/zoffix_znet/2016/01/perl-6-rotor-the-king-of-list-manipulation.html"><code>.rotor</code></a>, the power is limitless.</p>
+
+<p>The other thing we also are certain of: nothing beats Perl 5's concise
+<code>my %things = $text =~ /(key)...(value)/g;</code></p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

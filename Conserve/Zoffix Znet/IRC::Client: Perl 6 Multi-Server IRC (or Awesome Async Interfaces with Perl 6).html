@@ -1,11 +1,713 @@
-https://perl6.party/<a href="/post/IRC-Client-Perl-6-Multi-Server-IRC-Module
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/IRC-Client-Perl-6-Multi-Server-IRC-Module
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>IRC::Client: Perl 6 Multi-Server IRC (or Awesome Async Interfaces with Perl 6) - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">IRC::Client: Perl 6 Multi-Server IRC (or Awesome Async Interfaces with Perl 6)</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-07-29 <span class="words-count">| 3615 words |</span> A tutorial for writing IRC bots with Perl 6</p>
+  <p>I wrote my first Perl 6 program—a New Years IRC Party bot—around Christmas,
+2015. The work included releasing the <a href="https://github.com/zoffixznet/perl6-IRC-Client/">IRC::Client
+module</a>, and given my
+virginity with the language and blood alcohol level appropriate for the Holiday
+Season, the module ended up sufficiently craptastic.</p>
+
+<p>Recently, I needed a tool for some Perl 6 bug queue work, so I decided to lock
+myself up for a weekend and re-design and re-write the module from scratch.
+Multiple people bugged me to do so over the past months, so I figured I'd also
+write a tutorial for how to use the module—as an apology for being a master
+procrastinator. And should IRC be of no interest to you, I hope the tutorial
+will prove useful as a general example of async, non-blocking interfaces
+in Perl 6.</p>
+
+<h2 id="thebasics">The Basics</h2>
+
+<p>To create an IRC bot, instantiate an <code>IRC::Client</code> object, giving it some basic
+info, and call the <code>.run</code> method. Implement all of the functionality you need as
+classes with method names matching the events you want to listen to
+and hand those in via the <code>.plugins</code> attribute. When an IRC event
+occurs, it's passed to all of the plugins, in the order you specify them,
+stopping if a plugin claims it handled the event.</p>
+
+<p>Here's a simple IRC bot that responds to being addressed in-channel, notices,
+and private messages sent to it. The response is the uppercased original
+message the bot received:</p>
+
+<pre><code>use IRC::Client;
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#perl6&gt;
+    :debug
+    :plugins(class { method irc-to-me ($_) { .text.uc } })
+</code></pre>
+
+<p>And here's what the bot looks like when running:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> MahBot, I ♥ you!<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, I ♥ YOU!</span></p>
+</blockquote>
+
+<p>The <code>:nick</code>, <code>:host</code>, and <code>:channels</code> are the nick for your bot, the
+server it should connect to, and channels it should join. The <code>:debug</code>
+controls how much debugging output to display. We'll set it to value <code>1</code> here,
+for sparse debug output, just to see what's happening. Tip: install the
+optional
+<a href="https://modules.perl6.org/repo/Terminal::ANSIColor">Terminal::ANSIColor</a>
+module to make debug output purty:</p>
+
+<p><img src="/assets/pics/irc-bot/debug-output.png" alt="" /></p>
+
+<p>For the <code>.plugins</code> attribute, we hand in an anonymous class. If you have
+multiple plugins, just shove them all in in the order you want them to receive
+events in:</p>
+
+<pre><code>:plugins(PlugFirst.new, PlugSecond.new(:conf), class { ... })
+</code></pre>
+
+<p>The plugin class of our uppercasing bot has a single method that listens to
+<code>irc-to-me</code> event, triggered whenever the bot is addressed in-channel or is sent
+a private message or notice. It receives a single argument: one of the objects
+that does the <code>IRC::Client::Message</code> role. We stick it into the <code>$_</code> topical
+variable to save a bit of typing.</p>
+
+<p>We reply to the event by returning a value from the method. The original text is
+contained inside the <code>.text</code> attribute of the message object, so we'll call
+<code>.uc</code> method on it to uppercase the content and that's what our reply will be.</p>
+
+<p>As awesome as our uppercasing bot is, it's as useful as an air conditioner
+on a polar expedition. Let's teach it some tricks.</p>
+
+<h2 id="gettingsmarter">Getting Smarter</h2>
+
+<p>We'll call our new plugin <code>Trickster</code> and it'll respond to commands <code>time</code>—that
+will give the local time and date—and <code>temp</code>—that will convert temperature
+between Fahrenheit and Celsius. Here's the code:</p>
+
+<pre><code>use IRC::Client;
+
+class Trickster {
+    method irc-to-me ($_) {
+        given .text {
+            when /time/ { DateTime.now }
+            when /temp \s+ $&lt;temp&gt;=\d+ $&lt;unit&gt;=[F|C]/ {
+                when $&lt;unit&gt; eq 'F' { "That's {($&lt;temp&gt; - 32) × .5556}°C" }
+                default             { "That's { $&lt;temp&gt; × 1.8 + 32   }°F" }
+            }
+            'huh?'
+        }
+    }
+}
+
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#perl6&gt;
+    :debug
+    :plugins(Trickster)
+</code></pre>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> MahBot, time<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, 2016-07-23T19:00:15.795551-04:00<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, temp 42F<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, That's 5.556°C<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, temp 42C<br></span>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, That's 107.6°F<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, I ♥ you!<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, huh?<br></span></p>
+</blockquote>
+
+<p>The code is trivial: we pass the given text over a couple of regexes. If
+it contains word <code>time</code>, we return the current time. If it contains word
+<code>temp</code> we do the appropriate math, based on whether the given number is
+postfixed by an <code>F</code> or a <code>C</code>. And if no matches happen, we end up returning
+the inquisitive <code>huh?</code>.</p>
+
+<p>There's an obvious problem with this new and improved plugin: the bot no longer
+loves me! And while I'll survive the heartache, I doubt any other plugin will
+teach the bot to love again, as <code>Trickster</code> consumes <em>all</em> <code>irc-to-me</code> events,
+even if it doesn't recognize any of the commands it can handle. Let's fix that!</p>
+
+<h2 id="passingthebuck">Passing The Buck</h2>
+
+<p>There's a special value that can be returned by the event handler to signal
+that it did <em>not</em> handle the event and that it should be propagated to
+further plugins and event handlers. That value is provided by the
+<code>.NEXT</code> attribute offered by the <code>IRC::Client::Plugin</code> role, which a plugin
+<code>does</code> to obtain that attribute. The role is automatically exported when
+you <code>use IRC::Client</code>.</p>
+
+<p>Let's look at some code utilizing that special value. Note that since
+<code>.NEXT</code> is an attribute and we can't look up attributes on type objects,
+you need to go the extra step and instantiate your plugin classes when giving
+them to <code>:plugins</code>.</p>
+
+<pre><code>use IRC::Client;
+
+class Trickster does IRC::Client::Plugin {
+    method irc-to-me ($_) {
+        given .text {
+            when /time/ { DateTime.now }
+            when /temp \s+ $&lt;temp&gt;=\d+ $&lt;unit&gt;=[F|C]/ {
+                when $&lt;unit&gt; eq 'F' { "That's {($&lt;temp&gt; - 32) × .5556}°C" }
+                default             { "That's { $&lt;temp&gt; × 1.8 + 32   }°F" }
+            }
+            $.NEXT;
+        }
+    }
+}
+
+class BFF does IRC::Client::Plugin {
+    method irc-to-me ($_) {
+        when .text ~~ /'♥'/ { 'I ♥ YOU!' };
+        $.NEXT;
+    }
+}
+
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#perl6&gt;
+    :debug
+    :plugins(Trickster.new, BFF.new)
+</code></pre>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> MahBot, time<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, 2016-07-23T19:37:45.788272-04:00<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, temp 42F<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, That's 5.556°C<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, temp 42C<br></span>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, That's 107.6°F<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, I ♥ you!<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, I ♥ YOU!<br></span></p>
+</blockquote>
+
+<p>We now have two plugins that both subscribe to <code>irc-to-me</code> event. The
+<code>:plugins</code> attribute receives <code>Trickster</code> plugin first, so its
+event handler will be run first. If the received text does not match either
+of the <code>Trickster</code>'s regexes, it returns <code>$.NEXT</code> from the method.</p>
+
+<p>That signals the Client Object to go hunting for other handlers, so it gets
+to <code>BFF</code>'s <code>irc-to-me</code> handler. There, we reply if the input contains a heart,
+if not, we pre-emptively return <code>$.NEXT</code> here too.</p>
+
+<p>While the bot got its sunny disposition back, it did so at the cost of quite a
+bit of extra typing. What can we do about that?</p>
+
+<h2 id="multifyallthethings">Multify All The Things!</h2>
+
+<p>Perl 6 supports multi-dispatch as well as type constraints in signatures. On
+top of that, smartmatch against <code>IRC::Client</code>'s message objects that have
+a <code>.text</code> attribute uses the value of that attribute. Combine all three
+of those features and you end up with ridiculously concise code:</p>
+
+<pre><code>use IRC::Client;
+class Trickster {
+    multi method irc-to-me ($ where /time/) { DateTime.now }
+    multi method irc-to-me ($ where /temp \s+ $&lt;temp&gt;=\d+ $&lt;unit&gt;=[F|C]/) {
+        $&lt;unit&gt; eq 'F' ?? "That's {($&lt;temp&gt; - 32) × .5556}°C"
+                       !! "That's { $&lt;temp&gt; × 1.8 + 32   }°F"
+    }
+}
+
+class BFF { method irc-to-me ($ where /'♥'/) { 'I ♥ YOU!' } }
+
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#perl6&gt;
+    :debug
+    :plugins(Trickster, BFF)
+</code></pre>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> MahBot, time<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, 2016-07-23T19:59:44.481553-04:00<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, temp 42F<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, That's 5.556°C<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, temp 42C<br></span>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, That's 107.6°F<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, I ♥ you!<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, I ♥ YOU!<br></span></p>
+</blockquote>
+
+<p>Outside of the signature, we no longer have any need for the message object,
+so we use the anonymous <code>$</code> parameter in its place. We then
+<a href="/post/Perl-6-Types--Made-for-Humans#subsets:tailor-madetypes">type-constrain</a>
+that parameter with a regex match, and so the method will be called only if the
+text of the message matches that regex. Since no methods will be called
+on failed matches, we no longer have to mess around with the whole <code>$.NEXT</code>
+business or compose any roles into our plugins.</p>
+
+<p>The bodies of our methods each have a single statement that produces the
+response value for the event. In the temperature converter, we use the ternary
+operator to select which formula to use for the conversion, depending on the
+unit requested, and yes, the <code>$&lt;unit&gt;</code> and <code>$&lt;temp&gt;</code> captures created in the
+signature type constraint match <em>are</em> available in the method's body.</p>
+
+<h2 id="aneventfulday">An Eventful Day</h2>
+
+<p>Along with standard named and numerical IRC protocol events, <code>IRC::Client</code>
+offers convenience events. One of them we've already seen: the <code>irc-to-me</code>
+event. Such events are layered, so one IRC event can trigger several
+<code>IRC::Client</code>'s events. For example, if someone addresses our bot in a channel,
+the following chain of events will be fired:</p>
+
+<pre><code>irc-addressed  ▶  irc-to-me  ▶  irc-privmsg-channel  ▶  irc-privmsg  ▶  irc-all
+</code></pre>
+
+<p>The events are ordered from "narrowest" to "widest": <code>irc-addressed</code> can be
+triggered only in-channel, when our bot is addressed; <code>irc-to-me</code> can also
+be triggered via notice and private message, so it's wider;
+<code>irc-privmsg-channel</code> includes all channel messages, so it's wider still;
+and <code>irc-privmsg</code> also includes private messages to our bot. The chain ends
+by the widest event of them all: <code>irc-all</code>.</p>
+
+<p>If a plugin's event handler returns any value other than <code>$.NEXT</code>, later
+events in the event chain won't be fired, just as plugins later in the
+plugin chain won't be tried for the same reason. Each event is tried on all
+of the plugins, before attempting to handle a wider event.</p>
+
+<p>By setting the <code>:debug</code> attribute to level 3 or higher, you'll get emitted
+events in the debug output. Here's our bot attempting to handle unknown command
+<code>blarg</code> and then processing command <code>time</code> handled by <code>irc-to-me</code> event handler
+we defined:</p>
+
+<p><img src="/assets/pics/irc-bot/debug-output2.png" alt="" /></p>
+
+<p>All of <code>IRC::Client</code>'s events have <code>irc-</code> prefix, so you can freely define
+auxiliary methods in your plugin, without worrying about conflicting with event
+handlers. Speaking of emitting things...</p>
+
+<h2 id="keepemcommin">Keep 'Em Commin'</h2>
+
+<p>Responding to commands is sweet and all, but many bots will likely want
+to generate some output out of their own volition. As an example, let's write
+a bot that will annoy us whenever we have unread GitHub notifications!</p>
+
+<pre><code>use IRC::Client;
+use HTTP::Tinyish;
+use JSON::Fast;
+
+class GitHub::Notifications does IRC::Client::Plugin {
+    has Str  $.token  = %*ENV&lt;GITHUB_TOKEN&gt;;
+    has      $!ua     = HTTP::Tinyish.new;
+    constant $API_URL = 'https://api.github.com/notifications';
+
+    method irc-connected ($) {
+        start react {
+            whenever self!notification.grep(* &gt; 0) -&gt; $num {
+                $.irc.send: :where&lt;Zoffix&gt;
+                            :text("You have $num unread notifications!")
+                            :notice;
+            }
+        }
+    }
+
+    method !notification {
+        supply {
+            loop {
+                my $res = $!ua.get: $API_URL, :headers{ :Authorization("token $!token") };
+                $res&lt;success&gt; and emit +grep *.&lt;unread&gt;, |from-json $res&lt;content&gt;;
+                sleep $res&lt;headers&gt;&lt;X-Poll-Interval&gt; || 60;
+            }
+        }
+    }
+}
+
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#perl6&gt;
+    :debug
+    :plugins(GitHub::Notifications.new)
+</code></pre>
+
+<blockquote>
+  <p><span class="irc-timestamp">[00:25:41]</span> <b>-MahBot-</b> Zoffix,
+      You have 20 unread notifications!<br>
+  <span class="irc-timestamp">[00:26:41]</span> <b>-MahBot-</b> Zoffix,
+      You have 19 unread notifications!<br></p>
+</blockquote>
+
+<p>We create <code>GitHub::Notifications</code> class that <code>does</code> the
+<code>IRC::Client::Plugin</code> role. That role gives us the <code>$.irc</code> attribute, which
+is the <code>IRC::Client</code> object we'll use to send messages to us on IRC.</p>
+
+<p>Aside from <code>irc-connected</code> method, the class is just like any other:
+a public <code>$.token</code> attribute for our GitHub API token, a private <code>$!ua</code>
+attribute that keeps our HTTP User Agent object around, and a private
+<code>notification</code> method, where all the action happens.</p>
+
+<p>Inside <code>notification</code>, we create a
+<a href="https://docs.perl6.org/type/Supply"><code>Supply</code></a>
+that will emit the number of unread notifications we have. It does so
+by using an <a href="https://modules.perl6.org/repo/HTTP::Tinyish"><code>HTTP::Tinyish</code></a>
+object to access a GitHub API endpoint. On line 24, it parses the JSON
+returned by successful requests, and <code>grep</code>s the message list for any items with
+<code>unread</code> property set to <code>true</code>. The prefix <code>+</code> operator converts the list
+to an <code>Int</code> that is total items found, which is what we <code>emit</code> from our supply.</p>
+
+<p>The <code>irc-connected</code> event handler gets triggered when we successfully connect
+to an IRC server. In it, we <code>start</code> an event loop that <code>react</code>s <code>whenever</code>
+we receive the current unread messages count from our <code>supply</code> given by
+<code>notifications</code> method. Since we're only interested in cases where we <em>do</em>
+have unread messages, we also pop a <code>grep</code> on the supply to filter out the
+cases without any messages <small>(yes, we could avoid emitting those in the
+first place, but I'm showing off Perl 6 here 😸)</small>. And once we do
+have unread messages, we simply call <code>IRC::Client</code>'s <code>.send</code> method, asking
+it to send us an IRC notice with the total number of unread messages. Pure
+awesomeness!</p>
+
+<h2 id="dontwaitup">Don't Wait Up</h2>
+
+<p>We've covered the cases where we either have an asynchronous supply of values
+we sent to IRC or where we reply to a command right away. It's not uncommon
+for a bot command to take some time to execute. In those cases, we don't want
+the bot to lock up while the command is doing its thing.</p>
+
+<p>Thanks to Perl 6's excellent concurrency primitives, it doesn't have to! If
+an event handler returns a <a href="https://docs.perl6.org/type/Promise"><code>Promise</code></a>,
+the Client Object will use its <code>.result</code> as the reply when it is kept. This
+means that in order to make our blocking event handler non-blocking, all we have
+to do is wrap its body in a <code>start { ... }</code> block. What could be simpler?</p>
+
+<p>As an example, let's write a bot that will respond to <code>bash</code> command. The bot
+will fetch <a href="http://bash.org/?random1">bash.org/?random1</a>, parse out the
+quotes from the HTML, and keep them in the cache. When the command is triggered,
+the bot will hand out one of the quotes, repeating the fetching when the cache
+runs out. In particular, we don't want the bot to block while retrieving
+and parsing the web page. Here's the full code:</p>
+
+<pre><code>use IRC::Client;
+use Mojo::UserAgent:from&lt;Perl5&gt;;
+
+class Bash {
+    constant $BASH_URL = 'http://bash.org/?random1';
+    constant $cache    = Channel.new;
+    has        $!ua    = Mojo::UserAgent.new;
+
+    multi method irc-to-me ($ where /bash/) {
+        start $cache.poll or do { self!fetch-quotes; $cache.poll };
+    }
+
+    method !fetch-quotes {
+        $cache.send: $_
+            for $!ua.get($BASH_URL).res.dom.find('.qt').each».all_text.lines.join: '  ';
+    }
+}
+
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#perl6&gt;
+    :debug
+    :plugins(Bash.new)
+</code></pre>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> MahBot, bash<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, &lt;Time&gt; that reminds
+  me of when Manning and I installed OS/2 Warp4 on a box and during the install
+  routine it said something to the likes of 'join the hundreds of people on the
+  internet'<br></span></p>
+</blockquote>
+
+<p>For page fetching needs, I chose Perl 5's
+<a href="https://metacpan.org/pod/Mojo::UserAgent">Mojo::UserAgent</a>, since it has
+an HTML parser built-in. The <code>:from&lt;Perl5&gt;</code> adverb indicates to the compiler
+that we want to load a Perl 5, not Perl 6, module.</p>
+
+<p>Since we're multi-threading, we'll use a
+<a href="https://docs.perl6.org/type/Channel">Channel</a> as a thread-safe queue
+for our caching purposes. We
+subscribe to the <code>irc-to-me</code> event where text contains word <code>bash</code>. When the
+event handler is triggered, we pop out to a new thread using the <code>start</code>
+keyword. Then we <code>.poll</code> our cache and use the cached value if we have one,
+otherwise, the logic will move onto the <code>do</code> block that
+that calls the <code>fetch-quotes</code> private method and when that completes,
+polls the cache once more, getting a fresh quote. All said and done, a quote
+will be the result of the <code>Promise</code> we return from the event handler.</p>
+
+<p>The <code>fetch-quotes</code> method fires up our <code>Mojo::UserAgent</code> object that fetches
+the random quotes page from the website, finds all
+HTML elements that have <code>class="qt"</code> on them—those are paragraphs with
+quotes. Then, we use a hyper method call to convert those paragraphs to just
+text and that final list is fed to our <code>$cache</code> <code>Channel</code> via a <code>for</code> loop.
+And there you go, we non-blockingly connected our bot to the cesspit of the IRC
+world. And speaking of things you may want to filter...</p>
+
+<h2 id="watchyourmouth">Watch Your Mouth!</h2>
+
+<p>Our bot would get banned rather quickly if it spewed enormous amounts of
+output into channels. An obvious solution is to include logic in our
+plugins that would use a pastebin if the output is too large. However,
+it's pretty impractical to add such a thing to every plugin we write. Luckily,
+<code>IRC::Client</code> has support for filters!</p>
+
+<p>For any method that issues a <code>NOTICE</code> or <code>PRIVMSG</code> IRC command,
+<code>IRC::Client</code> will pass the output through classes given to it via <code>:filters</code>
+attribute. This means we can set up a filter that will automatically pastebin
+large output, regardless of what plugin it comes from.</p>
+
+<p>We'll re-use our bash.org quote bot, except this time it will pastebin
+large quotes to <a href="Pastebin::Shadowcat">Shadowcat pastebin</a>. Let's look at some
+code!</p>
+
+<pre><code>use IRC::Client;
+use Pastebin::Shadowcat;
+use Mojo::UserAgent:from&lt;Perl5&gt;;
+
+class Bash {
+    constant $BASH_URL = 'http://bash.org/?random1';
+    constant $cache    = Channel.new;
+    has        $!ua    = Mojo::UserAgent.new;
+
+    multi method irc-to-me ($ where /bash/) {
+        start $cache.poll or do { self!fetch-quotes; $cache.poll };
+    }
+
+    method !fetch-quotes {
+        $cache.send: $_
+            for $!ua.get($BASH_URL).res.dom.find('.qt').each».all_text;
+    }
+}
+
+.run with IRC::Client.new:
+    :nick&lt;MahBot&gt;
+    :host&lt;irc.freenode.net&gt;
+    :channels&lt;#zofbot&gt;
+    :debug
+    :plugins(Bash.new)
+    :filters(
+        -&gt; $text where .lines &gt; 1 || .chars &gt; 300 {
+            Pastebin::Shadowcat.new.paste: $text.lines.join: "\n";
+        }
+    )
+</code></pre>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> MahBot, bash<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, &lt;intuit&gt; hmm maybe
+  sumtime next week i will go outside'<br></span>
+  <b>&lt;Zoffix&gt;</b> MahBot, bash<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> Zoffix, <a href="http://fpaste.scsys.co.uk/528741"><a href="http://fpaste.scsys.co.uk/528741">http://fpaste.scsys.co.uk/528741</a></a><br></span></p>
+</blockquote>
+
+<p>The code that does all the filtering work is small enough that it's easy to
+miss—it's the last 5 lines in the program above. The <code>:filters</code> attribute
+takes a list of <a href="https://docs.perl6.org/type/Callable">Callables</a>, and here
+we're passing a pointy block. In its signature we constraint the text
+to be more than 1 line or more than 300 characters long, so our filter will
+be run only when those criteria are met. Inside the block, we simply use the
+<a href="https://modules.perl6.org/repo/Pastebin::Shadowcat">Pastebin::Shadowcat</a> module
+to throw the output onto the pastebin. Its <code>.paste</code> method returns the
+URL of the newly-created paste, which is what our filter will replace the
+original content with. Pretty awesome!</p>
+
+<h2 id="itspreadslikebutter">It Spreads Like Butter</h2>
+
+<p>In the past, when I used other IRC client tools, whenever someone asked me to
+place my bots on other servers, the procedure was simple: copy over the code
+to another directory, change config, and you're done. It almost made sense
+that a new server would mean a "new" bot: different channels, different
+nicknames, and so on.</p>
+
+<p>In Perl 6's <code>IRC::Client</code>, I tried to re-imagine things a bit:
+a server is merely another
+identifier for a message, along with a channel or nickname. This means
+connecting your bot to multiple servers is as simple as adding new server
+configuration via <code>:servers</code> attribute:</p>
+
+<pre><code>use IRC::Client;
+
+class BFF {
+    method irc-to-me ($ where /'♥'/) { 'I ♥ YOU!' }
+}
+
+.run with IRC::Client.new:
+    :debug
+    :plugins(BFF)
+    :nick&lt;MahBot&gt;
+    :channels&lt;#zofbot&gt;
+    :servers(
+        freenode =&gt; %(
+            :host&lt;irc.freenode.net&gt;,
+        ),
+        local =&gt; %(
+            :nick&lt;P6Bot&gt;,
+            :channels&lt;#zofbot #perl6&gt;,
+            :host&lt;localhost&gt;,
+        )
+    )
+</code></pre>
+
+<blockquote>
+  <p><span class="irc-timestamp">[on Freenode server]</span><br>
+  <b>&lt;ZoffixW&gt;</b> MahBot, I ♥ you<br>
+  <span class="irc-alt"><b>&lt;MahBot&gt;</b> ZoffixW, I ♥ YOU!<br></span>
+  <br>
+  <span class="irc-timestamp">[on local server]</span><br>
+  <b>&lt;ZoffixW&gt;</b> P6Bot, I ♥ you<br>
+  <span class="irc-alt"><b>&lt;P6Bot&gt;</b> ZoffixW, I ♥ YOU!<br></span></p>
+</blockquote>
+
+<p>First, our plugin remains oblivious that it's being run on multiple servers.
+Its replies get redirected to the correct server and <code>IRC::Client</code> still
+executes its method handler in a thread-safe way.</p>
+
+<p>In the <code>IRC::Client</code>'s constructor we added <code>:servers</code> attribute that takes
+a <code>Hash</code>. The keys of this <code>Hash</code> are servers' labels and values are
+server-specific configurations that override global settings. So <code>freenode</code>
+server gets its <code>:nick</code> and <code>:channels</code> from the <code>:nick</code> and <code>:channels</code>
+attributes we give to <code>IRC::Client</code>, while the <code>local</code> server overrides those
+with its own values.</p>
+
+<p>The debug output now has server lables printed, to indicate to which server
+the event applies:</p>
+
+<p><img src="/assets/pics/irc-bot/debug-output3.png" alt="" /></p>
+
+<p>And so, but simply telling the bot to connect to another server, we made it
+multi-server, without making any changes to our plugins. But what do we do
+when we <em>do</em> want to talk to a specific server?</p>
+
+<h2 id="senditthatway">Send It That Way</h2>
+
+<p>When the bot is <code>.run</code>, the Client Object changes the values of <code>:servers</code>
+attribute to be <code>IRC::Client::Server</code> objects. Those stringify to the label
+for the server they represent and we can get them either from the <code>.server</code>
+attribute of the Message Object or <code>.servers</code> hash attribute of the
+Client Object. Client Object methods such as <code>.send</code> or <code>.join</code> take
+an optional <code>server</code> attribute that controls which server the message will
+be sent to and defaults to value <code>*</code>, which means <em>send to every server.</em></p>
+
+<p>Here's a bot that connects to two servers and joins several channels. Whenever
+it sees a channel message, it forwards it to all other channels and sends a
+private message to user <code>Zoffix</code> on server designated by label <code>local</code>.</p>
+
+<pre><code>use IRC::Client;
+
+class Messenger does IRC::Client::Plugin {
+    method irc-privmsg-channel ($e) {
+        for $.irc.servers.values -&gt; $server {
+            for $server.channels -&gt; $channel {
+                next if $server eq $e.server and $channel eq $e.channel;
+
+                $.irc.send: :$server, :where($channel), :text(
+                    "$e.nick() over at $e.server.host()/$e.channel() says $e.text()"
+                );
+            }
+        }
+
+        $.irc.send: :where&lt;Zoffix&gt;
+                    :text('I spread the messages!')
+                    :server&lt;local&gt;;
+    }
+}
+
+.run with IRC::Client.new:
+    :debug
+    :plugins[Messenger.new]
+    :nick&lt;MahBot&gt;
+    :channels&lt;#zofbot&gt;
+    :servers{
+        freenode =&gt; %(
+            :host&lt;irc.freenode.net&gt;,
+        ),
+        local =&gt; %(
+            :nick&lt;P6Bot&gt;,
+            :channels&lt;#zofbot #perl6&gt;,
+            :host&lt;localhost&gt;,
+        )
+    }
+</code></pre>
+
+<blockquote>
+  <p><span class="irc-timestamp">[on Freenode server/#zofbot]</span><br>
+  <b>&lt;ZoffixW&gt;</b> Yey!<br>
+  <span class="irc-timestamp">[on local server/#zofbot]</span><br>
+  <span class="irc-alt"><b>&lt;P6Bot&gt;</b> ZoffixW over at irc.freenode.net/#zofbot says Yey!<br></span>
+  <span class="irc-timestamp">[on local server/#perl6]</span><br>
+  <span class="irc-alt"><b>&lt;P6Bot&gt;</b> ZoffixW over at irc.freenode.net/#zofbot says Yey!<br></span>
+  <span class="irc-timestamp">[on local server/ZoffixW private message queue]</span><br>
+  <span class="irc-alt"><b>&lt;P6Bot&gt;</b> I spread the messages!<br></span></p>
+</blockquote>
+
+<p>We subscribe to the <code>irc-privmsg-channel</code> event and when it's triggered,
+we loop over all the servers. For each server, we loop over all of the
+connected channels and use <code>$.irc.send</code> method to send a message to that
+particular channel and server, unless the server and channel are the same
+as where the message originated.</p>
+
+<p>The message itself calls <code>.nick</code>, <code>.channel</code>, and <code>.server.host</code> methods
+on the Message Object to identify the sender and origin of the message.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Perl 6 offers powerful concurrency primitives, dispatch methods, and
+introspection that lets you build awesome non-blocking, event-based interfaces.
+One of them is <code>IRC::Client</code> that lets you use IRC networks. It's here.
+It's ready. Use it!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

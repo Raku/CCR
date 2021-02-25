@@ -1,11 +1,278 @@
-https://perl6.party/<a href="/post/Perl-6-Hands-On-Workshop--Weatherapp--Part-1
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Hands-On-Workshop--Weatherapp--Part-1
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Hands-On Workshop: Weatherapp (Part 1) - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Hands-On Workshop: Weatherapp (Part 1)</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-05-20 <span class="words-count">| 1628 words |</span> Developing a weather reporting application. Part 1: narrowing scope and doing research.</p>
+  <p><em>Welcome to the Perl 6 Hands-On Workshop, or Perl 6 HOW, where instead of
+learning about a specific feature or technique of Perl 6, we'll be learning
+to build entire programs or modules.</em></p>
+
+<p><em>Knowing a bunch of method calls won't make you a good programmer. In fact,
+actually writing the code of your program is not where you spend most of
+your time. There're requirements, design, documentation, tests, usability
+testing, maintenance, bug fixes, distribution of your code, and more.</em></p>
+
+<p><em>This Workshop will cover those areas. But by no means should you accept
+what you learn as authoritative commandments, but rather as reasoned tips.
+It's up to you to think about them and decide whether to adopt them.</em></p>
+
+<h2 id="project:weatherapp">Project: "Weatherapp"</h2>
+
+<p>In this installment of <em>Perl 6 HOW</em> we'll learn how to build an application
+that talks to a Web service using its API (Application Programming Interface).
+The app will tell us weather at a location we provide.
+Sounds simple enough! Let's jump in!</p>
+
+<h2 id="preparation">Preparation</h2>
+
+<p>I'll be using Linux with bash shell. If you aren't, you can get a
+<a href="http://www.bodhilinux.com/">good distro</a> and run it in <a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>, or just try to find
+what the equivalent commands are on your OS. It should be fairly easy.</p>
+
+<p>I'll also be using <a href="https://git-scm.com/"><code>git</code></a> for version control. It's
+not required that you use this type of version control and you can skip all
+the <code>git</code> commands in the text. However, using version control lets you
+play around with your code and not worry about breaking everything,
+especially when you <a href="https://github.com/">store your repository somewhere online</a>. I highly
+recommend you familiarize yourself with it.</p>
+
+<p>To start, we'll create an empty directory <code>Weatherapp</code> and initialize a new
+git repository inside:</p>
+
+<pre><code>mkdir Weatherapp
+cd Weatherapp
+git init
+</code></pre>
+
+<h2 id="designdocs:why">Design Docs: "Why?"</h2>
+
+<p>Before we write down a single line of code we need to know a clear answer
+for what problem we're trying to solve. The statement
+"tell weather" is ridiculously
+vague. Do we need real-time, satellite-tracked wind speeds and pressures
+or is it enough to have temperature alone for one day for just the locations within United States? The answer will drastically change the amount of code written and
+the web service we'll choose to use—and some of those are rather expensive.</p>
+
+<p>Let's write the first bits of our design docs: the purpose of the code.
+This helps define the scope of the project and lets us evaluate what tools
+we'll need for it and whether it is at all possible to implement.</p>
+
+<p>I'll be using <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a>
+for all the docs. Let's create <code>DESIGN.md</code> file in our app's directory and
+write out our goal:</p>
+
+<pre><code># Purpose
+
+Provide basic information on the current weather for a specified location.
+The information must be available for as many countries as possible and
+needs to include temperature, possibility of precipitation, wind
+speed, humidex, and windchill. The information is to be provided
+for the current day only (no hourly or multi-day forecasts).
+</code></pre>
+
+<p>And commit it:</p>
+
+<pre><code>git add DESIGN.md
+git commit -m 'Start basic design document'
+git push
+</code></pre>
+
+<p>With that single paragraph, we significantly clarified what we expect
+our app to be able to do. Be sure to pass it by your client and resolve all
+ambiguities. At times, it'll feel like you're just annoying them with
+questions answers to which should be "obvious," but a steep price tag
+for your work is more annoying. Besides, your questions can often bring to
+light things the client haven't even though of.</p>
+
+<p>Anyway, time to go shopping!</p>
+
+<h2 id="researchandpriorart">Research and Prior Art</h2>
+
+<p>Before we write anything, let's see if someone already wrote it for us.
+Searching <a href="https://modules.perl6.org/">the ecosystem</a> for <code>weather</code> gives
+zero results, at the time of this writing, so it looks like if we want
+this in pure Perl 6, we have to write it from scratch. Lack of Perl 6
+implementation doesn't <em>always</em> mean you have to write anything, however.</p>
+
+<h3 id="usemultiplelanguages">Use multiple languages</h3>
+
+<p>What zealots who endlessly diss everything that isn't their favourite language
+don't tell you is their closet is full of reinvented wheels, created for
+no good reason. In Perl 6, you can use C libraries with <a href="https://docs.perl6.org/language/nativecall">NativeCall</a>,
+most of Perl 5 modules with
+<a href="https://modules.perl6.org/repo/Inline::Perl5">Inline::Perl5</a>, and there's
+<a href="https://modules.perl6.org/#q=Inline">a handful of other Inlines</a> in the
+ecosystem, including Python and Ruby. When instead of spending several weeks
+designing, writing, and testing code you can just use someone's library that
+did all that already, you are the winner!</p>
+
+<p>That's not to say such an approach is always the best one. First, you're
+adding extra dependencies that can't be automatically installed by
+<a href="https://modules.perl6.org/dist/panda"><code>panda</code></a> or
+<a href="https://modules.perl6.org/dist/zef"><code>zef</code></a>. The C library you used might
+not be available at all for the system you're deploying your code on.
+<code>Inline::Perl5</code> requires perl compiled with <code>-fPIC</code>, which may not be the
+case on user's box. And your client may refuse to involve Python without
+ever giving you a reason why. How to approach this issue is a decision you'll
+have to make yourself, as a programmer.</p>
+
+<h3 id="sstealsborrowideas"><s>Steal</s> Borrow Ideas</h3>
+
+<p>Even if you choose not to include other languages (and we won't, for the
+purposes of this tutorial), it's always a good idea to take a look at prior art.
+Not only can we see how other people solved similar problems and use their
+ideas, but for our program we can also see which weather Web service people
+tend to use.</p>
+
+<p>The two pieces we'll examine are Perl 5's
+<a href="https://metacpan.org/pod/Weather::Underground">Weather::Underground</a> and
+<a href="https://metacpan.org/pod/Weather::OpenWeatherMap">Weather::OpenWeatherMap</a>.
+They use different services, return their results in different formats
+(Perl 5's native data structures vs. objects), and the data contains
+varying amounts of detail.</p>
+
+<p>I like ::OpenWeatherMap's approach of returning results as objects, since the
+data can be abstracted and we can add useful methods if we ever need to,
+however, traversing its documentation is more difficult than that of
+::Underground—even more so for someone not overly familiar with Object
+Orientation. So in our program, I think we can return objects, but we'll have
+fewer of them. We'll think more about that during design stage.</p>
+
+<p>Also, the implementations suggest none of the two Web services offer humidex or
+windchill values. We'll ask our client how badly they need those values and
+try to find another service,
+if they are absolutely required. A more common case will be where the more
+expensive plan of the service offers a feature while the free or less expensive
+doesn't. The client will have to decide how much they wish to splurge in that
+case.</p>
+
+<p>Weather::Underground's service seems to offer more types of data, so let's
+look at it first. Even if we don't need those right now, we might in the
+future. The <a href="https://www.wunderground.com/">website</a> is pretty slow,
+has two giant ads, has poor usability,
+and the availability of the API isn't apparent right away
+(the link to it is in the footer). While those aren't direct indicators of
+the quality of the service, there tends to be at least some correlation.</p>
+
+<p>When we get to the <a href="https://www.wunderground.com/weather/api/d/pricing.html">API service level options</a>, we see
+the free version has rather low limits: 10 requests per minute up to a maximum
+of 500 per day. If you actually try to sign up to the site, you'll encounter a bug where you have to fill out your app's details twice. And the docs?
+<a href="https://www.wunderground.com/weather/api/d/docs?d=data/conditions">They</a> aren't
+terrible, but it took me a bit to find the description of
+<a href="https://www.wunderground.com/weather/api/d/docs?d=data/index">request parameters</a>. Also,
+none of the response parameters are explained and we're left to wonder
+what <code>estimated</code> is and what its properties are when it's not empty, for
+example. The API actually <em>does</em> offer windchill and "heat index," but in
+a sample response their values are "N/A". Are they ever available? Overall,
+I'd try to avoid this service if I have a choice.</p>
+
+<p>Up next, Weather::OpenWeatherMap's
+service—<a href="http://www.openweathermap.org/">www.openweathermap.org</a>. Nicer
+and faster website, unintrusive ads, the API link is right in the navigation
+and leads to a clear summary of the APIs offered. The
+<a href="http://www.openweathermap.org/price">free version</a> limits are much better too:
+60 requests per minute, without a daily limit.
+Signing up for the API key is simpler as well—no annoying
+email confirmations. And <a href="http://www.openweathermap.org/current">docs</a>
+are excellent. Even though humidex and wind chill aren't available,
+the docs explicitly state how many worldwide weather stations the site offers,
+while Wunderground's site mentions worldwidedness as an afterthought inside
+a broken <code>&lt;dfn&gt;</code> hovering over which pops up <code>Definition not found</code> message.</p>
+
+<p>The winner is clear: OpenWeatherMap. <a href="https://home.openweathermap.org/users/sign_up">Sign up</a> for an account and
+generate an <a href="https://home.openweathermap.org/api_keys">API key</a> for us to use.
+You can use <a href="http://www.throwawaymail.com/">a throwaway email address</a> for
+registration, if you prefer.</p>
+
+<p>Alternatively, try finding yet another web service that's better suited
+for our weather application!</p>
+
+<h3 id="homework">Homework</h3>
+
+<p>By choosing OpeanWeathMap service we had to abandon providing humidex
+and wind chill in our data that we originally wrote in our design doc.
+We pretended our client OKed changing the requirements of the app, so we
+need to update our docs to reflect that.</p>
+
+<p>You can also update it to reflect some other service you found. Perhaps,
+don't mention the specific data types, but rather the purpose of the
+weather information. Is it for a city dweller to know what to wear in the
+morning? Is it for a farmer to know when to sow the crops? Or is the data to
+be used in a research project?</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>Today, we started our design docs by defining the scope of our application.
+We then looked at prior art written in Perl&nbsp;6 (found none) and other languages.
+We evaluated to services that provide weather data on their potential quality,
+reliability, query limits, and feature sets.</p>
+
+<p>At this point we have: start of the design doc, chosen service provider, and
+API key for it. In the next post, we'll write detailed design and tests for our
+app.</p>
+
+<p>See you then!</p>
+
+<p>UPDATE: <a href="http://perl6.party/post/Perl-6-Hands-On-Workshop--Weatherapp--Part-2">Part 2</a> is now available!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

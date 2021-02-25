@@ -1,11 +1,356 @@
-https://perl6.party/<a href="/post/I-Botched-A-Perl-6-Release-And-Now-A-Robot-Is-Taking-My-Job
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/I-Botched-A-Perl-6-Release-And-Now-A-Robot-Is-Taking-My-Job
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>I Botched a Perl 6 Release And Now a Robot Is Taking My Job - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">I Botched a Perl 6 Release And Now a Robot Is Taking My Job</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-08-20 <span class="words-count">| 2231 words |</span> Automating your release cycle</p>
+  <p><em>Deconfusion note: if you're just a regular Perl 6 user, you likely use
+and only ever heard of Rakudo Star, which is a distribution that includes
+the Rakudo Perl 6 Compiler, some modules, and the docs. This post details a release
+of that compiler</em> <strong>only,</strong> <em>which gets released more often than Rakudo Star.
+So please don't think there's a new release, if Star is all you use.</em></p>
+
+<h2 id="parti:humansmakeerrors">Part I: Humans Make Errors</h2>
+
+<p>Today is the third Saturday of the month, which is an awesome day! It's when
+the Rakudo Perl 6 Compiler sees its monthly release. I was at the helm today,
+so I chugged along through the <a href="https://github.com/rakudo/rakudo/blob/37bf470f92dd0f0389c3d2c78f85374232c76203/docs/release_guide.pod">Rakudo release
+guide</a>
+and the <a href="https://github.com/perl6/nqp/blob/a714ed740adcf6d64d9066d6f0a56986fa66c3a1/docs/release_guide.pod">NQP release
+guide</a>,
+whose release is part of the process as well.</p>
+
+<h3 id="wereallgreentogo">We're All Green To Go</h3>
+
+<p>As I was nearing the end of the process, the first hint of a problem surfaced
+when a user joined the <a href="https://webchat.freenode.net/?channels=#perl6-dev">#perl6-dev IRC channel</a>:</p>
+
+<blockquote>
+  <p><b>&lt;nwc10&gt;</b> the tag 2016.08 seems to be missing from the nqp github repository<br>
+  <b>&lt;Zoffix&gt;</b> nwc10, it was created about 44 minutes ago. Ensure you got the<br>
+      latest everything<br>
+  <b>&lt;nwc10&gt;</b> very strange. because if I pull again in my nqp checkout I still don't see it<br>
+  <b>&lt;Zoffix&gt;</b> Did you add --tags?   it's git pull --tags or git fetch --tags or something like that<br>
+  <b>&lt;nwc10&gt;</b> Zoffix: correct. no I didn't. thanks<br>
+  <b>&lt;Zoffix&gt;</b> \o/<br>
+  <b>&lt;nwc10&gt;</b> OK, why do I usually <em>not</em> need to do that?</p>
+</blockquote>
+
+<p>Good question. I pulled in a fresh checkout and ran the full test suite again,
+just to be sure. Everything passed. Luckily, I got the answer rather quickly:</p>
+
+<blockquote>
+  <p><b>&lt;nwc10&gt;</b> git log --graph --decorate origin/master 2016.08<br>
+  <b>&lt;nwc10&gt;</b> how that it and master have diverged<br>
+  <b>&lt;nwc10&gt;</b> the tag is for a commit which is not a parent of nqp master</p>
+</blockquote>
+
+<p>Here's the story:
+I have a local NQP checkout. I bump its version and its <a href="http://moarvm.org/">MoarVM</a>
+dependency. <strong>Tag the release.</strong> And start the full build and test suite run.
+That's a lengthly process, so while that is happening, I go to GitHub and use
+the online editor to make a minor tweak to the text of the NQP's release guide.</p>
+
+<p>The tests finish. I try to push my tag and the version bump and get the usual error
+saying the online repo has diverged. Instinctively, I run my <code>gr</code> alias
+for <code>git pull --rebase</code> to bring in the new changes, and then push all
+of the work into the repo.</p>
+
+<p>The problem is that <code>--rebase</code> doesn't move my tag, so it's still referencing
+that old commit. If you clone the repo, everything appears to work for that tag,
+but if you pull in the changes into the existing repo, you don't get the tag.
+Also, <code>git describe</code> (which we use when doing mid-release NQP/MoarVM version
+bumps) was now missing my tag, because the commit my tag tagged is not the parent of
+the master HEAD.</p>
+
+<p>At this point, I don't yet know about the breakage for folks who are doing
+<code>git pull</code> in an existing branch, and so I continue with the release, since
+all of my tests are green. Finish up. Then relax by departing to fly in
+<a href="https://en.wikipedia.org/wiki/No_Man%27s_Sky">No Man's Sky</a>. Awesome!</p>
+
+<h3 id="therobocide">The Robocide</h3>
+
+<p>The first hint (wait, the <em>second</em> hint?) of trouble showed up when the latest
+commits did not appear in our eval bot that's supposed to update itself
+to HEAD:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> m: dd [ $*VM.version, $*PERL.compiler.version ]<br>
+  <b>&lt;camelia&gt;</b> rakudo-moar c201a7: OUTPUT«[v2016.07.24.g.31.eccd.7,<br>
+      v2016.07.1.243.gc.201.a.76]␤»<br>
+  <b>&lt;Zoffix&gt;</b> Oh. I guess camelia doesn't build every commit right away.</p>
+</blockquote>
+
+<p>I did not create camelia, so was unfamiliar with her workings, but there was
+another bot whom I did create and knew for sure it was supposed to update
+to HEAD every hour... it didn't:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> s: dd $*VM.version,  $*PERL.compiler.version<br>
+  <b>&lt;SourceBaby&gt;</b> Zoffix, Something's wrong: ␤ERR: v2016.07.24.g.31.eccd.7<br>
+     v2016​.07.1.243.gc.201.a.76␤Cannot resolve caller sourcery(Nil); none of<br>
+     these signatures match:␤    ($thing, Str:D $method, Capture $c)␤<br>
+     ($thing, Str:D $method)␤    (&amp;code)␤    (&amp;code, Capture $c)␤<br>
+     in block <unit> at -e line 6␤␤<br>
+  <b>* Zoffix</b> gets a bad feeling</p>
+</blockquote>
+
+<h3 id="thefallout">The Fallout</h3>
+
+<p>I didn't have to wonder about what the hell was going on for too long, since shortly
+thereafter a user in <a href="https://webchat.freenode.net/?channels=#perl6">#perl6 channel</a>
+turned up, saying they can't build:</p>
+
+<blockquote>
+  <p><b>&lt;cuonglm&gt;</b> Hi, anyone got trouble when building 2016.08 rakudo<br>
+      release from source I got `error: pathspec '2016.08' did not match<br>
+      any file(s) know to git. Sounds like git history was overriden</p>
+</blockquote>
+
+<p>After a short conversation with the person, it became obvious that while
+cloning and building the repo (or using the release I released) may have worked
+fine, simply <code>git pull</code>ing ran into the issue with the tag.</p>
+
+<p>It was obvious there was an issue and it needed fixing. The question was: how.
+The first suggestions seemed scary:</p>
+
+<blockquote>
+  <p><b>&lt;mst&gt;</b> you can always burn the tag with fire and replace it with a fixed one.<br>
+  <b>&lt;mst&gt;</b> the advantages may outweigh the risks</p>
+</blockquote>
+
+<p>We already had users with checkouts with a broken tag asking for help in the
+chat channel and since I've sent the
+release announcement email, there may have been many users experiencing
+such a checkout issue. I didn't
+know what to do, so the first thing I did was panic and attempt to find someone
+else to fix my mess:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> jnthn, [Coke], TimToady are you around? I made a booboo with the tag</p>
+</blockquote>
+
+<p>A lot of the core devs are in Europe, so there's a bit of timezone conflict with me,
+and with <a href="http://act.yapc.eu/ye2016/">YAPC::Europe</a>
+happening, some of them were not even in the chat at the time. Left to my own
+devices, I joined <a href="https://webchat.freenode.net/?channels=#git">#git on Freenode</a>,
+and the kind folks in there reaffirmed
+that replacing the tag might be a bad idea. Victory... I didn't have to
+learn how to do that:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> What if I delete the tag and create a new one.<br>
+  What happens to people who have cloned the branch with the incorrect tag?<br>
+  <b>&lt;_ikke_&gt;</b> Zoffix: A good question. Tags are kind of special as<br>
+  in they're not expecting to change (and git somewhat ignores changing tags from the remote)<br>
+  <b>&lt;_ikke_&gt;</b> Zoffix: man git tag has a section about it ("On retagging")<br>
+  <b>&lt;gitinfo&gt;</b> Zoffix: the git-tag manpage is available at http://jk.gs/git-tag.html<br>
+  <b>&lt;Zoffix&gt;</b> OK, then I think I'll leave it as it is, and wait for<br>
+  someone smarter than me to figure out a fix :P<br>
+  <b>&lt;Zoffix&gt;</b> Haha "Just admit you screwed up, and use<br>
+  a different name." Yup, I'll go with that :P<br>
+  <b>&lt;Zoffix&gt;</b> Thanks for the help!<br>
+  <b>&lt;_ikke_&gt;</b> YW ;-)</p>
+</blockquote>
+
+<p>With tag mangling out of the question and users having issues, the next
+answer was to make an emergency point release with a corrected tag, so I
+proceeded to do so:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> OK. I'm gonna do a 2016.08.1 'cause I'm not 100% sure<br>
+   just changing the tag will fix everything and won't introduce new problems.</p>
+</blockquote>
+
+<p>Making another NQP release, with a correct tag, seemed to resolve the issue
+<em>on my box,</em> but I wasn't sure there wasn't any more fallout about to happen with
+the current Rakudo release, so I made a point release of the compiler as well, just to
+be safe, and to sync up versions with NQP (so folks don't think a 2016.08.01 Rakudo
+release is missing, when they see a 2016.08.1 NQP release).</p>
+
+<p>Jumping into the release guides at mid-point proved challenging, and considering
+I've <em>just</em> done a release, so did trying to keep track of which steps I've
+already done. Tired. Embarrassed. And too sober for the occasion. I headed to
+the pub, knowing this is the last time I'll make a release like this.</p>
+
+<h2 id="partii:irobot">Part II: I, Robot</h2>
+
+<p>If you've heard of
+<a href="http://www.joelonsoftware.com/articles/fog0000000043.html">The Joel Test</a>, you
+may've noticed Perl 6's release process described above currently fails item #2:</p>
+
+<blockquote>
+  <p>2. Can you make a build in one step?</p>
+</blockquote>
+
+<p>Painfully aware of the issue, I was thinking about improving the situation ever
+since the first time I stepped up to cut a release. If you follow
+the <a href="https://webchat.freenode.net/?channels=#perl6-dev">#perl6-dev channel</a>,
+you may have even seen me show off a couple of prototypes.
+Such as my <a href="https://github.com/zoffixznet/Rele6sr">Rele6sr web app</a>
+that lets you keep track of release-blocking bug tickets:</p>
+
+<p><img src="/assets/pics/botched-release/tickets.png" alt="" /></p>
+
+<p>Or my Rele6sr bot that reminds you about an upcoming release, giving a list
+of new tickets since last release, as well as the ChangeLog entries to review:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> Rele6sr: reminder<br>
+  <b>&lt;Rele6sr&gt;</b> 🎺🎺🎺 Friends! I bear good news! Rakudo's release will<br>
+  happen in just 1 days! Please update the ChangeLog with anything you worked<br>
+  on that should be known to our users. 🎺🎺🎺<br>
+  <b>&lt;Rele6sr&gt;</b> 🎺🎺🎺 Here are still-open new RT tickets since last release:<br>
+  http://bug.perl6.party/1471608216.html And here is the git log output for commits<br>
+  since last release: http://bug.perl6.party/1471608219.html 🎺🎺🎺</p>
+</blockquote>
+
+<p>Today's incident indicated to me that it's time to stop messing around
+with prototypes and put out a complete plan of action.</p>
+
+<h3 id="spreaditout">Spread It Out</h3>
+
+<p>There are two things the Release Guide contains that may make it seem like
+automating releases is a tough nut to crack: reviewing bug tickets for blockers
+and populating the ChangeLog with needed items. We can't make a robot reliably
+do those things (yet?), so the largest part of the release process requests
+a human to do so. But... what if we spread that job throughout the entire
+month between the releases?</p>
+
+<p>This month, I will create a web app that will keep track of all the reported
+tickets and will let the release manager log in and mark the tickets they
+reviewed as either release blockers or non-blockers. As a bonus, the
+prototype <code>buggable</code> bug-queue interfacing bot that some of you may have seen
+will also use the app to do its thing more correctly, and the app will also
+serve as a nicer interface to tickets for people who don't like our
+original RT website.</p>
+
+<p>The same principle will apply to ChangeLog entries too, where the site will
+keep track of the commits the release manager has reviewed and added to the
+ChangeLog. As such, by "keeping state" around, the web app will let the release
+manager spend only a couple of minutes every few days reviewing changes and bugs,
+instead of cramming all of the work into a single session on the release day.</p>
+
+<h3 id="buildinonestep">Build In One Step</h3>
+
+<p>Providing the release manager keeps up with the above steps throughout the
+month, on the release day they will have a single thing to do: issue the <code>release</code>
+command to the Rele6sr bot:</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> Rele6sr: release<br>
+  <b>&lt;Rele6sr&gt;</b> Yey! It's that time! Starting the release.<br>
+  You can watch the progress on http://bug.perl6.party/some-url <br>
+  Tell me to <code>abort</code> at any time to abort the process.</p>
+</blockquote>
+
+<p>Since the issue review process has been subtracted from the release instructions,
+all that's left is grunt work that can be entirely automated. The bot will
+use <a href="https://cloud.google.com/compute/docs/reference/latest/">Google Compute Engine API</a>
+to fire up my 24-core dev box. It will then <code>ssh</code> into it and clone the
+repos, update versions, run the builds, run the tests, tag stuff,
+generate tarballs, test the tarballs,
+<code>scp</code> the tarballs to <a href="http://rakudo.org/">Rakudo's website</a>, email
+the release announcement, and update the Wikipedia page (if there's an API
+for that).
+The human can watch all of that happen on a page that feeds a websocket
+with the output from <a href="https://docs.perl6.org/type/Proc$COLON$COLONAsync"><code>Proc::Async</code></a>
+and abort if anything goes wrong. The bot will automatically abort if any
+of the tests in the test suite fail.
+As a bonus, I'm hoping to make the bot fire up instances of VMs with several
+different OSes, to add an extra layer of testing in different environments.</p>
+
+<p>Granted, at least with the first several releases, there will be safety
+stop-measures and
+verification steps where a human can ensure the robot is doing the right thing,
+and abort the process, if needed. But there's no technical limitation to
+the bot correctly cutting a release after being issued a single command.</p>
+
+<h3 id="exterminateallhumans">Exterminate All Humans</h3>
+
+<p>Automating complex build jobs eliminates mistakes. A robot doesn't care
+if it has to rebuild from scratch a hundred times while you're trying to
+debug a release-blocker (OK, I <em>think</em> it doesn't care... any
+robots' rights activists in the audience to tell me I'm wrong?).</p>
+
+<p>Both my today's mistake and the difficulty of fixing it could've been avoided
+if the release process were entirely automated. The fewer things you have
+to do manually, the fewer places a mistake can creep into.</p>
+
+<p><a href="http://www.joelonsoftware.com/articles/fog0000000043.html">The Joel Test</a>,
+while an amusing read, has a lot of truth and simplicity to it.
+I suggest you re-evaluate any of the points your project fails the test on,
+and I believe you'll save yourself a lot of headache if you do so.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Today's events were a great learning experience and a catalyst for improvement.
+Humans are squishy and fallable and they make mistakes, especially out of habit.</p>
+
+<p>Trying to follow a regular list of instructions during an irregular situation
+can prove difficult and introduce more mistakes, making a bad situation worse.</p>
+
+<p>If you haven't yet, try to automate your release process as much as you can.
+I know Perl 6 will follow that advice. This was the last time I cut a release.
+My job was taken by a robot.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

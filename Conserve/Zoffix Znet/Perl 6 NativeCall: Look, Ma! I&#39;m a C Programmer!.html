@@ -1,11 +1,222 @@
-https://perl6.party/<a href="/post/Perl-6-NativeCall--Look-Ma-Im-A-C-Programmer
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-NativeCall--Look-Ma-Im-A-C-Programmer
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 NativeCall: Look, Ma! I&#39;m a C Programmer! - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 NativeCall: Look, Ma! I&#39;m a C Programmer!</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-05-12 <span class="words-count">| 1076 words |</span> Using shared C libraries from Perl 6—no C compiler needed.</p>
+  <p>A while back, I wanted to write a post talking about how Perl 6 lets you use
+C libraries without writing any C code. It was cool and clickbaity, but I quickly realized two things: (a) the statement isn't always true; and (b) I'm too ignorant to talk about it without sounding like a moron.</p>
+
+<p>And so has <a href="http://learnxinyminutes.com/docs/c/">started</a> my
+path to <a href="http://www.amazon.com/Programming-Language-Brian-W-Kernighan/dp/0131103628">re-learn C</a>
+(I barely ever used it and it was over a decade ago) and to learn Perl 6's NativeCall in great detail. Oh, and I'll blog about my journey in a series of bite-sized posts. Let's begin!</p>
+
+<h2 id="useclibrarieswithoutwritinganyccode">Use C Libraries Without Writing Any C Code!</h2>
+
+<p><a href="http://docs.perl6.org/language/nativecall"><code>NativeCall</code></a> is one of the
+standard modules included with Perl 6 that provides interface to C libraries.
+No compilers or <code>-dev</code> versions of the libraries are needed! And this, of
+course, means you can use C libraries without writing any C code!</p>
+
+<p>The <code>is native()</code> trait is applied to a sub with an empty body and signature
+that matches the prototype of the C function you wish this sub to call.
+Magic! Right?</p>
+
+<p>As I've already hinted, things get complex fast, and in some circumstances
+not writing any C might be unfeasible or maybe even impossible. In such
+situations, you'd simply create a wrapper library. But let's look at some code
+already!</p>
+
+<h2 id="thestandardclibrary">The Standard C Library</h2>
+
+<p>If no argument is given to <code>is native</code> trait, it will look in the Standard
+C Library. Programmers coming from Perl 5 often notice there's no <code>fork()</code> in Perl 6. The
+reason for that is that, unlike in Perl 5, it's almost never needed, but
+thanks to NativeCall, it <em>is</em> actually "there":</p>
+
+<pre><code>use NativeCall;
+
+sub fork() returns int32 is native {};
+
+given fork() {
+    when 0     { say "I'm a kid!";                      };
+    when * &gt; 0 { say "I'm a parent. The kid is at $_";  };
+    default    { die "Failed :(";                       };
+}
+
+sleep .5;
+say 'Hello, World!';
+
+# OUTPUT:
+# I'm a parent. The kid is at 13099
+# I'm a kid!
+# Hello, World!
+# Hello, World!
+</code></pre>
+
+<p>On the first line, we <code>use</code> the NativeCall module to bring in its
+functionality. The second line is where all the magic happens. We declare
+a sub with an empty body and name it the same as its named in the C library. The sub is sporting <code>is native</code> trait which tells the
+compiler we want a C library function, and since the name of the library
+isn't there, we want the Standard Library.</p>
+
+<p>For a successfull call, we need to match the prototype of the C function.
+Looking at <code>man 2 fork</code>, we see it's <code>pid_t fork(void)</code>. So our sub
+doesn't take any arguments, but it returns one. If you dig around, you'll
+find <code>pid_t</code> can be represented as a C <code>int</code> and if we look up an <code>int</code>
+in the <a href="http://docs.perl6.org/language/nativecall#Passing_and_Returning_Values">handy table mapping C and Perl 6 types</a>, you'll notice we can use
+<code>int32</code> Perl 6 native type, which is what we specified in the <code>returns</code> trait.</p>
+
+<p>And that is it! The rest of our code uses <code>fork()</code> as if it were a Perl 6
+sub. It will be looked up in the library on the first call and cached for any subsequent look ups.</p>
+
+<h2 id="basicuseoflibraries">Basic Use of Libraries</h2>
+
+<p>For our learning pleasure, I'll be using
+<a href="http://www.gnu.org/software/libcdio/">libcdio</a> library that lets you
+mess around with CDs and CD-ROMs (anybody still got those?). On Debian,
+I'll just need <code>libcdio13</code> package. Notice is it <em>not</em> the <code>-dev</code> version and
+on my box it was actually already installed.</p>
+
+<p>I'm going to
+create a Perl 6 program called <code>troll.p6</code> that opens and closes the CD tray:</p>
+
+<pre><code>use NativeCall;
+
+sub cdio_eject_media_drive(Str) is native('cdio', v13) {};
+sub cdio_close_tray(Str, int32) is native('cdio', v13) {};
+
+say "Gimme a CD!";
+cdio_eject_media_drive Str;
+
+sleep .5;
+say "Ha! Too slow!";
+cdio_close_tray Str, 0;
+</code></pre>
+
+<p>The <code>cdio_eject_media_drive</code> and <code>cdio_close_tray</code> functions are provided
+by the library. We declare them and apply <code>is native</code> trait. This time, we
+give the trait two arguments: the library name and its version.</p>
+
+<p>Notice how
+the name lacks any <code>lib</code> prefixes or <code>.so</code> suffixes. Those are not needed, as
+NativeCall figures out what those should be automatically, based on the
+operating system the code is running on.</p>
+
+<p>The version is optional, but it's not recommended that you omit it, since
+then you never know whether the version that's loaded is compatible with your
+code. In future posts, I'll explore how to make naming/versioning more
+flexible.</p>
+
+<p>The one thing to look at are the C function prototypes for these two subs:</p>
+
+<pre><code>driver_return_code_t    cdio_eject_media_drive (const char *psz_drive)
+driver_return_code_t    cdio_close_tray (const char *psz_drive, driver_id_t *p_driver_id)
+</code></pre>
+
+<p>That looks mighty fancy and it seems like we haven't reproduced them exactly in our
+Perl 6 code. I'm cheetsy-doodling here a bit: while <code>Str</code> is correct for <code>const char *</code>, I looked up what <code>int</code> value will work for <code>p_driver_id</code> so I don't
+have to mess with structs or enums, for now. I'm also ignoring return types
+which may be a bad idea and makes my code less predictable and perhaps less
+portable as well. When making calls to subs, I used the type object
+<code>Str</code> for the strings. That translates to a <code>NULL</code> in C.</p>
+
+<p>I'll leave more detailed coverage of passing arguments around for future articles. Right now, there's a more serious issue that needs fixing. The names!</p>
+
+<h2 id="renamingfunctions">Renaming Functions</h2>
+
+<p>One thing that sucks about C functions is they're often named with
+snake_case, which is an eyesore in Perl 6 with it's shiny kebob-case.
+Luckily, the fix is just a trait away:</p>
+
+<pre><code>use NativeCall;
+
+sub open-tray(Str) is native('cdio', v13)
+    is symbol('cdio_eject_media_drive') {};
+
+sub close-tray(Str, int32) is native('cdio', v13)
+    is symbol('cdio_close_tray') {};
+
+say "Gimme a CD!";
+open-tray Str;
+
+sleep .5;
+say "Ha! Too slow!";
+close-tray Str, 0;
+</code></pre>
+
+<p>The usage is simple: name your sub with whatever you want its name to be, then
+use <code>is symbol</code> trait and use the C function's name as its argument. And that's
+it! With just a couple of lines of code, we're making a call into a C library
+and we're using purty sub names to do it!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Today we've seen a glimpse of the power Perl 6 provides when it comes to
+C libraries. It lets you get pretty far without needing a C compiler.</p>
+
+<p>In future posts in the series, we'll learn more about passing data around
+as well as various helpers that do the heavy lifting.</p>
+
+<p>See you next time!</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

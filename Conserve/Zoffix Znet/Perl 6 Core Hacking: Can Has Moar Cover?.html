@@ -1,11 +1,425 @@
-https://perl6.party/<a href="/post/Perl-6-Core-Hacking-Can-Has-Moar-Cover
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Core-Hacking-Can-Has-Moar-Cover
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Core Hacking: Can Has Moar Cover? - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Core Hacking: Can Has Moar Cover?</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-09-22 <span class="words-count">| 1998 words |</span> Discussion about roast coverage of Rakudo compiler</p>
+  <p>One of the more recent features of <a href="http://www.moarvm.org/">MoarVM</a>
+(Perl 6's leading virtual machine) is the coverage reporter created by
+<a href="https://twitter.com/loltimo">Timo Paulssen</a>. In fact, it's still experimental
+and lives in its own branch. So today, I'll talk about how to build it and use
+it, as well as how you can give a helping hand to the Perl 6 development.</p>
+
+<h2 id="parti:weneedtotalkaboutyourtpsreports">Part I: We Need To Talk About Your TPS Reports</h2>
+
+<p>As I've mentioned, coverage reporting is experimental, so many of the
+conditionals and individual lines may be wrong. What is mostly correct are the
+subs and methods. And you can help us out by writing tests for the uncovered
+ones!</p>
+
+<p>There are several ways to get your hands on the core coverage report...</p>
+
+<h3 id="perl6.wtfhttp:perl6.wtf"><a href="http://perl6.WTF/">perl6.WTF</a></h3>
+
+<p>First, you don't have to build or run anything... I did it for you! You can
+view the current coverage status at <a href="http://perl6.WTF">perl6.WTF</a>. At its
+current state, I don't really have the infrastructure to update this
+continuously, because to do it right, we have to run stresstest a couple of
+times, so be sure to check the built-on date at the top of the page. I'll
+try to run it at least once a day.</p>
+
+<h3 id="undercoverrobots">Undercover Robots</h3>
+
+<p>I've also built a bot called <code>Undercover</code>. It's in both
+<a href="https://webchat.freenode.net/?channels=#perl6">#perl6</a> and
+<a href="https://webchat.freenode.net/?channels=#perl6-dev">#perl6-dev</a> IRC channels,
+but if you want to run more than just a few commands, join in to the
+<a href="https://webchat.freenode.net/?channels=#zofbot">#zofbot</a> channel, so you don't
+annoy anyone.</p>
+
+<blockquote>
+  <p><b>&lt;Zoffix&gt;</b> c: &amp;pairs, (@ = ^10)<br>
+  <b>&lt;Undercover&gt;</b> Zoffix, The code is NOT hit during stresstest See http://perl6.WTF/src_core_​Any.pm.coverage.html#L464 for details<br></p>
+</blockquote>
+
+<p>The bot is triggered with <code>c:</code> trigger and takes the same input as my other
+<code>SourceBaby</code> robot, which is the arguments to the <a href="https://github.com/zoffixznet/perl6-CoreHackers-Sourcery#subroutines"><code>sourcery</code> subroutine of
+my CoreHackers::Sourcery module</a>.</p>
+
+<p>If the arguments you gave locate a proper Callable, the bot will provide
+a link to its coverage report.</p>
+
+<h3 id="buildityourself">Build It Yourself</h3>
+
+<p>You can also build the coverage reporter yourself, so that you can run it any
+time you want and get the up-to-date version.</p>
+
+<p>First, you may be reading this article far in the future enough that the
+coverage branch is already included in master MoarVM. You can check it by
+running:</p>
+
+<pre><code>moar --help | grep COVER
+</code></pre>
+
+<p>Or, if you're in a Rakudo's build directory, by running:</p>
+
+<pre><code>install/bin/moar --help | grep COVER
+</code></pre>
+
+<p>If this or similar line shows up, the coverage support is already there:</p>
+
+<pre><code>MVM_COVERAGE_LOG            Append line-by-line coverage messages to this file
+</code></pre>
+
+<p>If not, no worries, we'll build it. Here's a script that can do it. This builds
+Rakudo in <code>~/coverakudo</code> and generates the coverage HTML report in
+<code>~/coverakudo/coverage/index.html</code></p>
+
+<pre><code>#!/bin/bash
+
+# print out the commands we run and bail out on failures
+set -x
+set -e
+
+# Check out rakudo into ~/coverakudo. You can change it to any dir you want
+git clone https://github.com/rakudo/rakudo ~/coverakudo
+
+# go to that dir
+cd ~/coverakudo
+
+# Configure
+perl Configure.pl --gen-moar --gen-nqp --backends=moar
+
+# Disable the optimizer, so routines we want don't get optimized away
+perl -pi -e 's/--optimize=\K3/off/' Makefile
+
+# Build Rakudo
+make
+
+# Install Rakudo
+make install
+
+# Go to MoarVM dir
+cd nqp/MoarVM
+
+# Check out the branch with coverage support
+git checkout $(git branch -r | grep origin/line_based_coverage | tail -n1)
+
+# Bring in any latest MoarVM changes from master
+git pull --rebase https://github.com/MoarVM/MoarVM/
+
+# Configure MoarVM
+perl Configure.pl --prefix=../../install/
+
+# Build MoarVM
+make
+
+# Install MoarVM
+make install
+
+# Go back to rakudo dir
+cd ../..
+
+# Just check that we've got coverage now. Should say "WE SUCCEEDED!!"
+install/bin/moar --help | grep MVM_COVERAGE_LOG                 &amp;&amp;
+      echo 'We SUCCEEDED!!'                                     ||
+    { echo 'WE FAILED!!!!'; exit 1; }
+
+# The following steps download `panda` package manager and install
+# Inline::Perl5 module that we need for Rakudo stress testing. You may need
+# a specially-built Perl 5 for it. You can use `perlbrew` to obtain it.
+# See instructions at https://github.com/niner/Inline-Perl5#building
+git clone https://github.com/tadzik/panda
+export PATH=`pwd`/install/bin:$PATH
+cd panda; perl6 bootstrap.pl
+cd ..
+export PATH=`pwd`/install/share/perl6/site/bin:$PATH
+panda install Inline::Perl5
+
+# Delete coverage directory, if it's there already
+rm -fr coverage
+
+# Create coverage dir; we'll store our coverage report here
+mkdir coverage
+
+# Turn off auto-bail-out, since stresstests may fail and that's OK
+set +e
+
+# Run stresstest. The MVM_COVERAGE_LOG var tells MoarVM where to store
+# coverage report files; the `%d` in the filename is necessary to store
+# the process IDs of running tests!
+MVM_COVERAGE_LOG='coverage/cover-%d' TEST_JOBS=8 make stresstest
+
+#########################
+## Note: at least on my box, some stresstest flapped and exited early,
+## because apparently disabling the optimizer changes the test results.
+## For that reason, to get full coverage either run the stresstest
+## several times, or run individual failing test files a few times with
+## MVM_COVERAGE_LOG='coverage/cover-%d' make t/spec/THE-TEST-FILE.t
+## some test files may end with `.rakudo.moar` extension. Change it to `.t`
+#########################
+
+# Bail out on fail
+set -e
+
+# Go into directory with all the coverage files
+cd coverage
+
+# Find entries we want, make sure they're unique, and store them all in
+# a file. This step may take awhile to run, especially if you ran the
+# entire stresstest several times
+cat * | grep 'gen/moar/m-CORE.setting' | sort | uniq &gt; full-cover
+
+# Go back up
+cd ../
+
+# Generate the setting annotations
+install/bin/moar --dump CORE.setting.moarvm &gt; setting
+
+# Run the coverage report
+./perl6 nqp/MoarVM/tools/parse_coverage_report.p6 \
+    --annotations=setting coverage/full-cover gen/moar/m-CORE.setting
+
+# It's ready! All of the files are in coverage/ directory and you can
+# start viewing them by opening coverage/index.html in your favourite browser
+firefox coverage/index.html
+</code></pre>
+
+<p>You can also generate coverage reports for arbitrary chunks of code. You can
+use the same script, but simply replace this line:</p>
+
+<pre><code>MVM_COVERAGE_LOG='coverage/cover-%d' TEST_JOBS=8 make stresstest
+</code></pre>
+
+<p>With this:</p>
+
+<pre><code>MVM_COVERAGE_LOG='coverage/cover-%d' ./perl6 -e 'SOME CODE'
+</code></pre>
+
+<p>Or this:</p>
+
+<pre><code>MVM_COVERAGE_LOG='coverage/cover-%d' ./perl6 some-script.p6
+</code></pre>
+
+<h2 id="partii:canhasmoarcover">Part II: Can Has Moar Cover?</h2>
+
+<p>While the reports are pretty, we don't want to just stare at them, we want to
+improve them!</p>
+
+<p>The <code>t/spec</code> directory in your Rakudo build directory will contain a checkout
+of <a href="https://github.com/perl6/roast/">The Official Perl 6 Test Suite or "Roast"</a>.
+If you'd like to work on your own fork, just check it out into that directory
+and it'll work just the same. Our goal here is to find uncovered subroutines
+and methods using the coverage report and add tests for them. Most of the
+times, the uncovered versions will be multi candidates that take some uncommon
+arguments or handle degenerate cases. We need to find where the rest of the
+candidates are tested and add our tests along with them, but before we do,
+I want to make something clear:</p>
+
+<h4 id="whatrakudodoesdoesnotdefineperl6">What Rakudo Does Does Not Define Perl 6</h4>
+
+<p>Rakudo is <em>a</em> compiler for the Perl 6 language and the Roast defines what that
+language is, not the other way around. Just because a particular method in
+Rakudo returns a particular value does not mean that value is correct. So,
+keep this in mind, and be suspicious of any weird behaviour. If in doubt
+whether the test you're about to write is testing the wrong behaviour,
+double-check with the folks in <a href="https://webchat.freenode.net/?channels=#perl6-dev">#perl6-dev channel</a>.</p>
+
+<hr />
+
+<p>There are two techniques that serve well for finding where to put your
+tests. First, try to find the name of the routine you want to cover
+right in the filename of the test. We can do it by piping the output of
+<code>tree -f</code> to <code>grep</code>. Here's a way to find where <code>.splice</code> method is tested:</p>
+
+<pre><code>$ tree -f | grep splice
+│   ├── ./S32-array/splice.t
+</code></pre>
+
+<p>If that fails, try to find the method by grepping over files' contents:</p>
+
+<pre><code>$ grep -R '.combinations'
+... lots of output ...
+S32-list/combinations.t:# L&lt;S32::Containers/List/=item combinations&gt;
+... lots of output ...
+</code></pre>
+
+<p>For most methods, that will give you an idea of which file is right, otherwise,
+try to find the best you can. A test in the wrong file is better than no
+test at all.</p>
+
+<p>At the top of the test file, you'll find a plan that indicates how many
+tests you're expecting to run:</p>
+
+<pre><code>plan 13;
+</code></pre>
+
+<p>Increase it by the number of tests you're adding. As for the tests
+themselves, I like to place them at the end of the file, in a separate block
+labeled that these are coverage tests:</p>
+
+<pre><code>{ # coverage; 2016-09-21
+    is Foo, 'Bar', 'Foo is Bar';
+    ...
+    ...
+}
+</code></pre>
+
+<p>This way, if the tests' validity comes into question in the future, it will
+be easy to see that the tests were added as part of coverage, likely based
+on Rakudo's behaviour, rather than as part of thinking through of how the
+language is meant to work.</p>
+
+<p>Once that is done, check your tests pass. From Rakudo's build directory, run
+<code>make t/spec/your-test-file</code>:</p>
+
+<pre><code>make t/spec/S32-list/combinations.t
+... lots of output...
+All tests successful.
+Files=1, Tests=13,  1 wallclock secs ( 0.03 usr  0.01 sys +  0.64 cusr  0.06 csys =  0.74 CPU)
+Result: PASS
+</code></pre>
+
+<p>If you do get failures, you can get a more verbose output by
+running <code>prove -vlr</code> instead:</p>
+
+<pre><code>prove -e './perl6' -vlr t/spec/S32-list/combinations.t
+</code></pre>
+
+<p>Once the tests pass, you're ready to commit your changes. I like to prefix
+the commit message with <code>[coverage]</code> to indicate these tests are part of
+coverage work, but this isn't necessary.</p>
+
+<pre><code>git add S32-list/combinations.t
+git commit
+</code></pre>
+
+<p>All done!</p>
+
+<h2 id="partiii:thefuture">Part III: The Future!</h2>
+
+<p>Reading the article, you can notice two pain points:</p>
+
+<ul>
+<li>I said I don't have infrastructure to run continuous coverage reports
+due to large computational requirements</li>
+<li>Finding where to add the tests can be a pain, and it's even more difficult
+to find where a particular routine candidate is tested</li>
+</ul>
+
+<p>There is a way to ameliorate both of those issues. I don't think I'll have the
+time to do it, but perhaps there's a willing volunteer in the audience who can
+lend a helping hand.</p>
+
+<h3 id="wereyoutested">Were You Tested?</h3>
+
+<p>The way to get the data for where a routine is tested is to run coverage
+report <em>per test file</em>. The issue with that is <a href="https://github.com/MoarVM/MoarVM/blob/line_based_coverage_4/tools/parse_coverage_report.p6">the coverage report generator
+script</a> takes ages to run. However, most of that time is spent
+reading the annotations file, which is the same on each run.</p>
+
+<p>The way to speed up the script is to make it take multiple raw coverage reports
+and generate the HTML reports for each of them in separate directories. This
+way, the annotations would have to be read just once and we can generate
+batches of reports per-stresstest-file.</p>
+
+<p>The next stage would be to make <code>Undercover</code> robot (or any other means) to
+go through that batch of reports and see in which reports a particular given
+line of code is covered. The result: we get a list of test files that cover
+a particular routine!</p>
+
+<h3 id="continuousreports">Continuous reports</h3>
+
+<p>Being able to run continuous reports overlaps a bit with the previous point.
+The main issue is to ensure as many tests as possible have ran. If any
+of the test files prematurely bail out, we need to re-run them. The current
+blunt-force tool for that is to re-run the stresstest several times. On the
+server I have available, each run takes 20 minutes, which is less than ideal.</p>
+
+<p>So, if the individual files are tested, and there's a mechanism to re-test
+failing files a couple of times, to get rid of flappers, the coverage
+reports can then be re-generated continuously and entirely automatically,
+when new Rakudo or Roast commits come in.</p>
+
+<h3 id="bettercover">Better Cover</h3>
+
+<p>The reports themselves need improvement. How they work is beyond my current
+understanding, so if you're interested in helping with that work, contact
+<a href="https://twitter.com/loltimo">Timo Paulssen</a>
+(<a href="https://webchat.freenode.net/?channels=#moarvm"><code>timotimo</code> on #moarv channel</a>).</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>MoarVM has a new experimental feature to report test coverage for code. The
+reports are available on <a href="http://perl6.WTF">perl6.WTF</a>, via <code>Undercover</code> IRC
+bot, or you can generate them yourself, by building the coverage MoarVM branch.</p>
+
+<p>We could use volunteers for writing the missing <a href="https://github.com/perl6/roast/">roast</a> tests to improve coverage, improve the performance of
+coverage report generator, as well as improve the validity of the coverage
+report itself.</p>
+
+<p>There's lots of work to be done and you can be part of our awesome team!
+Join us!</p>
+
+<p>-Ofun</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

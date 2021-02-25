@@ -1,11 +1,295 @@
-https://perl6.party/<a href="/post/Perl-6-Is-Slower-Than-My-Fat-Momma
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>400 Bad Request</title>
-</head><body>
-<h1>Bad Request</h1>
-<p>Your browser sent a request that this server could not understand.<br />
-</p>
-<hr>
-<address>Apache/2.4.10 (Debian) Server at perl6.party Port 443</address>
-</body></html>
+https://perl6.party//post/Perl-6-Is-Slower-Than-My-Fat-Momma
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>Perl 6 Is Slower Than My Fat Momma! - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">Perl 6 Is Slower Than My Fat Momma!</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-04-07 <span class="words-count">| 1357 words |</span> A response to those who question Perl 6&#39;s performance and answers to those who are genuinely curious. </p>
+  <p>I notice several groups of people:
+folks who wish Perl 6's performance weren't mentioned;
+folks who are confused about Perl 6's perfomance;
+folks who gleefully chuckle at Perl 6's performance,
+reassured the threat to their favourite language XYZ
+hasn't arrived yet.</p>
+
+<p>So I'm here to talk about the elephant in the room
+and get the first group out of hiding and more at ease,
+I'll explain things to the second group, and to the
+third group... well, this post isn't about them.</p>
+
+<h2 id="whyisitslow">Why is it slow?</h2>
+
+<p>The simplest answer: Perl 6 is brand new. It's not
+the next Perl, but a brand new language in the Perl family. The
+<em>language spec</em> was finished less than 4
+months ago (Dec 25, 2015). While <em>some</em> optimization
+has been done, the core team focused on getting
+things right first. It's simply unrealistic to
+evaluate Perl 6's performance as that of an extremely
+polished product at this time.</p>
+
+<p>The second part of the answer: Perl 6 is big.
+It's easy to come up with a couple of one-liners that
+are much faster in other languages. However, a
+Perl 6 one-liner loads the comprehensive object
+model, list tools, set tools, large arsenal of async
+and concurrency tools... When in a real program you have to load
+a dozen of modules in language XYZ, but can still stay
+with bare Perl 6 to get same features, that's when performance starts to even out.</p>
+
+<h2 id="whatcanyoudoaboutit">What can <strong><em>you</em></strong> do about it?</h2>
+
+<p>Now that we got things right, we can focus on making
+them fast. Perl 6 uses a modern compiler, so
+<em>in theory</em> it can be optimized quite a lot. It
+remains to be seen whether theory will match reality,
+but looking through numerous optimization commits
+made since the start of 2016, many stand out by the boosts they bring in:</p>
+
+<ul>
+<li><a href="https://github.com/rakudo/rakudo/commit/add25c771c5b82ab0ce5bd3f6c0e87a6e9334a2d">Make Parameter.sigil about <strong>20x faster</strong></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/1969a42525f69d930735009a1dbbc39f3e910888">Make Blob:D eq/ne Blob:D about <strong>250x faster</strong></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/fb74abc314efa2dcc7f4866f1378f40a17410a50">Make prefix ~^ Blob:D about <strong>300x faster</strong></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/138441c97df2fc0603047b589e1fa71a126185f3">Make ~|, ~&amp; and ~^ about <strong>600x faster</strong></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/c70a18e9cd4aff36c2c7a6b8f9a62770c8c533b3">Make int @a.append(1) <strong>1800x faster</strong></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/e3342da00e7cfca618acbab37b90f13a133c73f6">Make Blob:D cmp/lt/gt/le/ge Blob:D <strong>3800x faster</strong></a></li>
+</ul>
+
+<p>Thus, the answer is: we're working on it... and we're making good progress.</p>
+
+<h2 id="whatcanidoaboutit">What can <strong><em>I</em></strong> do about it?</h2>
+
+<p>I'll mention three main things to keep in mind when trying
+to get your code to perform better:
+pre-compilation, native types, and of course, concurrency.</p>
+
+<h3 id="pre-compilation">Pre-Compilation</h3>
+
+<p>Currently, a large chunk of slowness you may notice comes
+from parsing and compiling code. Luckily, Perl 6
+automagically pre-compiles modules, as can be seen here, with
+a large Foo.pm6 module I'm including:</p>
+
+<pre><code>$ perl6 -I. -MFoo --stagestats -e ''
+Stage start      :   0.000
+Stage parse      :   4.262
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.013
+Stage mbc        :   0.000
+Stage moar       :   0.000
+
+$ perl6 -I. -MFoo --stagestats -e ''
+Stage start      :   0.000
+Stage parse      :   0.413
+Stage syntaxcheck:   0.000
+Stage ast        :   0.000
+Stage optimize   :   0.002
+Stage mast       :   0.013
+Stage mbc        :   0.000
+Stage moar       :   0.000
+</code></pre>
+
+<p>The first run was a full run that pre-compiled my module, but the second one already had the
+pre-compiled Foo.pm6 available and the parse stage went down from
+4.262 seconds to 0.413: a 1031% start-up improvement.</p>
+
+<p>Modules you install from <a href="http://modules.perl6.org/">the ecosystem</a> get
+pre-compiled during installation, so you don't have to
+worry about them. When writing your own modules, however,
+they will be automatically re-pre-compiled every time you change their
+code. If you make a change before each time you run
+the program, it's easy to get the impression your code is not
+performing well, even though the compilation penalty
+won't affect the program once you're done tinkering with it.</p>
+
+<p>Just keep that in mind.</p>
+
+<h3 id="nativetypes">Native Types</h3>
+
+<p>Perl 6 has several "native" machine types that can offer
+performance boosts in some cases:</p>
+
+<pre><code>my Int $x = 0;
+$x++ while $x &lt; 30000000;
+say now - INIT now;
+
+# OUTPUT:
+# 4.416726
+
+my int $x = 0;
+$x++ while $x &lt; 30000000;
+say now - INIT now;
+
+# OUTPUT:
+# 0.1711660
+</code></pre>
+
+<p>That's a 2580% boost we achieved by simply switching our counter to
+a native <code>int</code> type.</p>
+
+<p>The available types are: <code>int</code>, <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code>,
+<code>uint</code>, <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code>, <code>num</code>, <code>num32</code>,
+and <code>num64</code>. The number in the type name signifies the available
+bits, with the numberless types being platform-dependent.</p>
+
+<p>They aren't a magical solution to every problem, and won't offer huge
+improvements in every case, but keep them in mind and look out
+for cases where they can be used.</p>
+
+<h3 id="concurrency">Concurrency</h3>
+
+<p>Perl 6 makes it extremely easy to utilize multi-core CPUs using
+<a href="http://docs.perl6.org/language/concurrency#High-level_APIs">high-level APIs</a>
+like Promises, Supplies, and Channels. Where language XYZ is fast,
+but lacks ease of concurrency, Perl 6 can end up the winner in peformance
+by distributing work over multiple cores.</p>
+
+<p>I won't go into details—you can consult
+<a href="http://docs.perl6.org/language/concurrency">the documentation</a>
+or watch <a href="https://youtu.be/paa3niF72Nw?t=32m14s">my talk that mentions them</a>
+(<a href="http://tpm2016.zoffix.com/#/33">slides here</a>). I will show an example, though:</p>
+
+<pre><code>await (
+    start { say "One!";   sleep 1; },
+    start { say "Two!";   sleep 1; },
+    start { say "Three!"; sleep 1; },
+);
+say now - INIT now;
+
+# OUTPUT:
+# One!
+# Three!
+# Two!
+# 1.00665192
+</code></pre>
+
+<p>We use the <code>start</code> keyword to create three
+<a href="http://docs.perl6.org/type/Promise">Promises</a> and then use the
+<code>await</code> keyword to wait for all of them to complete. Inside our
+Promises, we print out a string and then sleep for at least one second.</p>
+
+<p>The result? Our program has three operations that take
+at least 1 second each, yet the total runtime was
+just above 1 second. From the output, we can
+see it's not in order, suggesting code was executed
+on multiple cores.</p>
+
+<p>That was quite easy, but we can crank it up a notch and use a <code>HyperSeq</code> to transform ordinary
+code into concurrent code with a single method call:</p>
+
+<pre><code>for (1..4).race( batch =&gt; 1 ) {
+    say "Doing $_";
+    sleep 1;
+}
+say "Code took {now - INIT now} seconds to run";
+
+# OUTPUT:
+# Doing 1
+# Doing 3
+# Doing 2
+# Doing 4
+# Code took 1.0090415 seconds to run
+</code></pre>
+
+<p>We had a list of 4 items to work with. We looped over each of
+them and performed an expensive operation (in this case, a 1-second
+<code>sleep</code>). To modify our code to be faster, we simply called the
+<a href="http://docs.perl6.org/routine/race"><code>.race</code> method</a> on our list of
+4 items to get a Hyper Sequence. Our loop remains the same, but it's
+now executing in a concurrent manner, as can be seen from the output:
+items are out of order and our total runtime was just over 1 second,
+despite a total of 4 seconds of sleep.</p>
+
+<p>If the default batch size of <code>64</code> is suitable for you, it means you can
+go from a plain loop to a concurrent loop by simply typing 5 characters
+(<code>. r a c e</code>).</p>
+
+<h2 id="letsseesomebenchmarks">Let's See Some Benchmarks</h2>
+
+<p>I won't show you any. There's hardly any sense in benchmarking <em>entire
+languages.</em> Clever one-liners can be written to support
+one point of view or another, but they simply abstract a problem into
+a simplistic singularity. Languages are different and they have
+vastly different tool kits to solve similar problems. Would you choose
+code that completes in 1 second and takes you 40 minutes to write or code
+that completes in 2 seconds, yet takes you 10 minutes to write? The
+choice depends on the type of application you're writing.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Perl 6 is a brand new product, so it doesn't make sense to compare it
+against software that existed for decades. It is being
+actively improved and, at least in theory, it should become
+performant on the level similar to other competing languages.</p>
+
+<p>You don't have to wait for that to happen, however. Thanks to
+Perl 6's pre-compilation of modules, support of native types, and
+superb concurrency primitives you can substantially improve the performance
+of your code <em>right now.</em></p>
+
+<p>Some may disagree that Perl 6 is slow, some may find it faster than another
+language, and some may say Perl 6 is slower than my fat momma.</p>
+
+<p>Who's to decide for you? Only you yourself can.</p>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+http://strangelyconsistent.org/blog/week-9-of-webpm-encodings-and-a-deep-dive-into-genshi
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 9 of Web.pm &#8212; encodings, and a deep dive into Genshi :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-06-17T13:50:00+02:00" pubdate="pubdate">17 Jun, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-9-of-webpm-encodings-and-a-deep-dive-into-genshi">Week 9 of Web.pm &#8212; encodings, and a deep dive into Genshi</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>Den all IRS d00dz an bad kittehs coem to hear Jebus. An Fariseez sez "LOL Jebus etz wit bad kittehs! Him sux!'</i> </dd>
+<dd> <i>Jebus sez, "WTF? If lolcat had hundrd sheeps an won gits losted, doan him leev naintee nain sheeps an go luk fr losted won? Den him find it an iz liek 'w00t!' An dem him coem hoem, trow partee cuz him finded losted sheep. Srsly! Ceiling Cat moar happi wen a bad kitteh being maed lolcat den bowt naintee nain gud kittehs." </i> &#8212; Luke 15:1-7</dd>
+</dl>
+
+<p>I'm working mostly on <a href="http://github.com/masak/web/tree/master/t/hitomi">Hitomi</a>, a Perl 6 port of the Python templating engine <a href="http://genshi.edgewall.org/">Genshi</a>. In the past week, I decided to dive into Genshi, looking at how data flows from the template to the finished result. I now have a pretty good understanding of this, so I thought I'd expand a bit on it here.</p>
+
+<p>Genshi's fundamental data structure is called <a href="http://genshi.edgewall.org/wiki/Documentation/streams.html">Stream</a> and it looks very much like a sequence of <a href="http://en.wikipedia.org/wiki/Simple_API_for_XML">SAX</a> events to me: open-tag, close-tag, text, processing-instruction, etc. Different transformations are then applied to a stream to yield the final result. A transformation could be something like "remove all &lt;script&gt; elements" or "shorten all posts that are longer than 400 characters". A stream modified in-place, but combine with a transformation to produce a new stream. The nice thing is that the actual templating is also expressed as a series of this kind of transformations. But the Genshi user can easily provide her own transformation on top of the standard ones.</p>
+
+<p>I like this model very much. It feels extremely clean and extensible. I decided to port as much as I can to Hitomi. My short-term goal is to make things round-trip using the streams, and to that effect, I've ported a test file with <a href="http://github.com/masak/web/blob/6127e91c62c1b2ac382627d27ed46972e760415b/t/hitomi/05-input.t">89 tests</a> from Genshi to Perl 6.</p>
+
+<p>It's still not totally clear to me how text is converted to a stream and then back. I can easily picture how a stream event knows how to serialize itself back into text, so the mystery on that side isn't very great; it's just that I haven't found the actual Python code for it yet. On the stream generation side, the data flow disappears into a Python-<a href="http://www.libexpat.org/">Expat</a> library. Delegating XML parsing to a third party also seems like an exceedingly good idea to me.</p>
+
+<p>Can we do the same thing — delegate to Expat, or some other suitable library — in Hitomi? I think so, and the <a href="http://www.parrotcode.org/docs/pdd/pdd16_native_call.html">Parrot documentation</a> seems hopeful. I'd very much like to get that working. But in the short run, I'm pondering whether it might not be easier to make a small, throwaway XML parser out of the bits and pieces we developed as prototypes. I could make it a separate class and call it <code>Impostor</code>, to make sure we remember to remove it later.</p>
+
+<p>Another issue I ran into is one of encoding. viklund++ has been doing heroic work in the past week making November handle UTF-8 correctly. The reason this is heroic is that Rakudo doesn't have a model for string encodings yet. The information has to be forced out of Rakudo against its will, and I've heard viklund mutter darkly about hacks and workarounds lately... It all culminated in <a href="http://irclog.perlgeek.de/perl6/2009-06-16#i_1244954">a good discussion</a> on #perl6 last night, and pmichaud++ <a href="http://irclog.perlgeek.de/perl6/2009-06-16#i_1245092">promised</a> to make a preliminary implementation of <code>.encode</code> (for <code>Str</code>) and <code>.decode</code> (for <code>Buf</code>), if we just sat down and wrote some tests to show what we expected these to do.</p>
+
+<p>Looking forward a bit; I think there's a good chance we'll have something usable with Hitomi before my original grant period is over. After that, it might be a good idea to start looking at the port of Ruby's <a href="http://wiki.github.com/why/hpricot">Hpricot</a> (for manipulating and searching HTML documents), and to start digging into the MVC quagmire. I still expect to do some preliminary MVC investigations before that, though.</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

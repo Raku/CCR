@@ -1,0 +1,131 @@
+http://strangelyconsistent.org/blog/fun-with-code-blocks-in-perl-6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Fun with code blocks in Perl 6 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-12-20T20:34:00+01:00" pubdate="pubdate">20 Dec, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/fun-with-code-blocks-in-perl-6">Fun with code blocks in Perl 6</a></h1>
+  </header>
+
+  <p>Here's a little pattern I've discovered while hacking away at <a href="http://strangelyconsistent.org/blog/november-15-2008-a-pact">a board game implementation</a> in Perl 6.</p>
+
+<p>I had a subroutine called <code>input_valid_move</code>, whose job it was to read a move from <code>$*IN</code>, and return the move <em>if it was valid</em> according to the rules of the game. Easy enough.</p>
+
+<pre><code>repeat {
+    print "\n", $player, ': ';
+} until my $move = input_valid_move(...);
+</code></pre>
+
+<p>Now, there are several ways a move can be illegal, and I found myself printing and returning a lot from the sub:</p>
+
+<pre><code>unless $row_diff == 2 &amp;&amp; $column_diff == 0
+    || $row_diff == 0 &amp;&amp; $column_diff == 2 {
+
+    say 'Must be exactly two cells apart';
+    return;
+}
+
+unless @heights[$row_1][$column_1]
+    == @heights[$row_2][$column_2] {
+
+    say 'Must be supported at both ends';
+    return;
+}
+</code></pre>
+
+<p>Notice the repetition? There were many (7) such tests for move correctness, and all of them made a boolean test, printed something and then returned from the sub:</p>
+
+<pre><code>if ( ... ) { # or 'unless'; depends
+    say '...';
+    return;
+}
+</code></pre>
+
+<p>Repetition is a sign that there there is an abstraction just waiting to be created. I wanted to make an abstraction <code>flunk_move</code> that closed over the <code>say '...'; return</code> part of the above pattern, parametrizing the message printed. That way, I could just write this instead:</p>
+
+<pre><code>    flunk_move 'Must be exactly two cells apart'
+        unless $row_diff == 2 &amp;&amp; $column_diff == 0
+            || $row_diff == 0 &amp;&amp; $column_diff == 2;
+
+    flunk_move 'Must be supported at both ends'
+        unless @heights[$row_1][$column_1]
+            == @heights[$row_2][$column_2];
+</code></pre>
+
+<p>Each move correctness test now became a single statement, instead of an <code>if/unless</code> statement containing two statements. As an added bonus, the most important part of the statement (the disqualification of the move) is now leftmost in the statement, something Damian Conway talks about in his book "Perl Best Practices".</p>
+
+<p>But a new subroutine would not do as a repetition-reducing abstraction. The <code>return</code> statement in such a new sub, having moved from its original environment would be a no-op. I wanted to eat the cake and have it, too.</p>
+
+<p>S06 states that the <code>return</code> function <a href="http://perlcabal.org/syn/S06.html#The_return_function">throws a control exception that is caught by the current lexically enclosing <code>Routine</code>,</a> and this fact turned out to be just what I needed. To decipher the Perl 6 designese, the <code>return</code> in a <code>sub</code> returns from that <code>sub</code>, but the <code>return</code> in a bare block returns from the <code>sub</code> (or whatever) it was called from.</p>
+
+<pre><code>  # not what I want -- the return does nothing
+  sub flunk_move($reason) { say $reason; return };
+
+  # what I want, using pointy block
+  -&gt; $reason { say $reason; return };
+
+  # what I want, using placeholder variables
+  { say $^reason; return };
+</code></pre>
+
+<p>Think of it in biological terms: a <code>sub</code> is like a <a href="http://en.wikipedia.org/wiki/Eukaryote">eukaryote</a>: a little more complex, handles advanced things like <code>return</code> when necessary. A bare block doesn't have all that advanced piping, and has to delegate its <code>return</code> calls to its surrounding host cell. In other words, a bare block is a bit like an <a href="http://en.wikipedia.org/wiki/Endosymbiont">endosymbiont</a> <a href="http://en.wikipedia.org/wiki/Prokaryote">prokaryote</a>, a simple organism that in the course of evolutionary history ended up in a symbiotic relationship inside a larger eukaryotic cell.</p>
+
+<p>Biological analogies aside, what it meant to me was that I could do this in my <code>sub input_valid_move</code>:</p>
+
+<pre><code>my &amp;flunk_move = { say $^reason; return };
+</code></pre>
+
+<p>(There's the endosymbiont, right there! It can't return from itself, because it's just a humble code block, so it returns from its surrounding subroutine instead, which happens to be <code>input_valid_move</code>.) </p>
+
+<p>After that, I could use <code>&amp;flunk_move</code> just as I wanted, as if it were a <code>return</code> statement with side effects. (Same code as above.)</p>
+
+<pre><code>    flunk_move 'Must be exactly two cells apart'
+        unless $row_diff == 2 &amp;&amp; $column_diff == 0
+            || $row_diff == 0 &amp;&amp; $column_diff == 2;
+
+    flunk_move 'Must be supported at both ends'
+        unless @heights[$row_1][$column_1]
+            == @heights[$row_2][$column_2];
+</code></pre>
+
+<p>Some Smalltalk people extol the power in being able to define things like <a href="http://pozorvlak.livejournal.com/94558.html">the if statement</a> from within the language, without any magical trickery to make it work. The pattern I discovered above uses the same kind of strengths, the ability to define my own slightly fancy return statement, and have it look like a built-in in subsequent code.</p>
+
+<p>That kind of power is what makes Perl 6 a joy to use.</p>
+
+</article>
+
+  </body>
+</html>

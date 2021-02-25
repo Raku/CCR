@@ -1,0 +1,115 @@
+http://strangelyconsistent.org/blog/june-9-2011-given
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 9 2011: given :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-09T23:23:08+02:00" pubdate="pubdate">9 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-9-2011-given">June 9 2011: given</a></h1>
+  </header>
+
+  <p><code>if</code> statements are great, but after a while they start looking like this:</p>
+
+<pre><code>my $animal = prompt "What's your favorite animal? ";
+
+if ($animal eq "tiger") {
+    say "Roar!";
+}
+elsif ($animal eq "cow") {
+    say "Mooo!";
+}
+elsif ($animal eq "parrot") {
+    say "Ka-kaw!";
+}
+elsif ($animal eq "butterfly") {
+    say "*flap* *flap*";
+}
+else {
+    say "I'm sorry, I do not know that animal.";
+}
+</code></pre>
+
+<p>There's a lot of repetition in there:</p>
+
+<ul>
+<li>Lots of <code>if</code> and <code>elsif</code>.</li>
+<li>Lots of <code>$animal eq</code>. We're checking the same variable all the time, and still we have to repeat that that's what we're doing.</li>
+</ul>
+
+<p>There's a construct that's specially designed to reduce this kind of needless "boilerplate" repetition: the <em>switch statement</em>, or <em><code>given</code> statement</em>. Here's how the same program would look using that:</p>
+
+<pre><code>my $animal = prompt "What's your favorite animal? ";
+
+given $animal {
+    when "tiger"     { say "Roar!"; }
+    when "cow"       { say "Mooo!"; }
+    when "parrot"    { say "Ka-kaw!"; }
+    when "butterfly" { say "*flap* *flap*"; }
+
+    default { say "I'm sorry, I do not know that animal."; }
+}
+</code></pre>
+
+<p>This way of writing takes less space, no doubt. Now, that's partly because we now write the <code>{ ... }</code> blocks on the same line as the condition &mdash; we could do that with the <code>if</code> statements and save some space that way, too. But it's much more accepted with the <code>given</code> statement.</p>
+
+<p>The other big saving is that we now write <code>$animal</code> once at the top, and then no more. It's <em>implicit</em> that we're comparing <code>$animal</code> against <code>"tiger"</code> and <code>"cow"</code> and <code>"parrot"</code>... we don't need to state it and re-state it. Even the <code>eq</code> is now implicit.</p>
+
+<p>Wait a minute! How <em>does</em> that work, really? We already know that there's a difference between numerical equivalence (<code>==</code>) and string equivalence (<code>eq</code>) &mdash; how does Perl 6 know which one to choose here?</p>
+
+<p>It knows which one to choose by looking at the type of the thing it's comparing. So <code>"tiger"</code> causes a string comparison, whereas <code>42</code> would cause a numerical comparison. There's a special operator called <em>smartmatch</em>, which embodies this type-aware kind of comparison:</p>
+
+<pre><code>say $answer ~~ "tiger";     # means '$answer eq "tiger"'    
+say $answer ~~ 42;          # means '$answer == 42'
+</code></pre>
+
+<p>The smartmatch comes back again and again in Perl 6, even when you can't see it. For example, the <code>when</code> clauses above use smartmatching under the hood:</p>
+
+<pre><code>when "cow" { ... }          # really means 'if $_ ~~ "cow" { ... }'
+</code></pre>
+
+<p>That <code>$_</code> variable there is a little darling. The fact that it doesn't start with a letter, but is just a dollar and an underscore, tells us that it's a somewhat special variable. Just like with smartmatches, the strength of <code>$_</code> is that it doesn't always have to be written out. We'll see more examples of that as we go along, but the <code>when</code> clause above is one such example.</p>
+
+<p>Of course, this whole thing would only work if <code>$_</code> contained the value of <code>$animal</code> somehow... and that's exactly what <code>given</code> does for us. It (temporarily) sets <code>$_</code> to the value that we give it.</p>
+
+<p>The extra little feature of <code>when</code> blocks is that when they match, they take you out of the surrounding <code>given</code> block. (Or more generally, the surrounding block that sets <code>$_</code>.) Same thing goes for the <code>default</code> block... which doesn't do much else, really. It always matches.</p>
+
+<p>It's often the case that nifty features in Perl 6 are built up of smaller, simpler nifty features. The <code>given</code>/<code>when</code> statement is one such feature, as it turns out that it really uses <code>$_</code> and smartmatching underneath.</p>
+
+<p>Now we're ready to tackle our next game. See you tomorrow on another celestial body.</p>
+
+</article>
+
+  </body>
+</html>

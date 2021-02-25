@@ -1,0 +1,62 @@
+http://strangelyconsistent.org/blog/week-15-of-webpm-another-better-persistence-module
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 15 of Web.pm &#8212; another, better persistence module :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-09-21T11:56:00+02:00" pubdate="pubdate">21 Sep, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-15-of-webpm-another-better-persistence-module">Week 15 of Web.pm &#8212; another, better persistence module</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>Has happen? Gunna be agin. Nuthing new undur teh sunz.</i> &#8212; Ecclesiastes 1:9</dd>
+</dl>
+
+<p>Last time, I wrote "We'll see if <a href="http://strangelyconsistent.org/blog/week-14-of-webpm-a-persistence-module">Viper</a> survives in any form. I wouldn't be surprised if it's replaced quickly by something much better." That was what happened. mst++ recommended I check out <a href="http://sequel.rubyforge.org/">Sequel</a>, which I did. There's no question Sequel is a better starting point than ActiveRecord.</p>
+
+<ul>
+<li>The port of Sequel received the name Squerl. I quickly threw together functionality to <a href="http://github.com/masak/web/blob/master/t/squerl/01-sqlite-write.t">mimic</a> what I had in Viper. That was two weeks ago.</li>
+<li>Since then, I've successively been porting over tests for the central class in Sequel: <code>Dataset</code>. If you're interested in the workings of this class, I recommend the <a href="http://github.com/jeremyevans/sequel/blob/master/README.rdoc">Sequel README.rdoc</a>. If that doesn't quench your thirst for knowledge, I recommend the beautifully-written <a href="http://github.com/jeremyevans/sequel/blob/master/lib/sequel/dataset.rb">dataset.rb</a> and <a href="http://github.com/jeremyevans/sequel/blob/master/lib/sequel/dataset/sql.rb">dataset/sql.rb</a>. One can tell that this code is written by people who know stuff.</li>
+<li>When porting, I'm using a quickly thrown-together version of <a href="http://strangelyconsistent.org/blog/helpfully-addictive-tdd-on-crack">tote</a>. A bastardisation of the idea, basically; once I had outlined the idea of tote, I just couldn't stand the thought of working without such a framework. The results are significant. Maybe it's the effect of just using some new framework, I don't know. But I look forward to writing the real tote.</li>
+<li>The increased programming activity has led to increased bug reporting activity. That makes me feel a bit relieved; for a while there I wasn't reporting as many bugs — I thought maybe we were running out of them. 哈哈</li>
+<li>I've really been working two weeks' worth of grant work lately, but haven't gotten around to blogging. Therefore, I'll keep this post short, and get back to my TDD-on-crack coding, and then hopefully give another short update later in the week. In that post, I promise to tell you how to use this new database module in your own Perl 6 projects! Until then, you'll just have to use <a href="http://github.com/masak/web/tree/master/t/squerl/">the tests</a> as guidance.</li>
+</ul>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

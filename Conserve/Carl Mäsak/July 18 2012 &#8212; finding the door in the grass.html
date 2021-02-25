@@ -1,0 +1,163 @@
+http://strangelyconsistent.org/blog/july-18-finding-the-door-in-the-grass
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 18 2012 &#8212; finding the door in the grass :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-19T00:09:28+02:00" pubdate="pubdate">19 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-18-finding-the-door-in-the-grass">July 18 2012 &#8212; finding the door in the grass</a></h1>
+  </header>
+
+  <p>Many small commits went in today. First, I decided to fix the things that were
+missing from yesterday:</p>
+
+<ul>
+<li>You can <a href="https://github.com/masak/crypt/commit/9f3040392660ebf6cff869db5a1c9a54155c30c8">take the rope and
+flashlight</a>
+from the car.</li>
+<li>But <a href="https://github.com/masak/crypt/commit/a309abbc97c17956f8466c6bbbb69d8d19bd4aad">not without opening the
+car</a>
+first. Happy path, sad path, see?</li>
+<li>Also, you can <a href="https://github.com/masak/crypt/commit/4c6b7f1d52b17cb0b633fe56660ef91c68cf684c">examine things in the
+car</a>.</li>
+<li><code>look</code> <a href="https://github.com/masak/crypt/commit/b10aab3cfbaa975a0d3fab63c0dc5c1295b111a3">includes the things in the
+room</a>.
+Bit of a temp solution, and some duplication, but works for now.</li>
+<li>When you take something, <a href="https://github.com/masak/crypt/commit/42c3cf2bc1b712b4276b6a30e44b56edeaba6f96">the game says you take
+it</a>.</li>
+<li>Added <a href="https://github.com/masak/crypt/commit/21ccca88c2fe412957f027a7869c13da29a3ff5d">a quit
+message</a>,
+just like last year.</li>
+</ul>
+
+<p>Therefore, now it looks like this:</p>
+
+<pre><code>$ bin/crypt 
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+There is a car here.
+You can go east.
+
+&gt; examine car
+Small, kind of old, and beginning to rust. But it still gets you places.
+
+&gt; examine flashlight
+You see no flashlight here.
+
+&gt; open car
+Opening the car reveals a flashlight and a rope.
+
+&gt; examine flashlight
+The flashlight, a trusty Flexmann 520, has been serving you for countless
+adventures.
+
+&gt; take flashlight
+You take the flashlight.
+
+&gt; quit
+Thanks for playing.
+</code></pre>
+
+<p>The only small detail that's wrong now is that there should be a "custom
+description" for the car, and the game should really say "Your car is parked
+here." I have a plan for how to fix this. But not today. All in due time.</p>
+
+<p>Now, what I <em>really</em> meant to do today was this:</p>
+
+<ul>
+<li>You can <a href="https://github.com/masak/crypt/commit/50aeeb08534b73d37ffc12ba0fe6ce78b40887cc">open the door on the
+hill</a>.</li>
+<li>But not without <a href="https://github.com/masak/crypt/commit/bb4788a700be527003a6223e6628793256c5d887">first examining the
+grass</a>
+where the door is hidden.</li>
+<li>Or, as it happens, <a href="https://github.com/masak/crypt/commit/a2c7c9e5c574102eeabfae41b5c288b46aa188d4">the
+bushes</a>.</li>
+<li>Then, let's <a href="https://github.com/masak/crypt/commit/dcd529a43f048194854113291357a99e38ca9326">open the door and walk
+through</a>.</li>
+<li>But walking south is only supposed to work <a href="https://github.com/masak/crypt/commit/27722eec71fb8f5528f41aeb6e4809760c151792">if you open the door
+first</a>,
+silly.</li>
+</ul>
+
+<p>Implementing this game is great; today more than previous days I'm feeling just
+how great. The foundation I've built in the first part of the month is not just
+suitable for building adventure games, it's <em>perfect</em>.  It's fantastic. Look at
+this:</p>
+
+<pre><code># Things on hill
+.place_thing('grass', 'hill');
+.make_thing_implicit('grass');
+.place_thing('bushes', 'hill');
+.make_thing_implicit('bushes');
+.place_thing('door', 'hill');
+.make_thing_openable('door');
+.hide_thing('door');
+.on_examine('grass', { .unhide_thing('door') });
+.on_examine('bushes', { .unhide_thing('door') });
+.on_open('door', { .connect(&lt;hill chamber&gt;, 'south') });
+</code></pre>
+
+<p>It's an adventure game world building API! (Yes, others will be able to take it
+and run with it too, as long as I separate <code>Adventure::Engine</code> out into its own
+module and publish it on <a href="http://modules.perl6.org">modules.perl6.org</a>).</p>
+
+<p>And not just that. The tests are wonderful, too!</p>
+
+<pre><code>my $game = Crypt::Game.new();
+
+$game.open('car');
+is $game.examine('flashlight'),
+    Adventure::PlayerExamined.new(
+        :thing&lt;flashlight&gt;,
+    ),
+    'examining the flashlight in the car';
+</code></pre>
+
+<p>I'm very happy about how this is turning out. All programming should be like
+this.</p>
+
+</article>
+
+  </body>
+</html>

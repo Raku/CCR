@@ -1,0 +1,78 @@
+http://strangelyconsistent.org/blog/the-curious-case-of-the-disappearing-test
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The curious case of the disappearing test :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2016-09-28T13:42:36+02:00" pubdate="pubdate">28 Sep, 2016</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-curious-case-of-the-disappearing-test">The curious case of the disappearing test</a></h1>
+  </header>
+
+  <p>I've recently learned a few valuable things about testing. I outline this in my Bondcon talk &mdash; Bondcon is a fictional anti-conference running alongside YAPC::Europe 2016 in a non-corporeal location but unfortunately frozen in time due to a procrastination-related mishap, awaiting the only speaker's tuits &mdash; but I thought I might blog about it, too.</p>
+
+<p>Those of us who use and rely on TDD know to test the software itself: the model, the behaviors, etc. But as a side effect of attaching TravisCI to the 007, another aspect of testing came to light: testing your repository <em>itself</em>. Testing code-as-artifact, not code-as-effect.</p>
+
+<p>Thanks to TravisCI, we currently test a lot of linter-like things that we care about, such as four spaces for indentation, no trailing whitespace, and that <code>META.info</code> parses as correct JSON. That in itself is not news &mdash; it's just using the test suite as a linter.</p>
+
+<p>But there are also various bits of <em>consistency</em> that we test, and this has turned out to be very useful. I definitely want to do more of this in the future in my projects. We often talk about <em>coupling</em> as something bad: if you change component A and some unrelated component B breaks, then they are coupled and things are bad.</p>
+
+<p>But some types of coupling are necessary. For example, part of the point of the <code>META.info</code> is to declare what modules the project provides. Do you know how easy it is to forget to update <code>META.info</code> when you add a new module? (Hint: very.) Well, we have a test which double-checks.</p>
+
+<p>We also have a consistency test that makes sure a method which does a certain resource-allocating thing also remembers to do the corresponding resource-deallocating thing. (Yes, there are still a few of those, even in memory-managed languages.) This was after a bug happened where allocations/deallocations were mismatched. The test immediately discovered another location in the code that needed fixing.</p>
+
+<p>All of the consistency tests are basically programmatic ways for the test suite to send you a message from a future, smarter you that remembered to do some B action immediately after doing some A action. No wonder I love them. You could call it "managed coupling", perhaps: yes, there's non-ideal coupling, but the consistency test makes it manageable.</p>
+
+<p>But the best consistency check is the reason I write this post. Here's the background. 007 has a bunch of builtins: subs, operators, but also all the types. These types need to be installed into the setting by the initialization code, so that when someone actually looks up <code>Sub</code> from a 007 program, it actually refers to the built-in <code>Sub</code> type.</p>
+
+<p>Every now and again, we'd notice that we'd gotten a few new types in the language, but they hadn't been added as built-ins. So we added them manually and sighed a little.</p>
+
+<p>Eventually this consistency-test craze caught up, and <a href="https://github.com/masak/007/commit/7baadd110c3fd844b902f469e1c93bc0426e31fa">we got a test for this</a>. The test is text-based, which is very ironic considering the project itself; but hold that thought.</p>
+
+<p>Following up on a <a href="https://github.com/masak/007/commit/31b531946cc513476cbb9c8d966a08be35c6767c#commitcomment-17801202">comment by vendethiel</a>, I realized we could do better than text-based comparison. On the Perl 6 types side, we could simply walk the appropriate module namespaces to find all the types.</p>
+
+<p>There's a general rule at play here. The consistency tests are very valuable, and testing code-as-artifact is much better than nothing. But if there's a corresponding way to do it by <em>running the program</em> instead of just <em>reading</em> it, then that way invariably wins.</p>
+
+<p>Anyway, <a href="https://github.com/masak/007/commit/fe2ebe5a632446012ecff660de59af19132e9b1f">the test started doing Stash traversal</a>, and after a <a href="https://github.com/masak/007/commit/c36ca643f7d998369cb15716a2f32f7d6903d5c8">few</a> more <a href="https://github.com/masak/007/commit/68a91ab60f3dfb7ec7972621cb0e9b5cc2f31937">tweaks</a> looked really nice.</p>
+
+<p>And then the world paused a bit, like a good comedian, for maximal effect.</p>
+
+<p>Yes, the test now contained an excellent implementation of finding all the types in Perl 6 land. This is <em>exactly what the builtin initialization code needed</em> to never be inconsistent in the first place. The tree walker <a href="https://github.com/masak/007/commit/d622d372d4dfd10a705d978f940e16673eeaedd2">moved into the builtins code itself</a>. The test file vanished in the night, its job done forever.</p>
+
+<p>And that is the story of the consistency check that got so good at its job that it disappeared. Because one thing that's better than managed coupling is... no coupling.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,134 @@
+http://strangelyconsistent.org/blog/june-27-2011-classes
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 27 2011: Classes :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-04T23:39:20+02:00" pubdate="pubdate">4 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-27-2011-classes">June 27 2011: Classes</a></h1>
+  </header>
+
+  <p>I thought I'd get philosophical as we get further into this post, but first let's jump right into an example:</p>
+
+<pre><code>my Bool $collected = False;
+
+sub dispense_ticket {
+    return "Sorry, you already got a ticket."
+        if $collected;
+
+    $collected = True;
+    return "Here's your free ticket. Lunch is on us today. Enjoy!";
+}
+
+say dispense_ticket;    # "Here's your free ticket..."
+say dispense_ticket;    # "Sorry, you already got a ticket."
+say dispense_ticket;    # "Sorry, you already got a ticket."
+</code></pre>
+
+<p>So. It's a function that only "works once". With the <code>$collected</code> variable, we can keep track of whether the <code>dispense_ticket</code> subroutine has been called before. The variable contains a little bit of <em>state</em> that helps the subroutine remember what's happened before.</p>
+
+<p>But &mdash; as usual &mdash; there's a problem. Some greedy people figure out that they can just do <code>$collected = False</code> in the code before calling <code>dispense_ticket</code>, and with that neat little trick they can have unlimited lunches for themselves <em>and</em> their pet lizards. The system is too open; something needs to be done.</p>
+
+<p>First, let's discuss a solution that would not work: putting the data inside an array or a hash. That kind of "hiding" makes the information slightly more cumbersome to access, but someone who really wanted to change the value would essentially be as able to as before. Arrays and hashes are "transparent" in the sense that anyone who can see them, can also see inside them.</p>
+
+<p>The real solution involves a new type of data structure besides arrays and hashes. Let me introduce the <em>class</em>:</p>
+
+<pre><code>class Dispenser {
+    has Bool $!collected;
+
+    method dispense_ticket {
+        return "Sorry, you already got a ticket."
+            if $!collected;
+
+        $!collected = True;
+        return "Here's your free ticket. Lunch is on us today. Enjoy!";
+    }
+}
+
+my $d = Dispenser.new;
+say $d.dispense_ticket;    # "Here's your free ticket..."
+say $d.dispense_ticket;    # "Sorry, you already got a ticket."
+say $d.dispense_ticket;    # "Sorry, you already got a ticket."
+</code></pre>
+
+<p>Whoa, whoa! Ok, the program sort of looks like it did before, but there's a bunch of new stuff there as well. Let's go through them one by one.</p>
+
+<ul>
+<li><p>The state variable and the sub are now in a <code>class</code> block. In putting them there, we're also <em>defining</em> a new class called <code>Dispenser</code>; we're adding a new type to the program, just as we did yesterday with the <code>subset</code> declaration. Only this time, we're not just specializing an old type; we're defining a completely new one.</p></li>
+<li><p>The <code>my</code> in the variable declaration has mutated to <code>has</code>, and there's a new, strange bang sign (<code>!</code>) after the sigil! Don't panic; these two changes are related. By this mechanism, we're basically saying that the variable belongs not to the class itself, but to any <em>object</em> of that class. Variables belonging to objects in this way are called <em>attributes</em>.</p></li>
+<li><p>The <code>sub</code> keyword has mutated to being a <code>method</code>. That's fine; we're already familiar with methods from before and know they're called with a dot, like this: <code>$d.dispense_ticket</code>. And that turns out to be what we then do.</p></li>
+<li><p>Before we can get out our only ticket, we have to create a new <code>Dispenser</code> object. We do that by calling the <code>.new</code> method on <code>Dispenser</code>. That's not a method we defined; every class gets a (default) <code>.new</code> method for free.</p></li>
+</ul>
+
+<p>The goal we wished for &mdash; that of <em>encapsulating</em> the state within a barrier &mdash; has now been reached. There's no honest way someone can reach the <code>$!collected</code> attribute inside the <code>$d</code> object and flip its bit. The state is protected from the outside world, and the <code>Dispenser</code> class has full control over it.</p>
+
+<p>Now let's review what new concepts fell out of this little exercise.</p>
+
+<p>A <strong>class</strong> is something like a blueprint of a group of similar things. We call these things <strong>objects</strong>. In the example above, <code>Dispenser</code> is a class and <code>$d</code> contains an object of that class. (Objects are always objects <em>of</em> some class or other. Often we hear the term "<strong>instance</strong> of a class", as well. Same thing.)</p>
+
+<p>An object generally contains <em>state</em> (<strong>attributes</strong>) as well as <em>behavior</em> (<strong>methods</strong>). We recognize the attributes as regular variables, but what's different this time around is that they <em>belong</em> to an object, and they're <em>hidden</em> inside that object. We call this <strong>encapsulation</strong>. (Literally, "forming a shell around".) The methods of a class have access to an object's attributes &mdash; like <code>dispense_ticket</code> has to <code>$!collected</code> above &mdash; but things outside of the class don't have access to attributes.</p>
+
+<p>This is where I wax a bit philosophical. The thought of classes and objects is very ingrained in our collective unconscious, because they've been a part of philosophical thinking for two millennia and a half: Plato spoke about <em>forms</em> or <em>ideas</em>, these are the unchanging abstract entities on which real-world objects supposedly are based.</p>
+
+<p>So every mug you've seen in your life would, according to Plato, belong to this ideal <code>Mug</code> form; would, let's say, be an instance of that form. Every dog would be an instance of <code>Dog</code>; every box would be an instance of <code>Box</code>... all physical things in the world would just be imperfect realizations of their corresponding perfect ideals. According to Plato.</p>
+
+<p>It's because of this ancient subdivision that we tend to have both classes <em>and</em> objects when programming. The class takes care of the collective concerns, like the declaration of attributes and methods, whereas the objects take care of the nitty-gritty stuff, such as actually interacting with the program.</p>
+
+<p>The line is (intentionally) blurry sometimes. The class <code>Dispenser</code> behaves very much like an object when we call <code>.new</code> on it, for example. That's good, because we need to call <code>.new</code> on <em>something</em>.</p>
+
+<p>Speaking of which...</p>
+
+<pre><code>my $d1 = Dispenser.new;
+say $d1.dispense_ticket;    # "Here's your free ticket..."
+say $d1.dispense_ticket;    # "Sorry, you already got a ticket."
+
+my $d2 = Dispenser.new;
+say $d2.dispense_ticket;    # "Here's your free ticket..."
+</code></pre>
+
+<p>Oops. <code>:-)</code></p>
+
+<p>Well, we could have predicted this would happen. (Both from a that's-how-attributes-work standpoint, and from a people-will-do-anything-for-free-lunch standpoint.) We have not eliminated the problem of people getting multiple free lunches, but we have <em>contained</em> the problem, and now we only have to solve the &mdash; hopefully simpler &mdash; issue of preventing <code>Dispenser</code> propagation. (Hm... a singleton? Or some kind of authentication mechanism?)</p>
+
+<p>It turns out that as your programs grow bigger and bigger, they also grow more complex and difficult to maintain. Subroutines were introduced as a way to keep the complexity in check, and divide up the program in smaller part. Classes are the same kind of medicine, but they go one step further by actually encouraging encapsulation of state within objects.</p>
+
+<p>Objects: they encapsulate state, and regulate the ways you can modify that state. They're little worlds in themselves, worlds where you, the author, make the rules.</p>
+
+<p>Now if you'll excuse me, I have to go refill the dispenser. People are grabbing tickets like crazy...</p>
+
+</article>
+
+  </body>
+</html>

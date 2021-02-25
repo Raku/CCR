@@ -1,0 +1,85 @@
+http://strangelyconsistent.org/blog/july-16-2012-things-which-are-part-of-the-scenery
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 16 2012 &#8212; things which are part of the scenery :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-17T00:00:18+02:00" pubdate="pubdate">17 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-16-2012-things-which-are-part-of-the-scenery">July 16 2012 &#8212; things which are part of the scenery</a></h1>
+  </header>
+
+  <p>This will be a quick one. I dove in today and implemented what I needed. Uhh,
+except for the
+<a href="https://github.com/masak/crypt/commit/cb6dffc11c8f00ab9992d04d520a407270d2918f">bug</a>
+<a href="https://github.com/masak/crypt/commit/e5c519899a8489d912d4882017a27af14c4f5e61">fixes</a>
+I committed along the way because I discovered recently introduced bugs.</p>
+
+<p>Uhm, and except for getting momentarily stuck on the last one. It really wasn't
+that difficult, I just managed to misplace my programmer ability for a few
+minutes. That happens. The tests kept telling me "no, that's still not it", so
+I kept trying until I got it right.</p>
+
+<p>So here's what's new today:</p>
+
+<ul>
+<li><p>When you <code>look</code> at things, the <code>PlayerLooked</code> event returned now includes a
+<a href="https://github.com/masak/crypt/commit/d807669a4a8e780a964b6bdae00f01c0ed989cc4">list of
+things</a>.
+Amazingly, adding this did not break any tests.</p></li>
+<li><p>However, there's a way to make things "part of the scenery". That means
+they're still in the room, but they're <a href="https://github.com/masak/crypt/commit/af694afa26008e8b50d8aeb872257a1f85761503">not included in that
+list</a>.</p></li>
+</ul>
+
+<p>It's interesting. I can feel that focusing on the verbs (as it were) is making
+this a better program than last year. What's interesting is that my brain's
+spare cycles are figuring out the <em>internal</em> representation of the game engine.
+How are rooms and things and containerships represented? I now have a fairly
+good idea of this, even for the things I haven't implemented yet.</p>
+
+<p>It's like separating the behavioral outside from the implementational inside
+makes it easier to think about both of them separately.</p>
+
+<p>Anyway, we've now had a really good start on "general adventure game
+mechanics". I'll probably need a few more course corrections as I map out the
+game itself. I'll need to flesh out the container semantics, etc. But the big
+brush strokes are there now.</p>
+
+<p>We're ready to implement crypt itself. Let's start doing that tomorrow.</p>
+
+</article>
+
+  </body>
+</html>

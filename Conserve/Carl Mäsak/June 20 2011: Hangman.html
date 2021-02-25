@@ -1,0 +1,194 @@
+http://strangelyconsistent.org/blog/june-20-2011-hangman
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 20 2011: Hangman :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-21T23:51:04+02:00" pubdate="pubdate">21 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-20-2011-hangman">June 20 2011: Hangman</a></h1>
+  </header>
+
+  <p><em>I'm a day behind. Computer trouble. Will try to catch up in the next few days.</em></p>
+
+<p>In the game "Hangman", one person guesses letters in a hidden word, while another person keeps track of the guessed letters, and penalizes wrong guesses with increments of a drawing of a stick figure in an unfortunate situation:</p>
+
+<pre><code> +
+ |
+ |
+ |
+ |
+ |
+ |
+-+-
+
+ +----+
+ |    |
+ |
+ |
+ |
+ |
+ |
+-+-
+
+ +----+
+ |    |
+ |    o
+ |
+ |
+ |
+ |
+-+-
+
+ +----+
+ |    |
+ |    o
+ |    |
+ |    |
+ |
+ |
+-+-
+
+ +----+
+ |    |
+ |    o
+ |   /|
+ |    |
+ |
+ |
+-+-
+
+ +----+
+ |    |
+ |    o
+ |   /|\
+ |    |
+ |
+ |
+-+-
+
+ +----+
+ |    |
+ |    o
+ |   /|\
+ |    |
+ |   /
+ |
+-+-
+
+ +----+
+ |    |
+ |    o
+ |   /|\
+ |    |
+ |   / \
+ |
+-+-
+</code></pre>
+
+<p>Let's put all those drawings in a file and call the file <code>states</code>; they're the states that the game can be in.</p>
+
+<p>Then we need a list of juicy, sufficiently long words:</p>
+
+<pre><code>excessive
+investigation
+realisation
+idiomatic
+misinterpret
+endocrinology
+colloquial
+</code></pre>
+
+<p>Let's put <em>that</em> in a file and call it <code>words</code>.</p>
+
+<p>Finally, we have the game itself. Look how short it is! (Of course, partly because we put all the data in files...)</p>
+
+<pre><code>my @states = slurp("states").split("\n\n");
+my $WORD = lines("words".IO).roll;
+my %letters_found;
+
+while @states {
+    loop {
+        my @guessed_word;
+        for $WORD.comb {
+            if %letters_found{$_} {
+                push @guessed_word, $_.uc;
+            }
+            else {
+                push @guessed_word, "_";
+            }
+        }
+
+        say "Word: ", join " ", @guessed_word;
+
+        if none(@guessed_word) eq "_" {
+            say "Congratulations! You guessed it right!";
+            exit;
+        }
+
+        say "";
+        my $letter = prompt "Guess a letter: ";
+
+        my $correct_guess = any($WORD.comb).lc eq $letter.lc;
+        if $correct_guess {
+            %letters_found{$letter} = True;
+        }
+        else {
+            say shift @states;
+            last;
+        }
+    }
+}
+
+say "Aww, you ran out of guesses.";
+say "The correct word was '$WORD'";
+</code></pre>
+
+<p>Make sure to copy the game to your own computer and run it. It's a nice little game, if I may say so myself.</p>
+
+<p>Some diverse comments:</p>
+
+<ul>
+<li><p>The way we build <code>@guessed_word</code> is simple, but a bit long. There are shorter, nicer ways to do it which we haven't touched on yet.</p></li>
+<li><p>The junctions <code>none</code> and <code>any</code> really help to bring the code size down by avoiding loops. And they blend into the code quite well, too. It's easy to realize what their purpose is.</p></li>
+<li><p>There are a few cases of the methods <code>.uc</code> (uppercase) and <code>.lc</code> (lowercase). This is another case of wanting to keep one internal representation of things, and one external. We want to print all the letters as uppercase when we print them, but we also want to compare letters internally without regard to case. When making a caseless comparison, it's prudent to lowercase both sides, rather than to uppercase them.</p></li>
+<li><p>Look how we're actually "eating" states as we go along, <code>shift</code>ing and <code>say</code>ing the next one in one go. Then we can simply loop until <code>@states</code> is empty, which is what <code>while @states</code> does.</p></li>
+</ul>
+
+<p>Next game we're aiming for is called "Animals". It'll be wild.</p>
+
+</article>
+
+  </body>
+</html>

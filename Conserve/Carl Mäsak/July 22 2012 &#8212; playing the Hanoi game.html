@@ -1,0 +1,93 @@
+http://strangelyconsistent.org/blog/july-22-2012-playing-the-hanoi-game
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 22 2012 &#8212; playing the Hanoi game :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-23T00:20:34+02:00" pubdate="pubdate">23 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-22-2012-playing-the-hanoi-game">July 22 2012 &#8212; playing the Hanoi game</a></h1>
+  </header>
+
+  <p>I felt a curious lack of energy today, on the day when it was time to do the
+important merge of the Hanoi subgame (developed on the first two days of this
+month), and the bigger adventure game (developed since then).</p>
+
+<p>Nevertheless, I made it, though admittedly I haven't tested it much, and pieces
+are missing. Hey, the tests pass! The rest will have to come piece by piece
+later.</p>
+
+<p>(Mostly what's missing is actually hooking up all the nice <code>Hanoi::</code> event
+types to the CLI so that it can tell the player what's going on. Oh, and
+parsing commands correctly on the CLI. That's missing, too.)</p>
+
+<p>Here's what happened today:</p>
+
+<ul>
+<li><p>Playing around with the game, I noticed that the hall was still lit. <a href="https://github.com/masak/crypt/commit/647e1b7f056acf06f01aa782c3705f3e1ffbc9ce">Fixed
+that</a>.
+It was a rather large fix because I realized I had a bug in the "is there a light
+source here" logic &mdash; ultimately caused by assuming the wrong location
+of the player because of not-yet-applied events. (Tricky, that one!)</p></li>
+<li><p>Oh, and no-one had disconnected the chamber and the hall by default, so I <a href="https://github.com/masak/crypt/commit/875023b9db7a389967621e2af38f62f761e2649e">did
+that</a>
+too before I started with today's real hacking.</p></li>
+<li><p>Now, I <a href="https://github.com/masak/crypt/commit/532054147e50b56a98ab0899fbf40e513cc4f20b">hooked up the
+CLI</a>
+to show the Hanoi game whenever the player is in the hall. This required
+lifting the Hanoi game drawing logic out of the <code>Hanoi::Game</code> class into its
+own subroutine. No big deal.</p></li>
+<li><p>Then it was time to <a href="https://github.com/masak/crypt/commit/1a921765e3db2a77b98d1a2e6ff9ab24245edb60">put the Hanoi game in
+Crypt</a>.
+This was the most hair-tearing commit I have made this month. I ended up choosing
+the least painful of a number of painful options. <code>Crypt::Game</code> has to intercept
+events that move the player from <code>Adventure::Engine</code>, in order to correctly forbid
+the player from playing the Hanoi game outside of the hall.</p></li>
+</ul>
+
+<p>I'll have more to say about this factoring in the next few days. I'm glad it
+worked out, and as far as I can see it will work very well for what we want.</p>
+
+<p>Note that we got our first crypt-specific exception with this:
+<code>X::Crypt::NoDisksHere</code>, which happens when you try to play Hanoi outside of
+the hall. It clearly belongs in the crypt domain, and not the adventure domain
+(which doesn't know about Hanoi) or the Hanoi domain (which doesn't know about
+player locations).</p>
+
+<p>See you tomorrow, when we will play with fire a bit.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,187 @@
+http://strangelyconsistent.org/blog/idiomatic-perl-6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Idiomatic Perl 6 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-08-27T02:22:00+02:00" pubdate="pubdate">27 Aug, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/idiomatic-perl-6">Idiomatic Perl 6</a></h1>
+  </header>
+
+  <p>So, I wrote a program to generate <a href="http://en.wikipedia.org/wiki/Pascal">Pascal's triangle</a>. The first ten rows of the triangle, at least. It only used simple features of Perl 6, such as scalars, nested arrays, and <code>for</code> loops.</p>
+
+<pre><code>my $ELEMENTS = 10;
+my @pascal = [1];
+
+for 1 .. $ELEMENTS - 1 {
+    my @last = @pascal[ * - 1 ].list;
+
+    my @current;
+    push @current, @last[0];
+    for 0 .. @last - 2 {
+        push @current, @last[$_] + @last[$_ + 1];
+    }
+    push @current, @last[ * - 1 ];
+
+    push @pascal, [@current];
+}
+
+say @pascal.perl;
+</code></pre>
+
+<p>In fact, save for simple mechanically substitutable differences, it could have been a Perl 5 script. In fact, with a bit of manual array allocation, it could have been a C script. That's OK; there's a tolerance in the Perl community of writing code that looks like it was thunk in some other language.</p>
+
+<p>But I've heard that Perl 6 is great at doing things with operators. For example, the <code>Z</code> operator, which interleaves two lists, seems to be able to help me write my <code>push</code> statements more succinctly:</p>
+
+<pre><code>my $ELEMENTS = 10;
+my @pascal = [1];
+
+for 1 .. $ELEMENTS - 1 {
+    my @last = @pascal[ * - 1 ].list;
+
+    my @current;
+    <b>for (0, @last) Z (@last, 0) -&gt; $left, $right {<br></br>
+        push @current, $left + $right;<br></br>
+    }</b> 
+
+    push @pascal, [@current];
+}
+
+say @pascal.perl;
+</code></pre>
+
+<p>The parentheses before and after the <code>infix:&lt;Z&gt;</code> aren't necessary, because the <code>Z</code> operator has looser precedence than comma. They're just shown here to make your eyes accustomed to reading this construct.</p>
+
+<p>In fact, now that only the addition is performed in the inner loop, I might as well use the <code>Z+</code> operator, which does this for me.</p>
+
+<pre><code>my $ELEMENTS = 10;
+my @pascal = [1];
+
+for 1 .. $ELEMENTS - 1 {
+    my @last = @pascal[ * - 1 ].list;
+
+    my @current <b>= 0, @last Z+ @last, 0;</b> 
+
+    push @pascal, [@current];
+}
+
+say @pascal.perl;
+</code></pre>
+
+<p>Now as the remaining loop shrinks to a size I can take in all at once, I see a bit more clearly what I'm doing: I'm building each new list from the previous one. I could feed the previous list into a named function to get the current one:</p>
+
+<pre><code>my $ELEMENTS = 10;
+my @pascal = [1];
+<b> <br></br>
+sub next-list(@p) {<br></br>
+    [0, @p Z+ @p, 0]<br></br>
+}<br></br>
+</b> 
+for 1 .. $ELEMENTS - 1 {
+    my @last = @pascal[ * - 1 ].list;
+
+    my @current = <b>next-list(@last)</b>;
+
+    push @pascal, @current;
+}
+
+say @pascal.perl;
+</code></pre>
+
+<p>Or I could just feed it into a in-place anonymous sub.</p>
+
+<pre><code>my $ELEMENTS = 10;
+my @pascal = [1];
+
+for 1 .. $ELEMENTS - 1 {
+    my @last = @pascal[ * - 1 ].list;
+
+    push @pascal, <b>(sub (@p) { [0, @p Z+ @p, 0] }).(@last)</b>;
+}
+
+say @pascal.perl;
+</code></pre>
+
+<p>But why even a sub? Perl 6 has a lighter construct, namely a "pointy block" (also known as a "closure" or a "lambda"). It doesn't participate in the call stack, and it's slightly easier to write.</p>
+
+<pre><code>my $ELEMENTS = 10;
+my @pascal = [1];
+
+for 1 .. $ELEMENTS - 1 {
+    my @last = @pascal[ * - 1 ].list;
+
+    push @pascal, (<b>-&gt; @p</b> { [0, @p Z+ @p, 0] }).(@last);
+}
+
+say @pascal.perl;
+</code></pre>
+
+<p>Let's look at what the code does. Seed with one element. Calculate the next element based on the previous one. Stop at some point.</p>
+
+<p>But that's exactly what the series operator does. The one that's written with three dots. We have a starting value, a way to get from one value to the next (our code block above), and a stopping value.</p>
+
+<p>Well actually, we don't have the stopping value. But that's OK, since the series operator is <em>lazy</em>. So if we only request the first 10 values, it won't loop forever giving us the rest of the list.</p>
+
+<pre><code><b>my @pascal := do [1], -&gt; @p { [0, @p Z+ @p, 0] } ... *;</b> 
+
+say <b>@pascal[^10]</b>.perl;
+</code></pre>
+
+<p>(The extra <code>do</code> required because of a <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=77462">shortcoming in Rakudo</a>.)</p>
+
+<p>Now. Something very much like this code was posted first <a href="http://rosettacode.org/wiki/Pascal's_triangle#Perl_6">on Rosetta code</a> and then <a href="http://perlgeek.de/blog-en/perl-6/pascal-triangle.html">on Moritz' blog</a>. (TimToady used a sub, but said later that he'd have preferred binding.)</p>
+
+<p>A couple of Perl 5 people's reactions were — somewhat uncharacteristically — of a negative flavour, similar to how people <a href="http://strangelyconsistent.org/blog/perl-6-the-frankensteins-monster-of-operators">seem to react</a> to the periodic table of operators:</p>
+
+<p class="quote">
+<a href="http://twitter.com/shadowcat_mst/status/22112066276">@shadowcat_mst</a>: an excellent example of why I consider camelia perl to be a language research project more than a production language
+</p>
+
+<p class="quote">
+<a href="http://twitter.com/pedromelo/status/22110965152">@pedromelo</a>: I'm seriously considering this post as an example of what I don't want Perl6 to become... 
+</p>
+
+<p>I think these reactions are mainly feature shock. Higher-order operators, pointy blocks, and the series operator... they're all good, well-established features, which find daily use in Perl 6 programs. Maybe using them all together like that flung some people off the deep end. Never mind that the resulting script is all <a href="http://en.wikipedia.org/wiki/Essential_complexity">essential complexity</a>, with virtually no boilerplate from the original script left.</p>
+
+<p>This is the first time that's happened. I think it's important to listen to what Perl 5 people think and to try to respond to that. But I also think that this time, it's a case of them seeing some highly idiomatic Perl 6, and freaking out a bit.</p>
+
+<p>And I think that that, in some odd sense, is a good thing. Well, not freaking people out, per se. But the fact that we did shows that there's something forming which might be tentatively called "idiomatic Perl 6": people on the inside can read it quite easily, but those on the outside, even Perl 5 folks looking in, instinctively go "eeeeew!".</p>
+
+<p>That's OK. You're not meant to start with the idiomatic stuff. <em>Language acquisition takes place step by step</em>, and that goes for learning Perl 6 as well. On the way there, just don't confuse distaste with lack of familiarity.</p>
+
+</article>
+
+  </body>
+</html>

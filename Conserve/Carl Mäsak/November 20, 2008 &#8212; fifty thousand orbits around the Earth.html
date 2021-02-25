@@ -1,0 +1,96 @@
+http://strangelyconsistent.org/blog/november-20-2008-fifty-thousand-orbits-around-the-earth
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 20, 2008 &#8212; fifty thousand orbits around the Earth :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-21T00:58:00+01:00" pubdate="pubdate">21 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-20-2008-fifty-thousand-orbits-around-the-earth">November 20, 2008 &#8212; fifty thousand orbits around the Earth</a></h1>
+  </header>
+
+  <p>Ten years ago today, the first module of the <a href="http://en.wikipedia.org/wiki/International_Space_Station">International Space Station</a> (ISS) was launched. Its name, Zarya (Заря), means "dawn" in Russian. <a href="http://en.wikipedia.org/wiki/Zarya">Wikipedia</a>:</p>
+
+<blockquote><div><p>Although only designed to fly autonomously for six to eight months, Zarya was required to fly autonomously for almost two years due to delays to the Russian Service Module, Zvezda. Finally, on July 12, 2000, Zvezda was launched and docked on July 26 using the Russian Kurs system.</p></div></blockquote>
+
+<blockquote><div><p>Zarya initially had problems with battery charging circuits, but these were resolved. It will eventually require supplemental micro meteor shielding, as it was given an exemption to the ISS rules when it launched.</p></div></blockquote>
+
+<blockquote><div><p>Zarya passed the 50,000-orbit mark at 15:17 UTC. on August 14, 2007, during the STS-118 mission to the International Space Station.</p></div></blockquote>
+
+<p class='separator'>&#10086;</p>
+
+<p>I was going to write today about all the branches we're working on nowadays, but I got so involved in doing markup parsing and (because of that) finding Rakudo bugs, so I'll have to write about that instead.</p>
+
+<p>Having realised that the first letter in MediaWiki links is automatically upcased, I needed to do something about the link-producing closure that I sent along to the formatting routine. It looked like this:</p>
+
+<pre><code>my $link_maker = { "&lt;a href=\"/?page=$^page\"&gt;$^page&lt;/a&gt;" }
+</code></pre>
+
+<p>Nice, huh? Might be even nicer once we get better quoting constructs.</p>
+
+<p>(For those who haven't buried their noses in the Perl 6 specifications, that <code>$^page</code> variable is called a <em>placeholder parameter</em>, a positional parameter that you don't have to declare in your routine, but which sort of "declares itself" when you mention it the first time. Think of them as the sane version of the special variables <code>$a</code> and <code>$b</code> in <code>sort</code> blocks.)</p>
+
+<p>So the above line creates a closure that expects one parameter and returns strings: if I call the closure like this: <code>$link_maker('main_page')</code>, I get <code>'&lt;a href="?page=main_page"&gt;main_page&lt;/a&gt;'</code> back. The closure is a machine that makes links.</p>
+
+<p>But I needed to tweak the machine; I needed to upcase the first letter in the link. So I came up with this, which seemed reasonable:</p>
+
+<pre><code>my $link_maker = { "&lt;a href=\"/?page={$^page.ucfirst}\"&gt;$^page&lt;/a&gt;" }
+</code></pre>
+
+<p>(Ah, that new <code>ucfirst</code> function <em>is</em> handy at times.)</p>
+
+<p>I should note here that in Perl 6.0.0, I shouldn't have to use the curlies, because method calls are handled just as well as variables. (I'd have to end with <code>()</code> though. But Rakudo isn't Perl 6.0.0-compatible, not yet. Getting there. So I did it with closure curlies instead.</p>
+
+<p>And that's why it didn't work. I got this error:</p>
+
+<pre><code>too few arguments passed (0) - 1 params expected
+</code></pre>
+
+<p>Can you guess why? What's getting zero arguments here instead of the one it expected?</p>
+
+<p>That's right, my new closure. It's almost too obvious in retrospect. The <code>$^page</code> in the closure is not the same variable reference as the <code>$^page</code> outside. Why? Well, because each closure has its own right to placeholder params. Note that there's no way to <em>pass</em> such params to a closure in a string, but at least we're consistent!</p>
+
+<p>I turned to <a href="http://irclog.perlgeek.de/perl6/2008-11-20#i_707971">#perl6</a>, and then to <a href="http://www.nntp.perl.org/group/perl.perl6.language/2008/11/msg29931.html">p6l</a>, asking whether we prefer DWIM or consistency in this case. It was just a while ago, so the jury is still out.</p>
+
+<p>In the meantime, I have to write this:</p>
+
+<pre><code>my $link_maker = { my $l = $^page.ucfirst; "&lt;a href=\"/?page=$l\"&gt;$^page&lt;/a&gt;" }
+</code></pre>
+
+<p>That was today's bedtime story. I found another bug too, I think, but I haven't boiled it down to its essentials yet. It occurs when, in my <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w%2Ft%2Fmarkup%2Fmediawiki%2F06-links.t">second link test</a>, I <em>don't</em> pass in the link maker as a named argument, but the formatter goes on and uses a link maker anyway. (How does it <em>do</em> that?) I'll know more tomorrow.</p>
+
+</article>
+
+  </body>
+</html>

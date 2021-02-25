@@ -1,0 +1,169 @@
+http://strangelyconsistent.org/blog/june-28-2011-roles
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 28 2011: Roles :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-06T00:18:11+02:00" pubdate="pubdate">6 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-28-2011-roles">June 28 2011: Roles</a></h1>
+  </header>
+
+  <p>Having learned how to create classes, we might go on to create them to our hearts' content:</p>
+
+<pre><code>class Hammer {
+    method hammer($stuff) {
+        say "You hammer on $stuff. BAM BAM BAM!";
+    }
+}
+
+class Gavel {
+    method hammer($stuff) {
+        say "You hammer on $stuff. BAM BAM BAM!";
+    }
+}
+
+class Mallet {
+    method hammer($stuff) {
+        say "You hammer on $stuff. BAM BAM BAM!";
+    }
+}
+</code></pre>
+
+<p>But... notice something here? These three classes contain the exact same method, repeated in each class. We <em>have</em> to do that if we want each of <code>Hammer</code>, <code>Gavel</code> and <code>Mallet</code> to have the ability to <code>hammer</code>. (And that's reasonable.) But it's a pity that we have to triplicate the method.</p>
+
+<p>Why is it a pity? Well, it's more to write, for one thing. Also, the methods might not be this close to each other in a real-world example, and one day we may decide to change something in the <code>hammer</code> method, not realizing that it's in three different places... which generally leads to a bunch of pain and suffering.</p>
+
+<p>So here we are, with this new toy, classes, and already they exhibit a problem. We'd somehow like to <em>re-use</em> the <code>hammer</code> method in each three classes.</p>
+
+<p>A new concept, the <em>role</em> comes to our rescue:</p>
+
+<pre><code>role Hammering {
+    method hammer($stuff) {
+        say "You hammer on $stuff. BAM BAM BAM!";
+    }
+}
+</code></pre>
+
+<p>Whereas classes are often named after an appropriate noun, roles are often named after a participle, such as <code>Hammering</code>. It's not a hard-and-fast rule, but it's a good rule of thumb. I really shouldn't be talking about thumbs, what with all the hammering going on...</p>
+
+<p>Now the class definitions become easy:</p>
+
+<pre><code>class Hammer does Hammering {}
+class Gavel  does Hammering {}
+class Mallet does Hammering {}
+</code></pre>
+
+<p>Ah, yes. We <em>like</em> that.</p>
+
+<p>What's happening under the hood when we do <code>does</code> on a class? All the methods from the role definition are copied into the class definition. Since it's a copy operation, we can do it with as many classes as we want.</p>
+
+<p>So, here's what we do: we put methods in roles when we figure we'll re-use them.</p>
+
+<p>But that's not the only benefit we get. There's at least two more:</p>
+
+<pre><code>my $hammer = Hammer.new;    # create a new hammer object
+say $hammer ~~ Hammer;      # "Bool::True" -- yes, this we know
+say $hammer ~~ Hammering;   # "Bool::True" -- ooh!
+</code></pre>
+
+<p>So the <code>$hammer</code> knows that it does <code>Hammering</code>. Essentially, we now have a way to ask not only what class an object belongs to, but also what roles it incorporates. That's useful if we're unsure what kind of object we're dealing with:</p>
+
+<pre><code>if $unkown_object ~~ Hammering {
+    $unknown_object.hammer("that nail over there");     # will always work
+}
+</code></pre>
+
+<p>Can a class take on several roles at once? Yes, it can:</p>
+
+<pre><code>role Flying {
+    method fly {
+        say "Whooosh!";
+    }
+}
+
+class FlyingHammer does Hammering does Flying {}
+</code></pre>
+
+<p>Having a class do several roles in that way introduces an interesting possibility: that of <em>conflicts</em>, when two methods with the same name from two different roles try to occupy the same class. What happens in such a case? Well, there are at least three possibilities:</p>
+
+<ol>
+<li>First role wins. Its method gets to live in the class.</li>
+<li>Last role wins. It overwrites the previous method.</li>
+<li>Compilation fails. The conflict has to be resolved.</li>
+</ol>
+
+<p>And option 3 is the right answer in this case. The reason for this is the same as before: as classes and projects grow larger, the programmer might not <em>realize</em> that there's a conflict between two roles somewhere. So we flag it.</p>
+
+<pre><code>role Sleeping {
+    method lie {
+        say "Reclining horizontally...";
+    }
+}
+
+role Lying {
+    method lie {
+        say "Telling an untruth...";
+    }
+}
+
+class SleepingLiar does Sleeping does Lying {}    # CONFLICT!
+</code></pre>
+
+<p>Next question, then: when there's a role conflict in a class, how do we fix it? Simple: by defining a method with that name in the class itself:</p>
+
+<pre><code>class SleepingLiar does Sleeping does Lying {
+    method lie {
+        say "Lying in my sleep....";
+    }
+}
+</code></pre>
+
+<p>If you want to call a method from a particular role, there's a syntax for that:</p>
+
+<pre><code>class SleepingLiar does Sleeping does Lying {
+    method lie {
+        self.Sleeping::lie;
+    }
+}
+</code></pre>
+
+<p>And that's roles. They mix in reusable behavior into classes.</p>
+
+<p>Now, we're finally ready to tackle that text adventure of ours!</p>
+
+</article>
+
+  </body>
+</html>

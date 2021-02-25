@@ -1,0 +1,77 @@
+http://strangelyconsistent.org/blog/week-7-of-webpm-blogs-hitomi-and-server-agnosticism
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 7 of Web.pm &#8212; blogs, Hitomi and server agnosticism :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-05-13T23:38:00+02:00" pubdate="pubdate">13 May, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-7-of-webpm-blogs-hitomi-and-server-agnosticism">Week 7 of Web.pm &#8212; blogs, Hitomi and server agnosticism</a></h1>
+  </header>
+
+  <dl>
+<dd> <em>Cheezburgrz 4 teh n00b kittehs, theys can has teh Ceiling.</em> </dd>
+<dd> <em>Cheezburgrz 4 teh sad kittehs, theys can has petting.</em> </dd>
+<dd> <em>Cheezburgrz 4 teh m33k kittehs, theys can has teh urfs.</em> </dd>
+<dd> <em>Cheezburgrz 4 teh kittehs who sez "I can has gud, plz?", theys can has it.</em> </dd>
+<dd> <em>Cheezburgrz 4 teh kittehs dat no pwns, Ceiling Cat no pwnz0rz thems.</em> </dd>
+<dd> <em>Cheezburgrz 4 teh kittehs wiff purr in hartz, theys can sees Ceiling Cat.</em> </dd>
+<dd> <em>Cheezburgrz 4 teh kittehs dat sez shhhhh!, Ceiling Cat is liek "u mai kittehs."</em> </dd>
+<dd> <em>Cheezburgrz 4 teh kittehs dat gets pwned by otehrs fur haz gud, theys can has teh Ceiling too.</em> </dd>
+<dd> <em>Cheezburgrz if otehrs be liek "DO NOT WANT" 2 u, an liez abt u, coz of meh.</em> </dd>
+<dd> <em>B teh happys n party, coz u can has cookiez n cakez in Ceiling. Iz liek wen theys been liek "DO NOT WANT" to all teh holee kittehs b4.</em> &#8212; Matthew 5:3-12</dd>
+</dl>
+
+<p>Another nice week with Web.pm. They usually start out slow, as if to give me some breathing-room after writing the previous week's summary, and then they just tend to take off, with more and more leads to follow. Furthermore, this increase seems to become stronger each week — a kind of meta-increase, if you will.</p>
+
+<ul>
+<li>My Saturday build-a-blog-in-90-minutes spree inspired Tene++ to do the same, except he did it in <a href="http://blogs.gurulabs.com/stephen/2009/05/blog-speed-run.html">20 minutes</a>, and his source code looks much cooler than mine. Besides using his module Tags, which I also used, he also effortlessly does dispatching with his amazing 16-line module LolDispatch. It uses a feature in Rakudo called "trait handlers", which I wasn't even aware existed before I saw it in Tene's code.</li>
+<li>Apart from <a href="http://github.com/masak/web/blob/d42596a457ebe15115a7ea07ae96bdc9034231a7/lib/LolDispatch.pm">LolDispatch</a> and Ilya's <a href="http://github.com/masak/web/blob/d42596a457ebe15115a7ea07ae96bdc9034231a7/lib/Routes.pm">Routes</a>, there's now also a new dispatcher called <a href="http://github.com/ruoso/faz/">Faz</a>. This one was created by ruoso++, and it works by registering the URL regexes that participate in the dispatch, and compiling them into one unit which then handles all the request URLs. After writing this dispatcher, ruoso <em>also</em> ported my quick-and-dirty blog engine. Here's <a href="http://github.com/ruoso/faz/blob/a7345928687f44c61cc15362575ace912260f562/examples/yarn/lib/Yarn.pm">the ported blog engine</a>, and here's <a href="http://github.com/ruoso/faz/blob/a7345928687f44c61cc15362575ace912260f562/lib/Faz/Dispatcher.pm">the dispatcher</a>. Go look at it, it's cool stuff.</li>
+<li>It feels kinda nice to have a short public programming session of mine cause two people to independently turn my unworthy code into two different kinds of great, and this within the course of three days. Clearly, I should do more of these slightly insane coding marathons.</li>
+<li>(Oh, and the eventual goal is to be able to do a blog engine in 3 to 5 minutes on Web.pm. But I think we'll need our Rails/Catalyst idea to be able to pull that off.)</li>
+<li>Yesterday, viklund and I had a hackathon — the first Tuesday in quite some time when we were both available. Since those Tuesday hacking sessions are really meant for Novermber work but my head was full of Web.pm stuff, we compromised and started experimenting with the Hitomi prototype, which will hopefully be suitable for November some day. The reason I still consider Hitomi being stuck in prototype mode is that none of us have yet managed to build both the bottom-up parser (using grammar actions) and the top-down parser (that does the actual template substitutions), and have these play nicely together.</li>
+<li>But in yesterday's pair programming session, we made some real progress in a number of ways. I finally grokked the <code>make</code> call. (It's not that hard, really. It just sets the <code>.ast</code> property on the <code>Match</code> object to whatever you pass it.) We actually got a <code>pl:if</code> directive to behave as we wanted, that is we got it to appear and disappear based on the truth value of an expression. After I reluctantly left, viklund kept hacking on the proof-of-concept. As I write this, he's still at it: here's <a href="http://gist.github.com/110712">the latest version</a>. viklund++</li>
+<li>I realized, when explaining Hitomi to viklund, that I haven't really (apart from some semi-coherent IRC ramblings) taken the time to output the part of its design that I've nailed down so far into a substrate outside of my brain. So here's a short summary: templates contain value substitutions, if-directives and for-loops. Value substitutions look like this right now in Hitomi: <code>${ $value }</code>. They can occur in the content between tags, and as part of attribute values. If directives are simply elements with a <code>pl:if</code> attribute. The value of that attribute is evaluated as a Perl 6 expression, and the boolified result determines whether to serialize the whole element in question. For loops, correspondingly, are elements with <code>pl:for</code> attributes. The value of <em>those</em> attributes are also expressions, often evaluating to lists, which are then looped over. But there's a twist: you can also have the attribute value contain something like <code>"@list -&gt; $elem"</code>, and (just as in Perl 6 for-loops) the variable <code>$elem</code> will be magically available within the children of that element node. (Бог knows how we'll implement that last part, but the idea just feels too good to leave out.)</li>
+<li>At present, all the evaluations are done in the application itself, not because we like it that way, but because we're trying to get something to work. I plan to do a second dive into Genshi and see how they do the whole evaluation thing. Intuitively, working on some kind of data object which holds results from a database call seems much saner.</li>
+<li>Finally, today there was a <a href="http://irclog.perlgeek.de/perl6/2009-05-13#i_1140465">short discussion</a> about Web.pm on #perl6. Among other things, we concluded that Web.pm aims to be server-engine-agnostic, but that it isn't really at this point. In fact, more and more examples are being created where mberends++' HTTP::Daemon is assumed to be the only web server in the world. (Partly because, at this point, it kinda is.) Anyway, I feel an obligation to port some more of Rack to at least make it possible to code web applications in as agnostic a way as possible. I will revisit the Rack design and source code in the coming weeks.</li>
+</ul>
+
+<p>All in all, a lot is happening, and my weekly agenda is starting to write itself to some extent. People are actually coming up to me on IRC and asking about Web.pm, which is both exhilirating and a bit scary. Need to fix all those things that don't work yet...</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

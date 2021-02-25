@@ -1,0 +1,67 @@
+http://strangelyconsistent.org/blog/november-14-2010-around-and-about
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 14 2010 &#8212; around and about :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-14T18:22:00+01:00" pubdate="pubdate">14 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-14-2010-around-and-about">November 14 2010 &#8212; around and about</a></h1>
+  </header>
+
+  <p>122 years ago today, reporter <a href="http://en.wikipedia.org/wiki/Nellie_Bly">Nellie Bly</a> embarked on a journey around the world, attempting to turn the fictional <em>Around the World in Eighty Days</em> (published 15 years prior) into fact. </p>
+
+<div class="quote">On her travels around the world, she went through England, France (where she met Jules Verne in Amiens), Brindisi, the Suez Canal, Colombo (Ceylon), Hong Kong, the Straits Settlement of Penang and Singapore, and Japan. The development of efficient submarine cable networks and the electric telegraph allowed Bly to send short progress reports, though longer dispatches had to travel by regular post and were thus often delayed by several weeks.</div>
+
+<p>I know "delayed by several weeks" must seem like an absurd concept for people growing up in the Age of the Tweet.</p>
+
+<p>Anyway, she made it. <a href="http://en.wikipedia.org/wiki/Around_the_World_in_Seventy-Two_Days">72 days</a>. Nellie++.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>As of today, it's possible to call closures in Yapsi. This thanks to the pioneering work done by patrickas++, the few gaps of which I helped fill in some hours into the night last night.</p>
+
+<p>The work turned out to decompose into two steps:</p>
+
+<ul>
+<li><p>First we made the parser distinguish between <a href="https://github.com/masak/yapsi/commit/dd03f5893c29ac35b784ff7c6a76a301ba1f746d">non-immediate and immediate blocks</a>. We used to have only the latter kind; now we only consider statement-level blocks immediate.</p></li>
+<li><p>Then we added the ability to <a href="https://github.com/masak/yapsi/commit/706d5f6109e419aedae3e48f4cb9c5868a0efc92">call a closure</a>. Voilà!</p></li>
+</ul>
+
+<p>This is good news, because this lays the groundwork for subroutines in Yapsi, a big milestone. In fact, I'm going to go attempt subroutines now.</p>
+
+</article>
+
+  </body>
+</html>

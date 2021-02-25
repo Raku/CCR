@@ -1,0 +1,273 @@
+http://strangelyconsistent.org/blog/an-introduction-to-mazemaking-in-literate-perl-6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>An introduction to maze-making (in Literate Perl 6) :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-09-01T23:55:00+02:00" pubdate="pubdate">1 Sep, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/an-introduction-to-mazemaking-in-literate-perl-6">An introduction to maze-making (in Literate Perl 6)</a></h1>
+  </header>
+
+  <p>When I was younger and programmed in BASIC, there were some programs I kept coming back to, writing them many times over, each time with small variations. It was a part of my autodidactic journey towards programmerhood — understanding algorithms, patterns, code smells and coding common sense by writing things over and over again.</p>
+
+<p>One particular type of program I wrote was a program that drew <a href="http://en.wikipedia.org/wiki/Labyrinth">labyrinths</a>.</p>
+
+<p>I still remember the different mode numbers for switching to graphic modes in <a href="http://en.wikipedia.org/wiki/Turbo_Basic">Turbo Basic</a> and <a href="http://en.wikipedia.org/wiki/QBasic">QBasic</a>: <code>SCREEN 7</code> switched to 320x200x16 EGA graphics, while <code>SCREEN 8</code> gave you 640x200x16 (and thus, quite non-square pixels). <code>SCREEN 9</code> and <code>SCREEN 12</code> provided even higher resolutions... but it wasn't the resolution that was the attractive part for me. It was speeding up the algorithm.</p>
+
+<p>By the time I finally learned about <a href="http://en.wikipedia.org/wiki/Big_O_notation">Big O notation</a>, it made perfect sense due to experiences such as those I had with my labyrinth programs. In this post, I'll explain not only why my programs were slow, but how I later learned about real algorithms and data structures, went back and made my program fast, and found total happiness.</p>
+
+<p>To make sure we're on the same page, let me specify what it is my programs did. They built labyrinths which looked <a href="http://masak.org/carl/labyrint.txt">like this</a>. It's an <code>m</code> by <code>n</code> grid of <code>N</code> cells, totally surrounded by walls, and with internal walls making sure there's exactly one way through the structure from the lower left to the upper right. Each internal wall (that is, each wall which is not part of the surrounding border) faces two cells. The cells in themselves are wholly uninteresting; the information lies in which walls are solid and which are passages.</p>
+
+<pre><code>&gt; class Cell {}
+&gt;
+&gt; class Wall {
+&gt;   has Cell $!cell1;
+&gt;   has Cell $!cell2;
+&gt;
+&gt;   has Bool $.solid = True;
+&gt;   method true() { $.solid } # this way, walls boolify to $.solid
+&gt; }
+&gt;
+&gt; class Labyrinth {
+&gt;   has Int $!height;
+&gt;   has Int $!width;
+&gt;   has Wall @!vertical-walls;
+&gt;   has Wall @!horizontal-walls;
+&gt; }
+</code></pre>
+
+<p>When a program builds the labyrinth, it can start with an empty grid and keep adding walls, making sure that at least one way through the labyrinth remains. Another way to build a labyrinth to start with all walls in place, and then selectively remove walls, with the constant criterion that we do not introduce more than one passage through the whole labyrinth. In some sense, these approaches are duals to each other and equivalent. In this post, I will choose the latter approach, since that's how I've come to think about the algorithm.</p>
+
+<p>So here's the general recipe we're going to follow: we start with all walls in place, and then randomly remove walls, with the added criterion that a wall is kept if removing it would introduce a second path through the labyrinth. This "second path" criterion can be reformulated like so: if we're about to remove some wall, which happens to lie between cells A and B, and our only concern is that we don't want to introduce multiple paths through the labyrinth, we're allowed to remove the wall if and only if cells A and B aren't already connected by some other means.</p>
+
+<pre><code>&gt; class Labyrinth is also { # RAKUDO: Should be 'augment class'
+&gt;   submethod BUILD (Int :$height, Int :$width) {
+&gt;     $!height = $height;  # RAKUDO: S06/Attributive parameters
+&gt;     $!width  = $width;   #         C&lt;Int :$!height, Int :$!width&gt;
+&gt;
+&gt;     self.init-cells-and-walls();
+&gt;
+&gt;     for @.random-wall-order -&gt; $wall {
+&gt;       if $wall.separates-different-areas() {
+&gt;         $wall.remove();
+&gt;       }
+&gt;     }
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>It's this connectedness check that kills performance. At least it did for me in my teens. My programs used a metaphoric bucket of paint to mark cell A, and then the unpainted neighbours of cell A, and all their unpainted neighbours, and so on... until they either ran into cell B (at which point we know that A and B are connected), or they ran out of new neighbours to paint (at which point we know that A and B belong to distinct graph components). After each such painting spree, all cells were metaphorically scrubbed clean, so that the next round of painting would start from a clean slate.</p>
+
+<p>Some big-O analysis explains why this method is slow. We want to try and remove each wall exactly once, so that's one connectedness check per wall. Such a check needs to traverse a bunch of cells, in the worst case all cells in the labyrinth. Painting a cell takes constant time, so checking if A and B are connected takes O(<code>N</code>) time units, <code>N</code> being the number of cells in the labyrinth.</p>
+
+<p>That's for one wall; the number of walls is proportional to the number of cells, so that's an outer loop with O(<code>N</code>) iterations each doing the O(<code>N</code>)-unit connectedness check. In toto, the tearing down of walls takes O(<code>N²</code>) time units. That's too slow.</p>
+
+<p>(Why is it too slow? To get a feeling for what the O(<code>N²</code>) tells us, consider that doubling the number of cells in the labyrinth would make it four times as slow. And that's doubling the <em>cells</em>, not one of the sides. Were we to double both the height and the width of the labyrinth, it would have four times as many cells, and the algorithm would be <em>sixteen</em> times as slow. Exponents kill.)</p>
+
+<p>My next idea was to label each cell with its own group number, and each time I removed a wall, I'd let the cells on one side assimilate those on the other side, so that the cells on both sides had the same group number. With this method, the connectedness checking was cheap, but the <em>joining of groups</em> suddenly took O(<code>N</code>) time units, as all the cells of one group had to be traversed and relabeled. In rethinking the problem, I had lost as much performance as I had won. Some hidden waterbed theory of minimal time complexity seemed to have bitten me. At this point, I faltered and failed to glimpse the beautiful solution, discussed below.</p>
+
+<p>I called a few utility submethods in my <code>BUILD</code> method above, which I haven't defined. They're not algorithmically challenging, but shoving them away in their own submethods makes the <code>BUILD</code> submethod so much more readable.</p>
+
+<pre><code>&gt; class Labyrinth is also {
+&gt;   method init-cells-and-walls() {
+&gt;     my @cells = map { [map { Cell.new() }, ^$!width] }, ^$!height;
+&gt;
+&gt;     @!vertical-walls =
+&gt;       map -&gt; $row {
+&gt;         map -&gt; $column {
+&gt;           Wall.new(:cell1(@cells[$row][$column]),
+&gt;                    :cell2(@cells[$row][$column+1]))
+&gt;         }, ^($!width-1) # off-by-one -- internal walls
+&gt;       }, ^$!height
+&gt;     ;
+&gt;
+&gt;     @!horizontal-walls =
+&gt;       map -&gt; $row {
+&gt;         map -&gt; $column {
+&gt;           Wall.new(:cell1(@cells[$row][$column]),
+&gt;                    :cell2(@cells[$row+1][$column]))
+&gt;         }, ^$!width
+&gt;       }, ^($!height-1)  # off-by-one -- internal walls
+&gt;     ;
+&gt;
+&gt;     return;
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>By the way, I hope I'm not shocking you too much with those <code>map</code> blocks. In Perl 6, <code>map</code> and <code>for</code> are semantically equivalent. When I want to functionally transform a list of things, I still prefer <code>map</code>.</p>
+
+<pre><code>&gt; class Labyrinth is also {
+&gt;   submethod random-wall-order() {
+&gt;     return (@!vertical-walls, @!horizontal-walls).pick(*);
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>I'm translating this code from a Java program I had lying around. The corresponding Java method was a bit longer than the above. 哈哈</p>
+
+<p>Now for the big revelation of this post: we can do better than the O(<code>N²</code>) calculated above, and with the addition of one simple trick. No matter what we do, the O(<code>N</code>) walls still have to be traversed, but if we can somehow reduce both the connectedness test and the joining of groups to constant time — <em>constant time!</em> — the whole thing would only take O(<code>N</code>) time units.</p>
+
+<p>This is where the theory comes in. A few summers ago, I was basking in the sun on a piece of grass outside of a university building, reading Knuth's <a href="http://www-cs-faculty.stanford.edu/~knuth/taocp.html">TAOCP</a>. At one point, he discusses <a href="http://en.wikipedia.org/wiki/Equivalence_class">equivalence classes</a>, and how the operations of joining and comparing members can be made efficient. It all hinged on each member of the equivalence class having the option to delegate decision-making to another member, one more central to the decision-making process (call it a "leader").</p>
+
+<p>How are equivalence classes related to labyrinths, you ask? Well, that's the beauty of mathematics: all it does is provide us with tools to solve problems better. If we find a way to apply the tools to our problem space, it's like someone already did all the work for us. Specifically, if we can show that "A is connected with B" is an <a href="http://en.wikipedia.org/wiki/Equivalence_relation">equivalence relation</a>, we can think of each set of communicating cells in the labyrinth as an equivalence class, and then apply Knuth's trick to the program to make it fast.</p>
+
+<p>What does it take to show that "A is connected with B" forms an equivalence relation? An equivalence relation <code>~</code> has to satisfy three properties: reflexivity, symmetry and transitivity. Or, in mathese, for any members x, y and z, (1) <code>x ~ x</code>, (2) <code>x ~ y ⇔ y ~ x</code>, (3) <code>x ~ y &amp; y ~ z ⇒ x ~ z</code>. (Math alert: if I just lost you in a cloud of boolean incantations, fear not! What the symbols represent is not difficult, but neither are the symbols self-evident. The rest of the post can be understood without this paragraph.) But all these happen to hold for our connectedness relation: cells are connected to themselves; if one is connected to another, the other is connected to the first; and if one is connected to a second which is connected to a third, the first must be connected to the third as well. QED.</p>
+
+<p>Ok, so we're good to go. To make this work, each cell needs to keep track of which leader cell it delegates to. Each cell starts out without a leader, signified by the attribute being <code>undef</code>.</p>
+
+<pre><code>&gt; class Cell is also {
+&gt;   has Cell $.leader is rw;
+&gt; }
+</code></pre>
+
+<p>Cells with a leader delegate all their decisions (such as answering questions about connectedness) to that leader. In fact, since this may be done in several steps, we eventually end up with trees of cells, each tree with one cell at the root node which gets to make all the decisions. We call that cell the <em>boss</em>. We're never really interested in the middle managers, and in fact we can remove them as we find them, creating a totally flat hierarchy.</p>
+
+<pre><code>&gt; class Cell is also {
+&gt;   method boss() {
+&gt;     defined $!leader ?? ($!leader = $!leader.boss()) !! self
+&gt;   }
+&gt;
+&gt;   method join(Cell $other-cell) {
+&gt;     $other-cell.leader = self;
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>In words: to know who my boss is, ask my leader who its boss is. Make that my new boss. (That way, the hierarchy keeps flattening out.) If I don't have a leader, I'm my own boss. To join with another cell, tell it that I'm its leader now.</p>
+
+<p>With the introduction of bosses, the connectedness and joining steps are easy to implement. This is more or less directly from Knuth's TAOCP, by the way:</p>
+
+<pre><code>&gt; class Wall is also {
+&gt;   method separates-different-areas {
+&gt;     $!cell1.boss() !=== $!cell2.boss();
+&gt;   }
+&gt;
+&gt;   method remove() {
+&gt;     $!cell1.boss().join( $!cell2.boss() );
+&gt;     $!solid = False;
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>These two methods sure <em>look</em> fast, but how can we be sure? Maybe the <code>.boss</code> calls take O(<code>N</code>) time units each, bringing the total running performance down to O(<code>N²</code>) again... but the <code>.boss</code> calls turn out to be very fast in practice. For one thing, we're no longer traversing all the cells within the same equivalence class; we're just taking the shortest route to the cell in charge. Secondly, we're even short-circuiting that route to one single step, so that subsequent traversals through the same path will be faster. The result is that the <code>.boss</code> calls run in (<a href="http://en.wikipedia.org/wiki/Amortized_analysis">amortized</a>) constant time, making the total running time O(<code>N</code>).</p>
+
+<p>[<strong>Update 2010-02-20:</strong> The above analysis is slightly weak, and doesn't tell the whole story, which I discovered only later by tips from others. If you're interested, you could start from the Wikipedia article on <a href="http://en.wikipedia.org/wiki/Disjoint-set_data_structure">Disjoint-set data structures</a>.]</p>
+
+<p>And that's it! Well, um, we might want to print our labyrinth at some point. Stringifying a two-dimensional structure is not a pretty thing; there's too much going on, and the code looks nothing like the result. So please close your eyes (or look the other way) while reading this part:</p>
+
+<pre><code>&gt; class Labyrinth is also {
+&gt;   method Str() {
+&gt;     my ($h, $v) = 0, 0;
+&gt;     my $s = '+--' x ($!width-1) ~ "+  +\n";          # upper wall
+&gt;     for ^$!height -&gt; $row {
+&gt;       $s ~= '|  ';                                   # left wall
+&gt;       for ^($!width-1) -&gt; $column {
+&gt;         $s ~= @!vertical-walls[$v++] ?? '|' !! ' ';  # inner v walls
+&gt;         $s ~= '  ';
+&gt;       }
+&gt;       $s ~= "|\n";                                   # right wall
+&gt;       $s ~= [~] map -&gt; $column {
+&gt;                   $row == $!height-1 &amp;&amp; $column != 0 # bottom wall
+&gt;                   || @!horizontal-walls[$h++]        # inner h walls
+&gt;                     ?? '+--'
+&gt;                     !! '+  '
+&gt;                 }, ^$!width;
+&gt;       $s ~= "+\n";
+&gt;     }
+&gt;     return $s;
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>Now we can simply print out an instance of a <code>Labyrinth</code>, and watch the fruits of our work.</p>
+
+<pre><code>&gt; my $labyrinth = Labyrinth.new( :height(10), :width(10) );
+&gt; say $labyrinth;
+</code></pre>
+
+<p><em>This blog post is written in "Literate Perl 6", inspired by several blog posts in <a href="http://www.haskell.org/haskellwiki/Literate_programming">Literate Haskell</a> that I've seen over the years. If you have the module <a href="http://github.com/masak/perl6-literate">Perl6::Literate</a> installed, you can paste this whole blog post to a file, and run the file with <code>./perl6-literate &lt;pastefile.lpl&gt;</code>. Your reward will be a reasonably quickly generated labyrinth. On my computer, running the blog post that way takes 31 seconds, 23 out of which are spent in parsing and converting, and 8 in actually making the labyrinth.</em></p>
+
+<p>I promised moritz_++ to make something pretty with SVG as well, so here's an SVG serializer for the labyrinth:</p>
+
+<pre><code>&gt; use SVG; # requires the SVG.pm module, 'proto install svg'
+&gt;
+&gt; class Labyrinth is also {
+&gt;   method svg() {
+&gt;     my $f = 20; # scaling factor
+&gt;     my @walls;
+&gt;     my $style = 'stroke:black;stroke-width:1px;fill:none';
+&gt;
+&gt;     my $v = 0;
+&gt;     for ^$!height X ^($!width-1) -&gt; $r, $c {
+&gt;       if @!vertical-walls[$v++] {
+&gt;         my $d = sprintf 'M %d %d L %d %d',
+&gt;                         ($c+1) * $f, $r * $f, ($c+1) * $f, ($r+1) * $f;
+&gt;         push @walls, 'path' =&gt; [ :$d, :$style ];
+&gt;       }
+&gt;     }
+&gt;
+&gt;     my $h = 0;
+&gt;     for ^($!height-1) X ^$!width -&gt; $r, $c {
+&gt;       if @!horizontal-walls[$h++] {
+&gt;         my $d = sprintf 'M %d %d L %d %d',
+&gt;                         $c * $f, ($r+1) * $f, ($c+1) * $f, ($r+1) * $f;
+&gt;         push @walls, 'path' =&gt; [ :$d, :$style ];
+&gt;       }
+&gt;     }
+&gt;
+&gt;     my ($x1, $x2, $x3) = $f, ($!width  - 1) * $f, $!width  * $f;
+&gt;     my            $y3  =                          $!height * $f;
+&gt;     for "M 0 0 L 0 $y3", "M 0 0 L $x2 0",
+&gt;         "M $x3 0 L $x3 $y3", "M $x1 $y3 L $x3 $y3" -&gt; $d {
+&gt;       push @walls, 'path' =&gt; [ :$d, :$style ];
+&gt;     }
+&gt;
+&gt;     my $picture = svg =&gt; [
+&gt;       :xmlns&lt;http://www.w3.org/2000/svg&gt;,
+&gt;       :width($!width * $f), :height($!height * $f),
+&gt;       @walls,
+&gt;     ];
+&gt;     return SVG.serialize($picture);
+&gt;   }
+&gt; }
+</code></pre>
+
+<p>If you change the line <code>say $labyrinth;</code> to <code>say $labyrinth.svg()</code>, you'll get the SVG version of the labyrinth instead of the ASCII version. The output will look <a href="http://masak.org/carl/labyrint.svg">something like this</a>. </p>
+
+</article>
+
+  </body>
+</html>

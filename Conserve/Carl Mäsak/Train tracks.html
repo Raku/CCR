@@ -1,0 +1,150 @@
+http://strangelyconsistent.org/blog/train-tracks
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Train tracks :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2016-06-18T23:33:36+02:00" pubdate="pubdate">18 Jun, 2016</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/train-tracks">Train tracks</a></h1>
+  </header>
+
+  <p><em>I don't know anything, but I do know that everything is interesting if you go into it deeply enough.</em> &mdash; Richard Feynman</p>
+
+<p>Someone gives you a box with these pieces of train track:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/01-piece-inventory.png"></center></p>
+
+<p>It's possible you quickly spot the one obvious way to put these pieces into one single train track:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/02-figure-eight.png"></center></p>
+
+<p>But... if you're like me, you might stop and wonder:</p>
+
+<blockquote>
+  <p><em>Is that the only possible track? Or is there some equally possible track one could build?</em></p>
+</blockquote>
+
+<p>I don't just mean the mirror image of the track, which is obviously a possibility but which I consider equivalent:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/03-mirror-image.png"></center></p>
+
+<p>I will also not be interested in complete tracks that fail to use all of the pieces:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/04-smaller-tracks.png"></center></p>
+
+<p>I would also reject all tracks that are physically impossible because of two pieces needing to occupy the same points in space. The only pieces which allow intersections even in 2D are the two bridge pieces, which allow something to pass under them.</p>
+
+<p>I haven't done the search yet. I'm writing these words without first having written the search algorithm. My squishy, unreliable wetware is pretty certain that the obvious solution is the only one. I would love to be surprised by a solution I didn't think of!</p>
+
+<p>Here goes.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Yep, I was surprised. By no less than nine other solutions, in fact. Here they are.</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/05-all-other-nine-solutions.png"></center></p>
+
+<p>I really should have foreseen most of those solutions. Here's why. Already above the fold I had identified what we could call the "standard loop":</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/06-standard-loop.png"></center></p>
+
+<p>This one is missing four curve pieces:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/07-four-curve-pieces.png"></center></p>
+
+<p>But we can place them in a zig-zag configuration...</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/08-two-zigzags.png"></center></p>
+
+<p>...which work a little bit like straight pieces in that they don't alter the angle. And they only cause a little sideways displacement. Better yet, they can be inserted into the standard loop so they cancel each other out. This accounts for seven solutions:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/09-seven-solutions-with-zigzags.png"></center></p>
+
+<p>If we combine two zig-zag pieces in the following way:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/10-bulge.png"></center></p>
+
+<p>...we get a piece which can exactly cancel out two orthogonal sets of straight pieces:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/11-triangle.png"></center></p>
+
+<p>This, in retrospect, is the key to the final two solutions, which can now be extended from the small round track:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/12-two-solutions-with-bulge.png"></center></p>
+
+<p>If I had <em>required</em> that the track pass under the bridge, then we are indeed back to only the one solution:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/02-figure-eight.png"></center></p>
+
+<p>(But I didn't require that, so I accept that there are 10 solutions, according to my original search parameters.)</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>But then <a href="http://tvtropes.org/pmwiki/pmwiki.php/Main/RealityEnsues">reality ensued</a>, and took over my blog post. Ack!</p>
+
+<p>For fun, I just randomly built a wooden train track, to see if it was on the list of ten solutions. It wasn't.</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/13-wiggle-track.jpg"></center></p>
+
+<p>When I put this through my train track renderer, it comes up with a track that doesn't quite meet up with itself:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/14-misrendered-wiggle-track.png"></center></p>
+
+<p>But <em>it works with the wooden pieces</em>. Clearly, there is some factor here that we're not really accounting for.</p>
+
+<p>That factor turns out to be <em>wiggle</em>, the small amounts that two pieces can shift and rotate around the little connector that joins them:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/15-wiggle.png"></center></p>
+
+<p>Since there are sixteen pieces, there are sixteen connection points where wiggle can occur. All that wiggle adds up, which explains how the misrendered tack above can be made to cleanly meet up with itself.</p>
+
+<p>Think of the gap in the misrendered track as a 2D vector (x, y). What was special about the ten solutions above is that they had a displacement of (0, 0). But there are clearly other small but non-zero displacements that wiggle can compensate for, leading to more working solutions.</p>
+
+<p>How many working solutions? Well, armed with the new understanding of displacements-as-vectors, we can widen the search to tolerate small displacements, and then plot the results in the plane:</p>
+
+<p><center><img src="http://strangelyconsistent.org/blog/images/16-plane-of-displacements.png"></center></p>
+
+<p>That's 380 solutions. Now, I hasten to add that not <em>all</em> of those are possible. At least one solution that I tried actually building turned out to be impossible because the track tried to run into itself in an unfixable way.</p>
+
+<p>With yet another 8-shaped solution, I had given up trying to make it work because it seemed there was too much displacement. Then my wife stopped by, adjusted some things, and voilà! &mdash; it worked. (She had the idea to run the track through one of the <em>small</em> side-tunnels under the bridge; something that hadn't occurred to me at all. There's no way to run a wooden train through that small tunnel, but that <em>also</em> wasn't something I restricted up front. Clearly the track itself is possible.)</p>
+
+<p>Anyway, I really enjoyed how this problem turned out to have a completely solvable constraint-programming core of 10 solutions, but then also a complete fauna &mdash; as yet largely unclassified &mdash; of approximate, more-or-less buildable solutions around it. All my searching and drawing can be found in <a href="https://github.com/masak/tracks">this Github repository</a> &mdash; others who wish to experiment may want to start from the ideas in there, rather than from scratch.</p>
+
+<p><em>Essentially, all models are wrong, but some are useful.</em> &mdash; George E. P. Box</p>
+
+</article>
+
+  </body>
+</html>

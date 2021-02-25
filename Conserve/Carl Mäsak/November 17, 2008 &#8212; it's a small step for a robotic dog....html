@@ -1,0 +1,66 @@
+http://strangelyconsistent.org/blog/november-17-2008-its-a-small-step-for-a-robotic-dog
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 17, 2008 &#8212; it's a small step for a robotic dog... :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-18T00:48:00+01:00" pubdate="pubdate">18 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-17-2008-its-a-small-step-for-a-robotic-dog">November 17, 2008 &#8212; it's a small step for a robotic dog...</a></h1>
+  </header>
+
+  <p>38 years ago today, the Soviet Union put the first remote-controlled robot on another world. The other world was the Moon, and the robot, 13 years before Michael Jackson's dance, was called <a href="http://en.wikipedia.org/wiki/Lunokhod_1">Lunokhod</a> (Луноход), <em>moon walker</em>.</p>
+
+<p>It looks a bit like a <a href="http://en.wikipedia.org/wiki/K-9_(Doctor_Who">robot dog</a>) from a budget-impaired sci-fi series; the Russians seem to have had a thing for <a href="http://en.wikipedia.org/wiki/Laika">sending dogs into space</a>.</p>
+
+<p>Beyond its looks, I find nothing extraordinary about the robot itself, but I like other parts of the <a href="http://en.wikipedia.org/wiki/Lunokhod_programme">Lunokhod programme</a>:</p>
+
+<blockquote><div><p>In summer 1968, at the KIP-10(&#1050;&#1048;&#1055;-10) in the secret village of Shkolnoye, near Simferopol, a lunodrom (moondrome) was built. It covered an area of one hectare (120 meters by 70 meters) and was very similar to some parts of the lunar surface. It was constructed using more than 3,000 cubic meters of soil, and included 54 craters up to 16 m in diameter and around about 160 rocks of various sizes. The whole area was covered with bricks, painted in gray and black. It was used to analyze problems with the Lunokhod chassis.</p></div></blockquote>
+
+<p>Sounds like a nice place for a vacation. I like that word: "lunodrom".</p>
+
+<p class='separator'>&#10086;</p>
+
+<p><a href="http://www.endofworld.net/">Hokay</a>, so today I implemented the rest of the heading parsing, the one with the mixed headings and ordinary text. I discovered a Rakudo bug along the way, which I <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=60620">reported</a>. For some reasons, I keep finding bugs which aren't really bugs but turn out to be things I missed or overlooked. It's no big deal, just a bit annoying.</p>
+
+<p>I'm kind of pleased with the way the <a href="http://github.com/viklund/november/tree/76e0339f4865e32140b7f0c29fc061c9740f8f48/p6w/Text/Markup/Wiki/MediaWiki.pm">MediaWiki.pm</a> code turned out as a result of today's hacking. Yesterday, it was one lumpy method that did all the work, but today, things naturally fell out into their own methods. It wasn't even a question of refactoring, they just... did. The code looks much lighter now, with the main action taking place in a method called <code>format_line</code>. That's to be expected, since in the end the MediaWiki markup is line-based.</p>
+
+<p>(I know that today is Monday, and that Mondays were supposed to be Skin Mondays, and that this third Monday I've still only begun on my first skin. I might remind the readers who are very upset about this fact that this blog has a money-back guarantee. I'll start looking for another day in the week to make skins; Mondays turned out to be really unsuitable for that kind of deep-concentration work.)</p>
+
+<p>That's all. Now go out and look at the <a href="http://en.wikipedia.org/wiki/Leonids">Leonids</a>, all of you.</p>
+
+</article>
+
+  </body>
+</html>

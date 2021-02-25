@@ -1,0 +1,92 @@
+http://strangelyconsistent.org/blog/p2-is-the-point-in-the-polygon
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>p2: Is the point in the polygon? :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-01-22T00:36:00+01:00" pubdate="pubdate">22 Jan, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/p2-is-the-point-in-the-polygon">p2: Is the point in the polygon?</a></h1>
+  </header>
+
+  <p><em>If you're just passing by and don't have any context as to what this blog post is all about, it's all about summarizing the <a href="http://strangelyconsistent.org/blog/masaks-perl-6-coding-contest">Perl 6 coding context</a>.</em></p>
+
+<div class='quote'><code>&lt;colomon&gt; "It should not matter whether the points in the polygon run clockwise or counterclockwise."  Silly masak!</code></div>
+
+<p>I've reviewed and published <a href="http://strangelyconsistent.org/p6cc2010/">the p2 submissions</a>. On the page linked, you can browse the solutions, along with my notes.</p>
+
+<p>Here's the problem description for p2:</p>
+
+<pre><code>== Find out whether a given point is inside a given (simple) polygon
+
+Well, that's it, really.
+
+A polygon is *simple* if its edge doesn't intersect itself. You only have
+to solve the problem for this type of polygon. You also don't have to
+consider polygons with holes.
+
+Of course, if you're terribly disappointed at this restriction, by all means go
+ahead and solve a more general variant of the problem.
+
+Here's what the input might look like:
+
+    1.0,1.0 1.0,-1.0 -1.0,-1.0 -1.0,1.0
+    0.0,0.0
+
+The points in the first line describe a square with side 2 centered on the
+origin. (It is assumed that edges connect all adjacent pairs of coordinates,
+as well as the first and the last pair.) The point in the first line is the
+one tested for inclusion, so in this case the output should be "yes".
+
+It should not matter whether the points in the polygon run clockwise or
+counterclockwise.
+</code></pre>
+
+<p>I'd say that all the contestants "passed" this one, in that they all have good, usable
+solutions. I only found one bug in one of the solutions, and even it wasn't too serious.</p>
+
+<p>Four of the solutions carry the same general theme (but with many details different). colomon's
+solution is the outlier, bringing in ambitious machinery to make sure the point doesn't
+cheat its way in and out of that polygon. I'm honestly not comp.geom.-savvy enough to determine
+whether those extra safety measures are "worth it", but I'll happily take colomon's word for
+it.</p>
+
+<p>All of the solutions are worth <a href="http://strangelyconsistent.org/p6cc2010/">browsing through</a>. I know I did.</p>
+
+<p>Code submitters, let me know if I've omitted or committed something in my reviews! Speak now, or forever hold your point in a polygon!</p>
+
+</article>
+
+  </body>
+</html>

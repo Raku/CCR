@@ -1,0 +1,153 @@
+http://strangelyconsistent.org/blog/november-2-2009-fighting-servers-and-giant-squids
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 2 2009 &#8212; fighting servers and giant squids :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-03T00:53:00+01:00" pubdate="pubdate">3 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-2-2009-fighting-servers-and-giant-squids">November 2 2009 &#8212; fighting servers and giant squids</a></h1>
+  </header>
+
+  <p>131 years ago today, the (allegedly) largest giant squid ever <a href="http://en.wikipedia.org/wiki/Giant_squid">washed or was pulled ashore</a>:</p>
+
+<div class='quote'><p>For example, a specimen washed ashore in Thimble Tickle Bay, Newfoundland on November 2, 1878; its mantle was reported to be 6.1 metres (20 ft) long, with one tentacle 10.7 metres (35 ft) long, and it was estimated as weighing 2.2 tonnes.</p></div>
+
+<p>While the quoted article claims that the squid washed ashore, another page claims that it was found aground/alive off shore, <a href="http://en.wikipedia.org/wiki/List_of_giant_squid_specimens_and_sightings">tied with rope and pulled to shore</a>. This latter page also mentions that none of the squid remains, because it was cut up and used for dog food. So it goes.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I wanted to start fixing bugs for lichtkind++, who has been waiting for months for me to return to active November development. But when I was about to begin doing that, it occurred to me that the November web app at november-wiki.org is still down. Need to fix that first, so that there'll be a place to point at and say "look! fixed!".</p>
+
+<p>I emailed viklund++ and negotiated with him to take over the responsibility for keeping the site online. He gave me some pointers as to how to configure the unholy union between November and Apache so that things work. viklund has been getting November running on feather so many times by now that he has developed a system for doing it. As part of that system, he uses proto (!) to set up Rakudo, Parrot, November and its dependency, html-template for him. Schmot guy, viklund.</p>
+
+<p>So I try to do the same.</p>
+
+<pre><code>masak@feather:~/proto-2009-06-23$ ./proto
+Building proto...== SORRY! ==
+Unable to find Perl 6 dynops and dynpmcs library.
+If you want to run Rakudo outside of the build directory, please make install.
+== SORRY! ==
+Unable to find Perl 6 dynops and dynpmcs library.
+If you want to run Rakudo outside of the build directory, please make install.
+done
+== SORRY! ==
+Unable to find Perl 6 dynops and dynpmcs library.
+If you want to run Rakudo outside of the build directory, please make install.
+</code></pre>
+
+<p>Oh ouch. Can it be that the last time we (or viklund++, rather) tried to do this, Parrot and Rakudo didn't do the <code>make install</code> trick yet? Yes, it can be. We've been living on some kind of borrowed time since then.</p>
+
+<p>I have two options here. Either I use the newest Rakudo, and make things work with it; or I stick with the version from June that worked last time. The first option is clearly the right one; trying the second one.</p>
+
+<p>Ok, done "downdating" and building Rakudo.</p>
+
+<pre><code>masak@feather:~/proto-2009-06-23$ ./proto install november
+Downloading november...downloaded
+Downloading html-template...downloaded
+Building html-template...built
+Building november...built
+The following projects are not in your $PERL6LIB env var: november
+Please add them if you want to compile and run them outside of proto.
+</code></pre>
+
+<p>Huh. For some reason I didn't expect that to work.</p>
+
+<pre><code>masak@feather:~/apache/cgi-bin$ ./w
+Method 'Int' not found for invocant of class 'Float'
+</code></pre>
+
+<p>Why, that error reminds me of the un-bitrot commit I made yesterd... oh. The most recent November doesn't work with the Rakudo as of June. After picturing trying to juggle commits to make November keep working with an old Rakudo, I decide to try to make proto work with the latest Rakudo instead.</p>
+
+<p>Here's the change I make. It's short-term and not very thorough, but it makes proto build.</p>
+
+<pre><code>diff --git a/proto b/proto
+index a28da2f..ad1fa39 100755
+--- a/proto
++++ b/proto
+@@ -48,7 +48,7 @@ my $silently = ' &gt; /dev/null 2&gt;&amp;1';
+ install\_perl6( $config\_info );
+
+ my $rakudo\_directory = rakudo\_directory( $config\_info );
+-my $perl6 = "$rakudo\_directory/perl6";
++my $perl6 = "$rakudo\_directory/<b>parrot\_install/bin/</b>perl6";
+ make\_pir\_modules( $perl6 );
+ # Delegate to installer
+ exec( "env RAKUDO\_DIR=$rakudo\_directory $perl6 installer @ARGV" );
+</code></pre>
+
+<p>Next hurdle:</p>
+
+<pre><code>masak@feather:~/proto-2009-10-02$ ./proto
+Building proto...done
+Required named parameter 'projects-dir' not passed
+in Main (file src/gen_setting.pm, line 324)
+</code></pre>
+
+<p>I think I recognize jnthn++'s new binder when I see it. 哈哈. But why do I get the error?</p>
+
+<p>Well, first off, here's the method that fails to bind:</p>
+
+<pre><code>class Ecosystem;
+
+# ...
+
+method new(:$projects-dir!) {
+</code></pre>
+
+<p>Hey, look at this!</p>
+
+<pre><code>method new() {
+    self.bless(
+        self.CREATE(),
+        config-info =&gt; (my $c = load-config-file('config.proto')),
+        ecosystem   =&gt; Ecosystem.new($c{'Proto projects directory'}),
+    )
+}
+</code></pre>
+
+<p>No wonder it doesn't work, when we're trying to pass a positional argument to a named-only parameter. This is the second day in a row that I catch this type of error in app-cheese code.</p>
+
+<p>(Not only that. I ran <code>git blame</code>, and the originator of that line is unquestionably me. G'ah!)</p>
+
+<p>Fixing.</p>
+
+<p>It works now! Wohoo! But, hm, the skin doesn't seem to appear as it should. Need to email viklund and ask. But the site's up again!</p>
+
+<p>Summary: it's certainly not easy to set up November with Apache. Lots of moving parts and scary pitfalls. It doesn't help that November, Rakudo and proto are all moving targets. But considering all that, it's less lethal than I feared.</p>
+
+</article>
+
+  </body>
+</html>

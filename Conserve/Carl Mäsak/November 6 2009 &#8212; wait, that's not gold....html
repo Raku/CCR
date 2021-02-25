@@ -1,0 +1,142 @@
+http://strangelyconsistent.org/blog/november-6-2009-wait-thats-not-gold
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 6 2009 &#8212; wait, that's not gold... :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-07T00:53:00+01:00" pubdate="pubdate">7 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-6-2009-wait-thats-not-gold">November 6 2009 &#8212; wait, that's not gold...</a></h1>
+  </header>
+
+  <p>65 years ago today, the first industrial batch of <a href="http://en.wikipedia.org/wiki/Plutonium#Production_during_the_Manhattan_Project">plutonium</a> was produced.</p>
+
+<div class='quote'><p>Element 94 was first synthesized in 1940 by a team led by Glenn T. Seaborg and Edwin McMillan at the University of California, Berkeley laboratory by bombarding uranium-238 with deuterons. McMillan named the new element after Pluto, and Seaborg suggested the symbol Pu as a joke. [...] The entire plutonium weapon design effort at Los Alamos was soon changed to the more complicated implosion device, code-named "Fat Man." With an implosion weapon, a solid sphere of plutonium is compressed to a high density with explosive lenses&#8212;a technically more daunting task than the simple gun-type design, but necessary in order to use plutonium for weapons purposes.</p></div>
+
+<p>"Fat Man", as you may know, was subsequently dropped on Nagasaki, Japan. Perhaps it contains some revealing truth about mankind, that when we finally make reality out of the alchemical dream to change material from one element to another, we use it not to create beauty or riches, but to wipe cities off the face of the Earth.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Okay, switching to the <code>installed-modules</code> branch. (If you're coming in through non-linear time, you might want to read what I did <a href="http://strangelyconsistent.org/blog/november-5-2009-hanging-in-there">yesterday</a> first.)</p>
+
+<pre><code>$ ./proto
+
+*** CONFIG FILE TOO OLD ***
+
+Hello, faithful proto user. Since the August 2009 release, Rakudo installs
+and runs outside its source directories. It's time for proto to make projects
+install Perl 6 projects in a similar way. Rather than spend a lot of effort
+trying to guess how to upgrade our userbase from distributed to merged, we'll
+just deprecate the old ways and let you do a bit of the work. Hope it's OK!
+
+So here's the thing: we're moving to a model where PERL6LIB becomes optional
+or needs to point to only one library base directory. You should probably
+reinstall the projects you have already, so that they end up in that place.
+
+Here are your currently installed projects ('legacy' in projects.state):
+
+november html-template druid perl6-examples uri web svg svg-plot maya form pun io-prompt wtop xml statistics-lite json faz http-daemon yarn ppm epoxy epoxy-resin grampa csv perl6-literate perl6-sqlite mwbot
+
+When you're ready to go with the new ways, please remove your old
+config.proto and reinstall the above projects.
+</code></pre>
+
+<p>Ok. Bravely going where no man has gone before. Save for mberends++, and probably viklund++, and moritz++...</p>
+
+<p>I remove <code>config.proto</code>.</p>
+
+<pre><code>$ ./proto
+
+*** CONFIG FILE CREATED ***
+
+Greetings! I have created a file '/Users/masak/gwork/proto/config.proto'
+that you may want to review. Next time you run ./proto
+these settings will be used to bootstrap your Perl 6 software ecosystem.
+
+If you're new to this, or reluctant to do configuration, you probably want
+the default settings anyway. The most important ones are:
+Perl 6 executable -&gt; /Users/masak/gwork/rakudo/parrot_install/bin/perl6
+Perl 6 library    -&gt; /Users/masak/.perl6/lib
+</code></pre>
+
+<p>Looks good. Proceeding.</p>
+
+<pre><code>$ ./proto 
+Building proto...done
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/november», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/html-template», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/druid», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/perl6-examples», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/uri», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/web», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/svg», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/svg-plot», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/maya», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/form», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/pun», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/io-prompt», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/wtop», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/xml», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/statistics-lite», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/json», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/faz», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/http-daemon», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/yarn», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/ppm», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/epoxy», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/epoxy-resin», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/grampa», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/csv», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/perl6-literate», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/perl6-sqlite», ignoring it
+don't know how to parse the line «    state: legacy: /Users/masak/gwork/mwbot», ignoring it
+</code></pre>
+
+<p>Now, that's not very pretty. The error is coming from lib/Ecosystem.pm:126. It's caused by the fake YAML parser not recognizing more than one word after the first colon.</p>
+
+<p>Ah, this is the TODO point recording this piece of data format.</p>
+
+<pre><code>10. Drop the migration plan for existing installations: laziness++ ;)
+    Just warn the user as long as the old config.proto has not been
+    upgraded, and record as "state: legacy: /path" in projects.state.
+    This must be overwritten if the user later re-installs the project.
+    [DONE]
+</code></pre>
+
+<p>Need to talk to mberends++ about how to solve this. My guess is that we need to make the fake YAML parser a bit smarter, but even that might come at a cost.</p>
+
+</article>
+
+  </body>
+</html>

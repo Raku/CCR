@@ -1,0 +1,56 @@
+http://strangelyconsistent.org/blog/november-meets-the-web
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November meets the Web :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-08-24T17:37:00+02:00" pubdate="pubdate">24 Aug, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-meets-the-web">November meets the Web</a></h1>
+  </header>
+
+  <p>Two major things have happened during the week: first off, pmichaud++ implemented <em>precompiled modules</em> for Rakudo, i.e. when including a module through the <code>use</code> keyword, Rakudo now looks first for <code>Module.pbc</code> and <code>Module.pir</code> before falling back to the usual <code>Module.pm</code>.</p>
+
+<p>We made use of this, precompiling all our modules, even moving the main wiki code into its own module <code>Wiki.pm</code> so we could precompile it, too. The resulting speedup in a "view page" request was 17-fold: instead of 23 seconds, it now takes 1.3 seconds!</p>
+
+<p>The second major thing was that we got November running on <a href="http://feather.perl6.nl/">feather</a>, the dedicated development server of the Perl 6 community. We also got our own domain name, <a href="http://www.november-wiki.org/">november-wiki.org</a>, to match.</p>
+
+<p>That's Perl 6 you see running there.</p>
+
+<p>Kudos to (Frederik Schwarzer)++ and moritz++ for submitting patches to the project! And kudos also to jhorwitz++, who is looking into making November and mod_perl6 work together.</p>
+
+</article>
+
+  </body>
+</html>

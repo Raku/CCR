@@ -1,0 +1,70 @@
+http://strangelyconsistent.org/blog/november-13-2010-burning-tuits
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 13 2010 &#8212; burning tuits :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-14T00:08:00+01:00" pubdate="pubdate">14 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-13-2010-burning-tuits">November 13 2010 &#8212; burning tuits</a></h1>
+  </header>
+
+  <p>35 years ago today, the steamship <a href="http://en.wikipedia.org/wiki/SS_Yarmouth_Castle"><em>Yarmouth Castle</em></a>, on a pleasure cruise from Miami to the Bahamas, caught fire and sank.</p>
+
+<div class="quote">Shortly before 1:00 a.m. on November 13, a mattress stored too close to a lighting circuit in a storage room, Room 610, caught fire. The room was filled with mattresses and paint cans, which fed the flames.</div>
+
+<p>The ship was made of wood, and was freshly painted, so the fire spread quickly.</p>
+
+<div class="quote">More problems ensued. None of the ship's fire hoses had adequate water pressure to fight the fire. One of the hoses had even been cut. Crewmen also had difficulty launching the lifeboats. The ropes used to lower the boats had been covered in thick coats of paint, causing them to jam in the winches. Even the boats that were successfully lowered had no oarlocks, and had to be paddled like canoes. By the end, only six of the 13 lifeboats were launched.</div>
+
+<p>87 people went down with the ship, and three later died while treated at hospitals. The disaster brought on changes in the international <a href="http://en.wikipedia.org/wiki/International_Convention_for_the_Safety_of_Life_at_Sea">Safety of Life at Sea</a> law. One of the changes was "do not build passenger ships out of wood".</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>I've been here and there today, nibbling at stuff. Did a little more work on pls, cleared out my queue of pending rakudobugs, and <a href="https://github.com/rakudo/rakudo/commit/015d77b6bee35955d66a35f9e45e16c15c91b7b0">patched</a> an LTA error message in Rakudo.</p>
+
+<p>But the chunk of "actual" November work today was restoring Shrdlu to the living. The <a href="https://github.com/masak/shrdlu/commit/ad72e6fe90a6567e7d4c32023ce1b63b0eb0c471">commit</a> summarizes what needed doing:</p>
+
+<ul>
+<li>Can't assign to a variable that contains <code>*</code>. (I submitted this as <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=79166">[perl #79166]</a>, because I think it's ridiculous that the prior content of a variable would determine whether the assignment "succeeds".)</li>
+<li>Some <code>rule</code>s really wanted to be <code>token</code>s. (Grammars are hard. Someone should give a course or something. I've learned a bit since I wrote that code.)</li>
+<li>Nowadays (as per spec), <code>&gt;&gt;~~&lt;&lt;</code> needs parens around lhs and rhs. (Generally, hyperops have "transparent" precedence, i.e. the same as the operator they're meta-ing. Since <code>~~</code> would require parens, so does <code>&gt;&gt;~~&lt;&lt;</code>.)</li>
+</ul>
+
+<p>Shrdlu is a really nice project that I will tell you all about some day. Also, I'll start actually hacking on it some day... after I've grokked what that Terry Winograd was doing.</p>
+
+</article>
+
+  </body>
+</html>

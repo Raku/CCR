@@ -1,0 +1,69 @@
+http://strangelyconsistent.org/blog/november-6-2008-making-waves
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 6, 2008 &#8212; making waves :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-07T00:57:00+01:00" pubdate="pubdate">7 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-6-2008-making-waves">November 6, 2008 &#8212; making waves</a></h1>
+  </header>
+
+  <p>73 years ago today, electrical engineer slash inventor Edwin Armstrong presents his paper "A Method of Reducing Disturbances in Radio Signaling by a System of Frequency Modulation" to the New York section of the Institute of Radio Engineers. The impact of this man's work is perhaps best explained by this quote from <a href="http://inventorspot.com/father_of_fm">InventorSpot</a>:</p>
+
+<blockquote><div><p>Because of his [Armstrong's] work, FM radio is the preferred format for broadcast music, while the AM band has largely been relegated to the realm of news and talk. Because of pioneering work performed by Armstrong we also have access to other commonly used technologies like television, radar, and cellular telephony.</p></div></blockquote>
+
+<p>Not bad.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I added the <code>.fmt</code> method to S29, the comprehensive-to-be listing of all the built-in functions in Perl 6. S29 is partly incomplete and outdated, and would benefit from much attention from people with spare tuits.</p>
+
+<p>The problem is that adding stuff to S29 requires hard-won knowledge. That's why S29 exists, to summarize info about functions which might not be found elsewhere. For example, moritz++ pointed me to <a href="http://svn.pugscode.org/pugs/t/spec/S02-names_and_variables/fmt.t">t/spec/S02-names<em>and</em>variables/fmt.t</a> which tests various aspects of <code>.fmt</code>. After I'd made my commit, I noticed that those tests actually assume that the second argument can be omitted in the <code>Array::fmt</code> variant. That detail wasn't to be found anywhere in the Specs (I looked), but since I think it's a good idea, I'll make a change to reflect this in S29.</p>
+
+<p>The difficulty thus consists not in realizing what needs to be done, but in collecting and assessing all the minute details about every function, and figuring out what is hard fact and what is opinion, what is outdated or deprecated. Luckily, the #perl6 gang very often provides in cases like this, making the whole experience much easier. Or at least being there for you when it isn't.</p>
+
+<pre><code>&lt;jnthn&gt; masak: Having the various roles like Positional and stuff in there would be good too.
+&lt;masak&gt; jnthn: I'll put it on my list which I just made.
+&lt;moritz_&gt; masak: and when you are at it... many methods now actually live in Any, not in Str|List|Complex|$Whatever...
+&lt;masak&gt; moritz_: yes, that's true. that goes on the list too.
+&lt;moritz_&gt; masak.list.elems++ ;-)
+</code></pre>
+
+<p>Oh my. I think I just made myself S29 wrangler, too.</p>
+
+</article>
+
+  </body>
+</html>

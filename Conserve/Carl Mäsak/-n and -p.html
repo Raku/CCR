@@ -1,0 +1,193 @@
+http://strangelyconsistent.org/blog/dash-n-and-dash-p
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>-n and -p :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-08-28T23:54:43+02:00" pubdate="pubdate">28 Aug, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p">-n and -p</a></h1>
+  </header>
+
+  <p><em>(This blog post is part one of a series; there's also a <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-two">part two</a> and a <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three">part three</a>.)</em></p>
+
+<p>With <code>-n</code> on the command line in Perl 5, you can create an implicit loop for lines of input:</p>
+
+<pre><code>$ cat &gt; input
+1 big cup of tea
+2 cookies
+5 pages of a good book
+^D
+
+$ perl -nE '$sum += $_; END { say $sum }' input
+8
+</code></pre>
+
+<p>Pretty neat.</p>
+
+<p>Oh, and it works in Perl 6, too.</p>
+
+<pre><code>$ perl6 -n -e 'our $sum += $_; END { say $sum }' input
+8
+</code></pre>
+
+<p>Yay!</p>
+
+<p>There's a <code>-p</code> flag that also does the loop thing, but it prints <code>$_</code> at the end of each loop iteration:</p>
+
+<pre><code>$ perl -pE '$_ = uc' input 
+1 BIG CUP OF TEA
+2 COOKIES
+5 PAGES OF A GOOD BOOK
+
+$ perl6 -p -e '.=uc' input
+1 BIG CUP OF TEA
+2 COOKIES
+5 PAGES OF A GOOD BOOK
+</code></pre>
+
+<p>Now, let's look at the <em>implementations</em> of these flags in Perl 5 and in Rakudo.</p>
+
+<p>Perl 5, has a file <code>perl.c</code>, let's look there:</p>
+
+<pre><code>PL_minus_n      = FALSE;
+PL_minus_p      = FALSE;
+
+/* meanwhile, much later */
+
+case 'n':
+    PL_minus_n = TRUE;
+    s++;
+    return s;
+case 'p':
+    PL_minus_p = TRUE;
+    s++;
+    return s;
+</code></pre>
+
+<p>Ok, um. So that clearly wasn't it. That's just the code to <em>prepare</em> for applying the flags. Let's keep looking.</p>
+
+<p>Oh, here's a file, <code>toke.c</code>. But that's the lexer for Perl 5, clearly the code for handling the flags can't be in there, can it?</p>
+
+<pre><code>if (!PL_in_eval &amp;&amp; PL_minus_p) {
+    sv_catpvs(linestr,
+        /*{*/";}continue{print or die qq(-p destination: $!\\n);}");
+    PL_minus_n = PL_minus_p = 0;
+} else if (!PL_in_eval &amp;&amp; PL_minus_n) {
+    sv_catpvs(linestr, /*{*/";}");
+    PL_minus_n = 0;
+} else
+    sv_catpvs(linestr, ";");
+
+/* much, much later */
+
+if (PL_minus_n || PL_minus_p) {
+    sv_catpvs(PL_linestr, "LINE: while (&lt;&gt;) {"/*}*/);
+    /* handling of -l, -a, and -F */
+</code></pre>
+
+<p>Oh wow. <code>sv_catpvs</code>. That's some kind of string concatenation. So when <code>perldoc perlrun</code> says that the <code>-n</code> and <code>-p</code> flags cause Perl 5 to "assume a loop around your program", it actually means something more like "stick a loop right into your program".</p>
+
+<p>I won't toke &mdash; sorry, poke &mdash; too much fun of the Perl 5 solution. After all, I've used it many times, and I really like it. I bet it's fast to do it with strings like that. And elegant. No wait, the other thing.</p>
+
+<p>Let's look at Rakudo's implementation of the same flags. In Rakudo, we find the code in <code>src/Perl6/Actions.pm</code>, a code-oriented companion to <code>src/Perl6/Grammar.pm</code>:</p>
+
+<pre><code>if %*COMPILING&lt;%?OPTIONS&gt;&lt;p&gt; { # also covers the -np case, like Perl 5
+    $mainline := wrap_option_p_code($mainline);
+}
+elsif %*COMPILING&lt;%?OPTIONS&gt;&lt;n&gt; {
+    $mainline := wrap_option_n_code($mainline);
+}
+
+# meanwhile, earlier
+
+# Turn $code into "for lines() { $code }"
+sub wrap_option_n_code($code) {
+    return PAST::Op.new(:name&lt;&amp;eager&gt;,
+        PAST::Op.new(:pasttype&lt;callmethod&gt;, :name&lt;map&gt;,
+            PAST::Op.new( :name&lt;&amp;flat&gt;,
+                PAST::Op.new(:name&lt;&amp;flat&gt;,
+                    PAST::Op.new(
+                        :name&lt;&amp;lines&gt;,
+                        :pasttype&lt;call&gt;
+                    )
+                )
+            ),
+            make_block_from(
+                Perl6::Compiler::Signature.new(
+                    Perl6::Compiler::Parameter.new(
+                        :var_name('$_'), :is_copy(1)
+                    )
+                ),
+                $code
+            )
+        )
+    );
+}
+
+# Turn $code into "for lines() { $code; say $_ }"
+# &amp;wrap_option_n_code already does the C&lt;for&gt; loop, so we just add the
+# C&lt;say&gt; call here
+sub wrap_option_p_code($code) {
+    return wrap_option_n_code(
+        PAST::Stmts.new(
+            $code,
+            PAST::Op.new(:name&lt;&amp;say&gt;, :pasttype&lt;call&gt;,
+                PAST::Var.new(:name&lt;$_&gt;)
+            )
+        )
+    );
+}
+</code></pre>
+
+<p>Don't get bogged down by detail. There's a bit more code, but the big difference is that Rakudo operates on the <em>syntax tree</em> of the code, whereas Perl 5 operates on the <em>text</em> of the code.</p>
+
+<p>In particular, this means that Rakudo parses the program code <em>first</em>, and <em>then</em> adds the <code>-n</code> and <code>-p</code> code.</p>
+
+<p>Which means that the <a href="http://www.mail-archive.com/fwp@perl.org/msg03431.html">eskimo operator</a> doesn't work in Rakudo:</p>
+
+<pre><code>$ perl -nE '$sum += $_ }{ say $sum' input
+8
+
+$ perl6 -n -e 'our $sum += $_ }{ say $sum' input
+===SORRY!===
+Confused at line 1, near "}{ say $su"
+</code></pre>
+
+<p>Call me conservative, but I think this is a good thing.</p>
+
+</article>
+
+  </body>
+</html>

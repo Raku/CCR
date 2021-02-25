@@ -1,0 +1,73 @@
+http://strangelyconsistent.org/blog/reading-up-on-mvc-part-1-ruby-on-rails
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Reading up on MVC, part 1: Ruby on Rails :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-06-26T22:11:00+02:00" pubdate="pubdate">26 Jun, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/reading-up-on-mvc-part-1-ruby-on-rails">Reading up on MVC, part 1: Ruby on Rails</a></h1>
+  </header>
+
+  <p>Hello, don't mind me. I'm just going through a few MVC frameworks to see how they differ and how they're alike. I need the knowhow to create an MVC for Web.pm. Right now, my plan is to examine Rails, Catalyst, Django and Jifty. I'll write down my impressions of each of the in some kind of list, for future reference. Basically the only way you'd want to read this is if you want to laugh at how little I know about MVC frameworks.</p>
+
+<p>Here's the list I got from watching <a href="http://media.rubyonrails.org/video/rails_blog_2.mov">this screencast</a>:</p>
+
+<ul>
+<li>Man, the Ruby folks sure can make a beatuiful screencast!</li>
+<li>Rails uses scaffolding. I've heard not all people like scaffolding, but it does look kinda convenient to my untrained eye.</li>
+<li>Partial templates are called, logically, "partials". They bind smartly with variable names somehow.</li>
+<li>Different output formats are really easy to add. XML, JSON, Atom...</li>
+<li>A blog is a really nice example for an MVC framework screencast, because it's just a list of posts, each with a list of comments.</li>
+<li>Rails can add authentication through before_filter.</li>
+<li>Hm, clearly the strength of Rails comes largely through the keywords it introduces. Wonder if it uses monkey typing for that?</li>
+<li>Rails has Routes! Maybe this is my chance to finally understand ihrd++'s Routes, which I never really grokked.</li>
+<li>Controllers do things like index, show, new, update and delete. Probably related to CRUD somehow.</li>
+<li>That 'debugger' trick is fantastic! One of those features which you feel can't be just hot air.</li>
+<li>AJAX is fairly well integrated, though I'll be danged if I understand exactly how. Looks like magic to me.</li>
+<li>Did I hear that right? "rjs is just a way to generate JavaScript using Ruby." Wow.</li>
+<li>There's graceful fallback from JS to non-JS.</li>
+<li>There's built-in automated testing.</li>
+<li>The console seems like the debugger again, but without the breakpoint. Yes, I can see how that might be very useful.</li>
+<li>Never once do they explicitly say 'the database' in the screencast. They say the word 'database-agnostic' once, and 'table' and 'column' a few times, but most of the time it's just 'model', 'view', 'controller'. Seems like the abstraction is largely intact.</li>
+</ul>
+
+<p>Um. Well, in summary, that cool-aid sure seems to have an effect on me. I'll leave the comments open so that you people can tell me how Rails, despite all appearances, is really bad for your teeth and leaves skid marks on your puppy.</p>
+
+<p>Next up: <a href="http://use.perl.org/~masak/journal/39263">Catalyst</a>.</p>
+
+</article>
+
+  </body>
+</html>

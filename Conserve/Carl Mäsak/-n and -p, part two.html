@@ -1,0 +1,67 @@
+http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-two
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>-n and -p, part two :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-09-05T21:51:06+02:00" pubdate="pubdate">5 Sep, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-two">-n and -p, part two</a></h1>
+  </header>
+
+  <p><em>(This blog post is part two of a series; there's also a <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p">part one</a> and a <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three">part three</a>.)</em></p>
+
+<p>I wrote <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p">last time</a> about how <code>-n</code> and <code>-p</code> were implemented in a text-oriented way in Perl 5, and in an AST-oriented way in Rakudo.</p>
+
+<p>Afterwards, TimToady said he thought I was going to write about settings and <code>{YOU_ARE_HERE}</code>. You see, the <em>spec</em> doesn't talk about toying around with ASTs, it talks about <code>-n</code> being equivalent to having a setting that looks something like this:</p>
+
+<pre><code>for lines() {
+    {YOU_ARE_HERE}
+}
+</code></pre>
+
+<p>(This is completely equivalent to the current AST approach, but with code instead; the <code>{YOU_ARE_HERE}</code> gets replaced by your program. In a way, it's a nice full circle back to a text-based way of doing things, but correctly this time. Kissing eskimos still need not apply.)</p>
+
+<p>The whole notion confused me, because by "setting", I generally mean the set of builtins provided by Perl 6. Here it seemed to mean "a layer of code immediately surrounding your program". I <a href="http://irclog.perlgeek.de/perl6/2011-09-03#i_4366219">asked</a> on the channel. Turns out no-one else knew, either.</p>
+
+<p>There was plenty of good discussion, though. Didn't make me any wiser, but it was at least interesting.</p>
+
+<p>Finally jnthn suggested that maybe Rakudo actually does this right already (with the ASTs) and the spec is wrong. I can agree with that, at least to the extent that I don't see how the current setting/<code>{YOU_ARE_HERE}</code> spec is s'posed to work, but I feel pretty comfortable about those AST transformations.</p>
+
+<p>So, um, yeah.</p>
+
+</article>
+
+  </body>
+</html>

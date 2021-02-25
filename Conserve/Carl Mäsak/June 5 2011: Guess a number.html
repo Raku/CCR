@@ -1,0 +1,87 @@
+http://strangelyconsistent.org/blog/june-5-2011-guess-a-number
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 5 2011: Guess a number :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-05T23:58:33+02:00" pubdate="pubdate">5 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-5-2011-guess-a-number">June 5 2011: Guess a number</a></h1>
+  </header>
+
+  <p>Without much ado, here's our first game:</p>
+
+<pre><code>say "I'm thinking about a number between 1 and 100.";
+my $answer = (1 .. 100).roll;
+
+my $tries = 0;
+loop {
+    my $guess = prompt "Guess the number: ";
+    $tries = $tries + 1;
+
+    if $guess &lt; $answer {
+        say "Your guess was too low.";
+    }
+    elsif $guess &gt; $answer {
+        say "Your guess was too high.";
+    }
+    else {
+        last;
+    }
+}
+
+say "Yay!";
+say "You got it right in $tries tries!";
+</code></pre>
+
+<p>All of what we've seen in the past few days works together in this bit of code. There's the <code>loop</code> that makes sure the program runs as many times as needed, and the <code>last</code> inside of it that makes sure we exit the loop when we hit upon the right answer. There's the <code>if</code>/<code>elsif</code>/<code>else</code> inside of the loop to make decisions about the guess that was just made. And a bunch of <code>say</code> and <code>prompt</code> and variables along the way to communicate with the user.</p>
+
+<p>The <code>(1 .. 100).roll</code> thing is new. This is how we generate random numbers. In this case, we're interested in a random number between 1 and 100. You can think of it as rolling a 100-sided die, if that helps. In fact, that's why <code>.roll</code> is called the way it is.</p>
+
+<p>(You might wonder why <code>say</code> is written before and <code>roll</code> is written after things, and what the dot is doing there. We'll talk more about the difference between subroutines and methods later, when it starts to matter. For know, just know that there is a bit of leeway sometimes, and that <code>"Hello World".say</code> also works, for example.)</p>
+
+<p>The <code>$tries</code> variable is an interesting example of an <em>accumulator</em>, something that we see in loops a lot, and in many shapes and forms. An accumulator is anything that starts as some empty value and then keeps adding things onto it. In our case, we keep adding <code>1</code> until the loop finishes. In some other case, we might want to calculate a sum or a product of many things.</p>
+
+<p>Your math teacher doesn't have to get gray hairs just because you write <code>$tries = $tries + 1;</code> in your programs: this is assignment, not the equals sign from maths equations. Besides, there is a shorter way to write it when the same variable appears on both sides of the equals sign: <code>$tries += 1;</code>. It means the same. For the case of adding one, there's an even shorter way to write it: <code>$tries++;</code>.</p>
+
+<p>It's also worth noticing how we subtly affect the relationships between different parts of the program by adding empty lines here and there. For example, the first empty line in the program makes it understood that <code>my $answer = ...</code> is part of initialization of the entire program, whereas <code>my $tries = 0</code> belongs to the loop, because it looks "attached" to it.</p>
+
+<p>How many tries does it take you to beat the game? Despite the fact that there's a hundred different possible answers in this game, you can always beat it in seven tries or less. Do you agree? How come at most seven tries are needed?</p>
+
+<p>Our next lofty goal is to write a moon lander game, but before that we'll talk some more about strings and arithmetic and the <code>given</code> statement. See you on the moon in five days!</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,84 @@
+http://strangelyconsistent.org/blog/yapsi-201105-released
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Yapsi 2011.05 Released! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-05-02T00:10:00+02:00" pubdate="pubdate">2 May, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/yapsi-201105-released">Yapsi 2011.05 Released!</a></h1>
+  </header>
+
+  <p>It is with superfluous glee that I announce on behalf of the Yapsi development team the May 2011 release of Yapsi, a Perl 6 compiler written in Perl 6. Yeah.</p>
+
+<p>You can download it <a href="http://github.com/downloads/masak/yapsi/yapsi-2011.05.tar.gz">here</a>.</p>
+
+<p>Yapsi is implemented in Perl 6. It thus requires a Perl 6 implementation to build and run. This release of Yapsi has been confirmed to work on all releases of Rakudo Star to date.</p>
+
+<p>Yapsi is an "official and complete" implementation of Perl 6. By general agreement, no Perl 6 implementation is "the official implementation"... which is why Yapsi only makes claims to be "AN official implementation". Similarly, it's only "complete" in a very restricted sense, namely "not really complete".</p>
+
+<p>This month's release introduces ENTER blocks. So now you can have code execute at the beginning of your program without having to actually place it in the beginning of your program.</p>
+
+<pre><code>$ bin/yapsi -e 'say 2; ENTER { say 1 }; say 3'
+1
+2
+3
+</code></pre>
+
+<p>The two other big compilers, Rakudo and Niecza, don't have this feature yet. Pugs does, however.</p>
+
+<p>For a complete list of changes, see doc/ChangeLog.</p>
+
+<p>Yapsi consists of a compiler and a runtime. If this feels in any way unsettling, then your career probably isn't language implementations. The compiler generates runnable instructions of a format called SIC. If that feels unsettling, that just means you're relatively normal. SIC is what the compiler emits and the runtime consumes. Yeah, that's gross. There's a syntax tree format from which SIC is generated, which for more or less obscure reasons is called FUTURE. That's unsettling, too.</p>
+
+<p>As usual, the SIC version is kept in sync with the Yapsi version, and no SIC version is or has ever been backwards- or forwards-compatible with any Yapsi version, even when in actual fact, they are. This strict versioning policy is kept in place just so people won't get any ideas.</p>
+
+<p>The versioning of FUTURE, however, abides by an advanced deprecation policy which is never really spelled out or elaborated on. This means that you can never be sure when or how the features you rely upon from FUTURE will change in the future. And thus, the FUTURE isn't what it used to be.</p>
+
+<p>An overarching goal for making a Perl 6 compiler-and-runtime is to use it as a server for various other projects, which hook in at different steps:</p>
+
+<ul>
+<li>A time-traveling debugger (tardis), which hooks into the runtime. Already underway, see http://github.com/masak/tardis</li>
+<li>A coverage tool (lid), which will also hook into the runtime.</li>
+<li>A syntax checker (sigmund), which will use output from the parser.</li>
+</ul>
+
+<p>Another overarching goal is to optimize for fun while learning about parsers, compilers, and runtimes.</p>
+
+<p>Have the appropriate amount of fun! \o/</p>
+
+</article>
+
+  </body>
+</html>

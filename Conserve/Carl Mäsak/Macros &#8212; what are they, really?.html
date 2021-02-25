@@ -1,0 +1,148 @@
+http://strangelyconsistent.org/blog/macros-what-are-they-really
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros &#8212; what are they, really? :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-10-15T16:13:00+02:00" pubdate="pubdate">15 Oct, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-what-are-they-really">Macros &#8212; what are they, really?</a></h1>
+  </header>
+
+  <p>Apparently, if you schedule all of my talks at YAPC::EU 2011 on the first day, I will spend the remaining time of the conference thinking intently about how macros work. (I did some socializing too, don't worry. I even distinctly remember talking to people about other things than macros on at least one occasion.)</p>
+
+<p>Like most of the rest of you, I'd heard about C preprocessor macros (and how they're both useful and kinda dangerous if you don't know what you're doing), and <a href="https://c2.com/cgi/wiki?LispMacro">Lisp macros</a> (and how they're part of what makes Lisp the awesomest programming language in the universe forever). Which one of these types does Perl 6 specify?</p>
+
+<p>Both, duh. 哈哈</p>
+
+<p>But I'm going to talk about the latter kind. I'll call them "AST macros", to differentiate them from "textual macros". ("AST" simply means <a href="http://en.wikipedia.org/wiki/Abstract_syntax_tree">"Abstract Syntax Tree"</a>. Forget the "abstract" part, it's just been put there to scare you into thinking this is tricky.)</p>
+
+<h2>Why ASTs matter</h2>
+
+<p>When the complexity of a codebase increases, it inevitably <a href="http://steve-yegge.blogspot.com/2007/12/codes-worst-enemy.html">becomes a part of the problem it is trying to solve</a>. We need to combat the complexity in the code itself, and we need to start talking about the code in the code. There are three broad ways we can describe code:</p>
+
+<ul>
+<li><strong>Code as strings.</strong> Humans can read it, but the computer can't, because it's just strings.</li>
+<li><strong>Code as ASTs.</strong> It has a lot of structure, which both humans and computers can use.</li>
+<li><strong>Code as executable code objects.</strong> It's opaque to humans, but the computer run it, because it's just code.</li>
+</ul>
+
+<p>These three forms &mdash; string, AST, code block &mdash; reflect what a compiler does when it prepares your source code for execution:</p>
+
+<ul>
+<li>Code starts out as <strong>text</strong>, as source code.</li>
+<li>Compiler parses the text and builds an <strong>AST</strong>. (And some other information, such as a symbol table.)</li>
+<li>Compiler generates the AST into executable <strong>code</strong>.</li>
+</ul>
+
+<p>The <em>reason</em> the compiler takes the detour through ASTs when creating your code is that <a href="http://strangelyconsistent.org/blog/its-just-a-tree-silly">trees are much easier to reason about and manipulate</a> than the "flat" representations of code. An AST contains a lot of explicit relations that don't stand out in the original or final, "flat" representations of code. ASTs can be manipulated, stitched together, optimized, etc. It's this strength that AST macros make use of.</p>
+
+<p>Since ASTs are the way code looks before code generation, AST macros give you a say in what code will be generated in your program.</p>
+
+<p>Macros are a way to <em>transform code</em>. AST macros transform code by giving you the tools to <em>build your own AST</em>.</p>
+
+<h2>How to make an AST</h2>
+
+<p>How to construct an AST in Perl 6? Using the <code>quasi</code> keyword:</p>
+
+<pre><code>quasi { say "OH HAI" }
+</code></pre>
+
+<p>What this evaluates to is a <code>Perl6::AST</code> object holding a tree structure representing the program code <code>say "OH HAI"</code>. Exactly how that tree structure looks may or may not be implementation-dependent.</p>
+
+<p><code>quasi</code> stands for "quasi-quote", a concept invented by Quine, the logician, who liked to think about self-reference, paradox, and words starting with the letter Q. Just as we quote code with a string literal and the result is a <code>Str</code>, so we can quote code with the <code>quasi</code> keyword and the result, in the case of Perl 6, is a <code>Perl6::AST</code> object.</p>
+
+<h2>What macros are</h2>
+
+<p>Macros work just like subroutines, but AST macros are expected to return a <code>Perl6::AST</code>. How the AST is created is the macro author's business. But we can use <code>quasi</code> to create them:</p>
+
+<pre><code>macro LOG {
+    quasi {
+        $*ERR.say(DateTime.now, ": some logging information here");
+    }
+}
+
+# Meanwhile, later in the code:
+LOG();
+</code></pre>
+
+<p>You see, it looks just like a subroutine call. But the call is made by the <em>compiler</em>, not by the runtime as with ordinary subroutines. And the return value is a <code>Perl6::AST</code> object containing the code to print something to <code>$*ERR</code>.</p>
+
+<p>But wait, there's more!</p>
+
+<p>It's a pretty useless <code>LOG</code> macro that doesn't take an argument with a <code>$message</code>. We'll fix that. There's one twist, though: AST macros deal in AST, so the <code>$message</code> that gets passed to the macro won't be a <code>Str</code>. It'll be a <code>Perl6::AST</code>:</p>
+
+<pre><code>macro LOG($message) {
+    quasi {
+        $*ERR.say(DateTime.now, ": ", {{{$message}}});
+    }
+}
+
+LOG("Evacuation complete.");
+</code></pre>
+
+<p>When we call <code>LOG</code>, we do it with a <code>Str</code>, just as with a usual subroutine. The parser sees the string literal and does its thing with turning stuff into ASTs. The compiler then calls the macro with one argument: the resulting <code>Perl6::AST</code> object. In the quasi, we make sure to take this object and <em>stitch</em> it right into the code that says "print a bunch of stuff to <code>$*ERR</code>". It's right there, at the end of that line, enclosed in triple curly braces.</p>
+
+<p>What do the triple curly braces do, exactly? They allow you to say "I want you to incorporate this already-parsed AST into this currently-being-parsed code". Triple curly braces are only recognized inside of quasi-quote blocks. In fact, this is what quasi-quotes specialize in: allowing an escape hatch from code to ASTs, so we can mix them. (This is what Quine used quasi-quoting for too, except in the domain of logic.)</p>
+
+<p>If we <em>didn't</em> write <code>{{{$message}}}</code> there, but just the normal form <code>$message</code>, guess what? The <code>LOG</code> function would stringify the <code>Perl6::AST</code> object, probably to something boring like <code>Perl6::AST()&lt;0x80681e0&gt;</code>, and print that.</p>
+
+<p>Right, so AST macros take ASTs, allow us to manipulate ASTs, and return ASTs. Fine. We get the message. But what makes them so powerful?</p>
+
+<p>The real power comes from the fact that we can steer this process any which way we want. For example, maybe we'd like to turn logging on and off at the switch of a constant:</p>
+
+<pre><code>constant LOGGING_ENABLED = True;
+
+macro LOG($message) {
+    if LOGGING_ENABLED {
+       quasi {
+           $*ERR.say(DateTime.now, ": ", {{{$message}}});
+        }
+    }
+    else {
+        quasi {}
+    }
+}
+
+LOG(crazily-expensive-computation());
+</code></pre>
+
+<p>Turn <code>LOGGING_ENABLED</code> off, and the <code>crazily-expensive-computation()</code> call will be parsed, but never executed.</p>
+
+<p>This is the essence of AST macros. There's much more to it than that, but we'll get to the other parts in later posts.</p>
+
+</article>
+
+  </body>
+</html>

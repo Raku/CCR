@@ -1,0 +1,62 @@
+http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>-n and -p, part three :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-09-10T00:20:34+02:00" pubdate="pubdate">10 Sep, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-three">-n and -p, part three</a></h1>
+  </header>
+
+  <p><em>(This blog post is part three of a series; there's also a <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p">part one</a> and a <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-two">part two</a>.)</em></p>
+
+<p>Shortly after I wrote the <a href="http://strangelyconsistent.org/blog/dash-n-and-dash-p-part-two">last post</a> on <code>-n</code> and <code>-p</code>, and how I didn't really understand what a setting was in Perl 6, sorear++ and TimToady++ filled me in on all of the details. So here I am, a third time, to pass the knowledge on.</p>
+
+<p>I wrote last time that I found the term "setting" confusing and overloaded. That's because I thought it was a single, defined thing. In effect, there's no <em>the</em> setting in Perl 6; there can be many at the same time.</p>
+
+<p>A setting is simply something that surrounds your code on the outside. (Haskell has a <a href="http://haskell.org/onlinereport/standard-prelude.html">Prelude</a>, but a prelude only comes before your code. A setting envelopes your code both before and after.) Your code simply finds itself lexically inside some setting or other. In technical parlance, whatever is the <code>OUTER::</code> of your code is a setting.</p>
+
+<p>So, you <em>can</em> have several settings, just like I wished for. They stack, you see. Or rather <em>peel</em>, like onion layers. One man's setting is another man's code, all the way outwards into the final <code>OUTER::</code> nothingness of empty space.</p>
+
+<p>And &mdash; the final piece of the puzzle &mdash; the big default "here, friend, are all of your builtins" setting is called <code>CORE</code>. I'd always wondered why we keep saying both "setting" and <code>CORE</code>. (And why Rakudo calls the directory <code>src/core</code>, not <code>src/setting</code>.) That's why; <code>CORE</code> is just a setting among others.</p>
+
+<p>The discussion &mdash; which consists mostly of sorear and TimToady telling how things really are &mdash; can be found <a href="http://irclog.perlgeek.de/perl6/2011-09-05#i_4376926">here</a>.</p>
+
+<p>And now I think I'm finally done writing on how <code>-n</code> and <code>-p</code> work. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

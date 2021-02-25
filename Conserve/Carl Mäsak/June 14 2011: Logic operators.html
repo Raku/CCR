@@ -1,0 +1,115 @@
+http://strangelyconsistent.org/blog/june-14-2011-logic-operators
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 14 2011: Logic operators :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-14T23:54:02+02:00" pubdate="pubdate">14 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-14-2011-logic-operators">June 14 2011: Logic operators</a></h1>
+  </header>
+
+  <p>We all know about <code>if</code> statements and true/false values by now.</p>
+
+<pre><code>if 2 + 2 == 4 {
+    say "Yay, math still works!";
+}
+</code></pre>
+
+<p>But sometimes we need to check that two things are both true:</p>
+
+<pre><code>my $coin = ("heads", "tails").roll;
+my $die  = (1..6).roll;
+
+if $coin eq "heads" &amp;&amp; $die == 6 {
+    say "You, sir or madam, are a lucky person.";
+}
+</code></pre>
+
+<p>Or sometimes we want to check that at least one of two things is true:</p>
+
+<pre><code>my $pram = (True, False).roll;
+my $jetski = (True, False).roll;
+
+if $pram || $jetski {
+    say "Seems we'll be able to get over the river...";
+}
+</code></pre>
+
+<p>That's all quite straightforward. Logic usually is.</p>
+
+<p>The only thing worth remembering is that <code>&amp;&amp;</code> and <code>||</code> are <em>short-circuiting</em>, which means that the evaluation of values stops as soon as the final truth value is certain. Here's a demonstration of how that works:</p>
+
+<pre><code>True  &amp;&amp; say "OH HAI";                # "OH HAI"
+False &amp;&amp; say "this isn't printed";    # ""
+
+True  || say "this isn't printed";    # ""
+False || say "OH HAI AGAIN";          # "OH HAI AGAIN"
+</code></pre>
+
+<p>So, again, the rule is that if we need to evaluate the right part of the expression to know the value, we do. If we don't need to, we don't.</p>
+
+<p>If you're wondering about, between <code>||</code> and <code>&amp;&amp;</code>, which operator "wins" and binds its values the tightest, I'll tell you: it's <code>&amp;&amp;</code>. This is because <code>&amp;&amp;</code> is the "multiplicative one, and <code>||</code> is the additive one. And the multiplicative operator always binds tighter:</p>
+
+<pre><code> additive op    multiplicative op
+
+     +                  *           numeric
+     ~                  x           string
+     ||                 &amp;&amp;          logic
+
+binds loosely     binds tightly
+</code></pre>
+
+<p>You might be wondering why the <code>||</code> and <code>&amp;&amp;</code> are doubled. That's because we're saving the single-character variants for something much cuter... instead of doing this:</p>
+
+<pre><code>if $answer == 1 || $answer == 4 || $answer == 9 {
+    say "That's a pretty square reply.";
+}
+</code></pre>
+
+<p>We can get rid of a bunch of repetition and do this:</p>
+
+<pre><code>if $answer == 1 | 4 | 9 {
+    say "That's a pretty square reply.";
+}
+</code></pre>
+
+<p>I assume you can see the usefulness of that. <code>:-)</code></p>
+
+<p>Tomorrow we'll do a game, with chocolate in it!</p>
+
+</article>
+
+  </body>
+</html>

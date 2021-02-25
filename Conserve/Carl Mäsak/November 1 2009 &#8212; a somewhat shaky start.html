@@ -1,0 +1,95 @@
+http://strangelyconsistent.org/blog/november-1-2009-a-somewhat-shaky-start
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 1 2009 &#8212; a somewhat shaky start :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-02T00:08:00+01:00" pubdate="pubdate">2 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-1-2009-a-somewhat-shaky-start">November 1 2009 &#8212; a somewhat shaky start</a></h1>
+  </header>
+
+  <p>254 years ago today, an earthquake <a href="http://en.wikipedia.org/wiki/1755_Lisbon_earthquake">stirred</a> the city of this year's YAPC::EU, Lisbon:</p>
+
+<div class='quote'><p>In 1755, the earthquake struck on the morning of 1 November, the Catholic holiday of All Saints' Day. Contemporary reports state that the earthquake lasted between three-and-a-half and six minutes, causing gigantic fissures five metres (15 ft) wide to appear in the city centre. Survivors rushed to the open space of the docks for safety and watched as the water receded, revealing a sea floor littered by lost cargo and old shipwrecks. Approximately forty minutes after the earthquake, an enormous tsunami engulfed the harbour and downtown, rushing up the Tagus river, "so fast that several people riding on horseback ... were forced to gallop as fast as possible to the upper grounds for fear of being carried away". It was followed by two more waves. In the areas unaffected by the tsunami, fire quickly broke out, and flames raged for five days.</p></div>
+
+<p>In <em>Candide</em>, Voltaire later used the Lisbon disaster as "a salutary counterexample" of the idea that we live in "the best of all possible worlds". Apparently, his contemporaries needed to have that pointed out to them.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>At the start of my first November Month day, 193 tests out of a total of 202 pass. 9 tests fail. 7 files give parse errors.</p>
+
+<p>That's actually not too bad for a Perl 6 project, where it's a positive surprise if there are tests at all. But it's not enough; we used to pass all tests with flying colors. Time to re-establish November's position as a pioneer project! Time to rectify those bit-rotted tests.</p>
+
+<p>First failure: the only test in <code>t/markup/mediawiki/16-pre.t</code>. That's because that feature isn't implemented yet. I mark it as a TODO.</p>
+
+<p>The next one (<code>t/markup/mediawiki/08-formatting-and-links.t</code>) seems more interesting: I get <code>Too many positional parameters passed; got 3 but expected 2</code>. It's a glitch in the Matrix; <a href="http://www.imdb.com/title/tt0133093/quotes">it happens when they change something</a>. ☺ Investigating...</p>
+
+<p>Oh yes. This line:</p>
+
+<pre><code>my $actual_output = $converter.format($input, $link_maker);
+</code></pre>
+
+<p>should never have worked, because the method <code>format</code> looks like this:</p>
+
+<pre><code>method format($text, :$link_maker, :$extlink_maker, :$author) {
+</code></pre>
+
+<p>I suppose you see it right away, but just in case, let me spell it out: that's one positional parameter (<code>$text</code>) in the method declaration, but we try to pass two positionals (<code>$input</code> and <code>$link_maker</code>) in the call. (Rakudo/Parrot reports "got 3 but expected 2", seemingly overshooting both counts by 1, since it includes the invocant as a parameter/argument. Something that will confuzzle Perl 6 newbies till the end of time, no doubt.)</p>
+
+<p>Anyway, the fix is simple:</p>
+
+<pre><code>my $actual_output = $converter.format($input, :$link_maker);
+</code></pre>
+
+<p>(How did this ever work previously? Бог knows.)</p>
+
+<p>Onto the next one. <code>t/tags/update_tags.t</code> is reported as a failure, but it passes here. Strange. Let's ssh over to feather and try it there.</p>
+
+<p>Hm. It turned out to be a sort of '<a href="http://blog.syracuse.com/entertainment/2007/09/cudia.jpg">phantom error</a>', caused by my previous unsuccessful attempts to make the <code>perl6</code> executable work from any directory without running <code>make install</code>. moritz++ later helped me with this, by basically reading aloud from the README. (The solution is to install things locally with the <code>--gen-parrot</code> argument to <code>Configure.pl</code>.)</p>
+
+<p>The failure in <code>t/dispatcher/06-set-param.t</code> feels like the first genuine one. Worse, it practically requires me to understand the code I'm trying to fix. Not sure I'm up for that...</p>
+
+<p>Oh! I see what it is. The test assumes that the <code>Test::is</code> function returns 1 (or <code>Bool::True</code>) if it succeeds, but it does no such thing. <a href="http://irclog.perlgeek.de/perl6/2009-11-01#i_1673141">moritz++ opines that it should</a>, though, as should all the other similar test functions. Might patch it some other day, if some enterprising soul doesn't beat me to it.</p>
+
+<p><code>t/storage/modification.t</code> and <code>t/utils/get_period.t</code> both suffered from bitrot as the function <code>int</code> is now spelled <code>.Int</code> (and is a method). The fix was as simple as tracking down and substituting in three different files.</p>
+
+<p>And that's it! All tests pass again. Both November and I feel slightly less rotten. As an extra service, I manually re-ran the HTML smoker, so you can <a href="http://feather.perl6.nl/~masak/november-smoke.html">see the result</a> for yourselves. Behold: PASS. I think green might be my favorite color. Your mileage may vary if you're visiting from the future, or from a parallel universe. (But you, the seasoned time/multiverse traveller, probably don't need such disclaimers.)</p>
+
+<p>Just as Lisbon, November has been shaken around slightly by the forces of nature, but eventually bounced back. November: alive and kicking, and stronger than ever! \☮/</p>
+
+</article>
+
+  </body>
+</html>

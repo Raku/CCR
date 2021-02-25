@@ -1,0 +1,111 @@
+http://strangelyconsistent.org/blog/plain-old-assignment-and-freaky-binding
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Plain old assignment, and freaky binding :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-03-16T00:47:00+01:00" pubdate="pubdate">16 Mar, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/plain-old-assignment-and-freaky-binding">Plain old assignment, and freaky binding</a></h1>
+  </header>
+
+  <p>What happens when we do assignment? When we do <code>$a = 42;</code>, for example.</p>
+
+<p>Intuitively, in almost every language, what happens is at least something like this: the <em>symbol</em> <code>$a</code> becomes associated with the <em>value</em> <code>42</code>. In pseudo instruction code, it might look something like this:</p>
+
+<pre><code> <strong>my $a; $a = 42;</strong>     $0 = 42
+    store '$a', $0</code></pre>
+
+<p>(Feel free to read <code>$0</code> et al. as "some register in the VM". And to fantasize liberally about the opcodes.)</p>
+
+<p>From this model, we expect variables to be independent, even when we've assigned from one to the other. So in this piece of code...</p>
+
+<pre><code> <strong>my $a = 42; my $b = $a; $a = 5;</strong> 
+    $0 = 42
+    store '$a', $0
+    $1 = fetch '$a'
+    store '$b', $1
+    $2 = 5
+    store '$a', $2</code></pre>
+
+<p>...we expect <code>$b</code> to still be associated with the value <code>42</code>, and not to have suffered some freaky action-at-a-distance which causes it to be changed when <code>$a</code> is assigned to <code>5</code>.</p>
+
+<p>"Well, obviously <code>$b</code> won't do that", you interject. "It can't, if we believe in the model in which there are only symbols and their associated values. No freaky action-at-a-distance can occur." And that's right, as far as that goes.</p>
+
+<p>But it turns out that Perl 6 allows a middle abstraction layer between symbols and values. The entities occupying this middle layer are usually referred to as "containers", but that's a terribly overloaded term. I'll call them "buckets" in this post, hoping I won't throw some hash expert into a fit. 哈哈</p>
+
+<p>To explain the behavior of (and need for) buckets, let's take an almost identical example as the one above:</p>
+
+<pre><code> <strong>my $a = 42; my $b := $a; $a = 5;</strong> 
+    $0 = 42
+    store '$a', $0
+    bind '$b', '$a'
+    $1 = 5
+    store '$a', $1</code></pre>
+
+<p>(Note the two surface differences from the earlier example: <code>:=</code> rather than <code>=</code>, and <code>bind</code> rather than <code>assign</code>.)</p>
+
+<p>The state at the end of this new program <em>is</em> a case of freaky action-at-a-distance. When the value of <code>$a</code> is changed to <code>5</code> in the last statement, the value of <code>$b</code> will also be changed to <code>5</code>.</p>
+
+<p>The reason for this is simple: the <code>:=</code> (and the <code>bind</code>) causes the symbol <code>$b</code> not to have a bucket all of its own, but to acquire <code>$a</code>'s bucket. When <code>5</code> is subsequently stored in that bucket, both <code>$a</code> and <code>$b</code> are simultaneously affected, since the two symbols share one and the same bucket.</p>
+
+<p>Now as a language feature, freaky action-at-a-distance may at first seem to be situated somewhere on a spectrum between "useless" and "dangerous". But it is the feature that makes pass-by-reference parameter passing work:</p>
+
+<pre><code>my $a = 42;
+foo($a); # freaky!
+say $a;  # 5
+
+sub foo($b is rw) {
+    $b = 5;
+}
+</code></pre>
+
+<p>Note how that's practically the same example as the above with binding, except that it's now mediated through a layer of parameter passing. But <code>$a</code> and <code>$b</code> still share one single bucket, as before.</p>
+
+<p>I only have two more things to say about this. First, jnthn++ explained in Copenhagen that the difference between scalar bucket and an array/hash bucket is that the former always forwards method calls to the value it contains. I don't grok that yet, so I may have got it wrong.</p>
+
+<p>Second, there's still a way to circumvent buckets, assigning values directly to symbols:</p>
+
+<pre><code> <strong>my $a := 42;</strong> 
+    $0 = 42
+    bind '$a', $0</code></pre>
+
+<p>What this means is simply that the variable <code>$a</code> is bound directly to a value, and has no buckets to which one can assign new values. It's a bit like a read-only value, except that <code>$a</code> can still be rebound to something else.</p>
+
+<p>These are the kinds of thoughts one gets when starting to write a time-travelling debugger.</p>
+
+</article>
+
+  </body>
+</html>

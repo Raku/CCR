@@ -1,0 +1,79 @@
+http://strangelyconsistent.org/blog/fail-firmly
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Fail firmly :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-11T17:36:57+02:00" pubdate="pubdate">11 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/fail-firmly">Fail firmly</a></h1>
+  </header>
+
+  <p>The practice <a href="http://en.wikipedia.org/wiki/Fail-fast">"fail fast"</a> comes from engineering. It's one of those wonderful ideas that sounds like bad advice, but is actually good advice.</p>
+
+<p>Same as with <a href="http://catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html">"release early; release often"</a> &mdash; what, I shouldn't hold off releasing until I'm finished? No, because "finished" isn't well-defined, whereas a test suite full of passing tests is.</p>
+
+<p>Same as with <a href="http://c2.com/cgi/wiki?YouArentGonnaNeedIt">"you ain't gonna need it"</a> &mdash; but I might need it! Well, we can talk about future needs when they actually manifest. That way, we're not boxing ourselves in and bloating our codebase today, and we can make future design choices closer to when they're needed.</p>
+
+<p>Maybe those slightly counterintuitive adages stick around <em>because</em> our initial impulse is to resist them, and we have to "get them" and see what they actually say before we embrace them.</p>
+
+<p>And so it is with "fail fast". The natural objection would be "but I don't want to fail", I guess. Well, dear, no-one does. But nothing is perfect. And when a failure creeps into the system &mdash; faulty data or unreachable states or unexpected occurrances &mdash; the idea is that it's better to hit the brakes early on, than to entangle ourselves further and then either fail even bigger, or &mdash; worse &mdash; just "succeed" and produce garbage results that may not even <em>look</em> wrong.</p>
+
+<p>Funnily enough, on some levels Perl itself is very fault-tolerant and just keeps trying the next thing even when the previous thing was a total failure. <code>open</code>, for example, just returns a false value in Perl 5 when something went wrong. That's why we as programmers have to learn to complement an <code>open</code> with <code>or die</code>. Or maybe we learn to reach for <a href="http://search.cpan.org/dist/autodie/"><code>use autodie;</code></a>. (I still haven't, though I probably should in most cases.)</p>
+
+<p>And even with other things, the tendency is to be robust to errors rather than being a canary in the coalmine. <code>no warnings</code> as the default, autovivification, implicit type conversions &mdash; they all represent a certain fault-tolerance in cases where we could have abended instead. (I'm not necessarily saying that all of those are bad, just that they encourage a culture of not testing for errors.)</p>
+
+<p>Perl 6 introduces many new mechanisms for failing fast, mostly through the type system. I program in Perl 5 and Perl 6, and I <em>know</em> that I am more lazy with parameter checking in Perl 5. Both checking for the presence of the parameters and checking their types. Simply because it's more of a hassle. When I'm less lazy, I reach for <a href="http://search.cpan.org/dist/MooseX-Params-Validate/">MooseX::Params::Validate</a>, which is a great module... but even that is more of a hassle than Perl 6's signature handling.</p>
+
+<p>But even Perl 6 keeps up the odd Perl tradition of letting errors slip through, instead reporting them much later in the program execution. The primitive for doing this is called <code>fail</code>, and it means "return an unthrown exception, that is, a booby-trap value which will throw an actual exception once it's used". The usage site of the value might of course be miles away from the production site, making it an "interesting" exercise to track down the latter. For those of us who are slightly skeptical to the whole idea of delaying error messages, there's a pragma called <code>use fatal</code>, which makes <code>fail</code> act like <code>die</code>. Phew.</p>
+
+<p>But that's not really what I wanted to write about. My topic is this: I think I've found an extension to fail fast, which I would like to popularize. I call it "fail firmly", but I'm open to better names. Here are three examples:</p>
+
+<ul>
+<li><p>The other day, weary of forgetting to match up my closing tags when using <code>XML::Writer</code>, I used a trick that I've at times used before. I created a <code>sub element</code>, that created the start tag, called a closure (one of the parameter), and then created the matching end tag. Now the problem had been reduced to matching up the curly braces in my program &mdash; something that I have ample training doing. Better yet, when I forget to do it, that's a compile-time error.</p></li>
+<li><p>Taking that a step further, Mauricio Fernández talks about generating HTML that must be correct because <a href="http://eigenclass.org/R2/writings/markdown-redux-html-generation">the type system doesn't allow placing elements where they don't belong</a>. Cool!</p></li>
+<li><p>Both <a href="http://strangelyconsistent.org/blog/str-and-buf-i-think-i-get-it-now">my post about <code>Buf</code></a> and <a href="http://www.joelonsoftware.com/articles/Wrong.html">a Joel Spolsky post about <em>real</em> Hungarian Notation</a> talk about shaping the world so that mistakes stand out. Sometimes you can go all the way and push the knowledge into the type hierarchy; other times, you're left with having to make the distinction through good naming, as Spolsky describes.</p></li>
+<li><p>The whole idea about <a href="http://cqrsinfo.com/documents/cqrs-introduction/">CQRS</a> is to separate things that are different: first queries from commands, then the commands into even finer types. Eventually you end up with a system with very clear client-server boundaries, where the only way to communicate to send the right query or the right command &mdash; and it's all enforced and carried out by judicious use of the type system.</p></li>
+</ul>
+
+<p>The unifying idea is this: code is meticulously checked in various ways. Data &mdash; not so much. Or rather data is never <em>a priori</em> wrong, and we have to write the checks ourselves. "Fail firmly" tells us to take those aspects of the data that <em>have</em> to be valid, and fold them into code somehow, in such a way that when the data is wrong, the <em>code</em> is wrong, too.</p>
+
+<p>Or more briefly, root your important data firmly in code. Then the compiler will see it, and do its thing. Hook your important data into the parser or even the type system. And you'll fail even earlier, and sometimes with gorgeous error messages.</p>
+
+<p>Just another step on the road of making our software more aware and intentional.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,69 @@
+http://strangelyconsistent.org/blog/attitude
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Attitude :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-02-08T20:18:00+01:00" pubdate="pubdate">8 Feb, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/attitude">Attitude</a></h1>
+  </header>
+
+  <p>Moritz seems to have an uncanny ability to get me to blog lately, with just a single line of IRC conversation. Last time it was <a href="http://strangelyconsistent.org/blog/three-bugs-that-bug-me-right-now">a tongue-in-cheek suggestion</a> for how to draw attention to blocker bugs. This time it was a light-hearted but oh-so-true comment on my complaining, for the N-th time, about being <a href="http://irclog.perlgeek.de/perl6/2009-01-29#i_872381">blocked in various places</a>, with no-one to fix my bugs for me:</p>
+
+<pre><code>&lt;moritz_&gt; in the old days you'd just worked around it
+</code></pre>
+
+<p>I proceeded to explain to him why these particular bugs were non-workaroundable, and he had the cheerful audacity to suggest workarounds for them. Hrm.</p>
+
+<p>It was somewhere around then that I realised that I had lost that industrious spirit that helped us build November last summer, despite all the obstacles at that time. Dang.</p>
+
+<p>Several thoughts have struck me since then. The expression "it is a poor workman who blames his tools" applies here; I should complain less and JFDI more. In a way, rakudobugs and their corresponding workarounds actually help code quality in our projects, because we have a very legitimate reason to return to a particular piece of code and rewrite it when the rakudobug is fixed. But for that to work, "just write a <code># RAKUDO</code> comment and move on" has to be the dominant paradigm.</p>
+
+<p>Another is the Swedish expression "Det är inte hur man har det, utan hur man tar det". (Loosely, "Attitude trumps situation.") By which I mean, the more I complain about bugs which block me, the more it will <em>feel</em> that way, with less code being written as a result.</p>
+
+<p>It turns out that at least bug number three in <a href="http://strangelyconsistent.org/blog/three-bugs-that-bug-me-right-now">that last blog post</a> wasn't an absolute blocker by far. I managed to rewrite that code, and I believe <a href="http://github.com/masak/druid/commit/5444d9fa17a0419770899a3b4de773a0285f09ee">the end result</a> even became more readable, on top of actually working as intended. Damnit, even the saying "every obstacle is an opportunity in disguise", despite being such a clichéd cliché, applies here.</p>
+
+<p>I haven't had much time to look at the two other bugs in the list, but it wouldn't surprise me if they, too, are more a question of having the right attitude than of anything else. If nothing else, I'll just write a <code># RAKUDO</code> comment and move on.</p>
+
+<p>Lastly, just because I'm one of the heaviest Rakudo abusers in the world, that <em>still</em> doesn't give me the right to expect anything in terms of feature implementation speed or bug fixing speed. It's an open-source project, propelled by people who do it for their love of the Perl 6 idea, or because they secured that grant, or both. Rakudo has been coming along nicely during the last half year, but due to a combination of circumstances its core devs just haven't been available very much in January. I must learn to accept that.</p>
+
+<p>In the end, I'm glad I realised that I'd gone from industrious workarounditude to excessive complainulexity; in the future, I'll try and re-focus on the former, because I believe that's the way I can best help the Rakudo effort along.</p>
+
+<p>Nobody can take your mojo from you. Except perhaps yourself.</p>
+
+</article>
+
+  </body>
+</html>

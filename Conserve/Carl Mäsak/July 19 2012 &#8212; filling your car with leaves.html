@@ -1,0 +1,128 @@
+http://strangelyconsistent.org/blog/july-19-filling-your-car-with-leaves
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 19 2012 &#8212; filling your car with leaves :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-20T00:03:50+02:00" pubdate="pubdate">20 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-19-filling-your-car-with-leaves">July 19 2012 &#8212; filling your car with leaves</a></h1>
+  </header>
+
+  <p>Started out the day with having to fix up crypt, because updating and
+installing latest Rakudo as part of releasing it earlier this evening
+apparently pulled in a change that broke stuff.</p>
+
+<p>Oh well. A little reminder that the spectests don't protect against anything.</p>
+
+<p>Anyway, today's job: making it possible to put leaves into the car.</p>
+
+<pre><code>&lt;jnthn&gt; WHY...do you put leaves in a car?!
+&lt;masak&gt; it's completely useless.
+&lt;masak&gt; but it works!
+</code></pre>
+
+<p>Actually, I remember the thrill of putting in this message last year. Making
+adventure games is very much about anticipating things the player might try,
+even silly things. When putting the leaves in the car, the player gets the
+message <code>"Great. Now your car is full of leaves."</code> as if this was an especially
+silly thing to try. Which it is, of course.</p>
+
+<p>So, two steps to make this work:</p>
+
+<ul>
+<li><p>You can <a href="https://github.com/masak/crypt/commit/009372068ab4f87b6443b598b5e458ca67161550">take the
+leaves</a>
+over at the hill.</p></li>
+<li><p>You can <a href="https://github.com/masak/crypt/commit/867e41d17a0cbe17d2aabbc6ad27a88e686da0b7">put them in the
+car</a>,
+and the player will open the car if it isn't open already, put the leaves in,
+and the game will give its remark.</p></li>
+</ul>
+
+<p>The last one led to a new event class <code>Adventure::GameRemarked</code> &mdash; thanks
+for naming suggestions, jnthn++ &mdash; and to a new hook method <code>on_put</code>.
+Notice that containers and platforms share the same <code>on_put</code> mechanism. That
+seemed appropriate.</p>
+
+<p>So here's what we can do now:</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+There is a car here.
+You can go east.
+
+&gt; east 
+Hill
+
+A flat, broad hill interrupts the dense-ish forest here. Only grass and
+small bushes grow on the hill.
+You can go west.
+
+&gt; take leaves
+You take the leaves.
+
+&gt; west
+Clearing
+
+
+&gt; put leaves in car
+You open the car.
+You put the leaves in the car.
+Great. Now your car is full of leaves.
+
+&gt; quit
+
+Thanks for playing.
+</code></pre>
+
+<p>Yay!</p>
+
+<p>Hm, there's an extra newline in there after going back west to <code>Clearing</code>. Will
+fix that tomorrow. A perfectionist never rests.</p>
+
+</article>
+
+  </body>
+</html>

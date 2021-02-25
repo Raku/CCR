@@ -1,0 +1,102 @@
+http://strangelyconsistent.org/blog/july-14-2012-hidden-things-which-can-be-revealed
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 14 2012 &#8212; hidden things which can be revealed :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-14T23:14:40+02:00" pubdate="pubdate">14 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-14-2012-hidden-things-which-can-be-revealed">July 14 2012 &#8212; hidden things which can be revealed</a></h1>
+  </header>
+
+  <p>So, here's the idea: there's no door in sight, but when you examine the grass,
+the door suddenly appears! Well, it was there all the time, but you couldn't
+<em>see</em> it until you went examining something else nearby.</p>
+
+<p>So, we want to be able to</p>
+
+<ul>
+<li>place objects,</li>
+<li>tell them to disappear,</li>
+<li>and then bind some logic into examining other objects that will...</li>
+<li>...tell them to re-appear.</li>
+</ul>
+
+<p>The first feature is already in place. The second feature means we want a
+<code>hide_thing</code> method and an <code>X::Adventure::NoSuchThingHere</code> exception when we
+examine a hidden object.</p>
+
+<p>The third feature means we want an <code>on_examine</code> method to hook arbitrary logic
+into examining objects. And the fourth feature means we want a an
+<code>unhide_thing</code> method which causes the object to appear and be examinable.</p>
+
+<p>Taking a step back, we have a situation with two actors here: the adventure
+game itself, and the player. The adventure game is always aware of objects,
+even when they are hidden. But to the player it should appear as if... well it
+shouldn't appear, basically. "Invisible" is what we're after here. Though
+"completely transparent to player actions" probably captures the intent even
+better. The game should play dumb and go "door? what door?".</p>
+
+<p>Let's begin.</p>
+
+<ul>
+<li><p>I realized that I wasn't disallowing looking, examining, putting, and reading
+before the player has been placed somewhere. So <a href="https://github.com/masak/crypt/commit/1744ffdb7e7b52ec1ddddfd174761ca3ab2c8196">I did
+that</a>.
+Undertested so far, but I'd rather have the checks in for now.</p></li>
+<li><p>Next up, <a href="https://github.com/masak/crypt/commit/2bfc22dac7e42e059867fceac82577e820dad715">implement
+<code>hide_thing</code></a>
+and test it by trying to examine the hidden thing and failing.</p></li>
+<li><p>In fact, you <a href="https://github.com/masak/crypt/commit/20e37abd5b01b6aa535114255f73fe31eb398e56">can't open hidden things
+either</a>.
+So there.</p></li>
+<li><p>Finally, we unhide a door by hooking up examining some grass to the door
+being unhidden. Then we <a href="https://github.com/masak/crypt/commit/51ce8171d8dc4a80a4436599bbdcf9587be167df">examine the grass and try to open the
+door</a>.
+It works!</p></li>
+</ul>
+
+<p>Another day's work done.</p>
+
+<p>I just realized that the <code>on_try_exit</code> and <code>on_examine</code> methods are outside of
+the whole event system. I don't really know what to think about that. Maybe it
+will become a pain point, maybe not. We'll see.</p>
+
+<p>Anyway, the whole model is deepening day by day. This is nice. We're growing a
+game here.</p>
+
+</article>
+
+  </body>
+</html>

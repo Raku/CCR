@@ -1,0 +1,80 @@
+http://strangelyconsistent.org/blog/november-23-2010-all-the-worlds-a-stage
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 23 2010 &#8212; all the world's a stage :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-24T00:11:00+01:00" pubdate="pubdate">24 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-23-2010-all-the-worlds-a-stage">November 23 2010 &#8212; all the world's a stage</a></h1>
+  </header>
+
+  <p>2543 years ago today &mdash; assuming there was no <a href="http://irclog.perlgeek.de/perl6/2010-11-23#i_3025150">year 0</a> &mdash; <a href="http://en.wikipedia.org/wiki/Thespis">Thespis of Icaria</a> won the first documented competition for Best Tragedy in Athens. Thespis is credited with the invention of acting out written plays.</p>
+
+<div class="quote">Thespis of Icaria (present-day Dionysos, Greece) (6th century BC), according to certain Ancient Greek sources and especially Aristotle, was the first person ever to appear on stage as an actor playing a character in a play (instead of speaking as him or herself).</div>
+
+<p>But having invented "pretending you're someone else on stage", he didn't stop there.</p>
+
+<div class="quote">Capitalising on his success, Thespis also invented theatrical touring: he would tour various cities while carrying his costumes, masks and other props in a horse-drawn wagon (<a href="http://en.wikipedia.org/wiki/File:Formella_15,_il_carro_di_Tespi_(Theatrica),_nino_pisano,_1334-1336.JPG">see picture</a>).</div>
+
+<p>Historical documents are silent on whether he also had a manager.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>We left off yesterday with garbled output:</p>
+
+<pre><code>Are y u eager t  see Per  6  eing re eased, s  y u  an write      
+pr grams in it with ut w rrying if the  anguage is "d ne" yet?
+</code></pre>
+
+<p>Some key letters are missing, incidentally all also part of the word <code>block</code>. (Though there was no <code>k</code> in the above sentence to begin with.) My guess, without having looked at the code yet, is that there's a <code>.trans</code> call somewhere, and that it accidentally stringifies a regex or some other <code>Callable</code>.</p>
+
+<p>Looking...</p>
+
+<p>Um. Ok. So... this is going to be a bit unsatisfactory, from the point of view of lucid explanations. The problem went away as I diagnosed it.</p>
+
+<p>Here are the details: there appears to be no piece of code actually causing this problem. In fact, I commented out the whole <code>Text::Markup::Wiki::MediaWiki</code> code path, and things <em>still</em> failed. At this point, I was a bit mystified.</p>
+
+<p>In November (the wiki engine), we've introduced a <em>cache</em>, in order to speed up page generation. The cache stores the HTML generated from the source markup, and as I looked at the appropriate file in that cache, it looked broken in exactly the above way.</p>
+
+<p>So I cleared the cache. And the problem went away.</p>
+
+<p>The text looks OK now. But it doesn't generate HTML any more at all. It just spits out the original Mediawiki markup. And I have no idea why. (And yes, I did revert the change that turned off the <code>Text::Markup::Wiki::MediaWiki</code> code path.)</p>
+
+<p>An excellent place to start investigating tomorrow.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,209 @@
+http://strangelyconsistent.org/blog/week-14-of-webpm-a-persistence-module
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 14 of Web.pm &#8212; a persistence module :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-08-24T00:39:00+02:00" pubdate="pubdate">24 Aug, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-14-of-webpm-a-persistence-module">Week 14 of Web.pm &#8212; a persistence module</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>"If u juj u wil be jujded. So don't. Bcz u will be jujded teh saem az u jujded teh othr d00d.</i> </dd>
+<dd> <i>Teh sawdust iz in ur brothrz i, makin u confused. Why u caer so much when u gotz a board in ur i LOL? Why u sez "O hai takin teh sawdust out of ur i"? U gotz board in ur i! Taek teh board out of ur i furst dumass. Den taek teh dust out of ur brotherz i aftr dat. Duh.</i> &#8212; Matthew 7:1-5</dd>
+</dl>
+
+<p>After looking a bit more closely first at Camping today, and then at ActiveRecord, I decided to try and create something a little like ActiveRecord.</p>
+
+<p>Now, after trying to wrap my head around what ActiveRecord is, I understand it is an ORM layer — that's Object-Relational Mapping, i.e. a bridge between the class-based world of programming languages and the table-based world of databases — that also (according to <a href="http://en.wikipedia.org/wiki/ActiveRecord_(Rails">Wikipedia</a>)) gives you inheritance and associations, something not all ORM layers deliver. Without understanding Rails completely yet, I'm coming to view it as the killer app of ActiveRecord, an application which seems pretty innovative on its own.</p>
+
+<p>Now, we're in a position with Web.pm that if we're to start building something that looks like an MVC framework, we need something that looks like a persistence layer. So that's what I wrote this evening: something that looks like a persistence layer. Right now, it's more likely to bite you than to do some actual good... which is one of the reasons I called it Viper. (The other reason being that "orm" is Swedish for "snake". I'm running low on names; so sue me.)</p>
+
+<p>What I did was to start from the outside in with what I wanted. The following simple blog example was loosely inspired by the Camping <a href="http://github.com/camping/camping/blob/fa8802511fd745dedcbeab61d809ddf15af80e43/README">README file</a>:</p>
+
+<pre><code>use v6;
+use Viper;
+
+class User is Viper::Base {
+}
+
+class Post is Viper::Base {
+    has $.user_id is persisted;
+}
+
+class Comment is Viper::Base {
+    has $.user_id is persisted;
+}
+
+my $session = Viper.new( :types[User, Post, Comment], :db('data/') );
+my Post @posts = Post.find($session, :all);
+say .name for @posts;
+</code></pre>
+
+<p>(Actually, the syntax and other details started quite different, and I adapted them as I learned more. But I have done <em>git rebase --interactive</em> on irrelevant details for the purpouses of this post, so that it'll be easier to follow.)</p>
+
+<p>The idea with the above script is that the initialization of <code>$session</code> should connect back to a database — a set of files, in this case — and pull up a persisted store of <code>User</code>, <code>Post</code> and <code>Comment</code> objects. The <code>persisted</code> trait on the attributes is there to give us a couple of extra accessor methods to the objects.</p>
+
+<p>Ok, so what's the smallest piece of code that can implement this for us? Scratch that, what's the smallest piece of code that will make the above script <em>compile</em>? Here it is:</p>
+
+<pre><code>class Viper {
+}
+
+class Viper::Base {
+    method find() {
+    }
+}
+</code></pre>
+
+<p>Not very exciting. Note that we haven't even bothered to define the trait we're using. Wonder when that'll bite us? 哈哈</p>
+
+<p>Anyway, functionality. The two classes will need some attributes for book-keeping:</p>
+
+<pre><code>class Viper {
+    has $.db;
+    has %.objects;
+
+    # ...
+}
+
+class Viper::Base {
+    has $.id is persisted;
+    has $.name is persisted;
+
+    # ...
+}
+</code></pre>
+
+<p>These store the path to the database, a mapping from all known types to all known objects of that type, and id/name, two ubiquitous properties of all persisted objects, respectively.</p>
+
+<p>Actually, having decided on the structure of the <code>%.objects</code> attribute, we can already flesh out the <code>find</code> method in <code>Viper::Base</code>:</p>
+
+<pre><code>    method find(Viper $session, :$all!) {
+        return $session.objects{self}.list;
+    }
+</code></pre>
+
+<p>It's not very versatile, but it does exactly what it advertises: finds all objects of a given type. (It does this by using itself as a key to the <code>%!objects</code> hash in the <code>Vipser</code> session. See the script at the top for an example.)</p>
+
+<p>Now, for this to work, something needs to happen when a <code>Viper</code> object is initialized. Thus, let's write a <code>BUILD</code> submethod:</p>
+
+<pre><code>    submethod BUILD(:@types!, :$db!) {
+        $!db    = $db;
+        if $db !~~ :e {
+            run("mkdir $db");
+        }
+        for @types -&gt; $type {
+            my $filename = $!db ~ '/' ~ $type.substr(0,-2);
+            if $filename !~~ :e {
+                self.create-new-db-file($type, $filename);
+                %!objects{$type} = [];
+            }
+            else {
+                %!objects{$type}
+                    = Text::CSV.parse-file($filename, :output($type));
+            }
+        }
+    }
+</code></pre>
+
+<p>Translated into bullet points, here's what the above code does:</p>
+
+<ul>
+<li>check if there's a directory; if not, make one;</li>
+<li>check if the files we want to load are there; if they're not, create them, if they are, load them in.</li>
+</ul>
+
+<p>As it happens, I wrote a CVS parser the other week (which I haven't blogged about yet, but will), and Viper uses that. The <code>Text::CSV.parse-file</code> call does the actual reading-from-the-database part, and as an added bonus, the parameter <code>:output($type)</code> makes sure we get an array of objects of the desired type back. Pretty neat, huh?</p>
+
+<p>What I realized was that there's no way (yet) for <code>Text::CSV</code> to <em>write</em> a CSV file, so we'll get no help from the module when we want to create an empty table file. Fortunately, that's fairly straightforward:</p>
+
+<pre><code>    submethod create-new-db-file($type, $filename) {
+        my @columns = $type.^attributes&gt;&gt;.name&gt;&gt;.substr(2); # w/o sigil/twigil
+        my $dbfile = open($filename, :w)
+            or die $!;
+        $dbfile.say: join(',', map { qq["$_"] }, @columns);
+    }
+</code></pre>
+
+<p>Don't you just love Perl 6?</p>
+
+<p>With that initialization code, we're ready to take our script-at-the-top for a test drive. If we succeed, it'll create a <code>data/</code> directory for us, with the files <code>User</code>, <code>Post</code> and <code>Comment</code>...</p>
+
+<p>And it does. Yay!</p>
+
+<p>Since we now have a persisted database, we can now open <code>data/Post</code> and enter our first object:</p>
+
+<pre><code>"user_id","id","name"
+1,1,"Hello Austria!"
+</code></pre>
+
+<p>Now, the script, once we run it again, should print <code>Hello Austria!</code>, since it lists the names of all our stored <code>Post</code> objects. We run it, and...</p>
+
+<p>BAM!</p>
+
+<pre><code>$ perl6 blog-example
+No applicable candidates found to dispatch to for 'trait_mod:is'
+</code></pre>
+
+<p>Ah, so now you know when that missing trait is going to bite you: at object creation time. :)</p>
+
+<p>So, we (grudgingly) add a stubbed method to the <code>Viper</code> module:</p>
+
+<pre><code>multi trait_mod:&lt;is&gt;(AttributeDeclarand $a, $names, :$persisted!) {
+}
+</code></pre>
+
+<p>Et voilà! Our script now prints:</p>
+
+<pre><code>$ perl6 blog-example
+Hello Austria!
+</code></pre>
+
+<p>Which means that Viper picks things up from file, dresses them in objects, stores them in the session, so that our script can find them and print their names. Well, "its name", since we only injected one <code>Post</code>.</p>
+
+<h2>Try it out yourself!</h2>
+
+<p>See if <em>you</em> can get Viper to persist something. Start from the script above (which can also be found in the <a href="http://github.com/masak/web/blob/68c15a604a1f487eb2774376079c05fa59622170/drafts/blog-example">Web.pm github repository</a>). Then, let your imagination run free. Write that blog engine in Perl 6, for example.</p>
+
+<p>Oh, and because Viper uses <code>Text::CSV</code>, make sure you <a href="http://github.com/masak/csv">have that too</a>, and that <code>PERL6LIB</code> can see it.</p>
+
+<p>We'll see if Viper survives in any form. I wouldn't be surprised if it's replaced quickly by something much better. But it has definitely been an interesting exercise so far in trying to understand the problem space better.</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

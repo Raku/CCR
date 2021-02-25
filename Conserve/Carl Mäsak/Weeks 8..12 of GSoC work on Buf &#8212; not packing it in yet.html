@@ -1,0 +1,63 @@
+http://strangelyconsistent.org/blog/weeks-812-of-gsoc-work-on-buf-not-packing-it-in-yet
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Weeks 8..12 of GSoC work on Buf &#8212; not packing it in yet :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-08-14T00:35:00+02:00" pubdate="pubdate">14 Aug, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/weeks-812-of-gsoc-work-on-buf-not-packing-it-in-yet">Weeks 8..12 of GSoC work on Buf &#8212; not packing it in yet</a></h1>
+  </header>
+
+  <p><em>I was reproached by my colleague because of the lack of "no cake"-style jokes in this last grant update. So what can I do to amend the situation? Firstly, let me concede that the below blog post is almost tear-inducingly boring. Secondly, let me remind you that when accosted by boring material such as that in this post, the most important thing to have is a positive outlook on life. Thank you.</em></p>
+
+<p>The past couple of days have been really eventful. The coming couple of days probably will be, too. It seems fitting to punctuate all this eventfulness with a status-updating blog post, something that I apparently haven't gotten around to in a few weeks.</p>
+
+<p>So, what's been happening?</p>
+
+<ul>
+<li>In the <a href="http://strangelyconsistent.org/blog/weeks-6-and-7-of-gsoc-work-on-buf-roundtrip">last update</a>, I was at a point where I needed to encode to different encodings, not just UTF-8. Tonight I had <a href="http://irclog.perlgeek.de/parrot/2010-08-13#i_2701004">an enlightening discussion</a> with the Parrot people, which gave all the pieces of the puzzle. Now it's just a Simple Matter of Programming. More precisely, I need to apply it to <a href="http://github.com/rakudo/rakudo/blob/0839993ed01c816dc8b3459fa7b79608be4fbf3a/src/core/Str.pm#L17">this spot</a> in the code base.</li>
+<li>By that discussion, I was once again made aware that Parrot differs between <em>encodings</em> and <em>charsets</em>. For example, <code>utf8</code> is an encoding, but <code>iso-8859-1</code> is a charset. It's confusing me slightly, but that's OK. I can make the code work so that both are treated as "encodings" on the Perl 6 level.</li>
+<li>I got unexpected assistance from oha++, who took me aside in private discussions to discuss new wild ideas for <code>Buf</code>. It all culminated in a <a href="http://www.mail-archive.com/perl6-language@perl.org/msg32689.html">p6l thread</a>. Oha is writing code that uses Buf for network traffic, and has been preparing a patch for making <code>IO::Socket::INET</code> return <code>Buf</code>s instead of <code>Str</code>s. In trying out this patch, oha++ found that some tests <a href="http://irclog.perlgeek.de/perl6/2010-08-12#i_2694900">will never work</a> when <code>Buf</code>s are used. Those tests will probably need to be rewritten.</li>
+<li>During the past week or so, I've been implementing <code>pack</code> and <code>unpack</code> in a branch. I'm making steady progress, and trying to take in documentation such as Perl 5's <a href="http://perldoc.perl.org/functions/pack.html"> <code>perldoc -f pack</code> </a> and <a href="http://perldoc.perl.org/perlpacktut.html"> <code>perlpacktut</code> </a> and <a href="http://www.erlang.org/doc/man/ei.html">Erlang's</a> <a href="http://www.trapexit.org/How_to_use_ei_to_marshal_binary_terms_in_port_programs"> <code>ei</code> </a> and <a href="http://www.tcl.tk/man/tcl8.5/TclCmd/binary.htm">Tcl's <code>binary</code> </a>. It's a lot to take in, and I won't aim for full functionality — look, <a href="http://github.com/mirrors/perl/blob/blead/t/op/pack.t">Perl 5 has 14699 tests</a> for pack! — but rather a reasonable subset of the directives from Perl 5.</li>
+</ul>
+
+<p>There's a lot to be said about the interplay between Perl 6's high level of abstraction and the almost reckless to-the-metal feeling of <code>&amp;pack</code>/<code>&amp;unpack</code>. Add to this that the "metal" in this case is Parrot, which in some regards is there to abstract away the real metal. I think the details of this interplay might well be the subject of a separate blog post. When I'm not busy finishing up the code itself. 哈哈</p>
+
+<p>The hard pencils-down deadline for GSoC is on Monday. I'm pretty sure I will have tied up the remaining loose ends by then, but I also foresee a couple of fairly focused hours programming before that. Time to dig back in; see you on the other side.</p>
+
+</article>
+
+  </body>
+</html>

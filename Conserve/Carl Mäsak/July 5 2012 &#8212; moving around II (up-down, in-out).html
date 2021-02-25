@@ -1,0 +1,101 @@
+http://strangelyconsistent.org/blog/july-5-moving-around-ii-up-down-in-out
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 5 2012 &#8212; moving around II (up/down, in/out) :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-06T01:11:41+02:00" pubdate="pubdate">6 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-5-moving-around-ii-up-down-in-out">July 5 2012 &#8212; moving around II (up/down, in/out)</a></h1>
+  </header>
+
+  <p>First, by request, I'm <a href="https://github.com/masak/crypt/commit/42e66425fb83f4eb2cce4ddbe5d5215b5163ed82">implementing
+'help'</a>
+in the game. (seldon++) Better sooner than later, I guess.</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+&gt; help
+Here are some (made-up) examples of commands you can use:
+
+look
+[walk] north/south/east/west
+
+&gt; quit
+</code></pre>
+
+<p>I'll make sure to keep the help message up-to-date as I add functions to the
+game.</p>
+
+<p>I <a href="https://github.com/masak/crypt/commit/aedec5ff877878172219b58b43422f5eadd36c2b">implemented the up/down
+directions</a>.
+As part of this, because it was easier to test it that way, I cleared up the
+misplaced 'clearing' initialization from yesterday. This quite naturally
+required the new event <code>Adventure::PlayerWasPlaced</code> (for giving the player an
+initial position) and <code>X::Adventure::PlayerIsNowhere</code> (for trying to move when
+this wasn't done). Things are in the right place now and everyone's happy.</p>
+
+<p>Hm, it also means I just implemented a teleportation mechanism! Probably not
+such a bad idea for a general adventure game. Though I won't need it in Crypt.</p>
+
+<p><a href="https://github.com/masak/crypt/commit/1e9e0cfc887b7975119ed0df1223b3e05d38892e">Implementing
+in/out</a>
+is a little more involved, since we're now out of primary directions. The
+compass directions and up/down are all primary directions. "In" and "out" are
+just aliases for one of those. So we wire up the event
+<code>Adventure::DirectionAliased</code> which lets us call some of the existing
+directions "in" or "out".</p>
+
+<p>None of this actually allows us to play the game any further. So it's a good
+thing I implemented 'help' so I have something to show today apart from passing
+tests!</p>
+
+<p>Also, note that I'm quite aware that connections are not yet two-way. They
+should be. That is, when we connect 'clearing' to 'hill' in the east direction,
+then 'hill' should also connect to 'clearing' in the west direction. We'll need
+this soon, maybe as soon as tomorrow.</p>
+
+<p>Anyway, tomorrow we'll tackle room descriptions in earnest. Probably I'll add
+all rooms in one go, and make sure walking between them works.</p>
+
+</article>
+
+  </body>
+</html>

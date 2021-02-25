@@ -1,0 +1,257 @@
+http://strangelyconsistent.org/blog/macros-what-the-faq-are-they
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: what the FAQ are they? :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2016-01-17T15:15:23+01:00" pubdate="pubdate">17 Jan, 2016</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-what-the-faq-are-they">Macros: what the FAQ are they?</a></h1>
+  </header>
+
+  <p><em>Thank you sergot++ for eliciting these answers out of me, and prompting me to
+publish them.</em></p>
+
+<h4>Q: Is it common to be totally befuddled by all these macro-related concepts?</h4>
+
+<p>Yes! In fact, that seems to be the general state of mind not just for people
+who hear about these things now and then, but also for those of us who have
+chosen to implement a macro system! 😝</p>
+
+<p>Seriously though, these are not easy ideas. When you don't deal with them every
+day, they naturally slip away from your attention. The brain prefers it that
+way.</p>
+
+<h4>Q: I keep seeing all these terms: quasis, unquotes, macros... I <em>think</em> I know what some of them are, but I'm not sure. Could you explain?</h4>
+
+<p>Yes. Let's take them in order.</p>
+
+<h4>Q: OK. What the heck is a quasi?</h4>
+
+<p>Quasis, or quasiquotes, are a way to express a piece of code as objects. An
+average program doesn't usually "program itself", inserting bits and pieces of
+program code using other program code. But that's exactly what quasis are for.</p>
+
+<p>Quasis are not strictly necessary. You could create all those objects by hand.</p>
+
+<pre><code>quasi { say "OH HAI" }        # easy way
+
+Q::Block.new(Q::Statement::Expr.new(Q::Postfix::Call.new(
+    Q::Identifier.new("say"),
+    Q::Literal::Str.new("OH HAI")
+)));                          # hard way
+</code></pre>
+
+<p>It's easier to just write that quasi than to construct all those objects.
+Because when you want to structurally describe a bit of code, it turns out the
+easiest way to do that is usually to... write the code.</p>
+
+<p>(By the way, take the <code>Q::Block</code> API with a huge grain of salt. It only exists
+for 007 so far, not for Perl 6. So the above is educated guesses.)</p>
+
+<h4>Q: Why would we want to create those Q objects? And in which situations?</h4>
+
+<p>Excellent question! Those Q objects are the "API for the structure of the
+language". So using it, we can query the program structure, change it during
+compile time, and even make our own Q objects and use them to extend the
+language for new things.</p>
+
+<p>They are a mechanism for taking over the compiler's job when the language isn't
+flexible enough for you. Macros and slangs are a part of this.</p>
+
+<h4>Q: Do you have an example of this?</h4>
+
+<p>Imagine a <code>format</code> macro which takes a format string and some arguments:</p>
+
+<pre><code>say format "{}, {}!", "Hello", "World";
+</code></pre>
+
+<p>Since this is a macro, we can check things at compile time. For example, that
+we have the same number of directives as arguments after the format string:</p>
+
+<pre><code>say format "{}!", "Hello", "World";                        # compile-time error!
+</code></pre>
+
+<p>In the case of sufficient type information at compile time, we can even check
+that the types are right:</p>
+
+<pre><code>say format "{}, robot {:d}!", "Hello", "four-nineteen";    # compile-time error!
+</code></pre>
+
+<h4>Q: Ooh, that's pretty cool!</h4>
+
+<p>I'm not hearing a question.</p>
+
+<h4>Q: Ooh, that's pretty... cool?</h4>
+
+<p>Yes! It is!</p>
+
+<h4>Q: Why is it called "quasiquote"? Why not "code quote" or something?</h4>
+
+<p>Historical reasons. In Lisp, the term is quasiquote. Perl 6's quasiquotes are
+not <em>identical</em>, but probably the nearest thing you'll get with Perl 6 still
+being Perl.</p>
+
+<p>Traditionally, quasiquotes have unquotes in them, so let's talk about them.</p>
+
+<h4>Q: Right. What's an unquote?</h4>
+
+<p>In Java, you have to write something like <code>"Hello, " + name + "!"</code> when
+interpolating variables into a string. Java developers don't have it easy.</p>
+
+<p>In Perl, you can do <code>"Hello, $name!"</code>. This kind of thing is called "string
+interpolation".</p>
+
+<p>Unquotes are like the <code>$name</code> interpolation, except that the string is a quasi
+instead, and <code>$name</code> is a Qtree that you want to insert somewhere into the quasi.</p>
+
+<pre><code>quasi {
+    say "Hello," ~ {{{$name}}};
+}
+</code></pre>
+
+<p>Just like the <code>"Hello, $name"</code> can be different every time (for example, if we
+loop over different <code>$name</code> from an array), unquotes make quasis potentially
+different every time, and therefore more flexible and more useful.</p>
+
+<p>To tie it to a concrete example: every time we call the <code>format</code> macro at
+different points in the code, we can pass it different format strings and
+arguments. (Of course.) These could end up as unquotes in a quasi, and thus
+help to build different program fragments in the end.</p>
+
+<p>In other words, a quasi is like a code template, and unquotes are like
+parametric holes in that template where you can pass in the code you want.</p>
+
+<h4>Q: Got it! So... macros?</h4>
+
+<p>Macros are very similar to subroutines. But where a sub call happens at run
+time, a macro call happens at compile time, when the parser sees it and knows
+what to send as arguments. At compile time, it's still early enough for us to
+be able to contribute/modify Q objects in the actual program.</p>
+
+<p>So a macro in its simplest form is just a sub-like thing that says "here,
+insert this Qtree fragment that I just built".</p>
+
+<h4>Q: So quasis are used inside of a macro?</h4>
+
+<p>Yes. Well, they're no more tightly tied to each other than <code>given</code> and <code>when</code>
+are in Perl, but they're a good fit together. Since what you want to do in a
+macro is return Q objects representing some code, you'd naturally reach for a
+quasi to do that. (Or build the Q objects yourself. Or some combination of the
+two.)</p>
+
+<h4>Q: Nice! I get it!</h4>
+
+<p>Also not a question.</p>
+
+<h4>Q: I... get it?</h4>
+
+<p>Yeah! You do!</p>
+
+<h4>Q: Ok, final question: is there something that you've omitted from the above explanation that's important?</h4>
+
+<p>Oh gosh, yes. Unfortunately macros are still gnarly.</p>
+
+<p>The most important bit that I didn't mention is hygiene. In the best case, this
+will just work out naturally, and Do What You Mean. But the deeper you go with
+macros, the more important it becomes to actually know what's going on.</p>
+
+<p>Take the original quasiquote example from the top:</p>
+
+<pre><code>quasi { say "OH HAI" }
+</code></pre>
+
+<p>The identifier <code>say</code> refers to the usual <code>say</code> subroutine from the setting.
+Well, <em>unless</em> you were actually doing something like this:</p>
+
+<pre><code>macro moo() {
+    sub say($arg) { callwith($arg.lc) }
+
+    return quasi { say "OH HAI" }
+}
+
+moo();    # 'oh hai' in lower-case
+</code></pre>
+
+<p>What we mean by hygiene is that <code>say</code> (or any identifier) always refers to the
+<code>say</code> in the environment where the <code>quasi</code> was written. Even when the code gets
+inserted somewhere else in the program through macro mechanisms.</p>
+
+<p>And, conversely, if you did this:</p>
+
+<pre><code>macro moo() {
+    return quasi { say "OH HAI" }
+}
+
+{
+    sub say($arg) { callwith("ARGLEBARGLE FLOOT GROMP") }
+    moo();    # 'OH HAI'
+}
+</code></pre>
+
+<p>Then <code>say</code> would still refer to the setting's <code>say</code>.</p>
+
+<p>Basically, hygiene is a way to provide the macro author with basic guarantees
+that wherever the macro code gets inserted, it will behave like it would in the
+environment of the macro.</p>
+
+<p>The same is <em>not</em> true if we manually return Q objects from the macro:</p>
+
+<pre><code>Q::Block.new(Q::Statement::Expr.new(Q::Postfix::Call.new(
+    Q::Identifier.new("say"),
+    Q::Literal::Str.new("OH HAI")
+)));
+</code></pre>
+
+<p>In this case, <code>say</code> will be a "detached" identifier, and the corresponding two
+examples above would output <code>"OH HAI"</code> with all-caps and <code>"ARGLEBARGLE FLOOT
+GROMP"</code>.</p>
+
+<p>The simple explanation to this is that code inside a quasi can have a
+surrounding environment (namely that which surrounds the quasi)... but a bunch
+of synthetically created Q objects can't.</p>
+
+<p>We're planning to use this to our advantage, providing the safe/sane
+quasiquoting mechanisms for most things, and the synthetic Q object creation
+mechanism for when you want to mess around with unhygiene.</p>
+
+<h4>Q: Excellent! So when will all this land in Perl 6? I'm so eager to...</h4>
+
+<p>Ok, that was all the questions we had time for today! Thank you very much, and
+see you next time!</p>
+
+</article>
+
+  </body>
+</html>

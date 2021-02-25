@@ -1,0 +1,302 @@
+http://strangelyconsistent.org/blog/macros-placeholdeeers
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: Placeholdeeers! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-12-04T22:38:08+01:00" pubdate="pubdate">4 Dec, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-placeholdeeers">Macros: Placeholdeeers!</a></h1>
+  </header>
+
+  <p><em>Alternative blog post title: finally, a rant about the <code>{{{ }}}</code> syntax.</em></p>
+
+<p>The macro blog post train lumbers on. Remember, the goal here is to <a href="https://www.google.com/search?tbm=isch&amp;q=picasso+cubist+images">view
+macros from all
+perspectives</a>,
+or at least all of them that somehow pertain to Perl 6. There's a whole lotta
+perspectives! Together they will form a "cloud" of suggestions, forces, and
+decisions... and then, magically, something wildly appropriate will crystallize
+out of the chaos, suggesting a way forward.</p>
+
+<p>In the meantime, it will seem like I'm recklessly firing RFCs on myself until
+I'm buried under them. What can I say? You need a lot of different parts to
+build a... <a href="https://www.youtube.com/watch?v=7TYJyCCO8Dc">SPACESHIP!</a></p>
+
+<p>Today's episode brings you <a href="https://github.com/jashkenas/coffeescript/pull/3171">vanviegen's macro
+proposal</a> from our friends
+over at the CoffeeScript world. You should read the OP in that one, but as a
+public service, I will also translate <del>all</del><ins>some of</ins> the
+Coffee code snippets into Highly Plausible Perl 6.</p>
+
+<pre><code># optionally compiled debug info
+macro debug(*@args) {
+    if (DEBUGGING) {            # it's a constant defined somewhere
+        Q::Call.new(
+            Q::Literal.new(     # (handwave)
+                "debugImpl"
+            )
+        )
+    }
+}
+</code></pre>
+
+<p>vanviegen's proposal doesn't have a notion of <code>quasi</code> blocks. At first I
+thought that was pretty lame, and clearly not a step up from what we already
+have implemented. But then...</p>
+
+<pre><code># mandatory swap example
+macro swap($a, $b) {
+    Q.codeToNode({
+        my ($x, $y) = $y, $x;
+    }).subst(
+        '$x' =&gt; $a,         # o.O
+        '$y' =&gt; $b,
+    );
+}
+</code></pre>
+
+<p>...uuummmm.</p>
+
+<p>Hold on just a minute. Let's all freeze our immediate reaction, and render that
+in Current Actual Perl 6:</p>
+
+<pre><code># mandatory swap example
+macro swap($a, $b) {
+    quasi {
+        ({{{$a}}}, {{{$b}}}) = {{{$b}}}, {{{$a}}};
+    }
+}
+</code></pre>
+
+<p>(Which <a href="http://irclog.perlgeek.de/perl6/2014-12-04#i_9759758">works</a>, by the way.)</p>
+
+<p>Ok, so here's my reaction:</p>
+
+<ul>
+<li><p>v's macro system doesn't use quasiquotes. It doesn't need them. It has realized
+that we already have a mechanism for expressing code as a value: blocks.</p></li>
+<li><p>If we left it at that, macros would be no more powerful than subroutines, which
+are already callable blocks. What quasis offer is a way to <em>insert</em> parameterized
+code into the bigger fixed template.</p></li>
+<li><p>v's macro system lets us inject things from the <em>outside</em> using the <code>.subst</code> call
+on <code>AST</code>s. It's a different mechanism to unquoting, but it fills exactly the same
+semantic role.</p></li>
+<li><p>Man, those triple curly unquotes are ugly. What were we thinking!? I mean, people
+accuse us for having been color-blind when drawing
+<a href="http://www.perl6.org/camelia-logo.png">Camelia</a>, but... were we like "ooh, Lisp
+must have been successful <em>because</em> of the parentheses. Let's do them in
+triplicate!"</p></li>
+</ul>
+
+<p>Ok, enough making fun of our own choices. I think what we're seeing here is an
+interesting solution, but I don't think we should rush to adopt it wholesale.
+I'll try to be more clear, or at least less circumscript, in what follows.</p>
+
+<p>But I also think I've figured out something about templating syntax.</p>
+
+<blockquote>
+  <p><em>All templating syntax sucks.</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&mdash; masak's Deplorable Truth About Templating Syntax</p>
+</blockquote>
+
+<p>It doesn't matter what you do: your templating syntax is going to suck. The
+template placeholders are a kind of out-of-band signaling, OK. "Hey hey, a
+thing gets inserted here!" You need a syntax for the placeholders. The syntax
+cannot blend in too naturally into the surrounding text because (a) if people
+don't notice them then we have a problem, and (b) if they're too close to
+normal syntax then there are also parsing collisions.</p>
+
+<p>So you have to make them stand out, which means making them look somehow
+unnatural. Visual pills. Ugly. I guess that's what we went for with the <code>{{{
+}}}</code> syntax: maximal ugly. Something that would <em>never, ever</em> be confused with
+sane and decent code. Someone might at some point find a reason to write <em>two</em>
+opening braces in normal code. But <em>three</em>? So it's collision-safe. And ugly.</p>
+
+<p>Don't believe me when I say that all templating syntax sucks? Fine, I'll bring
+you examples:</p>
+
+<ul>
+<li><a href="http://perldoc.perl.org/functions/sprintf.html">sprintf</a>. I could stop here.</li>
+<li><a href="https://metacpan.org/pod/Template::Tutorial::Web"><code>Template::Toolkit</code></a>.
+Combining square brackets, percent signs, and COBOL-style uppercase keywords.</li>
+<li><a href="https://docs.python.org/3/library/string.html#formatstrings">py3k's completely revamped format strings</a>.
+Actually, that's not so bad. But braces? In Python? I thought that was
+<code>SyntaxError: not a chance</code>.</li>
+</ul>
+
+<p>Anyway, you can't go right with a templating system. It's like the Prime
+Directive in Star Trek. The string would be better off if you left it in its
+natural state, but for one reason or another, <em>you just have to inject those
+out-of-band placeholders</em> and mess things up a bit. Just a little, because
+things will be "better". After which... things are not in a natural state any
+more. Your string is full of percents, your HTML no longer validates, your
+Python has braces, and your Perl 6 has a <em>lot</em> of braces.</p>
+
+<p>But v's macro system offers an interesting alternative. No quasi quotes, no
+unquoting. Nothing needs to be out-of-band anymore. Things are injected from
+the outside.</p>
+
+<p>I'm going to list what I perceive as pros and cons of this proposal. In
+increasing complexity order, so pros and cons will interleave.</p>
+
+<p><strong>Pro</strong>: No more <code>{{{ }}}</code>. Yay!</p>
+
+<p><strong>Pro</strong>: No more <code>quasi</code> blocks. Actually, this one deserves a bit more than
+just a "Yay!" &mdash; quasis are currently our way to represent code as ASTs,
+but it's like Perl 6's quasis bypass the standard way in Perl to quote code:</p>
+
+<pre><code>    AST form    ........^..................^........
+                        |                  |
+    lambda form ........|..................|........
+                        |
+    real code   ........|...........................
+                p6's current way      v's codeToNode
+</code></pre>
+
+<p>Rakudo's quasi implementation has already validated how much quasis piggyback
+on blocks/lambdas. v's macro system validates that in a more direct way.</p>
+
+<p><strong>Con</strong>: There are now extra moving parts. We have to make up new variables
+<code>$x</code> and <code>$y</code> just so we can substitute them. The reader is expected to
+mentally do the substitution in <code>.subst</code> to see what the eventual code will be.</p>
+
+<p><strong>Pro</strong>: There's a neat sleight-of-hand that goes on there that you won't have
+thought about until I point it out: we feel like we're swapping out
+<em>variables</em>, but what we're really doing is substituting <em>pieces of AST</em>.
+It's that subtle difference between "the value in <code>$x</code>" (which does not even
+enter into the picture on this level), "the variable <code>$x</code>" (the thing we feel
+we're manipulating), and "the piece of AST denoting the variable <code>$x</code>" (the
+thing we are actually manipulating).</p>
+
+<p><strong>Con</strong>: We're finding <code>$x</code> and <code>$y</code> using short strings of <em>text</em>. Eww. It's
+partly a scoping thing. <code>$x</code> and <code>$y</code> are already out of scope, and so we
+cannot refer to them directly. It's partly a convenience thing. Strings are the
+simplest way to state what we are looking for. In fact, we don't really have a
+symbol type in Perl 6 that we could use instead. But it still feels wrong.</p>
+
+<p><strong>Pro</strong>: The code inside of the block is <em>really</em> undisturbed. Plus, I could
+imagine someone using this to her advantage, naming the variables in suggestive
+ways to either show their symmetry with the things we want to substitute, or
+show their function as placeholder variables. I would take the undisturbed swap
+statement any day over the hectic mess of triple braces.</p>
+
+<p><strong>Pro</strong>: It strikes me that we don't need to substitute just variables, we
+could substitute operators, too. Still need to figure out a way to accept them
+into the macro in the first place, though.</p>
+
+<p><strong>Con</strong>: Does this whole thing remind you of beta reduction in lambda calculus?
+Yeah, me too. The thing we run into then is <a href="https://en.wikipedia.org/wiki/Lambda_calculus#Capture-avoiding_substitutions">capture-avoiding
+substitutions</a>.
+To give a concrete example:</p>
+
+<pre><code>my $greeting = Q.valToNode("OH HAI");
+Q.codeToNode({
+    say $s;
+    sub foo($s) {
+        say $s;
+    }
+    foo("two!");
+}.subst(
+    '$s' =&gt; $greeting,
+);
+</code></pre>
+
+<p>When this AST is injected and executed, it should print "OH HAI" and then
+"two!" (because <code>$s</code> got substituted once), not print "OH HAI" and then fail to
+dispatch (becase <code>$s</code> got substituted three times).</p>
+
+<p>So the thing about capture-avoiding substitutions can be summarized as "shallow
+occurrences are fine, but hands off if nested blocks bind something". This is
+not so much a show-stopper as a "must think about this" and "must write tests
+that melt brain".</p>
+
+<p><strong>Con</strong>: The thing that truly bothers me, though, is this:</p>
+
+<pre><code>macro example($in1, $in2) {
+    Q.codeToNode({
+        say $x;
+        say $y;
+    }).subst(
+        '$x' =&gt; $in1,
+        '$y' =&gt; $in2,
+    );
+}
+
+my $x = 5;
+my $y = 42;
+example($y + $y, $x);
+</code></pre>
+
+<p>I guess I would expect this code to spit out first 84 and then 5. But I fear it
+might well embark on a holy journey of infinite substitution, or maybe
+compromise somehow and output 10 and 5 or something. Someone is welcome to
+explain to me how my worries are unfounded. But from what I can see, this macro
+system suffers from the kind of naming clashes that gensymming seeks to avoid.</p>
+
+<p>So... that's where I'll leave things today. I still think that this fairly
+simple macro system is <em>interesting</em> in what it teaches us about our own.</p>
+
+<p>By the way, it's quite amazing how close it is to Perl 6's own macro system.
+I've studied a fair number of them at this point, and this one is very close.
+Which is kinda weird, with Perl 6 being what it is mixing compile and runtime,
+and CoffeeScript being what it is, compiling down to JavaScript and then
+getting out of the way.</p>
+
+<p>Maybe we will ditch quasi blocks. Maybe we'll keep them. Either way, it's
+clear that we will get rid of the <code>{{{ }}}</code> syntax in favor of something else.
+This blog post shows the contours of that other thing, but the contours still
+remain fuzzy.</p>
+
+<h2>Not addressed by this proposal</h2>
+
+<p>Identified in <a href="http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break">a previous post</a>.</p>
+
+<ul>
+<li>Macro parameters/operands being restricted to expressions</li>
+<li>Macros having a story in grammars/slangs</li>
+<li>Manipulexity of program elements</li>
+</ul>
+
+<h2>Addressed (yay!) by this proposal</h2>
+
+<ul>
+<li>Quasi slices only being usable in term position</li>
+<li>The <code>{{{ }}}</code> syntax being universally hated</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

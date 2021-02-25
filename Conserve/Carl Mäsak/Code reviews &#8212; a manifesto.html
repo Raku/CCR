@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/code-reviews-a-manifesto
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Code reviews &#8212; a manifesto :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-03-14T22:49:00+01:00" pubdate="pubdate">14 Mar, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/code-reviews-a-manifesto">Code reviews &#8212; a manifesto</a></h1>
+  </header>
+
+  <p>It has been famously said that programs should be written for people to read,and only incidentally for machines to execute[1]. I find the value in that saying lies not in its inherent truth — when we finish a piece of code, we normally show it to a compiler/interpreter and not to a fellow human being; and the code is normally executed many more times inside these metal boxes where we keep our Turing machines than inside the wetware where we keep our minds — but in its inherent <a href="http://en.wikipedia.org/wiki/Truthiness">truthiness</a>. The phrase rings true, it wants to tell us something. It wants to tell us that we can write software with a reader in mind. That we can write a story, one which is coherent and connects with the reader much like a novel does. Here's the protagonist; over here's the narrative thread; there's the bad guy, watch out for him.</p>
+
+<p>At this point, the wise reader is nodding and probably thinking "oh yes, comments. I really should write more of those". But it's not about that, it's not about forcing yourself into a frame of mind where you have to document everything your program does. Rather, it's about setting the scene, guiding the reader through rough passages, and filling the lines of text with some higher sense of purpose. Whereas a reader of a novel might find overused expressions jarring, balk at the paucity or overabundance of dialogue, or ask herself "why was that character given so much attention, only to disappear halfway through the book?", a code reader can wonder about unused or badly named variables, comments which befuddle rather than enlighten, antipatterns, copypasted code, or code fossils.</p>
+
+<p>Of course, there are many differences between a novel and a piece of source code, too. Some superficial, some more fundamental. One of the more fundamental differences is perhaps that when a novel reaches us, it's finished, whereas a piece of code can be anywhere between pre-alpha and thoroughly tested and bug-free[2]... but regardless, it's probably not finished. Books, in their current incarnation, get released in a stable state; code, as a rule, lives on in a state of flux. Which means that reading the source code, we can expect to find "TODO" comments, incomplete test coverage, thoughts written down by the programmer for later, inconsistent coding styles, unfortunate last-resort solutions, or simply bugs. Things we do not generally expect to find in a novel. And while on some level all these things are flaws, they must perhaps be accepted as inherent in most code out there. Code, in a very real sense, does not get finished.</p>
+
+<p>There's also a kind of disturbing honesty to code. Sure, a novelist can voluntarily choose to linger at an unpleasant chapter, or outline some mundane process in minute detail... but a programmer <em>must</em> do this, must write the truth and the whole truth, because if something is missing, the program won't do what it's supposed to. At best, refactoring can be used to diminish the pain of code drudgery, but not always remove it altogether.</p>
+
+<p>I read a lot of books, but I don't read a lot of code. I would like to change that; I want to be inspired by great works out there. I'm sure I'll find code all over the spectrum, from infra-write-only to ultra-literate. That's ok. There are lessons to be learned regardless.[3]</p>
+
+<p>I would also like, if I may be so bold, to try to inspire the Perl 6 community to do the same. It's still young and small, this community, so maybe such an ambition can have visible impact. Here's what I have in mind: <strong>code reviews</strong>. A bit like book reviews, but adapted to the medium of source code. Recount what you felt and thought as a reader, what you think were the strong and weak points of the code, what you learned, what you would have done differently yourself.</p>
+
+<p>That's what book reviewers do. But since we're in the fluent medium of code in flux, we can do better, and <strong>contribute</strong> to the project we just reviewed. Nothing complicated; a failing unit test or a simple refactor is about the appropriate scale. This, more than anything, says "I have read your code so thoroughly that I can contribute constructively to it." It's also the postmodern thing to do; becoming absorbed and part of the very process you are evaluating.</p>
+
+<p>A community creates itself, often through semi-random processes. Perl 6 is a deliberate redesign of the community, and I deeply believe that as part of that redesign, we should create a habit of <strong>reviewing each other's code</strong>. Software as literature; programmers as authors. And I believe that when we start to think of ourselves as authors, and of our code as something that people will at some point read, we will start writing more purposeful code.[4]</p>
+
+<p>Let's give it a try. <a href="http://use.perl.org/~masak/journal/38644">I'll go first</a>.</p>
+
+<p>[1] Do you recognize where the quote is from? It's from <a href="http://mitpress.mit.edu/sicp/full-text/book/book.html">this book</a>, which you should probably read if you haven't already.</p>
+
+<p>[2] Yeah, right.</p>
+
+<p>[3] <a href="http://www.hanselman.com/blog/CategoryView.aspx?category=Source+Code">Scott Hanselman</a> already does this. And likely lots of other enlightened people.</p>
+
+<p>[4] This idea is by no means mine. Chapters 5 and 6 in Donald Knuth's <a href="http://www-cs-faculty.stanford.edu/~knuth/lp.html">Literate Programming</a> do something very similar.</p>
+
+</article>
+
+  </body>
+</html>

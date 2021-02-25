@@ -1,0 +1,61 @@
+http://strangelyconsistent.org/blog/3d-baby
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>3D, baby! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-06-19T23:20:00+02:00" pubdate="pubdate">19 Jun, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/3d-baby">3D, baby!</a></h1>
+  </header>
+
+  <p>Last night I had one of those rapid prototyping sprints where everything goes just right. I wanted to scout the terrain for drawing a 3D Druid board using SVG.</p>
+
+<p>The result is <a href="http://masak.org/carl/druid/board.png">this</a>. Yup, Perl 6 did that, with a little help from me.</p>
+
+<p>It was very pleasing to see this image grow step by step. I literally started with a grey rectangle. Then I programmatically massaged the coordinates, adding projections, translations, scalings and rotations until I had what I wanted. <a href="http://github.com/masak/druid/blob/d309b630710f9dc8d1bca00b995519b188ba9bfd/bin/generate-board">Here's the code.</a></p>
+
+<p>I still feel two things are missing.</p>
+
+<ul>
+<li><strong>Real perspective.</strong> Because I currently project the 3D coordinates flatly onto the canvas, the result is isometric perspective. For some reason I don't like that — to me, the furthermost corner looks like it's sloping upwards from the plane of the board. I think I'd be happy with <a href="http://en.wikipedia.org/wiki/3D_projection#Diagram">this kind of perspective</a>, so I'll try that next. I was offline today, and had a couple of minutes to sit down and do the (really simple) math. I'm glad to see Wikipedia agrees with what I got. 哈哈 [<strong>Update</strong>: Fixed, see comment.]</li>
+<li><strong>Non-cheating with the piece order.</strong> I cheat right now in the sense that I placed the pieces in an order which looks good when drawn. The moves in a real game will not abide by such a restriction. I've already realized that I can draw all the horizontal surfaces in a separate pass, and don't need to sort those. I keep wondering whether I need to sort all the vertical surfaces separately, or whether it's enough to sort the pieces. Also, I'm thinking there might be nice, fast ways to determine that a surface will be completely covered by other surfaces, and can be thrown away. (Apart from the very simple case with the three surfaces on the back of each piece. I know about that one already.) [<strong>Update</strong>: Fixed, see comment.]</li>
+</ul>
+
+<p>Anyway, I've been wanting to do this for a long time, and I'm glad that when I finally sat down to do it, not only was the result quite satisfactory, but also the process of getting there. It's 2009, and I'm using Perl 6 to rapid-prototype 3D board games. Cool!</p>
+
+</article>
+
+  </body>
+</html>

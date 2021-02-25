@@ -1,0 +1,172 @@
+http://strangelyconsistent.org/blog/the-thing-with-nim
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The thing with Nim :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-01-31T19:55:00+01:00" pubdate="pubdate">31 Jan, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-thing-with-nim">The thing with Nim</a></h1>
+  </header>
+
+  <p>In order to understand the solutions to p4, one needs to understand a kind of game called "taking and breaking" games. To understand that kind of game, one needs to understand Nim. So let's talk about Nim.</p>
+
+<p>Nim is played with a number of heaps with stones. Here's a typical startig situation:</p>
+
+<pre><code>3 OOO
+4 OOOO
+5 OOOOO
+</code></pre>
+
+<p>Players take turns choosing one of the heaps (shown as rows in the ASCII picture above), and removing a positive number of stones from that heap. The player who picks the last stone(s) wins. (Or, equivalently, the player who faces a board situation with zero remaining stones loses.)</p>
+
+<p>So, here's a perfect-information, impartial game &mdash; <em>impartial</em> meaning that the available moves don't depend on whose turn it is &mdash; and there are good tools to analyze this type of game already, to the point of being able to say who will win in the above situation. (It's the player on turn, by the way.)</p>
+
+<p>There's a bit of math involved in the analysis, but I thought we'd take the scenic route and explore the game on our own instead. Turns out that you can get all the way without any explicit algebra.</p>
+
+<p>A very basic observation: a game played with only <em>one</em> heap is a done deal.</p>
+
+<pre><code>4 OOOO
+</code></pre>
+
+<p>The player on turn is <em>allowed</em> to take all of the stones and win the game. This goes for any game with a single heap, regardless of size. So the single-heap game is trivially won by the player on turn.</p>
+
+<p>The two-heap game can look in two different ways. Either the two heaps are equal in size:</p>
+
+<pre><code>3 OOO
+3 OOO
+</code></pre>
+
+<p>In which case the player on turn is in a bad seat, since all his moves will be mirrored by a good opponent, eventually giving the opponent the last move. Darn.</p>
+
+<p>In fact, let's go ahead and give losing positions of that kind the numeric value of 0. Similarly, we can give all the single-heap positions a numeric value corresponding to the number of stones in the heap. There's even an informal motivation to do that: a 2-stone heap is "more worth" than a 1-stone heap, in the sense that it gives you the option <em>either</em> to take two stones and win, <em>or</em> to take one stone and lose. (Why would it be an advantage to have the option to lose? Bear with me.)</p>
+
+<p>The other possible way a two-heap game can look is with the two heaps being unequal in size:</p>
+
+<pre><code>2 OO
+4 OOOO
+</code></pre>
+
+<p>This is a winning move, because the player on turn can always bring the bigger heap down in size to match the smaller one, making the opponent face a &mdash; losing &mdash; equal-heaps position.</p>
+
+<p>Putting two game positions together to form a bigger, combined game position is called a <em>disjunctive sum</em> of games. The underlying assumption is that when the games are combined, you're only allowed to move in either of them. This works perfectly with Nim's model of individual heaps.</p>
+
+<p>For impartial games, there is a special theorem, the <em><a href="http://en.wikipedia.org/wiki/Sprague%E2%80%93Grundy_theorem">Sprague–Grundy theorem</a></em>, which states that if all you do is combine nim-heaps, the number you end up with is the number for another nim-heap. Put simpler, we could <em>summarize</em> a whole Nim game down to its combined "Nim-heap number" (named, cutely, in the lingo of the theory, a <em>nimber</em>).</p>
+
+<p>The question is, how.</p>
+
+<p>The combined nimber is not just the sum of the nimbers of all the heaps in the game, because we already know that two heaps of equal size cancel out into a lost 0-position. On the other hand, sometimes the combining operation <em>does</em> act just like a sum, for example in the case of a 1-heap and a 4-heap:</p>
+
+<pre><code>1 O
+4 OOOO
+</code></pre>
+
+<p>Combined, these act just like a 5-heap. Which in turn means that this game...</p>
+
+<pre><code>1 O
+4 OOOO
+5 OOOOO
+</code></pre>
+
+<p>...is a loss for the player on turn, because the first two act like a 5-heap, and cancel out the actual 5-heap. (Play it out for yourself, and you'll see that the second player can always win.)</p>
+
+<p>Eventually, we might be so mystified at the pattern that some heaps <em>do</em> sum properly when combined and others <em>don't</em>, that we make a table to try to find a pattern:</p>
+
+<pre><code>nim-sum    1  2  3  4  5  6  7  8
+== sum?
+
+      1       Y     Y           Y
+      2    Y        Y           Y
+      3
+      4    Y  Y                 Y
+      5
+      6
+      7
+      8    Y  Y     Y
+</code></pre>
+
+<p>A-ha! Powers of two... only when two heaps with sizes equal to two different powers of two...</p>
+
+<p>A further insight leads us to draw games like this instead:</p>
+
+<pre><code>1      O
+4 OOOO
+5 OOOO O
+</code></pre>
+
+<p>So the three <em>heaps</em> cancel each other out, because together they have (power-of-two) <em>components</em> that cancel each other out.</p>
+
+<p>And from this, the whole rest of the analysis of Nim more or less falls out.</p>
+
+<p>Of course, in the algebraic treatment of the game, the "components" instead become "digits in the binary expansion of the heap-number". But this way is more fun. ☺</p>
+
+<p>Let's summarize what we know in terms of the new component terminology:</p>
+
+<ul>
+<li>The player to move will lose the game if all the components cancel each other out in pairs, i.e. if there's an even number of components of each size.</li>
+<li>Conversely, the player to move will win the game if there are "leftover" components that don't add up.</li>
+</ul>
+
+<p>How can we be sure of the last point? Well, the nimber representing the whole game turns out to be exactly the (normal addition) sum of the components that don't add up. A positive nimber means the player to move is in a winnable position.</p>
+
+<p>We don't even need to <em>prove</em> that there's a winning move from any such winnable position, we can just take it on faith that there is. But, of course, it's not a bad idea to work out an algorithm to find the winning move if, say, we're in the business of writing algorithms to win impartial games for us. 哈哈</p>
+
+<p>We want to place the opponent in a losing position, which is the same as a 0-position. So whatever leftover components there are in our position, we want to cancel out. We could try each possible move in each possible heap, but that's inelegant. Instead we do this:</p>
+
+<p>Find out what the biggest leftover component is. (There has to be exactly one, or it would have added up.) Find a heap with this type of component. (There has to be one, unless the game just started and is unwinnable anyway.) Remove that whole component, <em>minus</em> the sum of remaining leftover components. This will cancel out not only the big component (because we remove it), but also the remaining smaller ones (because we leave copies in the heap). We know that the sum of the remaining leftover components can't exceed the size of the biggest component, because that's how powers-of-two work.</p>
+
+<p>Let's apply these insights to the game from the beginning:</p>
+
+<pre><code>3 OOO
+4 OOOO
+5 OOOOO
+</code></pre>
+
+<p>We now know that we should really be looking at the game in terms of components:</p>
+
+<pre><code>3      OO O
+4 OOOO
+5 OOOO    O
+</code></pre>
+
+<p>Looking at it this way, we immediately spot the leftover 2-component. Since this is the only leftover component in this game position, it also makes up the winning move: take two stones from the first heap, and you'll eventually win the game. (Sure enough, this puts the opponent in a 1-4-5 position, which we already know is a losing one.)</p>
+
+<p>And that's all that needs to be said about Nim strategy. Now we have a way to recognize winnable/unwinnable positions, and a way to make the right move every time in winnable ones.</p>
+
+<p>But what does this have to do with p4? Last I looked p4 wasn't Nim... Well, as it happens, Nim is the "base game" for a whole family of games; specifically, the "taking and breaking" games mentioned at the beginning. More on that in the next post.</p>
+
+</article>
+
+  </body>
+</html>

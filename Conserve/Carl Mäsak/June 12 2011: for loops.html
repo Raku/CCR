@@ -1,0 +1,117 @@
+http://strangelyconsistent.org/blog/june-12-for-loops
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 12 2011: for loops :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-12T23:54:04+02:00" pubdate="pubdate">12 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-12-for-loops">June 12 2011: for loops</a></h1>
+  </header>
+
+  <p>Yesterday, we went through array variables, and there was much rejoicing. We saw how to add and remove things at the ends. We learned how to treat arrays as a single item. We learned how to inspect and change individual array elements.</p>
+
+<p>But there's something missing still. Something important. We will often want a way to say, "for every element in this array, do this...".</p>
+
+<p>We need a kind of loop for arrays.</p>
+
+<pre><code>my @seasons = "winter", "spring", "summer", "fall";
+
+for @seasons {
+    say "Yay, $_!";
+}
+
+# Yay, winter!
+# Yay, spring!
+# Yay, summer!
+# Yay, fall!
+</code></pre>
+
+<p>In the olden days, one used to loop through arrays by repeatedly increasing an index counter (often called <code>$i</code>), and then indexing the array with it. This is now considered gauche and primitive.</p>
+
+<p>Our good friend the topic variable <code>$_</code> shows up again here. The for loop takes care of <em>binding</em> it to the appropriate value; in this case, it is bound to each element in the array in turn. Since the array contains four elements, we make four iterations through it. Simple.</p>
+
+<p>So, to summarize, <code>given</code> sets the topic for a single value, whereas <code>for</code> sets the topic for each of the elements in an array or list.</p>
+
+<p>Sometimes we want a more descriptive name than just <code>$_</code>. The topic variable is fine for shorter loops, but when programs get larger and one can't see the closing brace of a block from its opening brace, it increasingly makes sense to name the variable something else.</p>
+
+<p>We <em>could</em> do this each time:</p>
+
+<pre><code>my @seasons = "winter", "spring", "summer", "fall";
+
+for @seasons {
+    my $season = $_;
+    say "Yay, $season!";
+}
+</code></pre>
+
+<p>But there's a nicer way:</p>
+
+<pre><code>my @seasons = "winter", "spring", "summer", "fall";
+
+for @seasons -&gt; $season {
+    say "Yay, $season!";
+}
+</code></pre>
+
+<p>In the latter case, <code>$_</code> is <em>not</em> set, so any value that it had before will be preserved. You could think of it as the "default" of a <code>for</code> loop being <code>-&gt; $_</code>, which is correct enough for now.</p>
+
+<p>We don't have to loop over arrays, either. Here's a short program that loops over the words that we input:</p>
+
+<pre><code>my $sentence = prompt "Enter a sentence: ";
+
+for $sentence.words -&gt; $word {
+    say "'$word' has $word.chars() characters";
+}
+</code></pre>
+
+<p>Running the program could look like this:</p>
+
+<pre><code>Enter a sentence: This isn't my hamster
+'This' has 4 characters
+'isn't' has 5 characters
+'my' has 2 characters
+'hamster' has 7 characters
+</code></pre>
+
+<p>Two new methods above: <code>.words</code> is a method on a string that returns a list of contiguous "word characters" (anything but whitespace).</p>
+
+<p><code>.chars</code> gives the length (number of characters) of a string. Note that we can even do method calls and have them interpolate in strings; the proviso is that we end in parentheses (<code>()</code>).</p>
+
+<p>That's it for today. Tomorrow we'll have a look at regexes, whatever that may be. <code>:-)</code></p>
+
+</article>
+
+  </body>
+</html>

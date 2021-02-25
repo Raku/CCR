@@ -1,0 +1,194 @@
+http://strangelyconsistent.org/blog/phasers-are-a-blast-first-and-last
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Phasers are a blast: FIRST and LAST :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-07-15T06:13:00+02:00" pubdate="pubdate">15 Jul, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/phasers-are-a-blast-first-and-last">Phasers are a blast: FIRST and LAST</a></h1>
+  </header>
+
+  <p>I started thinking about the <code>FIRST</code> and <code>LAST</code> phasers the other day, thanks to moritz++. My attention was on how to implement them in Yapsi, and my conclusions were mostly SIC, but they can be converted to Perl 6 for public view.</p>
+
+<p>For those who haven't kept up with the latest Perl 6 terminology, "phasers" are what we call those all-caps blocks which fire at different <em>phases</em> during program execution. Perl 5's <code>perldoc perlmod</code> simply calls them "specially named code blocks", but in Perl 6 it's been decided to call them "phasers".</p>
+
+<p>So much for phasers. What do the <code>FIRST</code> and <code>LAST</code> phasers do? They don't exist in Perl 5. S04 describes them thus:</p>
+
+<pre><code>FIRST {...}       at loop initialization time, before any ENTER
+ LAST {...}       at loop termination time, after any LEAVE
+</code></pre>
+
+<p>(There's a <code>NEXT</code> phasers too, which I'm not going to tackle today. The <code>ENTER</code> and <code>LEAVE</code> phasers are what they sound like; they trigger at block entrance and exit, respectively.)</p>
+
+<p>Here's some code using these.</p>
+
+<pre><code>my @a = 1, 2, 3;
+for @a -&gt; $item {
+    FIRST { say "OH HAI" }
+    say $item;
+    LAST { say "LOL DONE" }
+}
+</code></pre>
+
+<p>The code, when run, should print the following:</p>
+
+<pre><code>OH HAI
+1
+2
+3
+LOL DONE
+</code></pre>
+
+<p>(At the time of writing, no Perl 6 implementation implements the <code>FIRST</code> and <code>LAST</code> phasers yet.)</p>
+
+<p>The goal of this post is <em>transforming</em> the phasers into code using more primitive constructs, but which still produces the above results. Oh, and it should work not only in this case, but in general.</p>
+
+<p>Here's a first attempt. (Phaser-ful code to the left, rewritten code to the right.) It doesn't work.</p>
+
+<pre><code>my @a = 1, 2, 3;              my @a = 1, 2, 3;
+                              say "OH HAI";
+for @a -&gt; $item {             for @a -&gt; $item {
+    FIRST { say "OH HAI" }
+    say $item;                    say $item;
+    LAST { say "LOL DONE" }
+}                             }
+                              say "LOL DONE";
+</code></pre>
+
+<p>More exactly, it does produce the desired output, but it doesn't work in general; it fails when <code>@a</code> is empty:</p>
+
+<pre><code>my @a;                        my @a;
+                              say "OH HAI";
+for @a -&gt; $item {             for @a -&gt; $item {
+    FIRST { say "OH HAI" }
+    say $item;                    say $item;
+    LAST { say "LOL DONE" }
+}                             }
+                              say "LOL DONE";
+</code></pre>
+
+<p>This code would still produce <code>"OH HAI\nLOL DONE\n"</code>, which is wrong, because there is no first and last iteration for the empty <code>@a</code> array.</p>
+
+<p>Ok, we say. No worries; a bit more ad hoc, but we can detect for emptiness. No problem.</p>
+
+<pre><code>my @a;                        my @a;
+                              my $HAS_ELEMS = ?@a;
+                              if $HAS_ELEMS {
+                                  say "OH HAI";
+                              }
+for @a -&gt; $item {             for @a -&gt; $item {
+    FIRST { say "OH HAI" }
+    say $item;                    say $item;
+    LAST { say "LOL DONE" }
+}                             }
+                              if $HAS_ELEMS {
+                                  say "LOL DONE";
+                              }
+</code></pre>
+
+<p>That works for an empty list, but it fails to work when the <code>FIRST</code> block accesses variables that only exist within the <code>for</code> loop:</p>
+
+<pre><code>my @a = 1, 2, 3;              my @a = 1, 2, 3;
+                              my $HAS_ELEMS = ?@a;
+                              if $HAS_ELEMS {
+                                  $x # BZZT PARSE ERROR
+for @a -&gt; $item {
+    my $x;
+    FIRST { $x = 42 }
+    say $item, $x;
+}
+</code></pre>
+
+<p>So. Back to the drawing-board. Two seemingly opposing forces constrain our problem: we need to put the rewritten <code>FIRST</code> block <em>outside</em> the <code>for</code> loop, because we only want it to execute once; but we also need to put it <em>inside</em> the <code>for</code> loop, so that it can have access to the same lexical environment. Is there a compromise somewhere in there?</p>
+
+<p>Yes. We put the <code>FIRST</code> block inside the <code>for</code> loop, but then we keep track of whether we've already executed it once, with a special variable hidden in the surrounding scope:</p>
+
+<pre><code>my @a = 1, 2, 3;              my @a = 1, 2, 3;
+                              my $FIRST_PHASER_HAS_RUN = False;
+for @a -&gt; $item {             for @a -&gt; $item {
+    my $x;                        my $x;
+                                  unless $FIRST_PHASER_HAS_RUN {
+    FIRST { $x = 42 }                 $x = 42;
+                                      $FIRST_PHASER_HAS_RUN = True;
+                                  }
+    say $item, $x;                say $item, $x;
+}                             }
+</code></pre>
+
+<p>Now it all works. This is the general way to make the <code>FIRST</code> behave according to spec. In the presence of several loops within the same block, one can re-use the same variable for all of the loops, just resetting it before each one. Explicitly setting to <code>False</code> even the first time is quite important, in case someone ever implements the <code>goto</code> statement.</p>
+
+<p>With the <code>LAST</code> phaser, we encounter exactly the same dilemma as with the <code>FIRST</code> loop. The <code>LAST</code> phaser has to be both inside and outside the block; inside because it has to have access to the loop block's variables, and outside because... well, because in general one doesn't know which iteration was the last one until it has already run.</p>
+
+<p>At one point I had the idea to put the <code>LAST</code> block at the end of the loop block, checking the loop condition just before the placement of the <code>LAST</code> block, possibly saving it somewhere so it doesn't have to be re-evaluated. But the sad truth there's no realistic way to evaluate the loop condition from within the loop block; what if the expression contains a variable which is shadowed by another variable inside the loop block? There's just no way to make that fly.</p>
+
+<p>The whole situation with the <code>LAST</code> block really looks hopeless... until one remembers about closures:</p>
+
+<pre><code>my @a = 1, 2, 3;              my @a = 1, 2, 3;
+                              my $LAST_PHASER;
+                              my $LOOP_HAS_RUN = False;
+for @a -&gt; $item {             for @a -&gt; $item {
+    my $x = "LOL DONE";           my $x = "LOL DONE";
+    LAST { say $x }               $LAST_PHASER = { say $x };
+                                  $LOOP_HAS_RUN = True;
+}                             }
+                              if $LOOP_HAS_RUN {
+                                  $LAST_PHASER();
+                              }
+</code></pre>
+
+<p>So in every iteration, we save away a closure <em>just in case</em> that particular iteration turns out to be the last one. Then we execute the last value assigned to the closure, provided the loop ever run. Sneaky, huh?</p>
+
+<p>So that works in the general case. Of course, a clever optimizer which can detect with certainty that the loop will run at least once and that neither phaser uses loop-specific lexicals is perfectly entitled to rewrite the <code>FIRST</code> and <code>LAST</code> phasers to our first attempt. But the above rewritings work in the general case.</p>
+
+<p>In explaining this to a colleague, a case of possible confusion involving the <code>FIRST</code> phaser was uncovered:</p>
+
+<pre><code>for 1, 2, 3 {
+    my $x = 42;
+    FIRST { say $x }
+}
+</code></pre>
+
+<p>One might perhaps expect this code to print <code>"42\n"</code>, but in fact it prints <code>"Any()"</code>. The reason is simple: whereas the lexical <code>$x</code> is reachable throughout the whole <code>for</code> loop, the <em>assignment</em> of <code>42</code> to it won't occur until <em>after</em> the <code>FIRST</code> block has executed. That's what <code>FIRST</code> blocks do, they execute first. Nevertheless, some people might expect assignments to be treated specially in some way, not counting as "real code" or whatever. But they are, and thus that's the result. In general, reading from freshly declared lexical variables in a <code>FIRST</code> block won't do you much good.</p>
+
+<p>Lastly, there's this wording in S04:</p>
+
+<div class='quote'><p> <code>FIRST</code>, <code>NEXT</code>, and <code>LAST</code> are meaningful only within the lexical scope of a loop, and may occur only at the top level of such a loop block.</p></div>
+
+<p>I read that as saying that these kinds of blocks should be <em>illegal</em> if they are found in a block which isn't a loop block. STD.pm6 doesn't enforce this yet; it probably should.</p>
+
+</article>
+
+  </body>
+</html>

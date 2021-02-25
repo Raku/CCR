@@ -1,0 +1,85 @@
+http://strangelyconsistent.org/blog/macros-progress-report-d1-merged
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros progress report: D1 merged :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-03-10T17:14:00+01:00" pubdate="pubdate">10 Mar, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-progress-report-d1-merged">Macros progress report: D1 merged</a></h1>
+  </header>
+
+  <p>I've merged my first chunk of work, known to the <a href="http://news.perlfoundation.org/2011/09/hague-grant-application-implem.html">grant application</a> as "D1", into the <code>nom</code> branch of Rakudo. Concretely, this means three things:</p>
+
+<ul>
+<li>The next release of Rakudo (release #50, due 2012-03-22) will be the first release of any Perl 6 implementation to feature AST macros.</li>
+<li>People who have a new-enough revision of the <code>nom</code> branch checked out can play around with basic macros already.</li>
+<li>There's just three chunks of work left to do. <code>:-)</code></li>
+</ul>
+
+<p>The work has progressed nicely so far. It's been a little trickier than I expected, but not insurmountable yet, and I've received plenty of support from jnthn++. The time estimates were way too optimistic, it turned out &mdash; partly because the grant took a while to get accepted, partly because  <code>$dayjob</code> keeps wanting tuits &mdash; but at least I'm not stuck.</p>
+
+<p>One interesting aspect of the grant that I didn't expect is that much of my thinking happens in gists. Increasingly, I'm beginning to see gists as a sort of "semi-private blog posts". They're notes mainly left for myself and my creative process, and they don't clutter up the blog feed, but they're there if people are interested enough to see how sausage is made. I don't go back and "fix" gists when I learn new things that contradict what's in them &mdash; I just write new ones.</p>
+
+<p>Here, just for reference, I collect all the gists I've made so far philosophizing on macros:</p>
+
+<ul>
+<li><a href="https://gist.github.com/1148915">Musings on macros</a></li>
+<li><a href="https://gist.github.com/1149126">Macros and short-circuiting</a></li>
+<li><a href="https://gist.github.com/1156662">More thoughts on macros</a></li>
+<li>(at this point, I wrote the <a href="http://news.perlfoundation.org/2011/09/hague-grant-application-implem.html">grant application</a>)</li>
+<li><a href="https://gist.github.com/1293853">D4, deconstructed</a></li>
+<li><a href="https://gist.github.com/1548053">I'm thinking about macros again</a></li>
+<li><a href="https://gist.github.com/1809356">Cool use for a macro: meta for</a></li>
+<li><a href="https://gist.github.com/1853560">The lifetime of a macro invocation</a></li>
+</ul>
+
+<p>I have one more gist coming up that I haven't written yet, about how macro-argument AST thingies are thunkish and rebind to their outer context just like closures do.</p>
+
+<p>The other "artifacts" that have fallen out of the grant work so far, are:</p>
+
+<ul>
+<li>A <a href="https://github.com/perl6/roast/blob/7bbd58b13e8cd7c692ad8d6730159b311b8dedd3/S06-macros/macros-d1.t">spectest file</a>. Too few tests in it, even though I've tested everything I can think of. There will be more tests for D2, I'm sure.</li>
+<li>A <a href="https://github.com/rakudo/rakudo/commit/e29b2f18665dd3bd5aa31692317f64713d789a7a">monolithic commit</a> to Rakudo, representing my D1 work. I did a bunch of rebase operations on the way to keep current with the <code>nom</code> branch, and each time I folded a number of commits into a single one, because I considered most commits after the original one from September to be "oh right"-type afterthoughts. Not sure how this rhymes with jnthn's <a href="http://blog.edument.se/2012/03/09/love-your-version-history-and-itll-love-you-back/">post about atomic commits</a>... I'm a bit divided on the issue.</li>
+<li>A talk, at <a href="http://conferences.yapceurope.org/gpw2012/">Deutscher Perl Workshop</a> in Erlangen. You can <a href="http://masak.org/carl/gpw-2012-macros/talk.pdf">see the slides here</a>.</li>
+</ul>
+
+<p>Looking ahead a bit, what's up next is D2. Informally, D2 consists of "getting those little <code>{{{$stuff}}}</code> thingies to work". We need a way to represent "there's a placeholder here" in the AST, because that's how the ASTs look during the static part of their lifetime (before macro application). It will require a new AST type. As it happens, PAST in nqp/Rakudo is just about to be replaced by the next generation of AST technology, and <a href="http://6guts.wordpress.com/2012/03/09/meta-programming-slides-and-some-rakudo-news/">jnthn++ is just about to start working on that</a>. So it makes sense for me to assist him, since I'm now blocking on the new AST technology landing in Rakudo for my macros work. Aside from blocking, I expect D2 to be quite easy to implement.</p>
+
+<p>See you again at the next milestone. And possibly at part-way resting stops in between.</p>
+
+</article>
+
+  </body>
+</html>

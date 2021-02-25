@@ -1,0 +1,99 @@
+http://strangelyconsistent.org/blog/the-care-and-feeding-of-s29
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The care and feeding of S29 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-12-27T21:55:00+01:00" pubdate="pubdate">27 Dec, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-care-and-feeding-of-s29">The care and feeding of S29</a></h1>
+  </header>
+
+  <p>As I've <a href="http://strangelyconsistent.org/blog/november-6-2008-making-waves">said before</a>, S29 needs a lot of attention. It's a good resource for the things it covers, but it's also sadly lacking in many places.</p>
+
+<p>Last night I found the time to skim through the synopses in one sitting, looking for functions and methods covered in other synopses but not in S29. My findings divide into "questions" and "omissions".</p>
+
+<h2>Questions</h2>
+
+<ul>
+<li>I see the sub version of <code>defined</code> declared in S29. Is the method version (used in S02:519) also in S29? I can't see it, but I might be missing something about how method signatures work.</li>
+<li>Should the methods <code>.new</code> and <code>.clone</code> be covered by S29? They're slightly different beasts than <code>abs</code> or <code>push</code>, but they're still in a sense "builtin functions in Perl 6".</li>
+<li>Same question for <code>BUILD</code> and <code>CREATE</code>.</li>
+<li>What about metaclass methods, like <code>.HOW.methods</code>? Should they be covered in S29?</li>
+<li>Should there be a way to extract information about a <code>Rat</code>'s numerator/denominator? What methods does a <code>Rat</code> have?</li>
+<li>if <code>:exists</code> and <code>:delete</code> get honourable mentions as methods, maybe we should have <code>:p</code>, <code>:kv</code>, <code>:k</code> and <code>:v</code> too</li>
+<li>what's the name of the class that method descriptor objects belong to?</li>
+<li>ditto attribute descriptor objects.</li>
+</ul>
+
+<h2>Omissions</h2>
+
+<p>Things that no longer are omissions are marked in parentheses with a date and the wonderful person who added it.</p>
+
+<ul>
+<li><code>isa</code>, <code>does</code>, <code>can</code> (moritz++ 2009-01-05)</li>
+<li><code>.perl</code> (moritz++ 2009-01-05)</li>
+<li><code>.succ</code>, <code>.pred</code> (fixed on 2009-01-08)</li>
+<li><code>any</code>, <code>all</code>, <code>one</code>, <code>none</code>. these are also methods, on <code>Hash</code> for example. (fixed on 2009-01-08)</li>
+<li><code>warn</code> (fixed on 2009-01-08)</li>
+<li>The <code>slice</code> contextualizer. (S03:1945) (fixed on 2009-01-08)</li>
+<li>The <code>hash</code> contextualizer. (fixed on 2009-01-08)</li>
+<li>The filetest operators. These are covered in S16, so maybe just mention them.</li>
+<li><code>true()</code>, <code>not()</code>, also methods</li>
+<li><code>Range</code> objects have <code>.from</code>, <code>.to</code>, <code>.min</code>, <code>.max</code> and <code>.minmax</code> methods (wayland++ 2009-02-27)</li>
+<li>.<code>contains</code> on <code>Hash</code> and <code>Array</code> [update: not anymore]</li>
+<li><code>Code</code> has a <code>.sig</code> [update: now unambiguously .signature]</li>
+<li><code>.ACCEPTS</code> and <code>.REJECTS</code> on most everything -- provided by the Pattern role. Likely a mistake to put one under each section, though. Perhaps put one under Object and put a reference to S03.</li>
+<li>The <code>cat</code> contextualizer (wayland++ 2009-02-27).</li>
+<li><code>Object</code> has <code>.print</code> and <code>.say</code>.</li>
+<li><code>Block</code> types have <code>.next</code>, <code>.last</code>, <code>.redo</code> and <code>.leave</code> on them. These are also functions, and need to be specced as such. (wayland++ 2009-02-27)</li>
+<li><code>Block</code> also has a <code>.labels</code> method. (wayland++ 2009-02-27)</li>
+<li><code>fail</code> and <code>.handled</code> (the former is in S29, but has no signature/summary). (wayland++ 2009-02-27)</li>
+<li><code>.match</code>, <code>.subst</code> and <code>.trans</code> from S05. (wayland++ 2009-02-27)</li>
+<li><code>Match</code> objects: <code>.from</code>, <code>.to</code>, <code>.chars</code>, <code>.orig</code> and <code>.text</code>. (wayland++ 2009-02-27)</li>
+<li>Match state objects: <code>.pos</code>. (wayland++ 2009-02-27)</li>
+<li><code>context()</code> (wayland++ 2009-02-27).</li>
+<li><code>.wrap</code>, <code>.unwrap</code> and <code>.assuming</code> (wayland++ 2009-02-27).</li>
+<li><code>callsame</code>, <code>callwith</code>, <code>nextsame</code>, <code>nextwith</code>, <code>lastcall</code>.</li>
+<li><code>VAR()</code>, though a macro, could possibly get honourable mention. (wayland++ 2009-02-27)</li>
+<li>Method descriptor objects: <code>.name</code>, <code>.signature</code>, <code>.as</code>, <code>.multi</code>, <code>.do</code>.</li>
+<li>Attribute descriptor objects: .<code>name</code>, .<code>type</code>, .<code>scope</code>, .<code>rw</code>, .<code>private</code>, .<code>accessor</code>, .<code>build</code>, .<code>readonly</code>.</li>
+</ul>
+
+<p>I'll see if I can add these during the coming month. A helping tuit or two would be greatly appreciated.</p>
+
+</article>
+
+  </body>
+</html>

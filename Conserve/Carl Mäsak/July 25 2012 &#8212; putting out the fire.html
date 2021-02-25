@@ -1,0 +1,113 @@
+http://strangelyconsistent.org/blog/july-25-2012-putting-out-the-fire
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 25 2012 &#8212; putting out the fire :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-26T00:14:22+02:00" pubdate="pubdate">26 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-25-2012-putting-out-the-fire">July 25 2012 &#8212; putting out the fire</a></h1>
+  </header>
+
+  <p>I got a nice email today.</p>
+
+<pre><code>Date: Wed, 25 Jul 2012 10:54:09 -0600
+Message-ID: &lt;CA+0_sj5kWQYV35jGosyWjbCUKMCXrtOj=6r34qT6bhnH7VRWkw@mail.gmail.com&gt;
+Subject: crypt test cases with water
+From: Bruce Armstrong &lt;...&gt;
+To: cmasak@gmail.com
+
+Carl,
+
+  I've been following your crypt game with interest.  It has been thought provoking.
+Today's post brought out the tester in me and I have a few sad path tests that
+unfortunately complicate things.
+
+Water is not a normal object, but it is treated as such, so currently...
+
+You can take water without a helmet.
+Once taken, the water is gone
+You can put the water in the car and pick it back up again
+
+It has been fun to read these posts.  I thank you for writing this all up and look
+forward to seeing how you handle these and other conditions that come up.
+</code></pre>
+
+<p>Well, I thank <em>you</em>, dear tester! Your submissions entered into the <a href="http://gist.github.com/3034482">growing
+list of ways to mess with the game</a>, thus
+making you eligible for the <a href="http://strangelyconsistent.org/blog/another-month-of-blogging-adventure-game-here-i-come">promised Amazon
+book</a>.
+Also, I took the time to fix the bugs you discovered:</p>
+
+<ul>
+<li>You <a href="https://github.com/masak/crypt/commit/d51648ba83db766b610d6c2af9fd9f5e45793d9b">can't pick up the water with your
+hands</a>
+anymore. Just like last year's version. (This commit contains an ugly fix. I need to introduce
+sagas to make this nicer. But not today.)</li>
+<li>You <a href="https://github.com/masak/crypt/commit/59cb5dfade5fe8eaccef6ff8d45e28966312ebe7">can put water in your
+car</a>,
+but all that happens is it gets wet.</li>
+</ul>
+
+<p>The middle bug, "Once taken, the water is gone", is really the core issue, as I
+see it. Water isn't so much a "thing" as it is a "mass noun", and you should be
+able to have as many of it as you like in different places of the game. The
+game engine is not happy with such multi-location objects right now. Rather
+than address the problem head on, I went with last year's solutions. If it
+turns out that this becomes a pain point, I might evolve a more permanent
+solution.</p>
+
+<p>Now, let's move on to today's commits:</p>
+
+<ul>
+<li>You can <a href="https://github.com/masak/crypt/commit/00f8e1f6943229fb99b07f7a15a6afe0e4343ec0">put out the
+fire</a>
+with a bit of water. Oh, you're supposed to be able to put the water <em>on</em> the
+fire too, with the same effect. Forgot about that. Will get to it tomorrow.</li>
+<li>Once the fire is put out, you can <a href="https://github.com/masak/crypt/commit/772c8d83b737623b92b3b2ef4098b691aef37f55">walk into the
+crypt</a>.</li>
+</ul>
+
+<p>Well, that was easy. It feels like the game engine mostly has what I need now,
+and I can just make method calls and it obeys. A nice feeling overall. The game
+engine is in for a number of overhauls, though. I'll get to them as stuff
+settles down. Good thing I have a test suite. 哈哈</p>
+
+<p>Tomorrow we'll grab the treasure from the crypt, trigger total cavern collapse,
+and die. It'll be fun.</p>
+
+</article>
+
+  </body>
+</html>

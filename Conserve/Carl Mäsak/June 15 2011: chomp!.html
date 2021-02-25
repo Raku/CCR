@@ -1,0 +1,127 @@
+http://strangelyconsistent.org/blog/june-15-2011-chomp
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 15 2011: chomp! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-15T23:54:02+02:00" pubdate="pubdate">15 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-15-2011-chomp">June 15 2011: chomp!</a></h1>
+  </header>
+
+  <p>The good news: You have a chocolate bar, and you're sharing it with a friend!</p>
+
+<p>The bad news: the upper left corner of the chocolate bar is poisoned! Oh noes!</p>
+
+<p>So now you're both in a really odd game were you're taking turns biting lower-right chunks off the chocolate bar, each of you plotting your way to not being the one with the poisoned corner. Oh man, how did it end up this way? No-one knows.</p>
+
+<pre><code>say "Chomp -- don't eat the poisoned corner!";
+say "";
+
+my $WIDTH  = 15;
+my $HEIGHT = 10;
+
+my @bar;
+push @bar, "#" ~ "." x ($WIDTH - 1);
+for 2 .. $HEIGHT {
+    push @bar, "." x $WIDTH;
+}
+
+my $player = 1;
+
+PLAYER:
+loop {
+    say @bar.join("\n");
+    say "";
+
+    my $coords;
+    my $row;
+    my $column;
+
+    INPUT:
+    loop {
+        $coords = prompt "Player $player, move (m, n): ";
+        if $coords !~~ /^ (\d+) \s* ',' \s* (\d+) $/ {
+            say "Unrecognized move syntax. Please write it like '1, 2'";
+            redo INPUT;
+        }
+
+        $row    = $0;
+        $column = $1;
+
+        if $row &gt; @bar.elems
+           || $column &gt; @bar[$row - 1].chars {
+
+            say "That piece was already eaten.";
+            redo INPUT;
+        }
+
+        if $row == 1 &amp;&amp; $column == 1 {
+            last PLAYER;
+        }
+
+        last INPUT;
+    }
+
+    for @bar[$row - 1 .. $HEIGHT - 1] {
+        $_ = .substr(0, $column - 1);
+    }
+
+    if $player == 1 {
+        $player = 2;
+    }
+    else {
+        $player = 1;
+    }
+}
+
+say "Augh, poison! And it doesn't taste too good, either.";
+say "The end.";
+</code></pre>
+
+<p>A few things are worth pointing out in the above code.</p>
+
+<ul>
+<li><p>There are a lot of ways we could represent the chocolate bar, but having it as an array of strings which we can the just print out seems like a nice compromise. Taking bites of the bar then corresponds to taking <code>substr</code>s of the strings. Which isn't too bad.</p></li>
+<li><p>There's a loop in our loop. We need to <code>redo</code> and <code>last</code> on both of them, and things can turn a bit confusing. So we put <em>labels</em> on the loops, and then we can use them to identify them. Look "how well things read" after we do that: <code>redo INPUT</code> (when the input wasn't kosher), <code>last PLAYER</code> (when the game is lost), <code>last INPUT</code> (when we get the input right).</p></li>
+<li><p>Pay especial notice to how, in <code>$row &gt; @bar.elems || $column &gt; @bar[$row - 1].chars</code>, we are making implicit use of the short-curcuiting behavior of the <code>||</code> operator. On the left side, we're checking if <code>$row</code> is out of range, and <em>only if it's not</em> do we proceed and actually use it on the right side to index the array. This is one of the most common uses of short-circuiting.</p></li>
+<li><p>There are a bunch of <code>$var - 1</code> strewn across the latter part of the main game loop. That's because we expose a 1-based coordinate system to the players of the game, but our array and strings are all 0-based, because that's the way Perl does things. That kind of "model compensation" between slightly different world views is very common, as well. Get used to it. <code>:-)</code></p></li>
+</ul>
+
+<p>That's it for today; enjoy your chocolate. I'd tell you what we're heading for next, but I don't know yet. Have to make the second half of the schedule first.</p>
+
+</article>
+
+  </body>
+</html>

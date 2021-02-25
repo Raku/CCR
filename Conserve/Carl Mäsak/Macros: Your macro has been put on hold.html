@@ -1,0 +1,123 @@
+http://strangelyconsistent.org/blog/macros-your-macro-has-been-put-on-hold
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: Your macro has been put on hold :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2015-10-17T05:56:42+02:00" pubdate="pubdate">17 Oct, 2015</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-your-macro-has-been-put-on-hold">Macros: Your macro has been put on hold</a></h1>
+  </header>
+
+  <p>Yes, it is me. Back to blogging about macros. Feels good.</p>
+
+<p>There has been some vigorous activity around 007 lately. It started around YAPC::Europe, but really lifted off in October, for some reason. It's like 007 started out as a throwaway experiment, but lately it's been coming into its own, driving its own development and spewing out interesting findings as a by-product.</p>
+
+<p><em>Side note: I expect to blog extensively about 007. Not today, though. For those of you who feel an irresistible urge to know more, I refer you to <a href="http://masak.github.io/007/">the exquisitely crafted github.io page</a> and <a href="https://github.com/masak/007/blob/master/README.md">the README.md that has never received a single complaint for beeing too long and rambling</a>.</em></p>
+
+<p>Today the topic is the latest by-product to fall out of 007. I'm implementing quasi unquotes right now, and I realized:</p>
+
+<p><strong>Macro calls can't expand right after they're parsed in a quasi, if the arguments have an unquote in them.</strong></p>
+
+<p>I'm talking about something like this:</p>
+
+<pre><code>quasi {
+    my-macro 1, {{{$ast}}}, 3;
+}
+</code></pre>
+
+<p>Outside of a <code>quasi</code> block, as soon as the parser hit that <code>;</code> it would whoosh off and call <code>my-macro</code>. Clearly that's not possible here, because there's an unquote there, a hole that's waiting to be filled with <code>$ast</code>.</p>
+
+<p>So we must wait, patiently, until the <code>quasi</code> gets evaluated. (This usually happens when the surrounding macro is invoked. Quasis don't <em>have</em> to be found in macros, though typically they are. So we could also call this "splice-time", since likely the unquote is about to be spliced into code.) Once we're in the right scope and on the right instruction, we have an <code>$ast</code>, we can fit it into the unquote, and <em>then</em>, not before, we can expand <code>my-macro</code>.</p>
+
+<p>Frankly I'm surprised this took me so long to realize. I don't seem to be alone; <a href="http://design.perl6.org/S06.html#Macros">S06</a> has this to say about when macros are called:</p>
+
+<blockquote>
+  <p>Macros are functions or operators that are called by the compiler as
+soon as their arguments are parsed (if not sooner).</p>
+</blockquote>
+
+<p>This could be a confusion of terminology: the <code>{{{$ast}}}</code> was <em>parsed</em>, but we still don't know what expression it will contain. We still don't know what it <em>is</em>.</p>
+
+<p>Maybe it should say something like this:</p>
+
+<blockquote>
+  <p>Macros are functions or operators that are called by the compiler as
+soon as their arguments are known.</p>
+</blockquote>
+
+<p>The question arises: should we call unquote-less macros immediately, but hold off unquote-ful macros until the quasi is evaluated? In my opinion, no, for reasons of consistency. Let's just "hold all calls" instead:</p>
+
+<p><strong>Macro calls don't expand right after they're parsed in a quasi, they expand when the quasi is evaluated.</strong></p>
+
+<p>Be aware, this is by no means a bad thing. Macros as a whole get more flexible and capable if they're put on hold in quasis. I don't have a full example ready, but imagine we had a data structure (like a HTML DOM or something) expressed as code, and we send it off to a macro. Thanks to macro calls being put on hold, we can now code-gen stuff <em>recursively</em> based on the specific contents of the data structure. <a href="http://www.youtube.com/watch?v=g8f_XCH3zmM">That's pretty far out.</a></p>
+
+<p>Previously (when macro calls always evaluated right after they were parsed, a design we now know can't work), whenever you put a recursive macro call inside the macro itself, you were hosed as either the parser <a href="http://www.muppetlabs.com/~breadbox/intercal-man/s04.html">disappeared into the black lagoon</a> as it explored the feasibility of recursion without a base case... or it would just fail outright because we caught that case. Now, instead, you <em>can</em> recurse, as long as you put the macro call in the <code>quasi</code> block.</p>
+
+<p>So I'm pretty happy with this discovery. (And I'm fully prepared for TimToady coming along saying that he knew this already, and I just didn't read the spec in the right way. 😜)</p>
+
+<p>There's more. This finding is part of a larger trend where <em>parsing</em> gets un-tangled from another, later process that I don't yet have a really good name for. Within the scope of this post, let's call it <em>checking</em>... and I'll reserve the right to call it something better once I have a better name. Suggestions welcome. ("Checking" is slightly unfortunate, because it sounds like it would happen at <code>CHECK</code> time. Some of these things, such as the macro expansion, need to happen before that.)</p>
+
+<p>Some random examples of checking:</p>
+
+<ul>
+<li>You declare a variable <code>$COMPILING::x</code>. As the quasi is evaluated, we need to check whether to report a "potential difficulty" when <code>$x</code> was already declared in that scope. Same with functions, classes, etc.</li>
+<li>A synthetic variable reference <code>$x</code> was injected into an unquote, and now we need to check whether it actually refers to something in the mainline.</li>
+<li>Some stuff gets injected into a parameter list, and we need to make sure that the parameter list still is valid structurally.</li>
+</ul>
+
+<p>Many things that we consider to be part of parsing turn out to be part of checking, when you start to think about it. Taking quasis seriously leads to needing to tease parsing and checking apart. Some parts of checking we still want to do ASAP, interleaved with parsing. (For example: I'd expect to get an immediate "not declared" error if I typo'd a variable inside a quasi. Shouldn't have to wait until I call the macro.)</p>
+
+<p>The rabbit hole goes deep on this one. If we expect quasis to have unquotes for operators, then we can't even reliably parse an expression into a <em>tree</em>, because the exact structure of that tree depends on the precedence and maybe associativity of the operator we haven't injected yet! This leads to the uncomfortable question of what a quasi really <em>is</em>, if it isn't a Qtree representation of some code. In this case at least, it seems the best we can do is store the sequential order of terms and operators, so that we can expand them into the correct tree upon checking. (And this needs to be reflected somehow in Qtree introspection.) This <em>should</em> worry you: producing that tree is what parsing traditionally does. But here we provably can't: heck, the operator we end up injecting might not even be <em>defined</em> yet.</p>
+
+<p>Despite all, I'm hopeful. I'm happy quasis force macros to late-bind, because that makes macros more useful. I'm curious where the whole parsing/checking distinction will lead. The stuff with the operators looks challenging, but that's an improvement over what we had before in that slot, which was "what huh wait I don't even".</p>
+
+<h2>Not addressed in this prop... hey, wait</h2>
+
+<p>This isn't a proposal. It's just the harsh, undeniable reality. I find that the five-or-so things I usually bring up as addressed or not addressed aren't really relevant here.</p>
+
+<p>However, let's do a quick summary, since it's been long since I posted about this:</p>
+
+<ul>
+<li><strong>The <code>{{{ }}}</code> syntax being universally hated</strong> &mdash; Got some ideas. Watch this space.</li>
+<li><strong>Quasi slices only being usable in term position</strong> &mdash; 007 is currently breaking new ground on this.</li>
+<li><strong>Macro parameters/operands being restricted to expressions</strong> &mdash; This one is still a bit unclear, but there's hope. Maybe a good enough <code>is parsed</code> will help.</li>
+<li><strong>Macros having a story in grammars/slangs</strong> &mdash; Ummm, um. Oh! Look! Squirrel!</li>
+<li><strong>Manipulexity of program elements</strong> &mdash; 007 is currently breaking new ground on this. In brief, Qtrees are living up to the hype.</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

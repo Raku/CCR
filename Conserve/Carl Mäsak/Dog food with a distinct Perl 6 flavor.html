@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/dog-food-with-a-distinct-perl6-flavor
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Dog food with a distinct Perl 6 flavor :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-09-29T00:18:00+02:00" pubdate="pubdate">29 Sep, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/dog-food-with-a-distinct-perl6-flavor">Dog food with a distinct Perl 6 flavor</a></h1>
+  </header>
+
+  <p>For a long time, I kept using <a href="http://use.perl.org/~masak/journal"><code>use Perl</code></a> for my blogging, knowing that there are better solutions out there. <a href="http://blogs.perl.org/">blogs.perl.org</a> being among the most alluring alternatives. Various Perl 6 bloggers were also reporting happiness with <a href="http://wordpress.org/">Wordpress</a>-based blogs. Inertia kept me tied to use Perl.</p>
+
+<p>Inertia &mdash; and something else. I had a teeny tiny dream that I could make a blogging solution in Perl 6. That would, I theorized, make me ultimately happy.</p>
+
+<p>Except that it would never happen. It's quite a big step to move blogs, and doing it while actually <em>inventing</em> the new blog under oneself... no wai.</p>
+
+<p>And then <code>use Perl</code> forced my hand. After ~10 years of service, it has now been <a href="http://use.perl.org/article.pl?sid=10/09/08/2053239">shut down</a>. And suddenly, I found myself without a blogging platform.</p>
+
+<p>So I thought, what the heck.</p>
+
+<p>A couple of weeks later, here I stand with a working blogging solution in Perl 6. Yay!</p>
+
+<p>I'll have a lot more to say about the blogging software as we go along, but here are the main points in bullet form:</p>
+
+<ul>
+<li>It's written in Perl 6. (See above.)</li>
+<li>It's currently 200 <em>lines</em> of Perl 6!</li>
+<li>It's a static website generator. (If it weren't for today's speed limitations, it'd probably generate pages dynamically. There is, after all, <a href="http://november-wiki.org/">a wiki engine</a> that pulled that off already two years ago.)</li>
+<li>It outsources Markdown generation to Perl 5. This may or may not be a temporary solution.</li>
+<li>I'm not ready to put it on github yet, but <a href="http://gist.github.com/601864">here's a snapshot of the source</a> if you're interested.</li>
+<li>There's a static website generator called Hakyll on which I'm basing the general design of my program. Over time, I hope to push things out into what will eventually become a port of Hakyll. I want to do this while continually running the blog, to make sure things keep working. (Hence the title of this post.)</li>
+<li>A friend tweeted that it'd be funny if there were a Java port of Hakyll <a href="http://en.wikipedia.org/wiki/Strange_Case_of_Dr_Jekyll_and_Mr_Hyde">called Jyde</a>. On the spot, I decided that the Perl 6 port should be called Psyde. So that's what it'll be called.</li>
+</ul>
+
+<p>In summary: yay, new blog! Watch this space.</p>
+
+</article>
+
+  </body>
+</html>

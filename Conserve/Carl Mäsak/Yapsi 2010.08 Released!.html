@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/yapsi-201008-released
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Yapsi 2010.08 Released! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-08-02T01:50:00+02:00" pubdate="pubdate">2 Aug, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/yapsi-201008-released">Yapsi 2010.08 Released!</a></h1>
+  </header>
+
+  <p>It is with vertiginous modesty that I want to announce, on behalf of the Yapsidevelopment team, the August 2010 release of Yapsi, a Perl 6 compiler written in Perl 6. (Am I using, too many, commas?)</p>
+
+<p>You can get it <a href="http://github.com/downloads/masak/yapsi/yapsi-2010.08.tar.gz">here</a> — as a bonus, if you download within 24 hours, the bits in your download will be hand-painted and signed by nine indefatigable mice from northern Belarus.</p>
+
+<p>Yapsi is implemented in Perl 6. It thus requires a Perl 6 implementation to build and run. Both Rakudo Star and the latest monthly release ("Atlanta") seem to be fit to the task.</p>
+
+<p>Yapsi is an "official and complete" implementation of Perl 6. It's official because we stole the "Official Perl 6" rubber stamp and applied it liberally. Unfortunately, we also used all the special ink -- please don't tell any of the other implementors that. It's complete because we implemented all the parts of the synopses that weren't eaten by the team's pet dugong.</p>
+
+<p>This month's release consists of a total refactor of both the runtime and the compiler. The Yapsi.pm file is about 100 lines shorter, with the same functionality. Lexical variables are now handled more correctly. For a complete list of changes, see <a href="http://github.com/masak/yapsi/blob/master/doc/ChangeLog">doc/ChangeLog</a>.</p>
+
+<p>Quite a lot of features are within reach of people who are interested in hacking on Yapsi. See the <a href="http://github.com/masak/yapsi/blob/master/doc/LOLHALP">doc/LOLHALP</a> file for a list of 'em.</p>
+
+<p>Yapsi consists of a compiler and a runtime. The compiler generates a so-called instruction code, which is a code of instructions, for the runtime to run. This is fairly common, and nothing to be agitated about. The instruction code is called SIC, which is probably slightly less common. SIC is extended, re-thought and eaten by the team's pet dugong on a regular basis, so don't expect SIC from one release to be runnable on another.</p>
+
+<p>An overarching goal for making a Perl 6 compiler-and-runtime is to use it as a server for various other projects, which will hook in at different steps:</p>
+
+<ul>
+<li>A time-traveling debugger (tardis), which hooks into the runtime.</li>
+<li>A coverage tool (lid), which will also hook into the runtime.</li>
+<li>A syntax checker (sigmund), which will use output from the parser.</li>
+</ul>
+
+<p>Another overarching goal is to optimize for fun while learning about parsers, compilers, and runtimes.</p>
+
+<p>Gotta go feed S16 to the team's pet dugong. We wish you the appropriate amount of fun!</p>
+
+</article>
+
+  </body>
+</html>

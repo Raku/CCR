@@ -1,0 +1,83 @@
+http://strangelyconsistent.org/blog/june-3-2011-if-statements
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 3 2011: If statements :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-04T10:51:12+02:00" pubdate="pubdate">4 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-3-2011-if-statements">June 3 2011: If statements</a></h1>
+  </header>
+
+  <p>Let's say we like our sauna to be between 80 and 90 degrees Celsius. We write a small program to remind us of this fact:</p>
+
+<pre><code>my $temperature = prompt "Enter sauna temperature: ";
+
+if $temperature &lt; 80 {
+    say "The sauna is too cold!";
+}
+elsif $temperature &gt; 90 {
+    say "The sauna is too hot!";
+}
+else {
+    say "Aaaah, this is just right.";
+}
+</code></pre>
+
+<p>For the first time, we're seeing a program that's making choices. There are three <code>say</code> commands in there, but only one of them will be run each execution.</p>
+
+<p>The way it all works is probably fairly straightforward, and is reflected in how the code sounds when we read it out loud:</p>
+
+<ul>
+<li><strong>If</strong> the temperature is lower than 80 (degrees Celsius), say that the sauna is too cold,</li>
+<li><strong>elsif</strong> the temperature is higher than 90, say that the sauna is too hot,</li>
+<li><strong>else</strong> say that it's just right.</li>
+</ul>
+
+<p>Note that <code>else</code> is spelled with a total of two <code>e</code>s, but that there's only one <code>e</code> in <code>elsif</code>.</p>
+
+<p>One might ask, with a certain tinge of curiosity, what things we can write after an <code>if</code> or an <code>elsif</code>. The answer is, almost anything. We've been using the comparison operators <code>&lt;</code> and <code>&gt;</code> above, but there's also comparison for equality (<code>==</code>), and comparison for inequality (<code>!=</code>), and many others. In fact, we could write anything there that could be seen as either a true or false value. As a general rule, most things are true values, but <code>0</code>, the empty string <code>""</code> and undefined things are false values.</p>
+
+<p>Be mindful that assignment has one equals sign (<code>=</code>), but equality comparison has two (<code>==</code>). They work quite differently; the first one makes things equal, the second one only checks if they are.</p>
+
+<p>The curly braces (<code>{ ... }</code>) that we put after each test need to be there. They're a kind of grouping mechanism, so that there's no ambiguity as to where the conditional code ends and the usual code begins again. It's often the case that we want to do a number of things if something is true. In such a case, we'd just put many statements inside the curly braces.</p>
+
+<p>Finally, in our example we had <code>if</code>/<code>elsif</code>/<code>else</code>, but it's possible to mix and match, and have <code>if</code>/<code>elsif</code>/<code>elsif</code>/<code>else</code>, or just <code>if</code>/<code>else</code>, or even just <code>if</code>. It depends what you want to do.</p>
+
+<p>Boy, is it hot in here. Next time we'll throw our program for a loop.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,124 @@
+http://strangelyconsistent.org/blog/iterating-your-way-to-happiness-with-perl-6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Iterating your way to happiness with Perl 6 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-07-11T23:55:00+02:00" pubdate="pubdate">11 Jul, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/iterating-your-way-to-happiness-with-perl-6">Iterating your way to happiness with Perl 6</a></h1>
+  </header>
+
+  <p>I thought I'd have an easy time today, just regurgitating what <a href="http://perlcabal.org/syn/S04.html">S04</a> says about "Loop statements". Perl 5 already got this part pretty right already. Actually, even C got it pretty right. So what new does Perl 6 have to offer? That's what this post is about.</p>
+
+<p>So, nothing much has changed about the <code>while</code> and <code>until</code> loops that we know and love.</p>
+
+<pre><code>while EXPR { ... }
+until EXPR { ... }
+</code></pre>
+
+<p>Then there's the kind of loop when you want to test the condition <em>after</em> the block has run, rather than before. In Perl 5, that looks like this:</p>
+
+<pre><code>do { ... } while EXPR;
+do { ... } until EXPR;
+</code></pre>
+
+<p>This construct tends to cause fresh Perl programmers a lot of grief, since <code>do</code> isn't really a loop construct. There's some wording about this in <a href="http://perldoc.perl.org/perlsyn.html">perldoc perlsyn</a>:</p>
+
+<div class='quote'><p>Note also that the loop control statements described later will NOT work in this construct, because modifiers don&#8217;t take loop labels.  Sorry.</p></div>
+
+<p>Perl 6 solves this by</p>
+
+<ul>
+<li>recognizing and disallowing <code>while</code> and <code>until</code> after <code>do</code> blocks, and</li>
+<li>introducing the <code>repeat</code> block.</li>
+</ul>
+
+<p>So now you write it like this instead:</p>
+
+<pre><code>repeat { ... } while EXPR;
+repeat { ... } until EXPR;
+</code></pre>
+
+<p>And you get two bonus features from this: first, since the <code>while</code> or <code>until</code> is mandatory, you can put it on its own line. Generally, closing line-ending curlies act like they have implicit semicolons after them in Perl 6, but here the parser is smart enough to expect a <code>while</code> or <code>until</code>, so it doesn't put one in.</p>
+
+<p>Second, you're allowed to put the condition up front if you want:</p>
+
+<pre><code>repeat while EXPR { ... }
+repeat until EXPR { ... }
+</code></pre>
+
+<p>Even though the condition is <em>before</em> the loop here, it'll still not be run until <em>after</em> each iteration, because it's a <code>repeat</code> loop, and they work like that.</p>
+
+<p>Then there's the loop construct that loops forever, aptly named <code>loop</code>:</p>
+
+<pre><code>loop { ... }
+</code></pre>
+
+<p>In C, we'd have that as <code>for (;;) { ... }</code>. And, symmetrically, you can also write it like this in Perl 6:</p>
+
+<pre><code>loop (;;) { ... }
+</code></pre>
+
+<p>Or, more generally, you can do any C-style for loop, if you just spell it <code>loop</code>:</p>
+
+<pre><code>loop (EXPR; EXPR; EXPR) { ... }
+</code></pre>
+
+<p>And what was known alternately in Perl 5 as <code>for</code> and <code>foreach</code> becomes just <code>for</code> in Perl 6.</p>
+
+<p>The syntax for <code>for</code> in Perl 6 is what you'd expect:</p>
+
+<pre><code>for EXPR { ... }
+</code></pre>
+
+<p>But it packs a lot more power underneath. Or rather, the whole <em>language</em> is geared towards packing <code>for</code> with a lot more power. Some examples:</p>
+
+<ul>
+<li>If you want to name the item you're currently looping over, just prefix the block with <code>-&gt; $a</code>. (If you don't, you'll find the item in <code>$_</code>, as usual.)</li>
+<li>If you want to loop two items at a time, prefix the block with <code>-&gt; $a, $b</code>.</li>
+<li>Neither of the above are special syntaxes belonging to the <code>for</code> construct as such; rather, the <code>-&gt;</code> arrows belong to the block, making it, in the prevailing terminology, a "pointy block". In fact, <em>all</em> of the loop constructs I've brought up (except the C-style loop) can be given pointy blocks; the expression will then be bound to the variable and usable from within the block. You can do it with <code>if</code> statements, too! It's quite useful.</li>
+<li>If you want to loop over two lists simultaneously, you can use the <code>infix:&lt;Z&gt;</code> operator to interleave the lists. Loop one item at a time, and you'll get alternating elements from the two lists. Loop two at a time, and <code>$a</code> (or whatever) will always be from the first list, and <code>$b</code> from the second. Gone are the days when you had to do manual trickery with indexes and stuff because the <code>for</code> loop wasn't powerful enough.</li>
+<li>You can even eliminate nested loops sometimes with the <code>infix:&lt;X&gt;</code> operator, which does a Cartesian product (known in SQL circles as a "cross join") of two lists. So if you planned to do <code>for @a { for @b { ... } }</code> anyway, you might as well do <code>for @a X @b { ... }</code> and save yourself one level of indentation.</li>
+<li>All of the above is lazy, so with a sensible Perl 6 implementation, there's no huge memory waste from building up all these big lists; it's all generated on-the-fly. (This, incidentally, means that we also read files with <code>for</code> loops in Perl 6, rather than with a magical <code>while</code> construct as in Perl 5.)</li>
+</ul>
+
+<p>That's it for today. I forgot to mention the looping construct that only loops over <em>one</em> item... but you can look that one up yourself. Oh, and Perl 5.10 also has it.</p>
+
+<p>Actually, I got to thinking about all this, since I figured out the other day how to do the <code>FIRST</code> and <code>LAST</code> phasers in Yapsi. But this blog post felt like a natural precursor to the one I wanted to write. Hopefully soon. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

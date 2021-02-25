@@ -1,0 +1,308 @@
+http://strangelyconsistent.org/blog/macros-progress-report-d2-merged
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros progress report: D2 merged :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-11-02T17:40:43+01:00" pubdate="pubdate">2 Nov, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-progress-report-d2-merged">Macros progress report: D2 merged</a></h1>
+  </header>
+
+  <p>The grant that I'm currently working on, the <a href="http://news.perlfoundation.org/2011/09/hague-grant-application-implem.html">macros
+grant</a>,
+has now reached its D2 milestone. That is, the so-called "unquotes" work
+as advertised in Rakudo:</p>
+
+<pre><code>macro apply($code, $argument) {
+    quasi {
+        {{{$code}}}( {{{$argument}}} );
+    }
+}
+
+apply sub ($t) { say $t }, "OH HAI";    # prints "OH HAI"
+</code></pre>
+
+<p>Macros are <em>routines</em>, and so they take parameters. The above <code>apply</code> macro
+takes some <code>$code</code> and an <code>$argument</code>, and calls the former with the latter.
+It's as if, when the macro expansion is all done, what's left in the code
+is the following line:</p>
+
+<pre><code>(sub ($t) { say $t })("OH HAI");    # prints "OH HAI"
+</code></pre>
+
+<p>Of course, we never actually <em>see</em> this line, and in the compiler it's never
+textually substituted like that, because the substitution all happens on the
+level of syntax trees, not on the level of text.</p>
+
+<p>The new thing in this picture is the <code>{{{ }}}</code> thingies: the so-called
+<em>unquotes</em>. Back in <a href="http://strangelyconsistent.org/blog/macros-progress-report-quantum-yak-shaving">my last progress
+report</a>,
+we still didn't have unquote support in nqp. Now we do. In fact, we got unquote
+support already back in August. That, it turns out, was the easy bit.</p>
+
+<p>Then the conceptual problems appeared. For a few months, whenever I thought
+about macros, my brain would melt trying to think about those problems. It took
+quite a while to go from unquotes existing to them being actually useful. What
+follows is an explanation of the problem and its solution.</p>
+
+<p>The problem is one of <em>context</em>. By that, we mean the variable bindings seen by
+a piece of code. Psychologically, we expect a piece of code to see the variables
+in its lexical environment, that is, all the variables declared in all
+surrounding blocks.</p>
+
+<pre><code>my $a;
+
+sub f {
+    my $b;
+    sub {
+        my $c;
+        # $a, $b, $c visible here
+    }
+}
+</code></pre>
+
+<p>The exciting and highly useful thing about closures is that they honor this
+expectation, while simultaneously being <em>first-class values</em> that you can pass
+around between parts of your program. This combination of static bindings and
+dynamic function values is so powerful that you can use it to emulate the
+object encapsulation so espoused by OO enthusiasts.</p>
+
+<p>In the above case, the sub <code>f</code> implicitly returns its inner sub, which can
+be transported across the Russian tundras, stored in a dank wine cellar for
+75 years before being uncorked... but when finally called, it will <em>still</em>
+remember its <code>$a</code>, <code>$b</code>, and <code>$c</code> bindings. That's because closures aren't
+just containers of statements. They also hold a reference to an <code>OUTER</code> block
+through which variable lookups can be made.</p>
+
+<p>(And in the above case, <code>$b</code> and <code>$c</code> are properly encapsulated. <code>$a</code> isn't,
+since it's globally visible.)</p>
+
+<p>We want macros to behave the same. That is, <code>quasi</code> blocks should behave like
+closures.</p>
+
+<pre><code>macro f {
+    my $a = "OH HAI";
+    quasi {
+        say $a;
+    }
+}
+
+my $a = "B... BOOOOM!";
+f;      # OH HAI
+</code></pre>
+
+<p>It's the same principle: after the <code>f;</code> call has been conceptually replaced by
+<code>say $a;</code> this code should still remember its context, its origins, namely the
+macro body. The fact that <code>say $a;</code> doesn't print <code>"B... BOOOOM!"</code>, from the
+variable in the mainline scope, is part of what's called <em>hygiene</em>. Hygiene
+means that just like with closures, bindings inside are isolated from bindings
+outside by default.</p>
+
+<p>(The term "hygiene" is often conflated in people's minds with the term
+"AST-based macros". The two are not the same. AST-based macros are necessary
+but not sufficient for hygiene. End of rant.)</p>
+
+<p>But wait a minute. These two situations are obviously very similar. In the case
+of the closure, we know that the closure must keep an <code>OUTER</code> reference to
+remember its context. What is it in the macro case that remembers the context?</p>
+
+<p>The <code>quasi</code> construct generates an AST, a syntax tree, that then gets spliced
+into the mainline code where the <code>f;</code> call used to be. This AST must be the
+vessel for the context information. So, just like a closure is a bunch of
+statements plus a context, an AST object must be a tree plus the context
+information. If the AST <em>didn't</em> have a context, the above macro expansion
+couldn't be hygienic.</p>
+
+<p>We must perform unholy surgery on the block that eventually results from the
+quasi AST. The block will naturally have mainline context, but we want to
+<em>recontext</em> it to have macro context. So in the Rakudo macro expansion code,
+there is some code that transplants the context from the AST object to the new
+block. It involves a Rakudo-specific op called <code>perl6_get_outer_ctx</code>. It's only
+used for this code path.</p>
+
+<p>This much was clear already when I was merging D1. Now for the new
+complications.</p>
+
+<p>Macro expansions consist of <em>two</em> stages of substitution, and this is what
+makes them useful:</p>
+
+<ul>
+<li><strong>Unquotes are replaced by ASTs</strong>, typically arguments originating from the
+outisde of the macro.</li>
+<li><strong>The macro invocation is replaced by the AST</strong> returned from applying the
+macro to its arguments.</li>
+</ul>
+
+<p>When implementing D1, I sorted out my thoughts by writing lots of ruminating
+gists. During this phase of the work, I've composed fewer gists, but an
+unexpected thing happened: the more time passed, the more I realized how much I
+had <em>misnamed</em> the variables in the macro code I had contributed to Rakudo.</p>
+
+<p>It wasn't that I was careless about naming when I first wrote that code.
+Instead, my understanding of the macro domain had shifted so much that the
+choices of names I had made started to feel wrong. Today I landed <a href="https://github.com/rakudo/rakudo/commit/203f97e264e1c61e18a61163eef49bba03b806f1">a
+long-awaited
+refactor</a>
+which not only unified the three macro-invocation code paths, but also fixed
+all the now slighty-off variable names. Quite a relief.</p>
+
+<p>Here's part of what changed. During D1, a lot of AST objects in source ended up
+being called <strong>quasi ASTs</strong>. Nowadays, the following distinction is made:</p>
+
+<ul>
+<li><strong>quasi ASTs</strong> are what <code>quasi</code> blocks generate. Naturally.</li>
+<li><strong>argument ASTs</strong> are the things that the parser generates as it parses the
+macro arguments, just before it invokes the macro.</li>
+<li><strong>macro ASTs</strong> are what's returned from a macro, to be spliced
+back into the mainline code.</li>
+</ul>
+
+<p>There is overlap. A macro AST has been generated as either a quasi AST or an
+argument AST at some point or other. But the focus here is where the ASTs are
+coming from. And it turns out that matters a lot. Quasi ASTs and argument ASTs
+are quite different. Hence the need for precision.</p>
+
+<p>By the way, there is possibly a fourth kind of AST, one that we don't have yet,
+but that is totally possible once people start building macro libraries and
+stuff:</p>
+
+<ul>
+<li><strong>synthetic ASTs</strong>, syntax trees built up programmatically from individual
+AST nodes or smaller ASTs.</li>
+</ul>
+
+<p>Don't know yet if that's going to become a reality. Until it does, <code>quasi</code>
+blocks fill much the same role.</p>
+
+<p>Once we had unquotes working in Rakudo, the one glaring omission was that
+the unquotes didn't behave hygienically. Which was a shame because, again,
+people really expect hygiene to work:</p>
+
+<pre><code>macro test($value) {
+    my $a = "B... BOOOOM!";
+    quasi {
+        say {{{$value}}};
+    }
+}
+
+my $a = "OH HAI";
+test $a;    # OH HAI nowadays, used to B... BOOOOM!
+</code></pre>
+
+<p>Just as the quasi AST should remember its own original context, so should the
+argument AST that ends up in <code>$value</code>. It used not to, and so the context it
+got was the quasi's, resulting in <code>"B... BOOOOM!"</code> above. A little ironic
+that it was the successful recontexting of the quasi AST that messed things
+up for the argument AST.</p>
+
+<p>For months I struggled with the problem of how to recontext the argument
+ASTs. I developed a solution in a branch, which finally worked as it should,
+except that it <em>still</em> didn't recontext the ASTs properly! Argh!</p>
+
+<p>My plan of attack had been to set the context at the time of unquote
+evaluation, as the quasi is evaluated when running the macro. The other
+day, jnthn pointed out that this approach may be overly complicated: maybe
+the context could be set at the time of argument collection, just before
+calling the macro. This is definitely simpler. Not least because at this
+point, the parser actually <em>is</em> in the context it wants to set! And in
+particular, no block surgery was needed this time.</p>
+
+<p>I tried it. It worked. This solution almost feels <em>too</em> simple, and I'm not
+sure yet it will let us do all the things we want to do. But all the tests
+pass, and I have hammered this solution with tricky situations that might
+break, and it's holding up so far. So, we now have hygienic macros with
+unquotes in Rakudo.</p>
+
+<p>Here are the macro-related gists that I wrote during this period. They are in
+various states of obsolescence at this point, but still potentially
+informative:</p>
+
+<ul>
+<li><a href="https://gist.github.com/abd360db840a0719da2f">Proceedings: What are macros?</a></li>
+<li><a href="https://gist.github.com/3438222">macros use case by FROGGS</a></li>
+<li><a href="https://gist.github.com/3634046">It's all about context</a></li>
+<li><a href="https://gist.github.com/3678362">pack, unpack, pack, unpack</a></li>
+</ul>
+
+<p>The other artifacts that have emerged since D1 are as follows:</p>
+
+<ul>
+<li>A <a href="https://github.com/perl6/roast/blob/master/S06-macros/unquoting.t">new spectest
+file</a>.
+Also, thanks to a suggestion by moritz++, the macro spectest files are now
+<a href="https://github.com/perl6/roast/commit/0710d57620707c076175f129eb1ab08df427b840">much better
+named</a>.</li>
+<li>A number of commits to the <code>nom</code> branch of Rakudo:
+<ul>
+<li><a href="https://github.com/rakudo/rakudo/commit/98591b486467b72f925d3cea0bcfa7155f6e313c">can parse unquotes in quasis</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/1b9b70b1d0813cebd2b3d4dab2805be1d7abc13f">backpedal on throwing an exception</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/30c0302b747a553b7f97191919930c06effe3575"><code>&lt;statementlist&gt;</code>, not <code>&lt;EXPR&gt;</code></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/b7e189599c2787d7b3cbfb2865bbfb406fdc042f">implement unquote splicing</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/fc88876a1bc08eb6c5b39be4ae8b9f72d366c604"><code>X::TypeCheck::MacroUnquote</code> -> <code>X::TypeCheck::Splice</code></a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/7d10d1aae2288b9e7c9529c9899bd845ced808fc">throw <code>X::TypeCheck::Splice</code> everywhere</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/e5b94e343b237fa644ccff2abb583f0331ea74ad">make comment more precise</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/e7ab9ace23569bb2d5fe5550288efb8c0cbacd4b">refactor</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/9bb7de6dbf77b29298dae64ed5707e08061f065a">wrap macro-arg ASTs in thunks</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/203f97e264e1c61e18a61163eef49bba03b806f1">unify macro code paths</a></li>
+<li><a href="https://github.com/rakudo/rakudo/commit/02688057bb7e44557c614155370cd57209733e1c">make macro expansion ignore empty ASTs</a></li>
+</ul></li>
+<li>A number of commits to the <code>nqp</code> project:
+<ul>
+<li><a href="https://github.com/perl6/nqp/commit/1f54496f467ce76307afedb8e0992c1206aa7ea6">added <code>QAST::Unquote</code></a></li>
+<li><a href="https://github.com/perl6/nqp/commit/c2236072abf2f4d743f0b02d750fc5ac32b88f00">added <code>.evaluate_unquotes</code> method to QAST nodes</a></li>
+<li><a href="https://github.com/perl6/nqp/commit/2f7b14d66b5777f7f4d680cdbd787d284828c1f2">add <code>.evaluate_unquotes</code> to BVal and Block</a></li>
+<li><a href="https://github.com/perl6/nqp/commit/bc734932e9f7a8b63938fcb8ea8d23a057cd596f">shallow-clone nodes with kids</a></li>
+</ul></li>
+<li>Two more deliveries of the macros talk: one at French Perl Workshop in
+Strasbourg, and one at YAPC::Europe in Frankfurt.</li>
+</ul>
+
+<p>And once again, it's time to glance at what's ahead in the grant work. D3
+promises to deliver hygiene. As explained above, D2 already provides this; I
+actually could have declared the milestone D2 finished at the point I got
+unquotes working in Rakudo (in August), but it felt slightly disingenuous to do
+so, because unquotes aren't really useful until they're fully hygienic. Anyway,
+half of D3 ends up being already done. What still needs to be implemented is
+the <code>COMPILING::</code> pseudopackage, which gives the macro author several ways to
+opt out of hygiene. This is sometimes very powerful, even if it makes sense for
+it not to be the default.</p>
+
+<p>My grant reports have been sparse lately. I'm hopeful that the wait until the
+next one won't be as long.</p>
+
+</article>
+
+  </body>
+</html>

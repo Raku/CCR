@@ -1,0 +1,95 @@
+http://strangelyconsistent.org/blog/november-16-2009-digging-into-some-real-paperwork
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 16 2009 &#8212; digging into some real paperwork :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-17T00:42:00+01:00" pubdate="pubdate">17 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-16-2009-digging-into-some-real-paperwork">November 16 2009 &#8212; digging into some real paperwork</a></h1>
+  </header>
+
+  <p>64 years ago today, the first batch of German scientists is admitted to the US to help develop rockets. Their backgrounds were white-washed in what became known as <a href="http://en.wikipedia.org/wiki/Operation_Paperclip">Operation Paperclip</a>:</p>
+
+<div class='quote'><p>President Truman authorized Operation Paperclip in August 1945; however he expressly ordered that anyone found "to have been a member of the Nazi party and more than a nominal participant in its activities, or an active supporter of Nazi militarism" would be excluded.</p><p>Under this criterion many of the scientists recruited would have been ineligible. These included Wernher von Braun, Arthur Rudolph and Hubertus Strughold, who were all officially on record as Nazis and listed as a "menace to the security of the Allied Forces." All were cleared to work in the U.S. after having their backgrounds "bleached" by the military; false employment histories were provided, and their previous Nazi affiliations were expunged from the record. The paperclips that secured newly-minted background details to their personnel files gave the operation its name.</p></div>
+
+<p>I can't help getting anachronistic visions of the little overly helpful character in Microsoft Word, popping up and saying "I see you're trying to write a fake CV without all your previous Nazi affiliations. Would you like some assistance?"</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I started in on the accrued <a href="http://github.com/viklund/november/issues#list">lichtkindbugs</a> in the November github site. I quickly fixed <a href="http://github.com/viklund/november/issues#issue/20">20</a> and <a href="http://github.com/viklund/november/issues#issue/21">21</a>, and concluded that <a href="http://github.com/viklund/november/issues#issue/22">22</a> is a duplicate of 10.</p>
+
+<p>Now, what about that <a href="http://github.com/viklund/november/issues#issue/10">10</a>? Why has the user committed a deadly URL just by visiting the history page of an article? I go to investigate.</p>
+
+<pre><code>$ ack 'deadly URL'
+lib/November.pm
+246:    method error_page($message = "You have commited a deadly URL") {
+</code></pre>
+
+<p>Ah. It's the default error message. This is written in the pre-LTA era, so I'll just change it to "An internal error occurred. Apologies." and move on.</p>
+
+<p>I'm not one to throw rocks, by the way. The <a href="http://november-wiki.org/in">login page</a> still says "Everything you say can, and will, be used against you. Please put on your own mask first, then help others." because I was in a less-than-serious mood when I made it. I have no ideas what to write there instead, though, so I'm leaving it. Others are welcome to contribute a better wording.</p>
+
+<pre><code>$ ack error_page
+lib/November.pm
+32:        my $d = Dispatcher.new( default =&gt; { self.error_page } );
+246:    method error_page($message = "An internal error occurred. Apologies.") 
+kaye:november masak$ vi lib/November.pm
+</code></pre>
+
+<p>Look at that. It's referred to exactly once, namely when the dispatcher finds nothing better to do with its input. Could it be...?</p>
+
+<p>Yes, it could. We have all these actions, but no <code>history</code> action.</p>
+
+<pre><code>$d.add: [
+    [''],                     { self.view_page },
+    ['view', /^ &lt;-[?/]&gt;+ $/], { self.view_page(~$^page) },
+    ['edit', /^ &lt;-[?/]&gt;+ $/], { self.edit_page(~$^page) },
+    ['in'],                   { self.log_in },
+    ['out'],                  { self.log_out },
+    ['recent'],               { self.list_recent_changes },
+    ['all'],                  { self.list_all_pages },
+];
+</code></pre>
+
+<p>So now I know the cause of the bug. I won't add the missing action today, but that's a perfect task for some other day.</p>
+
+<p>Also, I'm seriously considering again changing the error message I just changed, to something more specific like "There's no action 'history'. Did you spell the URL correctly?" or something similar, seeing as it's only being used when actions are not found.</p>
+
+<p>Ah. Finally some November action. I'm pleased. I had forgotten the warm feelings I have for this little wiki engine. It's starting to come back now.</p>
+
+</article>
+
+  </body>
+</html>

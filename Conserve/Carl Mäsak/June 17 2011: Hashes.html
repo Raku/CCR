@@ -1,0 +1,97 @@
+http://strangelyconsistent.org/blog/june-17-2011-hashes
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 17 2011: Hashes :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-18T00:21:07+02:00" pubdate="pubdate">18 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-17-2011-hashes">June 17 2011: Hashes</a></h1>
+  </header>
+
+  <p>Hashes are like phone books. We use them to go from one thing (like a name) to another thing (like a phone number).</p>
+
+<pre><code>my %phone_numbers =
+    "Ada"     =&gt; "555-414141",
+    "Charles" =&gt; "555-567123",
+    "Ernest"  =&gt; "555-832238";
+</code></pre>
+
+<p>Hashes are written with a percent sign (<code>%</code>) up front. Not to be confused with when the percent sign is used as the remainder operator. That's a totally different usage.</p>
+
+<p>We index hashes much like we index arrays. But instead of <code>[]</code>, we tend to use <code>&lt;&gt;</code>:</p>
+
+<pre><code>say %phone_numbers&lt;Ada&gt;;    # "555-414141"
+</code></pre>
+
+<p>In fact, the above way only works if what we're indexing with is a literal string value. If it's a variable or something more complicated, we need to use <code>{}</code>:</p>
+
+<pre><code>my $inventor = "Charles";
+say %phone_numbers{$inventor};  # "555-567123"
+</code></pre>
+
+<p>Assignment to hash values works in the same way.</p>
+
+<p>Apart from that, there are plenty of useful methods on hashes:</p>
+
+<pre><code>say %phone_numbers.elems;            # "3"
+say join " ", %phone_numbers.keys;   # "Charles Ada Ernest"
+say join " ", %phone_numbers.values; # "555-567123 555-414141 555-832238"
+</code></pre>
+
+<p>The lists of things returned from <code>.keys</code> and <code>.values</code> will come out in some unspecified order. This is because hashes, unlike the real phone book, aren't sorted. We basically want hashes as a fast, string-based indexing system. And if it's supposed to be fast, it can't also be ordered, because it would take too long to add new things to a hash.</p>
+
+<p>It's worth knowing about something in hashes called <em>autovivification</em>. That's a fancy term for this effect:</p>
+
+<pre><code>my %h;
+say %h.elems;       # "0", of course
+
+say %h&lt;chocolate&gt;;  # "Any()", means there's nothing there
+say %h.elems;       # "0", still
+
+%h&lt;chocolate&gt;++;    # here is where the autoviv happens
+say %h.elems;       # "1"
+
+say %h.keys;        # "chocolate"
+say %h.values;      # "1"
+</code></pre>
+
+<p>In many other languages, you get an error if you increment a hash entry that doesn't exist. In Perl, incrementing something that isn't there causes it to spring into existence. We'll often use that to our advantage.</p>
+
+<p>I have to go; I believe that's Ada on the other line. See you tomorrow for... some other topic.</p>
+
+</article>
+
+  </body>
+</html>

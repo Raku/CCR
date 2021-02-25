@@ -1,0 +1,212 @@
+http://strangelyconsistent.org/blog/second-system-syndrome-done-wrong
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Second system syndrome done wrong :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-10-29T17:09:00+02:00" pubdate="pubdate">29 Oct, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/second-system-syndrome-done-wrong">Second system syndrome done wrong</a></h1>
+  </header>
+
+  <p>I'm mostly happy about the Perl 6 specification. Not all of you may
+know what it is, so here's a short summary: it consists of several numbered
+synopses, each of which describes a certain part of Perl 6. Some of the
+synopses sprang into existence as summaries of correspondingly-numbered
+"apocalypses" &mdash; those are the original Perl 6 design documents written by
+Larry Wall as a summary of the conclusions of reading through the RFCs. The
+apocalypses are way out-of-date nowadays; they're littered with updates that
+alert the reader to how syntax and other things are nowadays, but many of these
+updates are also out of date. The real specification sits in the synopses;
+that's where the language is defined.</p>
+
+<p>That's the specification. Several synopses, each of them about some
+topic. Sometimes <code>STD.pm6</code> is thrown in as being part of the specification,
+too, especially as it still contains ideas that haven't made it into the
+synopses yet.</p>
+
+<h2>Whirlpool</h2>
+
+<p>As different implementations (mostly Rakudo nowadays) catch up with the
+specification and actually implement it, we become increasingly confident
+that it actually works as specified. That's code for "we go in and change it
+a lot until the specification agrees with the implementation". This is a
+beneficial process, and it's part of why I really like Perl 6: we're not
+afraid to adjust our dreams to conform with reality.</p>
+
+<p>This back-and-forth between implementations and specification is of course
+what the in-house term "whirlpool development" is all about. It's a sort of
+antithetical stance to "waterfall development", this notion that work should
+proceed in discrete stages, from analysis via design to implementation and
+then testing. The whirlpool model maintains that later stages (like
+implementation and testing) affect earlier stages (like analysis and design).
+And boy, is that ever true!</p>
+
+<p>In fact, this has sunk so deep into our mental model of the project, that we
+don't really trust a synopsis until it's been implemented. The synopses are
+the <a href="http://en.wikipedia.org/wiki/Rough_consensus">rough consensus</a> that we've
+all agreed upon so far, but until there's running code too, the synopsis is
+assumed to come with a big grain of NaCl.</p>
+
+<h2>Slushy</h2>
+
+<p>The terminology that seems to emerge for this is that a synopsis becomes
+increasingly <strong>frozen</strong> over time, but before it reaches that point through
+actual empirical implementing, it's <strong>slushy</strong> or even <strong>liquid</strong>. Today,
+we have a few frozen bits of spec, lots of slushy bits, and a few liquid bits.
+Slushy is good; it means that we have some backing from implementations, but
+the spec and the implementations don't quite agree yet. I like that part, and
+since I'm an early adopter by temperament, I'm fully prepared to work under
+such conditions.</p>
+
+<p>Concrete example: Larry made some changes to <a href="http://github.com/perl6/specs/commit/9e98d528793095ae3c6e47837a1bf7dd8aea091a">multi
+semantics</a>;
+Jonathan got visibly worried, but couldn't quite put his finger on
+why. Recently he put his worries <a href="http://6guts.wordpress.com/2010/10/17/wrestling-with-dispatch/">into
+words</a>, which
+unsurprisingly were backed up by implementation concerns. Larry obliged and
+<a href="http://github.com/perl6/specs/commit/60aef3acd56f47b5a78721ca886b9fd3e22b366e">refined the
+semantics</a>
+to address those concerns. The implementations drive the specification.</p>
+
+<p>That last example is also a suitable instance of another metaphor: various
+parts of the spec seem to undergo some kind of stochastic hill-climbing in a
+hypothetical space. Along the way, it might reach several local maxima, in
+which some of the concerns have been addressed, but there is still gnashing
+of teeth over others. Usually, when we reach a global maximum, everybody just
+knows: this is it. (Well, at least to the extent that hill-climbing guarantees
+that the maximum really is global.)</p>
+
+<p>All this is emphasized in the Perl 6 motto "Second System Syndrome Done Right".
+Redesigning things on the basis of empirical feedback. And it's pretty good.</p>
+
+<h2>Liquid</h2>
+
+<p>There are also a couple of pieces of spec where I think we haven't found the
+global maximum yet, or even a local one. That's what I really set out to write
+about today. I feel a bit like <a href="http://blog.plover.com/">MJD</a> now; what you
+read so far was only an introduction of sorts.</p>
+
+<p>Let's split things into two parts: <strong>slight unease</strong> and <strong>abstraction
+astronautism</strong>. The former are parts where I believe we're on the right track
+but not quite there yet. The latter are parts that I believe were too
+ambitiously designed from the beginning, and that are probably better thrown
+out wholesale. The former requires out-of-the-box thinking; the latter would
+need something more like out-of-the-box courage.</p>
+
+<h2>Slight unease</h2>
+
+<ul>
+<li><p>The angle brackets <code>&lt;foo bar baz&gt;</code> provide the new, shorter <code>qw</code> syntax in
+Perl 6: the example gives you the list <code>('foo', 'bar', 'baz')</code>. But people
+keep using this construct, essentially a string quoting mechanism,
+expecting to get numbers out when they write a number. Due to this, the
+spec contains special concessions for any items in the list that look
+like numbers; each such item will be stored as "an object with both a string
+and a numeric nature". This unnerves me; I'd be happier if the construct
+always returned pure strings, that I'd then have to convert manually. I
+cannot quite put my finger on why I think this is bad and could create
+problems down the road; I just do.</p></li>
+<li><p>A related, but almost the opposite kind of problem: if I create a
+<code>MAIN</code> sub with an <code>Int</code> parameter, there's no command-line argument that
+would match that, since all the arguments coming in from the command line
+are, by definition, strings. I really like that we use signatures and multi
+subs to match command-line arguments; that just feels so right. But it feels
+like a waste to never be able to match an <code>Int</code> like that. Whereas I
+consider the previous situation to have too much magic in it, here I feel
+there's too little. I'm not at all sure that "an object with both a string
+and numeric nature" would be a good solution here either; I'd prefer
+something less icky that still solves the problem.</p></li>
+<li><p>I <em>used</em> to be slightly uneasy about the way the empty list <code>()</code> worked.
+Now, after some <a href="http://github.com/perl6/specs/commit/2f561420223fe5a44a5185e7fb7e9e8be536298e">spec
+changes</a>,
+I'm mostly relieved. Now sorear++ is uneasy instead, for (he says) reasons
+having to do with optimization.</p></li>
+<li><p>Most of <a href="http://perlcabal.org/syn/S05.html">synopsis 5</a> (about regexes and
+rules) is really frozen by now, thanks to some excellent implementations.
+(The really slushy phase was sometime in 2006, if I recall correctly.)
+But last time we talked about the <code>&lt;?after ...&gt;</code> assertion, it seemed to me
+that there were more questions about it than there were answers in the
+synopsis. "Lookbehind" assertions, according to S05, work by "reversing the
+syntax tree and looking for things in the opposite order going to the left".
+Of course, that only works for syntax trees without captures and other
+side effects, so the spec also says "It is illegal to do lookbehind on a
+pattern that cannot be reversed." Or, in other words, we haven't reached the
+point yet where we need to do lookbehind with those more tricky syntax
+trees. Fair enough.</p></li>
+</ul>
+
+<h2>Abstraction astronautism</h2>
+
+<ul>
+<li><p>Let's start with a sunshine story: the <a href="http://perlcabal.org/syn/S32/Temporal.html"><code>Temporal
+spec</code></a>. It used to be really
+bad, but after work that <a href="http://strangelyconsistent.org/blog/its-about-time">I started</a> and <code>Kodi++</code> and <code>supernovus++</code> finished, we now have a sane
+spec <em>and</em> a full Rakudo implementation. The secret sauce? Throw everything
+out and just copy someone else. In this case, we mostly copied the successful
+<code>DateTime</code> CPAN module, with some helpful experience-based tweaks suggested
+by <code>autarch++</code>, its original author. Essential to this type of wholesale
+rewrite is that it be done by one or at most two people. The many-cooks
+syndrome is usually what got us into trouble in the first place.</p></li>
+<li><p>The <a href="http://perlcabal.org/syn/S16.html"><code>IO</code> spec</a> is a mess. Most of it
+is completely unimplemented. Some parts of it, if I recall correctly, are
+unimplementable, or would be a big mistake to implement as spec'd. It's my
+hope that this synopsis will follow the example of the <code>Temporal</code> one,
+and that someone would pick it up and just rewrite it from scratch. As an
+example of the atrocities perpetrated in this area, someone once set out to
+design a <code>Tree</code> core data type that would encompass such diverse structures
+as file system hierarchies and XML DOM structures. This, in my view,
+epitomizes abstraction astronautism. The effort with the <code>Tree</code>
+specification seems to have fallen on its own absurdity.</p></li>
+<li><p>Sometimes I question whether Perl 6 should really <a href="http://perlcabal.org/syn/S19.html">embrace and extend Unix
+command-line options</a> in the way S19
+says it should. What really
+seems over-the-top to me is the way one can specify namespaced options by
+means of a special type of "parenthesizing" flag &mdash; think SGML tags.
+This kvetch could easily have fallen under the "slight unease" section, but
+I sincerely believe that some of the more ambitious parts of S19 should just
+go away. Having it conform better with the <code>MAIN</code> spec would be nice, on the
+other hand.</p></li>
+</ul>
+
+<p>A third category would be "areas where I wish there were more spec, period".
+But searching for those is the objective of being all over the place with
+Rakudo, writing different application code, trying new and exciting things.
+Such discussion takes place all the time on IRC, over pieces of code, or on
+the p6l list. So I don't have a pent-up need to blog about those.</p>
+
+</article>
+
+  </body>
+</html>

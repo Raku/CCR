@@ -1,0 +1,174 @@
+http://strangelyconsistent.org/blog/july-1-2012-hanoi-as-a-black-box
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 1 2012 &#8212; Hanoi as a black box :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-02T01:10:01+02:00" pubdate="pubdate">2 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-1-2012-hanoi-as-a-black-box">July 1 2012 &#8212; Hanoi as a black box</a></h1>
+  </header>
+
+  <p>So, here's a fun challenge. We're gonna write the Hanoi game <em>first</em>, despite
+it being in the middle of the adventure game. Then we start writing the
+adventure game, and when the time comes, we'll plug Hanoi into the adventure
+game. If we do it right, it should be fairly easy. If we do it wrong, it will
+hurt immensely.</p>
+
+<p>Think of it as an exercise in design, extensibility, and requirements
+prediction.</p>
+
+<p>Now, I've done this before. I wrote the Hanoi game basically as a class in the
+adventure game. This time around it'll be an independent part. The Hanoi game
+will know nothing about adventurers or inventories or quests. It will be a
+brain in a vat who happens to be really good at the rules of the one-player
+game Towers of Hanoi.</p>
+
+<p>Here are our design primitives:</p>
+
+<blockquote>
+  <p>The player interacts with the game by moving <strong>disks</strong> between three <strong>rods</strong>
+which we call 'left', 'middle', and 'right'. We label the disks by size, and
+refer to them as the tiny, small, medium, large, and huge disk, respectively.
+For aesthetic reasons, a larger disk may never be positioned on top of a
+smaller disk. The disks all start out on the left rod; you <strong>win</strong> by moving
+all of them to the right rod.</p>
+</blockquote>
+
+<p>This starts us down the road of understanding the language and the bounded
+context we're dealing with. There are still many details that need sorting out,
+though.</p>
+
+<p>Specifically, the adventure game will influence and distort the way the Hanoi
+game works:</p>
+
+<ul>
+<li><p>The adventure game is open-ended, and the Hanoi game doesn't shut down or
+finish just because you unlock its achievement. So it's actually possible
+to <em>un-</em>unlock the achievement too. You can regress in the Hanoi game as
+well as progress.</p></li>
+<li><p>For reasons having to do with finishing the game, it is important that the
+tiny disk be possible to pick up and carry with you. However, this should
+not be possible to do with the larger disks, because if it's possible to
+pick up disks and place them back anywhere, the Hanoi game ceases to be
+a challenge.</p></li>
+<li><p>You have to be able to unlock the Hanoi achievement and take the tiny disk
+with you without the achievement locking back up again. However, moving
+disks around beyond that will re-lock the achievement.</p></li>
+</ul>
+
+<p>We'll pick an approach to designing the Hanoi game that may be new to some
+readers. We will not talk about data or algorithms at all. Instead we will
+consider the game a black box, and only focus on behaviors (methods),
+successful responses (events), and unsuccessful responses (exceptions). These
+will completely occupy us for the rest of this post.</p>
+
+<p>Here are the public methods we know we need:</p>
+
+<ul>
+<li><code>move($source, $target)</code> &mdash; move the top disk of one rod to another</li>
+<li><code>remove($disk)</code> &mdash; remove a disk from the game</li>
+<li><code>add($disk, $target)</code> &mdash; add a disk to the top of some rod</li>
+</ul>
+
+<p>Again, note that a "regular" Hanoi game only deals with the first one, but we
+know we'll have the adventure game as a client, and that client will need to
+remove the tiny disk.</p>
+
+<p>Here are the events that represent successful responses:</p>
+
+<ul>
+<li><code>Hanoi::DiskMoved</code> &mdash; a <code>:disk</code> was moved from <code>:source</code> rod to <code>:target</code> rod</li>
+<li><code>Hanoi::DiskRemoved</code> &mdash; a <code>:disk</code> was removed from <code>:source</code> rod</li>
+<li><code>Hanoi::DiskAdded</code> &mdash; a <code>:disk</code> was added to <code>:target</code> rod</li>
+<li><code>Hanoi::AchievementUnlocked</code> &mdash; we just won the hanoi...</li>
+<li><code>Hanoi::AchievementLocked</code> &mdash; ...aaaand we somehow screwed it up again</li>
+</ul>
+
+<p>We see that we have one event each for each of the three public methods. That's
+quite normal. And then we also have events for emergent change of state, when
+we "win" and "un-win" the game. The rule of thumb for what we need events for
+in this style of designing things is that the black Hanoi box emits one event
+per change it itself needs to keep track of, so if we would lose our black box,
+we could theoretically get a new one, feed it a list of past events, and it
+would be able to pick up the work from there. So, one event per "important"
+change.</p>
+
+<p>Now, those are the successful return values from the black box. Let's also look
+at the exceptional return values, those that don't change the state and just
+report back why it won't do what you told it to:</p>
+
+<ul>
+<li><code>X::Hanoi::NoSuchRod</code> &mdash; no, you can't do something with the rod <code>:name</code> of type <code>:rod</code> (source or target) because it doesn't exist</li>
+<li><code>X::Hanoi::NoSuchDisk</code> &mdash; no, you can't <code>:action</code> (add or remove) a <code>:disk</code> that doesn't exist either</li>
+<li><code>X::Hanoi::RodHasNoDisks</code> &mdash; no, you can't move disks from rod <code>:name</code> that doesn't have any disks</li>
+<li><code>X::Hanoi::DiskHasBeenRemoved</code> &mdash; no, you can't <code>:action</code> (move or remove) a <code>:disk</code> because it's not currently in the game</li>
+<li><code>X::Hanoi::DiskAlreadyOnARod</code> &mdash; no, you can't add a disk from outside the game that is already in the game</li>
+<li><code>X::Hanoi::ForbiddenDiskRemoval</code> &mdash; no, you can't remove that <code>:disk</code> from the game</li>
+<li><code>X::Hanoi::LargerOnSmaller</code> &mdash; no, you can't put a <code>:larger</code> disk on a <code>:smaller</code> one according to the rules</li>
+<li><code>X::Hanoi::CoveredDisk</code> &mdash; no, you can't move or remove that <code>:disk</code>, because it's <code>:covered_by</code> all these other disks</li>
+</ul>
+
+<p>These fall into approximate categories: first, four "out of bounds" type
+responses, where the input doesn't make sense because there is nothing there.</p>
+
+<p>The next one (<code>X::Hanoi::DiskAlreadyOnARod</code>) is the opposite; trying to
+introduce duplicate objects into the game. (The adventure game won't make that
+possible unless hacked; but it feels prudent to prevent it anyway.)</p>
+
+<p>The next one after that (<code>X::Hanoi::ForbiddenDiskRemoval</code>) prevents the Hanoi
+game from becoming trivial when embedded in an adventure game where you can
+just take stuff and put them back in any order. I don't know what to call that
+category. Anti-corruption countermeasure? The "remove a disk" thing is already
+a concession for the surrounding adventure game, but we box it in and prevent
+it from going too far.</p>
+
+<p>And the final two are basically upholding the rules of the game. They are
+"illegal operation" exceptions, while the initial two/three are "illegal
+argument" excpetions, and the rest are somewhere in the murky hinterland
+between those endpoints.</p>
+
+<p>Ok, so we have our constituent parts. Tomorrow we'll be writing tests using
+the behaviors/events/exceptions introduced today.</p>
+
+<p>If you're curious about where we're heading, I already pushed what I'll talk
+about tomorrow. It's the
+<a href="https://github.com/masak/crypt/blob/2fecc9137c1a24bcb20eb8527c7e86a39ee20a1c/crypt.pl"><code>crypt.pl</code></a>
+file in the <code>crypt</code> repo. But I'll be going through the process tomorrow commit
+by commit. This is a very nice way to write code.</p>
+
+</article>
+
+  </body>
+</html>

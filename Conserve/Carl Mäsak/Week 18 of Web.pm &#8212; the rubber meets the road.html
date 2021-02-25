@@ -1,0 +1,63 @@
+http://strangelyconsistent.org/blog/week-18-of-webpm-the-rubber-meets-the-road
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 18 of Web.pm &#8212; the rubber meets the road :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-10-24T10:42:00+02:00" pubdate="pubdate">24 Oct, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-18-of-webpm-the-rubber-meets-the-road">Week 18 of Web.pm &#8212; the rubber meets the road</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>"Moses in teh r00lz sez we sposed to kill her dead wif rox. Whutchu fink?" srsly, dey dont care whut Jebus sez, tho, dis is a trap to maek Jebus luk bad. Jebus din say nuffin to dem and wroted sumfink in da durt. Dose d00dz din STFU, askin till Jebus sez, "d00ds, if yur so gud, n haz no invisivle error, u can haz rox for teh throwin." an Jebus pwned dos fairseez an whent bak to His writin. teh fairzeez sez, "hez got us der" n left, sos Jebus wuz lone wif the woman. Jebus luked up an sez "WTF? Where dem d00ds go? nobuddi wans rox?" she sez "No." An Jebus sez, "me neever. Go way an be gud kitteh."</i> &#8212; John 8:5-11</dd>
+</dl>
+
+<p>This week:</p>
+
+<ul>
+<li>I did the last bit of config-ing to get Druid to run as a web app on feather. It's still non-trivial to set up a thing like that, mainly because of <code>PERL6LIB</code>. A bit tellingly, I didn't use proto to ease the pain, even though I created it. In fact, proto is currently bad at setting <code>PERL6LIB</code> correctly for projects with dependencies. This will all get better as the <code>installed-modules</code> branch lands, though.</li>
+<li>I also needed to tweak <code>Web::Handler::HTTPDaemon</code> slightly to <a href="http://github.com/masak/web/commit/e24dabb7e5af79e446e4dc4107eb4a389313925f">allow for the hostname to be passed</a>.</li>
+<li>After that, we had Druid running on feather for a few minutes! \o/ You can see my exuberant joy on <a href="http://irclog.perlgeek.de/perl6/2009-10-19#i_1618009">the #perl6 channel</a>. jnthn++ joined in and we played a couple of moves.</li>
+<li>As we played for a couple of minutes, we had about three connection drops due to segmentation faults. All this code that Druid and Web.pm pull in to make Rakudo do their bidding, it seems to be pushing the limits. Probably a Parrot memory management bug to be discovered there or something. Anyway, it goes without saying that things need to get much more stable (and faster) before one can even think of using Web.pm for anything serious.</li>
+<li>Having the Druid web app exposed to daylight in that way made me see more clearly what the next steps for it would be. I put that into <a href="http://github.com/masak/druid/blob/master/README">the README file</a> of Druid.</li>
+<li>The rest of the week I was lost and kinda directionless, so I finally started in on writing the <a href="http://github.com/masak/web/blob/master/spec/Core.pod">Core spec</a>. Not done yet, but it feels like a good start. Still need to document all the methods of <code>Web::Request</code> and <code>Web::Response</code>.</li>
+</ul>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

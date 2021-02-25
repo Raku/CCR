@@ -1,0 +1,297 @@
+http://strangelyconsistent.org/blog/parsing-indented-text
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Parsing indented text :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-03-23T01:12:03+01:00" pubdate="pubdate">23 Mar, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/parsing-indented-text">Parsing indented text</a></h1>
+  </header>
+
+  <p>"How can I parse indented text with a grammar?" has turned into a frequently-asked question recently. People want to parse Python and CoffeScript.</p>
+
+<p>My fix is double. First, here's <a href="https://github.com/masak/text-indented">Text::Indented</a>, a module that does it.</p>
+
+<p>Secondly, I'll now recreate my steps in creating this module. Each section will have a description of what needs to be done, a failing test, and then the appropriate implementation code to pass the test.</p>
+
+<h2>Quite a simple indent</h2>
+
+<p>We want to be able to <a href="https://github.com/masak/text-indented/commit/08bfb4fd42113774a635da81074728a2afcca2c4">handle indentation <em>at all</em></a>.</p>
+
+<pre><code>    my $input = q:to/EOF/;
+    Level 1
+        Level 2
+    EOF
+
+    parses_correctly($input, 'single indent');
+</code></pre>
+
+<p>Well, that's easy. This grammar will do that:</p>
+
+<pre><code>regex TOP { .* }
+</code></pre>
+
+<p>(<a href="http://www.amazon.com/Test-Driven-Development-By-Example/dp/0321146530">Kent Beck</a> told me I can cheat, so I cheat!)</p>
+
+<h2>Too much indent for our own good</h2>
+
+<p>But there are some indent jumps that we're not allowed to make. Anything that indents more than one step at a time, basically. <a href="https://github.com/masak/text-indented/commit/a1609e603dd5062c3a93e6d5d8219c82b533d8ab">Let's check for that</a>.</p>
+
+<pre><code>    my $input = q:to/EOF/;
+    Level 1
+            Level 3!
+    EOF
+
+    fails_with($input, Text::Indented::TooMuchIndent);
+</code></pre>
+
+<p>This takes a little more code to fix. We declare an exception, start parsing lines, and separate each line into indent, extra whitespace, and the rest of the line. Finally we check the line's indent against the current indent &mdash; mediated by the contextual variable <code>@*SUITES</code>. You'll see where I'm going with this in a minute.</p>
+
+<pre><code>class TooMuchIndent is Exception {}
+
+constant TABSTOP = 4;
+
+regex TOP {
+    :my @*SUITES = "root";
+
+    &lt;line&gt;*
+}
+
+sub indent { @*SUITES.end }
+
+regex line {
+    ^^ (&lt;{ "\\x20" x TABSTOP }&gt;*) (\h*) (\N*) $$ \n?
+
+    {
+        my $new_indent = $0.chars div TABSTOP;
+
+        die TooMuchIndent.new
+            if $new_indent &gt; indent() + 1;
+    }
+}
+</code></pre>
+
+<p>(The <code>&lt;{ "\\x20" x TABSTOP }&gt;</code> is a bit of a workaround. In Wonderful Perl 6 we would be able to write just <code>[\x20 ** {TABSTOP}]</code>.)</p>
+
+<h2>Actual content</h2>
+
+<p>Having laid the groundworks, let's get our hands dirty. We want the content to end up, line by line, <a href="https://github.com/masak/text-indented/commit/b3e390b16ea5ef09fb2e0ba0c1eaabdf8f312c81">on the right scoping level</a>.</p>
+
+<pre><code>    my $input = q:to/EOF/;
+    Level 1
+        Level 2
+    EOF
+
+    my $root = parse($input);
+
+    isa_ok $root, Text::Indented::Suite;
+    is $root.items.elems, 2, 'two things were parsed:';
+    isa_ok $root.items[0], Str, 'a string';
+    isa_ok $root.items[1], Text::Indented::Suite, 'and a suite';
+</code></pre>
+
+<p>We need a <code>Suite</code> (term borrowed from Python) to contain the indented lines:</p>
+
+<pre><code>class Suite {
+    has @.items;
+}
+</code></pre>
+
+<p>This requires a slight amending of <code>TOP</code>:</p>
+
+<pre><code>regex TOP {
+    :my @*SUITES = Suite.new;
+
+    &lt;line&gt;*
+
+    { make root_suite }
+}
+</code></pre>
+
+<p>The logic in <code>line</code> to create new suites with new indents:</p>
+
+<pre><code># ^^ (&lt;{ "\\x20" x TABSTOP }&gt;*) (\h*) (\N*) $$ \n?
+
+my $line = ~$2;
+
+if $new_indent &gt; indent() {
+    my $new_suite = Suite.new;
+    add_to_current_suite($new_suite);
+    increase_indent($new_suite);
+}
+
+add_to_current_suite($line);
+</code></pre>
+
+<p>For all this, I had to define some convenience routines:</p>
+
+<pre><code>sub root_suite { @*SUITES[0] }
+sub current_suite { @*SUITES[indent] }
+sub add_to_current_suite($item) { current_suite.items.push($item) }
+sub increase_indent($new_suite) { @*SUITES.push($new_suite) }
+</code></pre>
+
+<h2>But what about de-indenting?</h2>
+
+<p>We've handled indenting and creating new suites nicely, but <a href="https://github.com/masak/text-indented/commit/3f9b71b7a8f4c0f35cc1f0c97d4bad898bcaa227">what about de-indenting</a>?</p>
+
+<pre><code>    my $input = q:to/EOF/;
+    Level 1
+        Level 2
+    Level 1 again
+    EOF
+
+    my $root = parse($input);
+
+    is $root.items.elems, 3, 'three things were parsed:';
+    isa_ok $root.items[0], Str, 'a string';
+    isa_ok $root.items[1], Text::Indented::Suite, 'a suite';
+    isa_ok $root.items[2], Str, 'and a string';
+</code></pre>
+
+<p>Easily fixed with an <code>elsif</code> case in our <code>line</code> regex:</p>
+
+<pre><code>elsif $new_indent &lt; indent() {
+     decrease_indent;
+}
+</code></pre>
+
+<p>And a convenience routine:</p>
+
+<pre><code>sub decrease_indent { pop @*SUITES }
+</code></pre>
+
+<h2>Hah, you missed multi-step de-indents!</h2>
+
+<p>Indenting multiple steps at a time isn't allowed... but <a href="https://github.com/masak/text-indented/commit/4ee499aace9b6110c3dce23bcbb43708b7ddad87">de-indenting multiple steps</a> is. (This may actually be the strongest point of this kind of syntax. It corresponds to the <code>} } }</code> or <code>end end end</code> case of languages with explicit block delimiters, and is arguably neater.)</p>
+
+<pre><code>    my $input = q:to/EOF/;
+    Level 1
+        Level 2
+            Level 3
+            Level 3
+    Level 1 again
+    EOF
+
+    my $root = parse($input);
+
+    is $root.items.elems, 3, 'three things on the top level';
+    is $root.items[1].items[1].items.elems, 2, 'two lines on indent level 3';
+</code></pre>
+
+<p>Oh, but we only need to change one line in the implementation to support this:</p>
+
+<pre><code>decrease_indent until indent() == $new_indent;
+</code></pre>
+
+<h2>And a half!</h2>
+
+<p>Now for some random sins. You're not supposed to <a href="https://github.com/masak/text-indented/commit/243291ba31e2a77b89bd47c33aadc14cd0dd8366">indent partially</a>, a non-multiple of the indent size.</p>
+
+<pre><code>    my $input = q:to/EOF/;
+    Level 1
+          Level 2 and a half!
+    EOF
+
+    fails_with($input, Text::Indented::PartialIndent);
+</code></pre>
+
+<p>So we introduce a new exception.</p>
+
+<pre><code>class PartialIndent is Exception {}
+</code></pre>
+
+<p>And a condition that checks for this:</p>
+
+<pre><code># ^^ (&lt;{ "\\x20" x TABSTOP }&gt;*) (\h*) (\N*) $$ \n?
+
+my $partial_indent = ~$1;
+
+die PartialIndent.new
+    if $partial_indent;
+</code></pre>
+
+<h2>What do you mean, "jumped the gun"?</h2>
+
+<p>Secondly, <a href="https://github.com/masak/text-indented/commit/8b21fc63b18707b3f2bf1b7700b325cf7607df80">you're not meant to indent the first line</a>; it has to be at indentation level 0.</p>
+
+<pre><code>    my $input = q:to/EOF/;
+        Level 2 already on the first line!
+    EOF
+
+    fails_with($input, Text::Indented::InitialIndent);
+</code></pre>
+
+<p>We introduce another exception for that.</p>
+
+<pre><code>class InitialIndent is Exception {}
+</code></pre>
+
+<p>And a condition that matches our test case.</p>
+
+<pre><code>die InitialIndent.new
+    if !root_suite.items &amp;&amp; $new_indent &gt; 0;
+</code></pre>
+
+<h2>The importance of <code>handles</code></h2>
+
+<p>As a final clean-up refactor, <a href="https://github.com/masak/text-indented/commit/71e81bfb082d1afc88c32a51763f25c430167da7">let's change <code>@.items</code> in <code>Suite</code></a> to this:</p>
+
+<pre><code>class Suite {
+    has @.items handles &lt;push at_pos Numeric Bool&gt;;
+}
+</code></pre>
+
+<p>It makes <code>Suite</code> more <code>Array</code>-like. Piece by piece:</p>
+
+<ul>
+<li><code>push</code> allows us to push directly into a <code>Suite</code> object, instead of into its <code>.items</code> attribute.</li>
+<li><code>at_pos</code> allows us to index <code>Suites</code> directly. Things like <code>$root.items[1]</code> in the tests turn into <code>$root[1]</code>.</li>
+<li><code>Numeric</code> gets rid of the <code>.elems</code> calls for us in the tests, and we can write <code>$root.items.elems</code> as just <code>+$root</code> instead.</li>
+<li>Finally, <code>Bool</code> allows us to write <code>!root_suite.items</code> as just <code>!root_suite()</code>.</li>
+</ul>
+
+<p>Somehow I liked doing this refactor last, after all the dust around the implementation had settled. It makes the API much more enjoyable to use, and hides a bunch of unnecessary steps along the way. I really like the way <code>handles</code> saves a bunch of boring code.</p>
+
+<h2>Enjoy</h2>
+
+<p>Anyway, that's parsing of indented code. Not as tricky as I thought.</p>
+
+<p>Now I fear I've damned myself to contribute this solution to <a href="https://github.com/arnsholt/snake/">arnsholt++'s budding py3k implementation</a>. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

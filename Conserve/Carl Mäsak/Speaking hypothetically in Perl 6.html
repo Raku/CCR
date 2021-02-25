@@ -1,0 +1,206 @@
+http://strangelyconsistent.org/blog/speaking-hypothetically-in-perl-6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Speaking hypothetically in Perl 6 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-07-02T21:25:00+02:00" pubdate="pubdate">2 Jul, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/speaking-hypothetically-in-perl-6">Speaking hypothetically in Perl 6</a></h1>
+  </header>
+
+  <p>So, arrays and hashes are considered central enough in Perl that they each have their own sigil, as well as a dedicated circumfix constructor:</p>
+
+<pre><code>Type    Sigil   Circumfix
+====    =====   =========
+Array   @       [ ]
+Hash    %       { }
+</code></pre>
+
+<p>Apart from those, we consider scalars quite important, but they're really "containers of anything", including (references to) arrays and hashes. The <code>$</code> sigil simply means "untyped". Because of this, there's not really a circumfix constructor.</p>
+
+<pre><code>Type    Sigil   Circumfix
+====    =====   =========
+<strong>Scalar  $       N/A</strong> 
+Array   @       [ ]
+Hash    %       { }
+</code></pre>
+
+<p>But there's one more sigil; one which has had to fight a bit more for its place in the food chain... but this is the one that really makes the hackers over at "Lambda the Ultimate" smile. Introducing the <code>&amp;</code> sigil:</p>
+
+<pre><code>Type    Sigil   Circumfix
+====    =====   =========
+Scalar  $       N/A
+Array   @       [ ]
+Hash    %       { }
+<strong>Block   &amp;       { }</strong> 
+</code></pre>
+
+<p>Ok, hold on a minute. <code>Block</code>? A block of what?</p>
+
+<p>So here's the really neat thing. In many situations in perfectly normal, sane programming, we end up with wanting to execute some code, just <em>not right now</em>. Just as we'd reach for an array or a hash when we want to collect some structured data for later, we can reach for this block thingy when we want to collect some executable code for later.</p>
+
+<p>If you haven't done this, I can see how it all sounds terribly esoteric, even pointless. You'd go "Just wait until later, and run the code at that point rather than passing around un-run code!", and if a <code>Block</code> was only what I've told you so far, I'd agree with you.</p>
+
+<p>But it's more. A <code>Block</code> is automatically a <em>closure</em> — and this is where people who've grokked this normally use big words (like "it closes over its lexical environment!") and the eyes of people who are struggling to understand glaze over. So I'll go slow.</p>
+
+<p>Take a look at the <code>Counter</code> class in <a href="http://strangelyconsistent.org/blog/laziness-for-the-impatient">this blog post</a>. Hm, I'll reproduce it here for you:</p>
+
+<pre><code>class LazyIterator {
+    has $!it;
+
+    method get() {
+        $!it();
+    }
+}
+
+class Counter is LazyIterator {
+    method new(Int $start) {
+        my $count = $start;
+        self.bless(*, :it({ $count++ }));
+    }
+}
+</code></pre>
+
+<p>The <code>new</code> method contains code both to initialize and to increase <code>$count</code>, but only the initialization code (<code>my $count = $start;</code>) is run. The increasing code (<code>{ $count++ }</code>) is inside a <code>Block</code>, and thus protected from immediate execution. Instead, it's just stored away in the private attribute <code>$!it</code> (for "iterator").</p>
+
+<p>When is <code>$counter</code> actually increased? Well, each time we call the <code>LazyIterator.get</code> method, it executes the <code>Block</code> stored in the <code>$!it</code>. This all seems perfectly obvious, until one starts to think about how magical it actually is. It increases... what, again? <code>$counter</code>? Which is... where, exactly? <em>In the lexical scope of the <code>Counter.new</code> method, which finished ages ago, and which by the way is in a subclass that wasn't even defined when we defined <code>LazyIterator.get</code>!!!</em></p>
+
+<p>For that to even have a chance at working, the <code>Block</code> in <code>$!it</code> must "save away" <code>$counter</code> from the lexical scope of the <code>Counter.new</code> method, enough for it to avoid being eaten by an evil garbage collector, etc. This is totally magical! It's as if you opened an empty bottle in orbit around Neptune to let some darkness in, and then whenever you opened the bottle again, <em>no matter where you were</em>, you'd get the same Neptune darkness from within the bottle.</p>
+
+<p>Or like me coming to visit you, but instead of leaving my phone number, I activate one half of an entangled-pair portal in your living room and take the other half with me. Afterwards, I can just scribble whatever I want on my half, and you'd see it instantaneously appear in the other half in your living room. That's how insanely great closures are.</p>
+
+<p>One of the very first blog posts I wrote here at use.perl.org was about <a href="http://strangelyconsistent.org/blog/ill-call-you-back">that magical ability of closures</a> to hold on to the environment in which they were created. Be sure to check out <a href="http://masak.org/carl/dependency-injection.png">the diagram</a> that goes with it, which explains how closures can be used to decouple parts of a large object-oriented system.</p>
+
+<p>In fact, closures — or <a href="http://en.wikipedia.org/wiki/Lambda_calculus">lambda expressions</a>, same thing — are so general that they have been shown to be <em>universal</em>. That is, anything that a computer algorithm can do, lambda expressions can do, too. (In fact, Alonzo Church developed lambda calculus and used it to prove the <a href="http://en.wikipedia.org/wiki/Halting_problem">Halting Problem</a> undecidable in April 1936, only one month before Alan Turing showed the same with his <em>gedanken</em> state machine. In an addendum published that autumn, Turing shows that lambda calculus and his machine are equal in power.)</p>
+
+<p>By the way, did you notice in the table at the start of the post that both hashes and blocks use the same circumfix constructor, <code>{ }</code>? How will you know when you've got a hash and when you've got a block of code?</p>
+
+<p><a href="http://perlcabal.org/syn/S04.html">S04</a> explains and gives plenty of examples.</p>
+
+<pre><code>$hash = { };
+$hash = { %stuff };
+$hash = { "a" =&gt; 1 };
+$hash = { "a" =&gt; 1, $b, $c, %stuff, @nonsense };
+
+$code = { %_ };                            # use of %_
+$code = { "a" =&gt; $_ };                     # use of $_
+$code = { "a" =&gt; 1, $b, $c, %stuff, @_ };  # use of @_
+$code = { ; };
+$code = { @stuff };
+$code = { "a", 1 };
+$code = { "a" =&gt; 1, $b, $c ==&gt; print };
+</code></pre>
+
+<p>Briefly, the code block will degenerate to a hash if it's empty or contains only a comma-separated list starting with either a pair or a <code>%</code>-sigil variable, and if it doesn't make use of any parameters. You can confirm that this covers all the cases above.</p>
+
+<p>That might seem like a slightly arbitrary way of deciding, but it's actually the result of a fair bit of back-and-forth in the spec about when something is a closure and when it's a hash — and this spec iteration feels like a keeper. The previous ones led people into tricky situations where they supplied what they thought was a closure to a <code>map</code>, but it turned out to evaluate to a hash, and the multi dispatch to <code>map</code> failed. That doesn't seem to happen with the current spec, which is a good sign.</p>
+
+<p>What are some common functions that accept blocks as arguments? I've already mentioned <code>map</code>, but even though the <a href="http://perl6advent.wordpress.com/2009/12/23/day-23-lazy-fruits-from-the-gather-of-eden/"> <code>map</code>/<code>grep</code>/<code>sort</code> triad</a> has that slightly built-in feel, so they're not really a good example.</p>
+
+<p>Here's one that's a good example:</p>
+
+<pre><code>$sentence = 'eye drops off shelf';
+$newspaper-heading = $sentence.subst(/ \S+ /, { $/.ucfirst }, :global);
+say $newspaper-heading; # Eye Drops Off Shelf
+</code></pre>
+
+<p>The vital part is the <code>{ $/.ucfirst }</code> block. Why do we need to put that part in a block? Because if we didn't, it'd get executed immediately, as in <em>before the <code>.subst</code> call was even made</em>. The <code>{ }</code> block constructor creates a protective shell of delayed action (same principle as with orally administered pills, really), and the <code>substr</code> method can then invoke the block when the time is right — i.e. after a match has been found. Newcomers on <code>#perl6</code> often leave out the curlies, thinking that it'll magically work anyway.</p>
+
+<p>If you're with me so far, you're ready for the next "look ma, no curlies!" stage.</p>
+
+<p>We like closures so much (as language designers) that we want to build them into a lot of places. There are a number of places when we want to build them in so much that we even decide to lose the <code>{ }</code> circumfix! If that sounds crazy, just look at these perfectly harmless examples:</p>
+
+<pre><code>if !@food || <strong>@food[0].lc eq 'marmite'</strong> {
+    say "You either have no food or just marmite!";
+}
+
+class VeryImportantObject {
+    has $!creation-time = <strong>time()</strong>;
+}
+ <strong>.flip.say</strong> for lines();
+</code></pre>
+
+<p>In all of the above cases, it's as if <em>invisible <code>{ }</code> curlies</em> have been inserted around the emboldened parts for us, and then evaluated only if/when the time was right. Closures without curlies are sometimes referred to as "thunks".</p>
+
+<p>(Why don't we special-case the second argument of <code>Str.subst</code> in the same way? Well, we certainly could, but it'd be kind of unfair to all other user-defined methods which don't automatically get the same special treatment. Somehow it's more OK to thunk language constructs like the <code>infix:&lt;||&gt;</code> operator, or <code>has</code>, or statement-modifying <code>for</code>, than it is to thunk the second argument in some method somewhere. But it's a perfect gotcha for static analysis to catch.)</p>
+
+<p>But Perl 6 also gives you, the programmer, a way to omit the curlies if you just want to create a little one-off closure somewhere. It's provided through the ubiquitous "whatever" star, after which <a href="http://www.pmichaud.com/2010/pres/yapcna-rakudo/">Rakudo Star</a> was named.</p>
+
+<p>The whatever star represents a curious bit of spec development, kind of a little idea that seemed to get a life of its own after a while and spread everywhere, like gremlins. It all started when the old "index from the end" syntax from Perl 5 was re-considered:</p>
+
+<pre><code>@a[ -1]    # getting the last element in Perl 5
+@a[*-1]    # getting the last element in Perl 6
+</code></pre>
+
+<p>Why was this change made? <a href="http://perlcabal.org/syn/S09.html#Negative_and_differential_subscripts">S09</a> sums it up:</p>
+
+<div class='quote'><p>The Perl&#160;6 semantics avoids indexing discontinuities (a source of subtle
+runtime errors), and provides ordinal access in both directions at both
+ends of the array.</p></div>
+
+<p>When this feature was finally implemented in Rakudo, instead of treating the <code>* - 1</code> like a syntactic oddity that's only allowed to occur inside array indexings, they generalized the concept so that <code>* - 1</code> means <code>{ $_ - 1 }</code>. (Note the surrounding block curlies.) This was considered nifty and trickled back into the spec. So now you can use all of the following forms to mean the same thing:</p>
+
+<pre><code>      { $_ - 1 }     # means "something minus one"
+-&gt; $_ { $_ - 1 } # explicit lambda mention of $_
+-&gt; $a { $a - 1 } # change the name of the param
+     { $^a - 1 }     # "self-declaring" param
+         * - 1   # note the lack of curlies
+</code></pre>
+
+<p>I haven't mentioned the "self-declaring" type of parameter so far. They're very nice, especially in small blocks where an explicit signature would give the block too much of a front weight. The spectical name for those are "placeholder variables", because they make a space for themselves in the parameter list, I guess. The place they get is their rank in an ascending string sort, by the way. You can't have both an explicit signature and placeholder variables for the same block — it's an either-or thing.</p>
+
+<p>(Also, the only form which isn't <em>exactly</em> identical in the list above, is the first one, which actually translates to <code>-&gt; $_? { $_ - 1 }</code>. That is, the <code>$_</code> is optional, and you can call the block with 0 arguments. I don't remember the rationale for this, nor whether I've ever benefitted from it.)</p>
+
+<p>A recent spec change generalized the whatever star so that if two or more occur in the same expression, they get assigned successive parameter slots. <code>* + *</code> translates into <code>{ $^a + $^b }</code>, for example. So they're really starting to look a bit like "anonymous placeholder variables".</p>
+
+<p>Now for the actual impetus for this post: in August 2000, almost ten years ago, Damian Conway made <a href="http://dev.perl.org/perl6/rfc/23.pod">an RFC which anticipated a lot of the features</a> outlined in this post. And it does this while suggesting syntax which is consistently less mnemonic and less maintainable than what we eventually ended up with. (Not the fault of Damian-from-ten-years-ago, of course. I'm pretty sure he's been instrumental in guiding us to many of the solutions we have today.)</p>
+
+<p>Here's a quick summary of the key points of the RFC, and the modern Perl 6 responses:</p>
+
+<ul>
+<li>The RFC suggests that one common use case for the "higher-order functions" (as it calls the closures) is in case statements with comparison ops in them, such as <code>case ^_ &lt; 10 { return 'milk' }</code>. Note that the whatever star nicely fills this niche: <code>when * &lt; 10 { return 'milk' }</code>.</li>
+<li>Much of the rest of the RFC seems to be handled well today with either lambda signatures or placeholder variables (the <code>$^a</code> ones). <code>$check = ^cylinder_vol == ^radius**2 * ^height or die ^last_words;</code> could today be written <code>$check = -&gt; $cylinder_vol, $radius, $height, $last_words { $radius ** 2 * $height or die $last_words };</code>. I hesitate to put that example in placeholder-variable form, because they're too many and the alphabetical mess would be too hard to maintain, even once.</li>
+<li>The model we ended up with doesn't do automatic currying, like in the RFC. We do, however, have the extremely nice method <code>.assuming</code> on all <code>Code</code> objects (including <code>Block</code>), which gives you back a new <code>Code</code> object with one or more parameters pre-set.</li>
+<li>Generally, the modern variants lean towards either explicit curlies or a whatever star to tell you that something mildly magical is going on. With the syntax proposed in the RFC, I suspect I'd be constantly less-than-certain about where implicit blocks ended.</li>
+</ul>
+
+<p>In <a href="http://dev.perl.org/perl6/doc/design/apo/A06.html">Apocalypse 6</a> the RFC was accepted with a "c" rating (that's for "major caveats"). I think that's accurate, because the spirit of the RFC definitely lives on, but the syntax of it all turned out much, much better. I guess that's the point of having the role of Language Designer centralized to one person.</p>
+
+<p>Having exhausted the things I have to say about this topic, I'll stop here and see if I can get some closure myself. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

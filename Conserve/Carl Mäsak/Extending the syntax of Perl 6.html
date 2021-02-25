@@ -1,0 +1,300 @@
+http://strangelyconsistent.org/blog/extending-the-syntax-of-perl6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Extending the syntax of Perl 6 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-10-17T20:14:30+02:00" pubdate="pubdate">17 Oct, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/extending-the-syntax-of-perl6">Extending the syntax of Perl 6</a></h1>
+  </header>
+
+  <p>Perl 6 allows us to define classes and roles and grammars, and they all look much the same.</p>
+
+<pre><code>class C {
+    method foo { ... }
+    method bar { ... }
+}
+
+role R {
+    method foo { ... }
+    method bar { ... }
+}
+
+grammar G {
+    regex foo { ... }
+    token bar { ... }
+}
+</code></pre>
+
+<p>The similarities don't just exist on the surface; all these three OO-style packages get parsed with the same rule (<code>package_declarator</code>) in the Perl6 grammar, and their insides get parsed with the same rule (<code>package_def</code>). The only difference is the metaclass object handed to each one. ("What's a metaclass?" you might ask. If you are, I recommend <a href="http://6guts.wordpress.com/2010/09/20/gradual-typing-merged-mops-and-bounded-serialization/">this post</a> by jnthn++.)</p>
+
+<p>So classes get handed a <code>ClassHOW</code>, roles a <code>RoleHOW</code>, and grammars a <code>GrammarHOW</code>. And that's basically how they differ. In theory, if we wanted to give (Rakudo) Perl 6 a bigger repertoire of OO-style package declarators, all we have to do is add a few rules to the Perl 6 grammar, and add a new <code>SomethingHOW</code> metaclass.</p>
+
+<p>The operative phrase being "in theory". See, no-one has ever done this, and whereas things are designed for people <em>eventually</em> being able to do that. Right now, you're advised to sit back and wait while some foolhardy person gets a thousand small cuts and bruises trying to make it all work without a hitch.</p>
+
+<p>That's where I come in.</p>
+
+<h2>The new syntax</h2>
+
+<p>This is going to look almost trivial. Well, it <em>is</em> trivial to describe. One day it'll be trivial to get to work in Rakudo as well. Here's the new syntax:</p>
+
+<pre><code>diagram D {
+    element foo { ... }
+    element bar { ... }
+}
+</code></pre>
+
+<p>Hm; actually, I have a full-blown example of the <code>diagram</code> DSL, that I might as well show at this point.</p>
+
+<pre><code>class Page {
+    has Str $.style = 'fill: #333333';
+}
+
+class Book {
+    has Str $.abbreviation;
+    has Str $.name;
+    has Str $.author;
+    has Str $.year;
+    has Page @.pages;
+}
+
+diagram BookLayout {
+    element LAYOUT { &lt;booktable&gt; on &lt;attribution&gt; }
+
+    element booktable { table(&lt;book&gt; from .books, :4columns) }
+
+    element book { .abbreviation on table(&lt;page&gt; from .pages, :10columns) }
+
+    element page { &lt;rect width="1" height="2" style="{.style}"&gt; }
+
+    element attribution {
+        vline on "SOURCE BOOKS"
+              on table(&lt;source&gt; from .books, :2columns, :down)
+    }
+
+    element source { .name on "by $_.author, $_.year" }
+}
+
+my Book @books = ...;
+BookLayout.render(:@books);
+</code></pre>
+
+<p>The above example was written to produce something very much like the third image over at <a href="http://samizdat.cc/cyoa/">One book, many readings</a>. (Here's a <a href="http://s3.amazonaws.com/cyoa/img/etc/endings-grid-i.png">direct link to the image</a>.) Compare the elements in that image and the <code>element</code>s in the <code>BookLayout</code> diagram, and you'll see the similarities.</p>
+
+<p>The final line, <code>BookLayout.render(:@books);</code>, would spit out a string full of SVG, or some other scene description format. The array <code>@book</code> would contain 12 <code>Book</code> objects corresponding to the 12 books in the image.</p>
+
+<p>Anyway, I thought this was a nice idea. It's certainly the best idea for a non-core extension to Perl 6 that I've been able to think up so far. The syntax of the <code>element</code> blocks is reminiscent of Perl 6 <code>regex</code> syntax, but the process is almost a reverse of the one for regexes: whereas a grammar does a complicated dance over a string of text and eventually produces an object hierarchy (a parse tree), a diagram does a complicated dance over an object hierarchy (in this case, a set of <code>Book</code>s with sets of <code>Page</code>s) and produces an image.</p>
+
+<p>Did I get Rakudo to parse my new syntax? Yes, I did. Here's how to do it.</p>
+
+<h2>Adding a new package declarator</h2>
+
+<p>I wanted to add the package declarator <code>diagram</code> and hook it up with a metaclass <code>DiagramHOW</code>. So I added these rules to <code>src/Perl6/Grammar.pm</code>:</p>
+
+<pre><code>     %*HOW&lt;module&gt;  := 'none';
+     %*HOW&lt;class&gt;   := 'ClassHOW';
+     %*HOW&lt;grammar&gt; := 'GrammarHOW';
++    %*HOW&lt;diagram&gt; := 'DiagramHOW';
+     %*HOW&lt;role&gt;    := 'RoleHOW';
+     my %*PKGCOMPILER;
+     %*PKGCOMPILER&lt;role&gt;    := Perl6::Compiler::Role;
+
+     &lt;sym&gt; :my $*PKGDECL := 'grammar';
+     &lt;package_def&gt;
+ }
++token package_declarator:sym&lt;diagram&gt; {
++    &lt;sym&gt; :my $*PKGDECL := 'diagram';
++    &lt;package_def&gt;
++}
+ token package_declarator:sym&lt;role&gt; {
+     &lt;sym&gt; :my $*PKGDECL := 'role';
+     &lt;package_def&gt;
+</code></pre>
+
+<p><code>GrammarHOW</code> is defined in <code>src/metamodel/GrammarHOW.pir</code>. I just took that file, replaced every occurrence of <code>Grammar</code> with <code>Diagram</code>, and saved the result as <code>src/metamodel/DiagramHOW.pir</code>. Since <code>GrammarHOW.pir</code> made reference to a <code>Grammar</code> class in <code>src/core/Grammar.pm</code>, I created a <code>Diagram</code> class and saved it in <code>src/core/Diagram.pm</code>.</p>
+
+<p>In <code>src/Perl6/Actions.pm</code> I had to make a corresponding addition:</p>
+
+<pre><code> method package_declarator:sym&lt;module&gt;($/)  { make $&lt;package_def&gt;.ast; }
+ method package_declarator:sym&lt;class&gt;($/)   { make $&lt;package_def&gt;.ast; }
+ method package_declarator:sym&lt;grammar&gt;($/) { make $&lt;package_def&gt;.ast; }
++method package_declarator:sym&lt;diagram&gt;($/) { make $&lt;package_def&gt;.ast; }
+ method package_declarator:sym&lt;role&gt;($/)    { make $&lt;package_def&gt;.ast; }
+
+ method package_declarator:sym&lt;does&gt;($/) {
+</code></pre>
+
+<p>Usually when I made a false step and got an internal error (not shown here), it was because I had neglected to add something to 
+<code>src/Perl6/Actions.pm</code>.</p>
+
+<h2>Adding the <code>element</code> declarator</h2>
+
+<p>Adding this to <code>src/Perl6/Grammar.pm</code>:</p>
+
+<pre><code> token term:sym&lt;routine_declarator&gt; { &lt;routine_declarator&gt; }
+ token term:sym&lt;multi_declarator&gt;   { &lt;?before 'multi'|'proto'|'only'&gt; &lt;multi_declarator&gt; }
+ token term:sym&lt;regex_declarator&gt;   { &lt;regex_declarator&gt; }
++token term:sym&lt;element_declarator&gt; { &lt;element_declarator&gt; }
+ token term:sym&lt;circumfix&gt;          { &lt;circumfix&gt; }
+ token term:sym&lt;statement_prefix&gt;   { &lt;statement_prefix&gt; }
+ token term:sym&lt;**&gt;                 { &lt;sym&gt; &lt;.panic('HyperWhatever (**) not 
+
+     | '(' ~ ')' &lt;signature&gt; &lt;trait&gt;*
+     | &lt;routine_declarator&gt;
+     | &lt;regex_declarator&gt;
++    | &lt;element_declarator&gt;
+     | &lt;type_declarator&gt;
+     ]
+ }
+
++proto token element_declarator { &lt;...&gt; }
++token element_declarator:sym&lt;element&gt; {
++    &lt;sym&gt; {*} #= open
++    :my $*METHODTYPE := 'regex';
++    &lt;element_def&gt;
++}
+
++rule element_def {
++    [
++      { $*IN_DECL := '' }
++      &lt;deflongname&gt;?
++      &lt;.newpad&gt;
++      [ [ ':'?'(' &lt;signature&gt; ')'] | &lt;trait&gt; ]*
++      {*} #= open
++      '{'[ '&lt;...&gt;' |&lt;p6regex=.LANG('Regex','nibbler')&gt;]'}'&lt;?ENDSTMT&gt;
++    ] || &lt;.panic: "Malformed element"&gt;
++}
+</code></pre>
+
+<p>And this to <code>src/Perl6/Actions.pm</code>:</p>
+
+<pre><code>     if    $&lt;variable_declarator&gt; { make $&lt;variable_declarator&gt;.ast }
+     elsif $&lt;routine_declarator&gt;  { make $&lt;routine_declarator&gt;.ast  }
+     elsif $&lt;regex_declarator&gt;    { make $&lt;regex_declarator&gt;.ast    }
++    elsif $&lt;element_declarator&gt;  { make $&lt;element_declarator&gt;.ast  }
+     elsif $&lt;signature&gt; {
+         my $list  := PAST::Op.new( :pasttype('call'), :name('&amp;infix:&lt;,&gt;') );
+         my $decls := $&lt;signature&gt;.ast.get_declarations;
+
++method element_declarator:sym&lt;element&gt;($/, $key?) {
++    if ($key) {
++        my %h;
++        %REGEX_MODIFIERS := %h;
++    } else {
++        make $&lt;element_def&gt;.ast;
++    }
++}
+
++method element_def($/, $key?) {
++    make PAST::Stmts.new();
++}
+
++class Perl6::DiagramActions {
++}
++
+</code></pre>
+
+<p>At this point, <code>element</code> declarations just called into the normal regex sublanguage. Needed to change this as a final step.</p>
+
+<h2>Adding the <code>Perl6::Diagram</code> sublanguage</h2>
+
+<p>Finally, we make these changes to <code>src/Perl6/Grammar.pm</code>:</p>
+
+<pre><code>     my %*LANG;
+     %*LANG&lt;Regex&gt;           := Perl6::Regex;
+     %*LANG&lt;Regex-actions&gt;   := Perl6::RegexActions;
++    %*LANG&lt;Diagram&gt;         := Perl6::Diagram;
++    %*LANG&lt;Diagram-actions&gt; := Perl6::DiagramActions;
+     %*LANG&lt;MAIN&gt;            := Perl6::Grammar;
+     %*LANG&lt;MAIN-actions&gt;    := Perl6::Actions;
+
+-      '{'[ '&lt;...&gt;' |&lt;p6regex=.LANG('Regex','nibbler')&gt;]'}'&lt;?ENDSTMT&gt;
++      '{'[ '&lt;...&gt;' |&lt;p6regex=.LANG('Diagram','expr')&gt;]'}'&lt;?ENDSTMT&gt;
+
++grammar Perl6::Diagram is HLL::Grammar {
++    rule expr { &lt;thing&gt; ** 'on' }
++
++    token thing {
++        [
++        | &lt;quote&gt;
++        | &lt;attribute&gt;
++        | &lt;call&gt;
++        | 'vline'
++        | :s 'table(' &lt;expr&gt; [',' ':'\d*&lt;identifier&gt; ]* ')'
++        ]
++    }
++
++    token quote {
++        [
++        | &lt;?[']&gt; &lt;quote_EXPR: ':q'&gt;
++        | &lt;?["]&gt; &lt;quote_EXPR: ':qq'&gt;
++        ]
++    }
++
++    token call {
++        '&lt;' &lt;identifier&gt;
++        [
++        | '&gt;' :s [from &lt;attribute&gt;]?
++        | :s [ &lt;identifier&gt; '=' &lt;quote&gt;]* '&gt;'
++        ]
++    }
++
++    token identifier { &lt;.ident&gt; [ &lt;[\-']&gt; &lt;.ident&gt; ]* }
++
++    token attribute { '.'&lt;.identifier&gt; }
++}
+</code></pre>
+
+<p>The above grammar parses my <code>BookLayout</code> example above. I guess the cool thing isn't that it does, but that it parses it <em>inside a regular Perl 6 script</em>. That's what this was all about, after all. The technology is there in Rakudo; it's just not user-accessible yet.</p>
+
+<h2>Simple as that, eh?</h2>
+
+<p>Doing this today is not easy. I stumbled upon maybe ten types of internal error along the way, about half of which I never managed to diagnose, but simply got rid of by doing things again, more slowly.</p>
+
+<p>Summarizing the situation:</p>
+
+<ul>
+<li><p>Yes, extending the syntax is <em>possible</em>. It's not particularly easy. That's just because the Perl 6 vision isn't fully implemented yet. But there is a roadmap, and we're sticking to it.</p></li>
+<li><p>None of the internals hacking will be needed once this works the real way. I'll still have to modify the grammar and the actions, and I'll still have to add a <code>DiagramHOW</code> metaclass, but I'll do it from the safety of a perl script or a module, not by prying open the Rakudo source files.</p></li>
+<li><p>I'm sure there's a whole heap of errors that could be removed or improved here. Problem is, my usual instinct for submitting bugs gets put on hold when I'm doing naughty things like internals hacking. What would I report it as? "[BUG] Nasty error message after applying this patch to Rakudo"? Somehow that doesn't feel right.</p></li>
+<li><p>After getting diagrams to parse, I have <em>no idea whatsoever</em> how to give them the right semantics. What grammars do is to emit the regexes as specialized <code>PAST</code> nodes. There are no specialized <code>PAST</code> nodes for diagrams.</p></li>
+</ul>
+
+<p>Looking forward to seeing this get much easier over time.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,134 @@
+http://strangelyconsistent.org/blog/november-30-2010-going-out-with-style
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 30 2010 &#8212; going out with style :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-12-01T00:31:00+01:00" pubdate="pubdate">1 Dec, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-30-2010-going-out-with-style">November 30 2010 &#8212; going out with style</a></h1>
+  </header>
+
+  <p>57 years ago today, the king of Buganda (a part of Uganda), <a href="http://en.wikipedia.org/wiki/Mutesa_II_of_Buganda">Major General Sir Edward Frederick William David Walugembe Mutebi Luwangula Mutesa II</a> (Knight Commander of the Order of the British Empire), was exiled because he had a disagreement with the British Governor.</p>
+
+<div class="quote">In the early 1950s the British Government floated the idea of uniting British East Africa (Uganda, Kenya and Tanganyika) into a federation. Africans feared that this would lead to their coming under the control of Kenya's white settler community, as had happened in Rhodesia. The Baganda, fearing they would lose the limited autonomy they had under British rule, were particularly opposed. Mutesa opposed the proposal, and thus came into conflict with the British Governor, Sir Andrew Cohen. Cohen deposed and exiled the Kabaka in 1953, creating massive protests among the Baganda. After two years in exile Mutesa was allowed to return to the throne under a negotiated settlement which made him a constitutional monarch and gave the Baganda the right to elect representatives to the kingdom's parliament, the *Lukiiko*. Mutesa's standing up to the Governor greatly boosted his popularity in the kingdom.</div>
+
+<p>Sir Edward Muteesa seems to have led an interesting life. He "is recorded to have fathered eleven sons and seven daughters". He died of alcohol poisoning in his flat, under somewhat mysterious circumstances.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Let's finish off with some statistical comparison between November-on-alpha (before we throw it on the trash heap of history) and November-on-ng.</p>
+
+<p>Because I thought it might be interesting, I tried both of these with and without article caching. I ran each of the four possible setups 10 times under identical conditions. The data points are in seconds of wallclock time.</p>
+
+<p>I should really make a cute graph for this, but I ran out of time. Maybe later.</p>
+
+<h2>ng/cache</h2>
+
+<pre><code>9.444
+9.662
+9.275
+9.356
+10.160
+9.621
+10.026
+9.522
+9.860
+9.737
+</code></pre>
+
+<h2>ng/no cache</h2>
+
+<pre><code>46.353
+52.880
+63.742
+44.745
+46.320
+59.831
+63.585
+58.116
+57.459
+54.510
+</code></pre>
+
+<h2>alpha/cache</h2>
+
+<pre><code>7.489
+4.847
+2.912
+3.031
+2.809
+2.807
+2.985
+2.778
+2.849
+2.955
+</code></pre>
+
+<h2>alpha/no cache</h2>
+
+<pre><code>9.735
+10.185
+8.558
+6.288
+7.101
+6.070
+6.170
+6.132
+6.234
+6.064
+</code></pre>
+
+<h2>So.</h2>
+
+<p>In summary:</p>
+
+<ul>
+<li>November on ng with the cache turned on runs in about 10 seconds.</li>
+<li>Turn off the cache, and it slows down about five times.</li>
+<li>November on alpha used to run in about 3 seconds.</li>
+<li>With the cache turned off, it slowed down 2-3 times.</li>
+<li>November on alpha with the cache turned off ran faster than November on ng with the cache.</li>
+</ul>
+
+<p>Summa summarum: over the past year, Rakudo has gotten 3-10 times slower.</p>
+
+<p>I'd like that order of magnitude back before I think of deploying November on the web again. The caching was introduced to make November <em>juuust</em> bearable to use. Now it turns out that upgrading to ng eats up that speedup.</p>
+
+<p>Of course, from many viewpoints <em>other</em> than speed, we're much further ahead now than a year ago. But that doesn't change the fact that November was developed on alpha and, even after porting it to ng, it still runs best on alpha.</p>
+
+</article>
+
+  </body>
+</html>

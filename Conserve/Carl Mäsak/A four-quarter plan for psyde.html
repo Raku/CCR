@@ -1,0 +1,95 @@
+http://strangelyconsistent.org/blog/a-four-quarter-plan-for-psyde
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>A four-quarter plan for psyde :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-02-05T16:15:49+01:00" pubdate="pubdate">5 Feb, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/a-four-quarter-plan-for-psyde">A four-quarter plan for psyde</a></h1>
+  </header>
+
+  <p><em>(If this blog had had a tagging system, this post would have been tagged "meta". You have been warned.)</em></p>
+
+<p>My blogging engine, <a href="http://github.com/masak/psyde">psyde</a>, is written in Perl 6. It's been serving me well in the past year-and-a-quarter since use.perl went read-only and <a href="http://strangelyconsistent.org/blog/dog-food-with-a-distinct-perl6-flavor">forced my hand</a> to move out. It's not too powerful, and it's kinda idiosyncratic, but it has definitely made me happy.</p>
+
+<p>Howver, I've increasingly been picturing where I want to take the engine. It could do more, and I know what bits I want it to do. But I never seem to get to the point where I sit down and tinker with the engine to make it better. You know, 'cus of tuits and yaks and worse-is-better and all that.</p>
+
+<p>So, here goes. Now I'm changing that. Here's a four-quarter plan for 2012:</p>
+
+<ul>
+<li><p>Q1: <strong>A way to create/edit posts online.</strong> All my posts sit in a repository, and theoretically I should be able to post from anywhere, just as one would expect from a blogging system. But in practice, I always forget to push the latest changes, which makes my local copy on my laptop at home the athoritative copy, and so I've no choice but to post from home. Better then to author all the posts online, to store the post sources on the server, and to have those be the authoritative copy.</p>
+
+<p>Also, while writing posts in Emacs is hard to beat from a text-editing perspective, one advantage of authoring posts on the web is that I would be able to <a href="http://www.showdown.im/">see the final HTML in real time</a>. Better than having to wait through a compilation process to see how things will turn out.</p></li>
+<li><p>Q2: <strong>A commenting system.</strong> Finally. This includes converting the old comments from my use.perl blog and retroactively adding them, too. I'd like to use something like openID as an authentication system, or more generally, something ready-made that makes it easy to just post a comment.</p>
+
+<p>I've had <a href="http://www.disqus.com/">Disqus</a> recommended to me as a way to add a commenting system. While it would certainly work, it's slightly against the spirit of psyde, which is more or less <a href="http://en.wikipedia.org/wiki/Not_invented_here">NIH</a>. I believe it's sometimes healthy to reinvent wheels, as much to learn how to make them round as to figure out how they can be made to work better. More importantly, I wouldn't be as happy with someone else's wheel, even a well-oiled one, as with my own.</p></li>
+<li><p>Q3: <strong>A text-oriented graphic library.</strong> I often desire to inject an image/graph/diagram or other in my blog posts, explaining the relationship between some things. But there are too many steps involved:</p>
+
+<ol>
+<li>open up Inkscape</li>
+<li>painstakingly draw and position a bunch of rectangles and arrows and text fields</li>
+<li>export to .png</li>
+<li>upload the .png</li>
+<li>insert an <code>&lt;img&gt;</code> tag linking to where I uploaded the .png</li>
+</ol>
+
+<p>...and besides, I always feel like I'm doing work that the computer should be doing for me, drawing the SVG. I've drawn graphs like that a hundred times before, and they all look the same.</p>
+
+<p>Imagine if I could just write a few symbols in my post saying "oh boy, here comes le graph!", a bit like <code>\[</code> takes me into the <code>displaymath</code> environment in LaTeX. And, <em>and</em>! Because the groundwork I will have done in Q1 enables me to see things as I type in real time, and because the graphic library that I haven't written yet will be mostly implemented in JavaScript, those graphs will appear as I type them, too! Instant graphic!</p>
+
+<p>I haven't seen any other blog system do this. Let me know if there's prior art.</p>
+
+<p>The graphic library will support not just graphs, but any number of pre-set picture drawing modes: graphs, class diagrams, chess boards, hex boards, tables, Nim positions, pentomino pieces, sudoku boards, sparklines, basically anything. Adding another mode should be as simple (for a programmer) as adding a syntax parser and a generator of iamge elements. There will have to be an API for all of this; details pending.</p></li>
+<li><p>Q4: <strong>Productize psyde.</strong> After all of this, I actually think I'll have something worth sharing with people. Not everyone will prefer to leave the cozy confines of Wordpress or Movable Type or whatever it is you kids use these days, but some people will like the combination of features in psyde, and will want to set up their own blog with it.</p>
+
+<p>(This already happened once, by the way. I'm not at all prepared for this, so I just sent them a <code>.tar.gz</code> file with the minimal environment needed to get set up, and they succeeded. It was a slightly bumpy ride for them, of course, but they got it working.)</p>
+
+<p>Now psyde isn't really a blogging system at its core, but a static web page generator. Making a product out of it probably means turning a bunch of things into modules, and have them play nicely with <a href="http://modules.perl6.org/">the Perl 6 ecosystem</a>. And to make setup a one-click operation, or as close to it as possible. Probably psyde the static web generator and the yet-unnamed blogging software will separate into a module-client relation as a part of this.</p>
+
+<p>When I say "product", by they way, I don't imagine I'll charge money for it. The source will remain free in all senses. I just want to make it easier to approach the software and get started with it. Removing various hard-coded things, as well as adding documentation and installation instructions, will be necessary.</p></li>
+</ul>
+
+<p>Early on, I told myself that this would be a ten-year blog. We're now a few months into the second year. It's time to introduce some furniture and make this blog engine fit to live in. Fit to relax in after a hard day's work.</p>
+
+<p>I want to be able to blog from my iPad. Or from a 40-inch TV screen. Or, in a pinch, from my Android phone. I want people to be able to comment. I want those graphs, oh nicely laid out, skinnable, auto-generated instant-gratification graphs! And I want to push psyde out into the wild, make it stand on its own legs.</p>
+
+<p>I want to use Perl 6 more in production, because the time is here. Even though I know it's prudent to underpromise and overdeliver, I choose to publish my plans like this because so far I've only been scheming and dreaming &mdash; this somehow makes it all more concrete.</p>
+
+<p>Onwards!</p>
+
+</article>
+
+  </body>
+</html>

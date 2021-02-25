@@ -1,0 +1,86 @@
+http://strangelyconsistent.org/blog/july-29-2012-verb-synonyms
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 29 2012 &#8212; verb synonyms :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-30T00:22:22+02:00" pubdate="pubdate">30 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-29-2012-verb-synonyms">July 29 2012 &#8212; verb synonyms</a></h1>
+  </header>
+
+  <p>I'm now the janitor in my own code, having switched from "let's implement
+feature X" to "let's make it all fit nicely together". Needless to say, there
+is some technical debt in there to repay.</p>
+
+<ul>
+<li>Playing the game, I noticed that I can't actually <code>take tiny disk</code> on the
+CLI, something that would be necessary to win the game. I <a href="https://github.com/masak/crypt/commit/ecdc8a1383fce9e6d9d03b85af743b8dc3ae3864">fixed
+that</a>.</li>
+<li>I moved the abbreviated-directions logic <a href="https://github.com/masak/crypt/commit/4b750afb4cfe34dcf1f58cd4ea7fcdb12d0f866e">into the adventure engine
+itself</a>,
+because I figure it belongs there. Better for the engine to recognize even
+abbreviated directions than for the CLI to munge it.</li>
+<li>Taking lue++'s suggestion on channel, I <a href="https://github.com/masak/crypt/commit/51cbe97931f4dd4a85f0846b7e1072dad043c39c">wrote a short
+grammar</a>
+for parsing commands for the adventure game.</li>
+<li>Going through the code in this way, I realized that there's a <code>.hide</code> method
+in the adventure engine. I used it to <a href="https://github.com/masak/crypt/commit/48e2a6f4b01c22117dabb3362805fa040753f479">hide the
+fire</a>
+when extinguished, instead of moving it to a made-up location "nowhere".
+Cleaner.</li>
+<li>Playing the game some more, fixed <a href="https://github.com/masak/crypt/commit/f1219e1c1ca8ad49099e4656c76d7377a900ffff">some subtle
+things</a>
+having to do with when things are visible or listed.</li>
+<li>The game used to say "There is a car here.", but now it says "Your car is
+parked here." Such thing-specific overridings <a href="https://github.com/masak/crypt/commit/44ef4e38fa47a69830a54ed51f85b53c293ab56c">are now
+handled</a>
+through a separate namespace in the <code>descriptions</code> file. Much cleaner than last
+year's solution. Actually, the event-based approach is <em>forcing</em> many of these
+"much cleaner" solutions, because it's harder to mix levels.</li>
+</ul>
+
+<p>Another example of the latter is the "remark" system &mdash; lots of
+game-specific remarks that the game made during various stages. All of these
+were spread over last year's codebase as literal strings. Now they are all in
+the <code>descriptions</code> file, too. It wasn't so much that I decided to do it that
+way; I basically <em>had</em> to do it that way. Which is nice.</p>
+
+<p>There's more to say, and more refactors to do. But I'll save some for tomorrow
+and the day after.</p>
+
+</article>
+
+  </body>
+</html>

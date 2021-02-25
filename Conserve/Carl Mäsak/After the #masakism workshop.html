@@ -1,0 +1,139 @@
+http://strangelyconsistent.org/blog/after-the-masakism-workshop
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>After the #masakism workshop :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2013-05-05T23:22:45+02:00" pubdate="pubdate">5 May, 2013</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/after-the-masakism-workshop">After the #masakism workshop</a></h1>
+  </header>
+
+  <p>On May 1st I learned what happens if you tell a bunch of people on the
+Internet, not all of whom you've met before, that you're going to teach Perl (5
+and 6) for free on an IRC channel for four hours.</p>
+
+<p>It worked well. Actually, it worked well beyond my expectations.</p>
+
+<h2>Successes</h2>
+
+<ul>
+<li><p><strong>Prepare.</strong> I had written a bunch of material; short-ish texts mixed with
+exercises. I didn't hear any feedback about the texts, but people threw
+themselves on the exercises. Which was lucky, because I basically didn't
+have time to interact much with people. Everyone did their own thing.</p></li>
+<li><p><strong>Map.</strong> The week before the workshop, I was taking a walk, and it occurred
+to me that the topics for the workshop should be laid out on a <em>subway map</em>.
+That turned out to work unexpectedly well. People followed the structure,
+I think. The material was pretty clear that they were free to skip/jump
+around if they wanted, so some did that.</p></li>
+<li><p><strong>Github.</strong> People suggested fixes and improvements to the material during
+the workshop. I handled the easy ones, and delegated what could be delegated.
+If anything about the workshop felt 2013-futuristic, it was the fact that
+participants were hacking on the workshop <em>in real time</em>, as it was being
+played out. Github was totally right for this.</p>
+
+<ul>
+<li>tadzik++ did an exercise and got a solution that I didn't expect. We
+agreed that a test was missing to force people to do the right thing,
+so he went ahead and added it.</li>
+<li>LlamaRider++ added hyperlinks between all the files.</li>
+<li>grtodd++ made the subway map clickable.</li>
+<li>choroba++ added hyperlinks to a file that I added later.</li>
+</ul></li>
+</ul>
+
+<h2>Things learned</h2>
+
+<ul>
+<li><p><strong>Newbies.</strong> This was never a workshop for total beginners. Still, we got
+a number of those. I'm not sure how many. If there's a next time, I'll
+want to add a track for the people who haven't done Perl before.</p></li>
+<li><p><strong>Exercises.</strong> Based on the tasks that people <a href="https://gist.github.com/masak/5496294">actually
+solved</a>, I got a
+lot of feedback on what worked and what didn't. Which exercises served the
+overall message of the course, and which ones didn't.</p></li>
+<li><p><strong>Message.</strong> After the workshop, I know much better what I <em>wanted</em> the
+whole thing to be about. I think I can go back and make that even more
+clear. I'm still surprised at how well it worked already the first time
+around... but some bits in there can certainly be improved.</p></li>
+</ul>
+
+<h2>Message</h2>
+
+<p>So... what was the real message of the workshop? What is "masakism"?</p>
+
+<p>Two things:</p>
+
+<ul>
+<li><strong>Testing gets you far.</strong>
+<ul>
+<li>My pain threshold for writing things without tests is half a screen of
+code. If I have more than that, there's probably something I should
+be writing tests for.</li>
+<li>That said, there's no need to be a fundamentalist about anything. I'm
+just saying that tests are good, and still somewhat undervalued
+sometimes. But it's always a question on spending time testing the
+stuff that matters. Of course.</li>
+<li>Even with tests, there's no substitute for knowing what you're doing
+and where you're going. Tests help a lot, but they don't write the
+program for you.</li>
+</ul></li>
+<li><strong>Keep it small and simple.</strong>
+<ul>
+<li>"Inside every big interesting problem is a small interesting problem,
+struggling to get out."</li>
+<li>The realization that you can write objects that focus <em>entirely</em> on
+your core problem, is a strong one.</li>
+<li>People tend to bring in persistence too early, "polluting" their core
+classes with database code. Hindering testability. This is backwards.</li>
+<li>Your program should be like an onion, with the most precious stuff
+in the middle, and layers around that. Outer layers should point to
+inner layers, but not vice versa.</li>
+</ul></li>
+</ul>
+
+<h2>Once more?</h2>
+
+<p>So, should we do another <code>#masakism</code> workshop?</p>
+
+<p>Yes, maybe we should. People seemed to like this first one. I'm open to finding
+a datetime for another one.</p>
+
+<p>If you have any suggestions, get in touch.</p>
+
+</article>
+
+  </body>
+</html>

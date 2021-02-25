@@ -1,0 +1,78 @@
+http://strangelyconsistent.org/blog/november-20-2010-leftmost-longest-whale-wins
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 20 2010 &#8212; leftmost longest whale wins :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-20T23:26:00+01:00" pubdate="pubdate">20 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-20-2010-leftmost-longest-whale-wins">November 20 2010 &#8212; leftmost longest whale wins</a></h1>
+  </header>
+
+  <p>190 years ago today, a whaleship called the <em>Essex</em> was <a href="http://en.wikipedia.org/wiki/Essex_(whaleship)">attacked by a whale</a>.</p>
+
+<div class="quote">She [the ship] was 87 feet (27 m) long, measured 238 tons, and was captained by the 28-year-old George Pollard, Jr. She is best known for being attacked and sunk by a sperm whale in the Pacific Ocean in 1820. The incident was an inspiration for Herman Melville's 1851 classic novel Moby-Dick.</div>
+
+<p>A whaleship attacked and sunk by a whale? What a <a href="http://theoatmeal.com/comics/irony">reversal of expectations</a>! Perhaps <a href="http://www.youtube.com/watch?v=fWL6j0SvqV0">Pac-Man</a> said it best: "Looks like the hunters... have become the hunted."</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>So, tonight while re-watching the unbelievably bad <em>Battlefield Earth</em> &mdash; "a <em>Plan 9</em> for a new generation!" &mdash; I tinkered with a re-implementation of <code>.trans</code> that <a href="http://strangelyconsistent.org/blog/november-17-2010-suppression-and-regressions">once worked in November</a> (the wiki engine). I ended up with <a href="https://github.com/rakudo/rakudo/commit/9fe5972f60b9bf41aa73ac6e11893dbd185ee344">this</a>.</p>
+
+<p>If you'll look at that patch, there's one pattern that I haven't seen anyone else use yet. I needed to define a whole class <code>LongestSubstitutionMatcher</code>, but I didn't want to pollute any global namespace with that name, so I put it in a <code>my</code> variable inside the <code>Cool</code> class. Since <code>my</code> variables act a bit like static variables, I guess you could say that this is a way to make a static inner class in Perl 6. I don't know if this is something I'll use often, but it felt right for this purpose.</p>
+
+<p>Oh, and the line in November that was supposed to work after I implemented this?</p>
+
+<pre><code>my $cleaned_of_whitespace = $trimmed.trans( [ /\s+/ =&gt; ' ' ] );
+</code></pre>
+
+<p>Wouldn't you know it, it's actually <em>wrong</em>! 哈哈 So not only did this once work in Rakudo, it worked wrongly. The array brackets (as gleaned from a cursory skim of S05) have no business being there, and the line should really be this:</p>
+
+<pre><code>my $cleaned_of_whitespace = $trimmed.trans( / \s+ / =&gt; ' ' );
+</code></pre>
+
+<p>With that <a href="https://github.com/viklund/november/commit/96527a7beacf4078a39181347b93bcd5e8659556">cleared up</a>, the error I'm now getting from November is this:</p>
+
+<pre><code>postcircumfix:&lt;{ }&gt; not defined for type Str()
+  in 'November::make_extlink' at line 1
+  in &lt;anon&gt; at line 79:lib/November.pm
+  [...]
+</code></pre>
+
+<p>I think I know why that might be. But this is a problem for next time.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,73 @@
+http://strangelyconsistent.org/blog/week-3-of-webpm-creating-a-minimal-web-framework-contd
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 3 of Web.pm &#8212; Creating a minimal Web framework, cont'd :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-03-24T19:35:00+01:00" pubdate="pubdate">24 Mar, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-3-of-webpm-creating-a-minimal-web-framework-contd">Week 3 of Web.pm &#8212; Creating a minimal Web framework, cont'd</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>Fine, u go to teh Macdonaldz and u can has feel-lay (lol) O feesh sandy-wich. Eeew, y u want shrimp basketz? It r BLECH, trust me. It r serously DO NOT WANT.</i>&#8212; Leviticus 11:10-12</dd>
+</dl>
+
+<p>Continuing last week's efforts to port Rack's <code>Utils</code>, <code>Request</code> and <code>Response</code> classes, I figured a nice showcase would be to get Rack's <a href="http://github.com/chneukirchen/rack/blob/master/lib/rack/lobster.rb">lobster</a> (their 'hello world' app) working on Web.pm. The summary of this week is that I've <em>practically</em> gotten this working, so much so that I hope to make a small post later in the week when I actually get a working lobster in Perl 6.</p>
+
+<p>Part of showing the lobster would of course be to have a small web server implemented in Perl 6, so that we don't need to go the way of Apache or similar. I asked mberends on #perl6 if he thought it would be worth the trouble to write a HTTP server within the Web.pm project, and his reply was <a href="http://steve-yegge.blogspot.com/2008/06/done-and-gets-things-smart.html">"Been there, done that"</a>. He gave me instructions to try his <code>HTTP::Server</code>.</p>
+
+<pre><code>&lt;masak&gt; mberends: wouldn't you know, the server works on the first attempt!
+&lt;masak&gt; it's slow, but it works.
+&lt;mberends&gt; \o/
+&lt;jnthn&gt; Rakudo can haz web server?! :-)
+&lt;jnthn&gt; You folks scare me. :-)
+</code></pre>
+
+<p>On top of that, Parrot and Rakudo might get sockets <em>very soon</em> by what I've understood from recent IRC discussions. This means that some of the solutions in <code>HTTP::Server</code> can be made a bit simpler, and possibly faster. Things are definitely in motion.</p>
+
+<p>I'm happy to see ihrd's progress on <code>Forest</code>, and Tene's <code>Tags</code> module. Before we know it, we'll have something that people can actually write web apps with.</p>
+
+<p>The ideas I had last week about <code>unpack($str, 'H2')</code> turned out to need the help from the Parrot people. I got a good answer from fperrad++, but I have yet to turn it into a Rakudo commit. A few other Rakudo commits from me made it into the public repo, however.</p>
+
+<p>Other ideas I've had during the week, but which will have to sit on the backburner for some time yet, include porting Hpricot to Perl 6, and making something like Genshi stylesheets work, first as Perl 6 code, and then as a standalone PCT language which compiles down to really efficient PIR. The reason these ideas will be on the backburner is that I want to stay on schedule.</p>
+
+<p>There's been a lot of discussion on #november-wiki and #perl6 this week. I've received good help from #rack, with the questions I had about Ruby, and parrot-dev@lists.parrot.org with those I had about Parrot strings.</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

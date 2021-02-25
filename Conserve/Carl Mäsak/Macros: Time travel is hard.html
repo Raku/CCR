@@ -1,0 +1,183 @@
+http://strangelyconsistent.org/blog/macros-time-travel-is-hard
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: Time travel is hard :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2015-10-27T15:13:04+01:00" pubdate="pubdate">27 Oct, 2015</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-time-travel-is-hard">Macros: Time travel is hard</a></h1>
+  </header>
+
+  <p>Let's say you're a <a href="http://tvtropes.org/pmwiki/pmwiki.php/Film/BackToTheFuture">plucky young time traveler from the
+80s</a> and you go
+back to the 50s because Libyan terrorists are chasing you and then you
+accidentally mess things up with the past and your time machine DeLorean
+is broken and you need to fix that too...</p>
+
+<p>Dealing with the different phases involved in macros is a bit like dealing
+with the two time streams: the new present, which is very early compared
+to what we're used to, and the future, which we would like to get back to
+intact. (<a href="http://tvtropes.org/pmwiki/pmwiki.php/Main/TheSlowPath">The slow
+path</a>, wasn't much
+of an option for Marty, and it isn't for us either as macro authors.)</p>
+
+<p>Let's try a new way of thinking of all this, instead of compile time and
+runtime. Those terms quickly get muddled with macros, since a macro <em>runs</em>
+(so it's kind of runtime), but it has <code>BEGIN</code>-time semantics (so it's
+definitely compile-time).</p>
+
+<p>Let's call the two phases <strong>early</strong> and <strong>late</strong>. Instead. What the compiler
+does happens <strong>early</strong>. What the normal program does happens <strong>late</strong>. M'kay?</p>
+
+<p><code>BEGIN</code> blocks? Early. <code>constant</code> declarations? Early. <code>CHECK</code> blocks? Also
+early, though kind of at the 11th hour of early. Role bodies get executed
+early when they're getting concretized into a class.</p>
+
+<p>Most everything else? Late. That is, in the 80s where Marty belongs. And
+where most people run most of their code.</p>
+
+<p>Macro bodies run early too. Except for the (often-occurring) quasi block at
+the end, which runs late. This is how you should probably think about macros:
+they have a "preparation area" where you get to do some initialization early,
+and then they have a "code area" whose code runs, inline where you called
+the macro, late.</p>
+
+<p>Got it? Like these terms? Eh, I guess they work. I don't expect we'll keep
+them around, but let's explore them.</p>
+
+<p>So much for setup. I had a thought today, which led me down some wrong paths.
+I'd like to try and relate it. Partly because it's "fun" to analyze one's
+own failure modes. Partly because, and believe me on this, macros are gnarly.
+Far be it from me to discourage people from using macros &mdash; the past
+few months of thinking and investigations have convinced me that they're
+useful, that they have a clear place in Perl 6, and that we can make them
+well-designed. But <em>wow</em> are they weird sometimes.</p>
+
+<p>Macros are so strange that once you wrap your head around closures, and accept
+that they're actually quite a natural consequence of first-class functions and
+lexical lookup, macros come along and make your brain go "wait, what?".</p>
+
+<p>Part of that, I'm sure, is the weird (but consistent) scoping semantics you
+get from macros. But part of it is also the early/late distinction.</p>
+
+<p>Ok, so back to what happened. I was thinking about <a href="https://github.com/masak/007/issues/51">implementing a 007 runtime
+in 007</a>, and in particular how the
+runtime would invoke functions, especially built-in functions. I realized I
+would probably need a huge table of built-in function mappings at some point
+in the runtime. In Perl 6, it'd look something like this:</p>
+
+<pre><code>my %builtins =
+    say =&gt; &amp;say,
+    abs =&gt; &amp;abs,
+    min =&gt; &amp;min,
+    max =&gt; &amp;max,
+    # ...and so on, for far too many lines...
+;
+</code></pre>
+
+<p>As you see, it's all mappings from strings to the runtime's own built-ins. Yep,
+welcome to the world of metacircular runtimes.</p>
+
+<p>So I wondered, "hm, shouldn't we be able to write a macro that takes a string
+value (that we get from a <code>Q::Identifier</code>) and dynamically looks it up in the
+current environement?". And indeed, I quickly came up with this:</p>
+
+<pre><code>macro lookup(name) {
+    return Q::Identifier( melt(name) );
+}
+</code></pre>
+
+<p>So easy! This example presupposes
+<a href="https://github.com/masak/007/issues/61"><code>melt</code></a>, which is a kind of evaluation
+built-in for Qtrees. We need to use <code>melt</code> because the <code>name</code> that we get in is
+a Qtree representing a name, not a string. But <code>melt</code> gives us a string.</p>
+
+<p>Oh, and it works and everything!</p>
+
+<pre><code>lookup("say")("OH HAI");    # OH HAI
+</code></pre>
+
+<p>Unfortunately, it's also completely useless. Specifically, <code>lookup</code> doesn't
+fulfill its original purpose, which was to allow <em>dynamic</em> lookup of names in
+the scope.</p>
+
+<p>Why? Because we're running the macro <strong>early</strong>, and so variables like
+<code>ident_name</code> cannot be <code>melt</code>ed because they don't have a meaningful value yet
+&mdash; they will, but not until <strong>late</strong> &mdash; only constants and literals
+like <code>"say"</code> have meaningful values. But in all such cases, we could just
+replace <code>lookup("say")</code> with... <code>say</code>. D'oh!</p>
+
+<p>Ok, so that didn't work. My next bright idea was to make use of the fact that
+<code>quasi</code> blocks run late. So we can get our dynamism from there:</p>
+
+<pre><code>macro lookup_take_II(name_expr) {
+    quasi {
+        my name = {{{name_expr}}};
+        # great, now I just need to... ummm....
+    }
+}
+</code></pre>
+
+<p>There's no correct way to conclude that thought.</p>
+
+<p>Why? Because you're in a quasi, which means you're back in the 80s, and you
+want to do a 50s thing, but you can't because the time machine is gone. In
+other words, it's late, and suddenly you wish it was early again. Otherwise how
+are you going to build that dynamic identifier? If only there were a <code>lookup</code>
+macro or something! 😀</p>
+
+<p>This has been the "masak stumbles around in the dark" show. Hope you enjoyed.
+I also hope this shows that it's easy to go down the wrong path with macros,
+before you've had something like four years of practice with them. Ahem.</p>
+
+<p>Anyway, these ponderings eventually led to the <code>melt</code> builtin &mdash; coming
+soon to a 007 near you! &mdash; which, happily <em>will</em> solve the problem of
+dynamic lookup (as detailed in <a href="https://github.com/masak/007/issues/61">the issue
+description</a>. So all's well that ends
+well.</p>
+
+<p>Macros are not a handgun that can accidentally shoot you in the foot if you
+use them wrong. They're more like an powered-off laser cannon which, if you
+look at it the wrong way, will shoot you in <em>both</em> feet, <em>and</em> your eyes and
+then your best friend's feet. That kind of power sure can come in handy
+sometimes! I'm convinced we as a community will learn not just to harness and
+contain that power, but also how to explain to ourselves how to best use
+the laser cannon so that it does not accidentally fire too early, or too late.
+Gotta stay in phase.</p>
+
+</article>
+
+  </body>
+</html>

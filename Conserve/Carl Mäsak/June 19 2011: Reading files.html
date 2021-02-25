@@ -1,0 +1,83 @@
+http://strangelyconsistent.org/blog/june-19-2011-reading-files
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 19 2011: Reading files :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-19T23:55:00+02:00" pubdate="pubdate">19 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-19-2011-reading-files">June 19 2011: Reading files</a></h1>
+  </header>
+
+  <p>Tomorrow we'll be writing a game.</p>
+
+<p>In order to do that, we'll need to be able to read from files. We'll learn two simple ways in this post.</p>
+
+<pre><code>my $contents = slurp("my_file");
+</code></pre>
+
+<p>This one reads the entire contents of a file and stores it in <code>$contents</code>. If it's a big file, you'll get a long string. Sometimes that is what you want.</p>
+
+<p>Here's one that can also come in handy:</p>
+
+<pre><code>my @lines = lines("my_file");
+</code></pre>
+
+<p>As you see, we're now storing the contents of the file in an array; that's because <code>lines</code> returns all the lines of the file as individual strings.</p>
+
+<p>You could say that <code>lines</code> is a bit of a specialisation of <code>slurp</code>. We could as well have used <code>slurp</code> and a function called <code>split</code>:</p>
+
+<pre><code>my @lines = slurp("my_file").split("\n");
+</code></pre>
+
+<p><code>split</code> does what you probably suspect it does: it takes a string and splits it into pieces. The pieces are determined by some delimiter (in this case <code>"\n"</code>) that says where to split the string.</p>
+
+<p>If <code>split</code> looks through a string for the things it wants to throw away, its cousin <code>comb</code> sifts through a string for the things it wants to keep:</p>
+
+<pre><code>say join " ", "abc123def456".split(/\d+/);    # "abc def"
+
+say join " ", "abc123def456".comb(/\d+/);     # "123 456"
+</code></pre>
+
+<p>A very useful special case of <code>comb</code> is when you want all the individual characters of a string:</p>
+
+<pre><code>say join " ", "Hello World".comb();           # "H e l l o   W o r l d"
+</code></pre>
+
+<p>Hang around for tomorrow's game. Because we're reading from file, the actual game is nice and short.</p>
+
+</article>
+
+  </body>
+</html>

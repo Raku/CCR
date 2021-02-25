@@ -1,0 +1,125 @@
+http://strangelyconsistent.org/blog/july-17-2012-getting-things-from-the-car
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 17 2012 &#8212; getting things from the car :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-17T22:53:47+02:00" pubdate="pubdate">17 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-17-2012-getting-things-from-the-car">July 17 2012 &#8212; getting things from the car</a></h1>
+  </header>
+
+  <p>Having created enough of the game engine, I now have a very pleasant DSL-like
+thing in which to write crypt. Today in my commits I could write</p>
+
+<pre><code>.place_thing('car', 'clearing');
+</code></pre>
+
+<p>And then</p>
+
+<pre><code>.place_thing('flashlight', 'contents:car');
+.place_thing('rope', 'contents:car');
+.make_thing_openable('car');
+</code></pre>
+
+<p>This is much nicer than last year. And more flexible, as I hoped.</p>
+
+<p>I found that in last year's game, I can examine the flashlight (which is in the
+car), even without opening the car and revealing the flashlight. Now, you might
+say, maybe the car has windows, but that wasn't the intent. I consider it a
+bug, caused by hard-to-follow placement logic. Let's do better this year.</p>
+
+<ul>
+<li><p>We <a href="https://github.com/masak/crypt/commit/4eab8bbaf4e2163845c9800d7f7a4656b92e6174">put a car in the
+clearing</a>.
+Bam! Ain't that cute?</p></li>
+<li><p>In relation to this, I <a href="https://github.com/masak/crypt/commit/fd3ee8ce59c858f6ef3972741997a38a3c20d967">discovered and fixed a
+bug</a>
+having to do with programmer (my) confusion about when events are applied. Some tests
+failed because the game reported the things from the <em>last</em> room when walking from one
+room to another. Yes, this happens because of my factoring with events. I'm not
+completely used to it yet, it seems. Anyway, thank you, extensive test suite.</p></li>
+<li><p>Now we put the flashlight and the rope in the car, and make them <a href="https://github.com/masak/crypt/commit/ae59ad95036c014d42b1539d0283eb1d18356b46">be revealed when
+we open it</a>.</p></li>
+<li><p>I make sure that a <code>look</code> command <a href="https://github.com/masak/crypt/commit/ae59ad95036c014d42b1539d0283eb1d18356b46">reveals the insides of
+things</a>,
+for example the car.</p></li>
+<li><p>Then I make sure <code>examine</code> <a href="https://github.com/masak/crypt/commit/37e0d351574801f1c95a54aab50602aca02f6238">works from the
+CLI</a>,
+and that when you open things, the CLI <a href="https://github.com/masak/crypt/commit/afd7967d5792f7fae0e3705594bf4198e98ea525">says what, if anything, is
+inside</a>.</p></li>
+</ul>
+
+<p>That's it for today. So what does the game look like now?</p>
+
+<pre><code>$ bin/crypt 
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+You can go east.
+
+&gt; examine car
+Small, kind of old, and beginning to rust. But it still gets you places.
+
+&gt; examine flashlight
+You see no flashlight here.
+
+&gt; open car
+Opening the car reveals a flashlight and a rope.
+
+&gt; examine flashlight
+You see no flashlight here.
+
+&gt; take flashlight
+Sorry, I did not understand that.
+
+&gt; quit
+</code></pre>
+
+<p>Well, we're not repeating last year's error, for sure. But the last two
+responses are wrong. Also, the car should appear in the description of the
+room. Let's fix all those things tomorrow.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,74 @@
+http://strangelyconsistent.org/blog/pretending-that-envy-is-one-of-the-perl-virtues
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Pretending that Envy is one of the Perl virtues :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-01-13T22:55:00+01:00" pubdate="pubdate">13 Jan, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/pretending-that-envy-is-one-of-the-perl-virtues">Pretending that Envy is one of the Perl virtues</a></h1>
+  </header>
+
+  <p>Sometimes I read parts of <code>_why</code>'s <a href="http://poignantguide.net/ruby/">Poignant Guide to Ruby</a>, and marvel at the inimitable writing style, the pedagogical comics, and the balance between explanations and, uh, story. But the other day I read <a href="http://poignantguide.net/ruby/expansion-pak-1.html">The Tiger's Vest</a>, and I realized that we in the Perl 6 community need to be really envious about two things in Ruby, otherwise we're not going provide good enough versions of these two things ourselves.</p>
+
+<p>Actually, I'm not sure we need Envy to do this. It might be that this falls well under Hubris, whose definition (in the Perl context) is as follows, according to <a href="http://en.wikipedia.org/wiki/Larry_Wall">Wikipedia</a>: "Excessive pride, the sort of thing Zeus zaps you for. Also the quality that makes you write (and maintain) programs that other people won't want to say bad things about."</p>
+
+<p>It might well be that we need not look at other languages to excel in this area, but I think that's the easiest way for us to be motivated. It sets a minimum bar, shows what actually can be done. And what more or less <em>needs</em> to be done so that people won't say bad things about Perl 6.</p>
+
+<p>Oh, and the two things? They're simply the two main things <code>_why</code> talks about in the chapter: an interactive shell and a documentation tool. Will go into detail about these now.</p>
+
+<h2>An interactive shell</h2>
+
+<p>This is not my main point for tonight, so I'll be brief. Rakudo has a REPL. It's — and I don't like to say this because I prefer to say nice things about Rakudo — not very good. Try it, and you'll see. (Just type <code>perl6</code>, and you're in.) The main thing lacking from it is that you can't declare a variable, hit enter, and then use the variable on the next line.</p>
+
+<p>I understand the technical limitations behind this behaviour; I've had them explained to me. But the explanations just make me want to whisper, really softly, "I want results, not excuses!". Surely Perl 6 isn't so perfectly crystalline in its structure that a proper interactive shell (which, in case I didn't stress this enough, is a <em>really good thing</em> to have) is beyond its reach? I have enough motivation to see this happen that I'm willing to personally go ahead and implement an interactive shell that retains its variables between lines. (As soon as I figger out how to overcome the technical limitations, that is.)</p>
+
+<p>Other non-essential but very desirable features of an interactive shell are also mentioned in the chapter: continuation prompts, nesting depth, tab completion. You get the idea. Envy.</p>
+
+<h2>A command-line documentation tool</h2>
+
+<p><code>_why</code> presents Ruby's documentation tool <code>ri</code> with giant brown serifed letters, reverberating with double parentheses as if struck like a heavenly gong. Or as if a chorus of angels were heard from inside of its name, I don't know. It is described in the text, somewhat obliquely, as the "<em>Most Blatantly Great Thing Since Michael Dorn</em>". The bottom line is, easily accessible documentation matters.</p>
+
+<p>And it takes time. Not so much writing the script that displays the documentation for a certain class, method, sub, operator, macro or other syntactic feature — that's an important task, but a relatively easy one compared to putting together all the documentation, making sure it looks nice, is complete, understandable and nice to read. In fact, since it takes time, I think we'd better start now.</p>
+
+<p>I hereby pronounce the Userdocs For Christmas project (U4X) started. Our official goal shall be to provide easy-to-access comprehensive user documentation, through a ridiculously easy-to-access command line tool, providing snippets of Perl 6 clarification so perfectly worded and so brilliantly illustrative that the unsuspecting reader will be brought close to tears.</p>
+
+<p>The documentation writing itself will be done in a controlled manner, where "controlled" means that people with tuits get to make sure that things are consistent. All the documentation will be written in Pod, the Perl 6 version of POD. More information will be found in the <a href="http://svn.pugscode.org/pugs/docs/u4x/README">U4X README file</a> which I just committed to the Pugs repository.</p>
+
+<p>When I look at all the things that are going on in the Perl 6 community right now, I think that Envy really needn't be one of the Perl virtues. It could very well be Pride. But for that to happen in time for the release of Perl 6.0.0, an interactive shell and exquisitely good documentation are needed. At least if Perl 6 is also to be the most blatantly brilliant thing since Michael Dorn.</p>
+
+</article>
+
+  </body>
+</html>

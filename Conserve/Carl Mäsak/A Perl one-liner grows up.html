@@ -1,0 +1,128 @@
+http://strangelyconsistent.org/blog/a-perl-oneliner-grows-up
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>A Perl one-liner grows up :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-01-03T15:12:00+01:00" pubdate="pubdate">3 Jan, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/a-perl-oneliner-grows-up">A Perl one-liner grows up</a></h1>
+  </header>
+
+  <p>I wanted an overview of S29. More exactly, I wanted a list of functions. The table of contents in <a href="http://perlcabal.org/syn/S29.html">S29 itself</a> didn't cut it, because it stopped short at the level of classes, and left out the functions. That's when I decided to extract the relevant information using a script of my own. I mean, how hard can it be?</p>
+
+<p>Turns out it was easy.</p>
+
+<p>Duh, right? We have <em>Perl</em> this is what Perl <em>does</em>: extract and report. (Practically.) Because it turned out to be a three-minute one-liner in Perl 5, I decided to turn it into a Perl 5 script file, and then into a Perl 6 script file.</p>
+
+<p>The results were a bit interesting, and I thought I'd share.</p>
+
+<p>First, a description of the problem:</p>
+
+<ul>
+<li>S29 is a POD file, which means we're in luck: all the directives we need to extract are on their own lines.</li>
+<li>Furthermore, all the classes are headed by <code>=head2 $class</code>, and the functions by <code>=item $function</code>.</li>
+<li>There's some <code>=over 4</code> and <code>=back</code> stuff that we don't care about.</li>
+<li>Oh, an the action doesn't start until after the line <code>=head1 Function Packages</code>.</li>
+<li>Now, produce a list of functions, indented under their respecitve class.</li>
+</ul>
+
+<p>Here's my one-line solution:</p>
+
+<pre><code>$ perl -e '$_ = &lt;&gt; until /Function Packages/; while (&lt;&gt;) { if (/^=(\S+) ↩
+(.*)/) { next if $1 eq "over"; print " " x 4 if $1 eq "item"; print $2,↩
+"\n" } }' S29-functions.pod
+</code></pre>
+
+<p>If you're interested in the output it produces, try running it after <code>cd</code>-ing into the directory <code>docs/Perl6/Spec</code> in the <a href="http://svn.pugscode.org/">Pugs repo</a>.</p>
+
+<p>Here's the corresponding turned-into-a-file script (still Perl 5):</p>
+
+<pre><code>use strict;
+
+open my $S29, '&lt;', 'S29-Functions.pod' or die $!;
+
+until (&lt;$S29&gt; =~ /Function Packages/) {}
+
+while (my $line = &lt;$S29&gt;) {
+    if ($line =~ / ^ = (\S+) ' ' (.*) /x) {
+        next if $1 eq 'over';
+        if ($1 eq 'item') {
+            print ' ' x 4;
+        }
+        print $2, "\n"
+    }
+}
+</code></pre>
+
+<p>Things are a bit more indented, a bit more Best Practices, but no revolutionary changes. It's the same script.</p>
+
+<p>Now, take a look at the Perl 6 script:</p>
+
+<pre><code>use v6;
+
+my $S29 = open('S29-Functions.pod', :r) or die $!;
+
+repeat {} until =$S29 ~~ /'Function Packages'/;
+
+for =$S29 -&gt; $line {
+    if $line ~~ / ^ '=' (\S+) ' ' (.*) / {
+        next if $0 eq 'over';
+        if $0 eq 'item' {
+            print ' ' x 4;
+        }
+        say $1;
+    }
+}
+</code></pre>
+
+<p>Noteworthy differences:</p>
+
+<ul>
+<li><code>use strict</code> is implicit in <code>use v6</code>.</li>
+<li>The <code>open</code> syntax is different. I stumbled on this, and had to go look in a spectest file to remind myself.</li>
+<li>I use <code>repeat {} until $cond</code> unstead of <code>{} until $cond</code>, because I think it looks better. The old way still works, too.</li>
+<li>The <code>while</code> loop is a <code>for</code> loop. Beware, young Perl 6 hatchlings! In Perl 6 land, we <code>for</code> loop over our files and other stream-like things. That way, we don't have to do an assignment (explicit as in my Perl 5 script, or implicit with <code>$_</code>). Things are more lazy in Perl 6, so the <code>for</code> loop doesn't cause the file to be slurped or anything like that. (For what it's worth, I forgot to use a <code>for</code> loop and used a <code>while</code> loop instead, with segfaults as a result. That was an indication that I was doing something wrong.)</li>
+<li>No parens are needed after <code>for</code> and <code>if</code>.</li>
+<li>Perl 6 regexes are automatically <code>/x</code>.</li>
+<li>The family of <code>$1, $2, ...</code> match variables are pushed down one step. For great justice. And consistency.</li>
+<li>I'm not sure it's kosher to use <code>say</code> like I did (i.e. to finish off a line that has been printed in several stages), but it seemed nice, so I decided to give it a try. So far, I like it.</li>
+</ul>
+
+<p>There you have it. A Perl one-liner grows up.</p>
+
+</article>
+
+  </body>
+</html>

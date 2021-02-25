@@ -1,0 +1,114 @@
+http://strangelyconsistent.org/blog/november-5-2009-hanging-in-there
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 5 2009 &#8212; hanging in there :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-06T00:54:00+01:00" pubdate="pubdate">6 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-5-2009-hanging-in-there">November 5 2009 &#8212; hanging in there</a></h1>
+  </header>
+
+  <p>69 years ago today, Franklin Roosevelt was elected president for the <a href="http://en.wikipedia.org/wiki/Franklin_D._Roosevelt">third consecutive time</a>, something only he has managed in the history of the United States:</p>
+
+<div class='quote'><p>The two-term tradition had been an unwritten rule (until the 22nd Amendment after his presidency) since George Washington declined to run for a third term in 1796, and both Ulysses S. Grant and Theodore Roosevelt were attacked for trying to obtain a third non-consecutive term. FDR systematically undercut prominent Democrats who were angling for the nomination, including two cabinet members, Secretary of State Cordell Hull and James Farley, Roosevelt's campaign manager in 1932 and 1936, Postmaster General and Democratic Party chairman. Roosevelt moved the convention to Chicago where he had strong support from the city machine (which controlled the auditorium sound system). At the convention the opposition was poorly organized but Farley had packed the galleries. Roosevelt sent a message saying that he would not run, unless he was drafted, and that the delegates were free to vote for anyone. The delegates were stunned; then the loudspeaker screamed "We want Roosevelt... The world wants Roosevelt!" The delegates went wild and he was nominated by 946 to 147. The new vice presidential nominee was Henry A. Wallace, the liberal intellectual who was Secretary of Agriculture.</p></div>
+
+<p>Election victory by sound system. There's something vaguely attractive about that.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Speaking of extending one's reign, proto is <a href="http://www.youtube.com/watch?v=Y6ljFaKRTrI">still alive</a> and kicking. Not only that, mberends++ has been working on an almost-total rewrite which will take advantage of Rakudo's new-found ability to <a href="http://strangelyconsistent.org/blog/cheese-speleology">find stuff in <code>~/.perl6/lib</code> </a> so that we don't have to fiddle with <code>PERL6LIB</code> anymore. The project is half-ambitious, certainly bigger than the original proto, which was more or less a one-day hack with kludges on it.</p>
+
+<p>I've been meaning to help mberends along with making the branch ready, but haven't seen sufficiently round tuits... until now, during this self-imposed month of productivness. <strong>Let's do this! Let's bring <code>PERL6LIB</code>-lessness to the people!</strong></p>
+
+<p>Hokay. First step: trying out the branch myself. It's called <code>installed-modules</code>, by the way. Switching over to it... hm, last commit two weeks ago. Most of the activity seems to have been in september, by mberends++, viklund++, moritz++, and ash++. Basically everyone but me. 哈哈</p>
+
+<p>I switch back to <code>master</code> to see which projects I already have installed.</p>
+
+<pre><code>$ ./proto update installed
+</code></pre>
+
+<p>Dang, parrot-lib conflict! I have way to many rakudo instances at this point, most of them conflicting. Deleting the offending instance, and trying again.</p>
+
+<pre><code>$ ./proto list installed
+Downloading Perl 6....................................................[  ok  ]
+Unpacking Perl 6......................................................[  ok  ]
+Building Perl 6.......................................................[ FAIL ]
+Couldn't build Perl 6.
+</code></pre>
+
+<p>I really like that part. I spent quite some time turning the verbose output into little progressive dots. But the <code>FAIL</code> at the end is disconcerting. I haven't been hearing massive complaints from people about this. Is it just on my box that it fails?</p>
+
+<p>I remove <code>config.proto</code> and try again.</p>
+
+<pre><code>$ ./proto
+Downloading Perl 6...[  ok  ]
+Building Perl 6.......................................................[ FAIL ]
+Couldn't build Perl 6.
+</code></pre>
+
+<p>Sigh. So it's not just me, then. Guess I'll be doing this today, rather than look at the branch.</p>
+
+<p>In order to check what's wrong, I turn off the nice dots and watch the output.</p>
+
+<p>Well, hey, the build succeeds! But it's the next step that fails, trying to start Rakudo. That's because Rakudo needs to be installed nowadays. Presently it looks like this:</p>
+
+<pre><code>== SORRY! ==
+Unable to find Perl 6 dynops and dynpmcs library.
+If you want to run Rakudo outside of the build directory, please make install.
+== SORRY! ==
+Unable to find Perl 6 dynops and dynpmcs library.
+If you want to run Rakudo outside of the build directory, please make install.
+done
+== SORRY! ==
+Unable to find Perl 6 dynops and dynpmcs library.
+If you want to run Rakudo outside of the build directory, please make install.
+</code></pre>
+
+<p>Well, at least I know how to fix that. I have to make proto run <code>make install</code> on Rakudo, and then make sure I call the installed executable in <code>rakudo/parrot_install/bin/perl6</code>.</p>
+
+<p>While I run make again, I think about the repercussions of that change. It's clearly the right thing to do for parrot-in-rakudo, but proto also accommodates users who run rakudo-in-parrot, and it's not the right thing to do for them. Hm.</p>
+
+<p>Maybe there is no way to make rakudo-in-parrot work nowadays? There's only one way to find out! But maybe some other day. This is already getting quite long.</p>
+
+<p>This seems to be a general trend this month. I set out to do something, only to notice something else is broken, so I get sidetracked fixing that instead. Oh well, it's things that need doing.</p>
+
+<p>Turns out I have the following projects installed on proto <code>master</code>: statistics-lite, maya, ppm, uri, svg, perl6-literate, form, grampa, web, http-daemon, perl6-sqlite, html-template, faz, io-prompt, mwbot, json, wtop, csv, xml, pun, perl6-examples, druid, yarn, svg-plot, rss-bot, http-client, irc-client, november. Basically all projects. Hey, I like looking at Perl 6 code, okay?</p>
+
+<p>Well, anyway. Tune in next time when I actually use the proto branch <code>installed-modules</code>, rather than just patch up <code>master</code>.</p>
+
+</article>
+
+  </body>
+</html>

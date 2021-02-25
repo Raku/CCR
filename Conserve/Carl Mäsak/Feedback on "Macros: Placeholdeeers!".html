@@ -1,0 +1,62 @@
+http://strangelyconsistent.org/blog/feedback-on-macros-placeholdeeers
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Feedback on "Macros: Placeholdeeers!" :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-12-13T12:06:31+01:00" pubdate="pubdate">13 Dec, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/feedback-on-macros-placeholdeeers">Feedback on "Macros: Placeholdeeers!"</a></h1>
+  </header>
+
+  <p>These comments pertain to <a href="http://strangelyconsistent.org/blog/macros-placeholdeeers">this pooost</a>.</p>
+
+<ul>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-04#i_9760374">lue</a>: '"Does this whole thing remind you of beta reduction in lambda calculus?" um, sure :) .'</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-05#i_9765361">TimToady</a>: "I think the CoffeeScript approach only works well for pieces of grammar that can have a specific piece of code stand in for a generic node, which is easier for nouns, but harder for more abstract grammatical constructs, like a new trait syntax, or a new parameter syntax. So I'd rather see something tied a little closer to grammatical categories rather than just ad hoc chunks of target text that the substituter might have to guess on which thing, or level of thing, is actually being referred to."</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-05#i_9765647">geekosaur</a>: "seems to me we need (a) some way to introspect the names mentioned in an AST (b) these names should default to be new names not related to any existing ones (i.e. it is an independent scope) unless <a> is used to associate with names presumably via CALLER:: or etc."</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-05#i_9765675">TimToady</a>: "<code>quasi { ¤A ¤B ¤C }</code>  # is A a listop? is it a declarator? is B an infix? is C an initializer? the parser must know in advance in order to parse correctly"</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-05#i_9765767">TimToady</a>: "the most generic macro in P6 is going to look a lot like a parsing rule with an AST maker for its action closure, which may or may not build the returned AST out of quasis, that may or may not refer to the bits parsed by the parse rule, presumably by the same name they were parsed under"</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-05#i_9765785">TimToady</a>: "sometimes I think even <code>%*LANG</code> is the wrong way to handle braids"</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-06#i_9766743">japhb</a>: <a href="https://gist.github.com/japhb/92442a22962c5156e102">wip macro idea</a></li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-07#i_9770110">masak</a>: "japhb: using parameter typing to decide the grammatical category of incoming ASTs seems, hm, both right and wrong somehow."</li>
+<li><a href="http://irclog.perlgeek.de/perl6/2014-12-07#i_9771308">masak</a>: 'learning from tinkering around with Qtrees: there are things out there that are neither terms, nor expressions, but kind of head off in another direction. yet they are very "structural" and expression-like. they sort of occur in "restricted" parts of the language. that's also currently where unquotes have trouble going.'</li>
+<li>moritz (chiming in via email): "I feel you overlooked a kinda important point in your examples and analysis: In Perl 6, all variables must be declared. So <a href="https://gist.github.com/masak/fbc45fdb1fa7861f8fd4">the example with the substitution</a> goes BOOM on the first '$s'. Two of your three examples miss the variable declarations, which usually isn't your style. Something else might be going on."</li>
+<li>masak (replying): "It seems to me now that the simplicity of <code>.subst</code> is dependent on implicit variable declarations in a way I hadn't appreciated when writing the post."</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

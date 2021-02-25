@@ -1,0 +1,66 @@
+http://strangelyconsistent.org/blog/november-26-2009-all-is-fair-if-youre-rewriting-time
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 26 2009 &#8212; all is fair if you're rewriting Time :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-26T23:22:00+01:00" pubdate="pubdate">26 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-26-2009-all-is-fair-if-youre-rewriting-time">November 26 2009 &#8212; all is fair if you're rewriting Time</a></h1>
+  </header>
+
+  <p>70 years ago today, as far as we can tell through the mists of history, the Soviet Union, looking for a fight with Finland, <a href="http://en.wikipedia.org/wiki/Shelling_of_Mainila">shelled one of its own villages</a> near the Finnish border:</p>
+
+<div class='quote'><p>The Soviet Union had signed international and mutual nonaggression treaties with Finland: the Treaty of Tartu of 1920, the Non-aggression Pact between Finland and the Soviet Union signed in 1932 and again in 1934, and further the Charter of the League of Nations. The Soviet government attempted to adhere to a tradition of legalism, and a <i>casus belli</i> was required for war. [...]</p><p>Seven shots were fired, and their fall was detected by three Finnish observation posts. These witnesses estimated that the shells detonated approximately 800 meters inside Soviet territory. Finland proposed a neutral investigation of the incident, but the Soviet Union refused and broke diplomatic relations with Finland on November 29.</p><p>In the days following the shelling, the Soviet propaganda machine generated much noise about other fictitious acts of Finnish aggression. The Soviet Union then renounced the non-aggression pact with Finland, and on November 30, 1939 launched the first offensives of the Winter War.</p></div>
+
+<p>Does the maxim 'all is fair in love and war' apply even if the war is orchestrated by your country's propaganda machine? (My office-mate claims it never applied universally to begin with.)</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today, as I <a href="http://strangelyconsistent.org/blog/november-24-2009-a-sort-of-leap-of-faith">predicted</a> earlier this week, is Themporal Thursday! And, fittingly, today I <a href="http://github.com/masak/rakudo/commit/2b43fb151c32df5fb2babd24af1d868412c0bc00">got leap years working</a>. Yay!</p>
+
+<p>There are plenty of off-by-one mismatches occurring naturally when handling dates. I decided that I like my months and days to start with 1, but I also like my arrays to start indexing at 0. So there's some addition and subtraction of 1 going on in places where I convert between months and indices. But I think that's preferrable to the alternatives.</p>
+
+<p>I made a lot of false starts. In what probably constitutes a valuable lesson, I didn't get day-and-month calculation right until I actually paused for a while and thought about what I wanted, wrote a comment to explain to myself what I was doing, and finally wrote the code. It worked!</p>
+
+<p>I also started in on the <a href="http://github.com/masak/rakudo/commit/5c4c821dd2f9583841e26f128f847f7a9d20e786">time parsing</a>. Still need to figure out how I will get hold of today's date; probably need to calculate it the hard way, from <code>time()</code>.</p>
+
+<p>Once again, the tests were an invaluable help, <em>sine qua non</em>. Thank you, tests!</p>
+
+<p>The month is nearing its end, and I feel about halfway done with the Temporal Flux project. More concretely, I've done a few sessions during November, and I'll probably need two more sessions to get the time parsing right, one or two sessions to make sure things fit together, and then one session to write it all up, make a <em>coup d'etat</em> and check everything in, and write to <code>p6l</code> about it. I hope I'll find the requisite hours to do that during December.</p>
+
+</article>
+
+  </body>
+</html>

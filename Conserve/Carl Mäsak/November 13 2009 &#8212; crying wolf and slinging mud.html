@@ -1,0 +1,114 @@
+http://strangelyconsistent.org/blog/november-13-2009-crying-wolf-and-slinging-mud
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 13 2009 &#8212; crying wolf and slinging mud :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-14T00:59:00+01:00" pubdate="pubdate">14 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-13-2009-crying-wolf-and-slinging-mud">November 13 2009 &#8212; crying wolf and slinging mud</a></h1>
+  </header>
+
+  <p>24 years ago, mud traveling at extremely high speeds flooded the <a href="http://en.wikipedia.org/wiki/Armero_tragedy">town of Armero</a> and killed over 20,000 inhabitants:</p>
+
+<div class='quote'><p>The night the volcano erupted, a fluidized mass of rock fragments and gases fell into the Lagunilla river, creating a megatsunami of mud, ash and water. It is estimated that the wave was traveling at 300 miles per hour as it hit Armero. Traveling through the narrow Lagunilla river, it gained speed and power as it hit the plains of the city of Armero. It took less than 15 minutes from the time of the eruption, to the time when the city was gone.</p><p>Gigantic rocks embedded in the bottom of the Lagunilla river were moved from their prehistoric positions and started travelling along with the wave, helping to destroy everything in its path. After the first few hours, a lesser secondary wave caused further damage. The next morning, the pilot of a plane transmitting to Colombia's Civil Defense system, overflying what was supposed to be Armero, is known to have remarked: <i>"Dios mio, Armero ha sido borrado del mapa"</i> ("Oh my God, Armero has been erased from the map").</p></div>
+
+<p>The saddest thing? People had cried wolf over the volcano erupting, so in the weeks leading up to the eruption, even though geologists warned about the dangers, officials (including the mayor) told the inhabitants that the town was safe.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Dear November diary: today I wrote a pastebin using Web.pm technology.</p>
+
+<p>Actually, I wrote the third of one. But I'm very pleased about how little code I needed for that third.</p>
+
+<p>Here are the three things I consider necessary for it to be called a pastebin.</p>
+
+<ul>
+<li>A form lets you enter text, and when you press the Submit button...</li>
+<li>...you get to a page that says "lolyoumadeapaste" and gives you an URL...</li>
+<li>...whose page contains the paste you made.</li>
+</ul>
+
+<p>I did the third part. You can look at pastes, but you can't make them. :)</p>
+
+<p>Here's the code I used to 'seed' the database with a paste:</p>
+
+<pre><code>use v6;
+use Squerl;
+
+my $DB = Squerl.sqlite('pastes.db');
+
+$DB.create_table: 'pastes',
+    'id'    =&gt; 'primary_key',
+    'title' =&gt; 'String',
+    'body'  =&gt; 'String',
+ ;
+
+my $pastes = $DB&lt;pastes&gt;;
+
+$pastes.insert(314, 'This is a test', "This paste is a test\nLine 2");
+</code></pre>
+
+<p>And here's the code that shows the paste:</p>
+
+<pre><code>use Web::Request;
+use Squerl;
+
+my $DB = Squerl.sqlite('pastes.db');
+
+my $pastes = $DB&lt;pastes&gt;;
+
+my $req = Web::Request.new(%*ENV);
+my $id = $req.GET&lt;id&gt;;
+my @found = $pastes.filter('id' =&gt; $id).llist;
+if @found {
+    say @found[0][2];
+}
+else {
+    say "Paste not found";
+}
+</code></pre>
+
+<p>(<strong>Update 2009-12-06:</strong> It's now <code>say @found[0]&lt;body&gt;;</code> — see comments below.)</p>
+
+<p>I'm pleased about how little code was needed for this. There's a few glue bash-script and Apache-config files to make it all work, but nothing out of the ordinary.</p>
+
+<p>The paste is live <a href="http://feather.perl6.nl:8110/cgi-bin/show?id=314">here</a>, unless you're coming to this blog post from the future, in which case it's probably long dead. Enjoy it while it lasts.</p>
+
+<p>I expect to do more pastebin hacking in the near future.</p>
+
+</article>
+
+  </body>
+</html>

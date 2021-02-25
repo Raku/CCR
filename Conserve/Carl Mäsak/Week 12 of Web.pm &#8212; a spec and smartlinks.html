@@ -1,0 +1,62 @@
+http://strangelyconsistent.org/blog/week-12-of-webpm-a-spec-and-smartlinks
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 12 of Web.pm &#8212; a spec and smartlinks :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-08-02T21:32:00+02:00" pubdate="pubdate">2 Aug, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-12-of-webpm-a-spec-and-smartlinks">Week 12 of Web.pm &#8212; a spec and smartlinks</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>Moses all growup now!. Wun dayz he go see his frenz. they is workin hard. Moses seez sum Gypshun d00d beatin up a Joo laik Mosis. Mosis look round &amp; not see no 1 and he go and pwnd teh Gypshun. He sed b00m hed shot but qu1et laik. He hided teh bodi in sand to makes it invisabl bodi.</i> &#8212; Exodus 2:11-12</dd>
+</dl>
+
+<p>Very brief, because I'm on vacation:</p>
+
+<p>For the past week, I've had the idea to hook up smartlinks in the tests of Web.pm, and then generate spec HTML files from spec Pod files. (Just like the Perl 6 project does.)</p>
+
+<p>I've succeeded in generating the HTML, thanks to a pre-packaged <code>Text::SmartLinks</code> module, that only required a few tweaks to do exactly what I want. Here's <a href="http://feather.perl6.nl/~masak/web-spec/Astaire.html">the spec for the Astaire sub-project</a>, which got started at the same time I had this idea.</p>
+
+<p>Now, ideally we'd also like test statistics in the HTML files, tracking the implementation progress. There are scripts in the Pugs directory for doing this, but they are... written by clever people. Meaning I don't see what I should change to have this code work for me.</p>
+
+<p>To make the question very concrete (in case someone out there has the know-how and tuits to help me): how to I smoke my tests and generate a <code>smoke.yml</code> file which I can then feed into the <code>Text::SmartLinks</code> process?</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

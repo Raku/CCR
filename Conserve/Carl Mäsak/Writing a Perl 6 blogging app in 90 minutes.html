@@ -1,0 +1,65 @@
+http://strangelyconsistent.org/blog/writing-a-perl-6-blogging-app-in-90-minutes
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Writing a Perl 6 blogging app in 90 minutes :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-05-10T00:36:00+02:00" pubdate="pubdate">10 May, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/writing-a-perl-6-blogging-app-in-90-minutes">Writing a Perl 6 blogging app in 90 minutes</a></h1>
+  </header>
+
+  <p>It all started yesterday with mberends' challenge.</p>
+
+<pre><code>&lt;mberends&gt; It's time for Web.pm to power a blogging site. Volunteers?
+</code></pre>
+
+<p>I figured it'd be interesting to see how far the tools already built into Web.pm would take me, so I set a moderately challenging time limit: 90 minutes to build a blogging app.</p>
+
+<p>Long story short: it didn't take 90 minutes. After 90 minutes I still hadn't gotten the posting mechanism to work. And I'd already had to do something like five or six tradeoffs because of inadequacies in Web.pm, HTTP::Daemon, and Rakudo.</p>
+
+<p>I did have a working blog after 130 minutes, though. One might favorably compare that time against the time it took to develop a basic wiki in Perl 6: one summer.</p>
+
+<p>So things are definitely improving, no doubt.</p>
+
+<p>It'd be interesting to list the things that contributed to the ease and speed in developing the blog app, and the things that could be improved to make the task even more painless. That'll have to wait until another day, though.</p>
+
+<p>mberends++ has promised to start blogging with the new blogging app, and likely to keep developing it, blogging about <em>that</em> as he goes along. Sounds like the epitome of dogfooding; hopefully it'll positively affect some aspects of Web.pm as well.</p>
+
+<p>Oh, and it's called <a href="https://github.com/masak/yarn">Yarn</a> — a single-threaded app for weaving Web.pm.</p>
+
+</article>
+
+  </body>
+</html>

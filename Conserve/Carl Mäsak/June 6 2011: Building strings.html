@@ -1,0 +1,94 @@
+http://strangelyconsistent.org/blog/june-6-2011-building-strings
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 6 2011: Building strings :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-06T23:38:42+02:00" pubdate="pubdate">6 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-6-2011-building-strings">June 6 2011: Building strings</a></h1>
+  </header>
+
+  <p>Just as we can add numbers, we can "add" strings together. (Though we usually talk about it as <em>concatenation</em>.)</p>
+
+<pre><code>my $string = "Hello" ~ " World!";
+say $string; # Hello World
+</code></pre>
+
+<p>That little tilde (<code>~</code>) is what's chaining the two strings together. Or, even chaining other things together into strings:</p>
+
+<pre><code> my $answer = "The answer is " ~ (6 * 7) ~ ".";
+ say $answer; # The answer is 42.
+</code></pre>
+
+<p>Pretty simple.</p>
+
+<p>Sometimes we keep concatenating the same string over and over, and we wish there were a "multiplication" of strings, too. The good news: there is one. Just as we use <code>*</code> for multiplication of numbers, in Perl we use <code>x</code> for multiplication of strings.</p>
+
+<pre><code>my $fifty-pies = "pie" x 50;
+say $fifty-pies; # piepiepiepiepiepie...
+</code></pre>
+
+<p>(Those things that start with a <code>#</code> are comments, by the way. They're seen by the programmer but not by the compiler, so we can put helpful notes in there. There's a whole lot of things to learn about when and how to write good comments... let's just settle for now that comments are best when they clarify intent ("Calculate the interest") and not mechanics ("Multiply $amount by $rate"). The latter should be evident from the code. By that rule, the above comments are somewhat dubious... but indulge us while we're in teaching mode, will you? <code>:-)</code>)</p>
+
+<p>Here's a case where it would be an extremely good idea to use string multiplication:</p>
+
+<pre><code>my $spaces = "                    ";
+</code></pre>
+
+<p>Yes, those are 20 spaces, but it's not really easy to see, is it? This would be much clearer:</p>
+
+<pre><code>my $spaces = " " x 20;
+</code></pre>
+
+<p>And, of course, we would be free to make the number of spaces vary if we wanted, using &mdash; duh &mdash; a variable:</p>
+
+<pre><code>my $spaces = " " x $n;
+</code></pre>
+
+<p>So it's not just a convenient shorthand.</p>
+
+<p>I know what you're thinking now. You're thinking "bar charts!". Hm, maybe not. But anyway, that's one thing we could do with our newly won power.</p>
+
+<pre><code>my $amount = prompt "Enter the amount: ";
+my $bar = "=" x $amount;
+say "That gives us a bar this long: $bar";
+</code></pre>
+
+<p>With bar charts, there's no telling how far you'll go within this organization, son. Stay tuned for tomorrow, and all you ever need to know about maths.</p>
+
+</article>
+
+  </body>
+</html>

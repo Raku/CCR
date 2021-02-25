@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/it-isnt-quite-tdd-but-i-like-it
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>It isn't quite TDD, but I like it :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-06-17T15:04:00+02:00" pubdate="pubdate">17 Jun, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/it-isnt-quite-tdd-but-i-like-it">It isn't quite TDD, but I like it</a></h1>
+  </header>
+
+  <p>In several tightly controlled projects over the past few years, I seem to either follow or approximate this sequence of steps:</p>
+
+<ol>
+<li>Write a test suite <strong>skeleton</strong>.</li>
+<li>Flesh it out into a <strong>test suite</strong>. (Make the tests run with a minimal implementation skeleton.)</li>
+<li>Make the tests pass by fleshing out the <strong>implementation</strong>.</li>
+</ol>
+
+<p>I haven't seen such a way of working mentioned elsewhere, so I thought I'd make note of it here.</p>
+
+<p>The idea with the first step is to separate most of the thinking from the automatic task of writing the tests. I find if I do this, I get better test coverage, because separation allows me to <strong>retain an eagle-eye view</strong> of the model, whereas if I were to switch back and forth between thinking about the whole and writing about the parts, I'd lose sight of the whole. To some degree. Also, having something to flesh out <strong>cancels out the impulse to cheat</strong> and skip writing tests.</p>
+
+<p>Step two ignores the mandate of TDD to write only one failing test at a time. I still prefer to <strong>have the whole test suite done</strong> before starting the implementation, again because I get rid of some context-switching. Usually I treat the implementation process in much the same way as if I had written the tests on-demand. It occasionally happens that a test already passes as soon as I write the minimal scaffold needed to run the tests. As I currently understand TDD, this is also "frowned upon". I leave them in there, because they're still part of the specification, and might even catch regressions in the future.</p>
+
+<p>I tried this out last weekend, and it was a really nice match with the problem domain — an I/O-free core of a package installer:</p>
+
+<ol>
+<li>Write a test suite skeleton: <a href="http://github.com/masak/proto/commit/d1123666b0c1954105a6b511166d21f2a2fd8d7c">Just a bunch of prose comments</a>.</li>
+<li>Flesh it out into a test suite: <a href="http://github.com/masak/proto/commit/61dc53918176998b25234ecc89af28d736ac46a6">one</a> <a href="http://github.com/masak/proto/commit/3612ad05e818e524487657cbd3099b77ec2d988f">commit</a> <a href="http://github.com/masak/proto/commit/1c8c201495a162a330b1ad0a19ae28bce657c920">per</a> <a href="http://github.com/masak/proto/commit/c7b2b6723d22e8a9a702ce0b7301af7a029f923a">skeleton</a> <a href="http://github.com/masak/proto/commit/649a7102c53347c4a54edc7d8f030efe62fcae32">test</a> <a href="http://github.com/masak/proto/commit/11d92fa95fc1c4bcd8cf91d6834258b072655ef9">file</a>.</li>
+<li>Make the tests pass: <a href="http://github.com/masak/proto/commit/44c586b6807480d27e90cd5b138fd8f1aeb60339">one</a> <a href="http://github.com/masak/proto/commit/d952250d9a34d966426cb870a53812629b111885">commit</a> <a href="http://github.com/masak/proto/commit/07dcc69a90f61c5e2cac005e74721c07a86d81c1">per</a> <a href="http://github.com/masak/proto/commit/0358c5ba39a822f93da16904773f8ef96be20b92">subpart</a>.</li>
+</ol>
+
+<p>And presto, a complete (core) implementation with great test coverage.</p>
+
+<p>Those who follow the links to actual commits will note that mistakes are corrected during the implementation phase. That's a symptom of the haltingproblem-esque feature of code in general; you don't know its true quality until you've run it in all possible ways.</p>
+
+</article>
+
+  </body>
+</html>

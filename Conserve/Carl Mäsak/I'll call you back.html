@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/ill-call-you-back
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>I'll call you back :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-09-24T20:33:00+02:00" pubdate="pubdate">24 Sep, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/ill-call-you-back">I'll call you back</a></h1>
+  </header>
+
+  <p>I'm re-reading Heinlein's “The number of the Beast”, in which four adventurers explore different universes in their flying car. I like it even more than the first time I read it.</p>
+
+<p>After a brief visit to the land of Oz, the travelers meet <a href="http://en.wikipedia.org/wiki/Glinda">Glinda the Good</a> who gifts them with a bathroom in their vehicle, something they'd sorely missed on their travels so far. The bathroom has a number of vaguely unsettling properties: it's <a href="http://tardis.wikia.com/wiki/Dimensionally_transcendental">larger on the inside</a>, sunlight keeps coming in through its windows (but there are no such windows on the outside of the car), and there's gravitational pull towards the floor, even when the car itself is weightless in outer space. All in all, the bathroom works as if it were on the ground in sunny Oz, regardless of where the car goes.</p>
+
+<p>From this I deduce that Glinda, in installing the bathroom, used the magical equivalent of a <a href="http://en.wikipedia.org/wiki/Callback_(computer_science">callback</a>). And about a week ago during a refactor, November started using the same trick. Here's how.</p>
+
+<p>The reason for the refactor was that I wanted the HTML formatting out of <code>Wiki.pm</code> and put it in its own class. (Eventually we want to allow for all kinds of markups, so this was a necessary step.) But like with a bowlful of entangled spaghetti, merely pulling out the desired pieces left a lot of tricky dependencies going both ways. I wrote <a href="http://groups.google.com/group/november-wiki/msg/d81c345b61804344">a contemplative mail</a> about it, then chanced upon the solution (and a few Rakudo bugs), and drew <a href="http://masak.org/carl/dependency-injection.png">a diagram</a> to explain it to myself and others.</p>
+
+<p>The call to the formatter went from this:</p>
+
+<pre><code>    format(
+        $.storage.read_page($page)
+    )
+</code></pre>
+
+<p>...to this:</p>
+
+<pre><code>&#160;&#160;&#160;&#160;Text::Markup::Wiki::Minimal.new.format(
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;$.storage.read_page($page),
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<b>{ self.make_link($^page) }</b>
+&#160;&#160;&#160;&#160;)</code></pre>
+
+<p>That second argument is the callback. It adjusts for the fact that what we want to send along is a method, but we can't send a method as-is, because at the receiving end there's no object to call it on. It also makes modest use of Perl 6's placeholder variables, effectively making this a one-parameter closure. We're not sending in <code>make_link</code> in itself, but a piece of code which knows how to call it.</p>
+
+<p>I feel a bit of the same wonderment as the adventurers in Heinlein's novel did with their new bathroom. I'm very happy Rakudo is complete enough and stable enough to allow me to think a thought as complex as callbacks to its conclusion.</p>
+
+</article>
+
+  </body>
+</html>

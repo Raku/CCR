@@ -1,0 +1,66 @@
+http://strangelyconsistent.org/blog/november-19-2008-things-to-keep-in-mind
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 19, 2008 &#8212; things to keep in mind :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-20T00:13:00+01:00" pubdate="pubdate">20 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-19-2008-things-to-keep-in-mind">November 19, 2008 &#8212; things to keep in mind</a></h1>
+  </header>
+
+  <p>18 years ago today, some pop duo called <a href="http://en.wikipedia.org/wiki/Milli_Vanilli">Milli Vanilli</a> was stripped of their Grammy Award because their first album, <a href="http://en.wikipedia.org/wiki/All_or_Nothing_(Milli_Vanilli_album">All or Nothing</a>), advertised them as the singers, when in fact it was not them at all, but some <a href="http://en.wikipedia.org/wiki/Session_musician">session musicians</a>. This all occurred four days after the recording of the voices got jammed during a live performance. <a href="http://en.wikipedia.org/wiki/Milli_Vanilli#Media_backlash">Wikipedia</a> tells it thus:</p>
+
+<blockquote><div><p>In 1990, during a live performance recorded by MTV at the Lake Compounce theme park in Bristol, Connecticut, the recording of the song "Girl You Know It's True" jammed and began to skip, repeating the partial line "Girl, you know it's-" over and over. According to the premiere episode of VH1's Behind the Music which profiled Milli Vanilli, fans attending the concert didn't seem to notice or even care and the concert continued as if nothing unusual had happened, but critics did notice and questioned Rob and Fab in their concert reviews.</p></div></blockquote>
+
+<p>Must have been awful, not only being found out and stripped of their Grammy, but actually having to put someone else's voices on the recording in the first place. In 1998, ten years after Milli Vanilli's debut, one of the two members was found dead in a Frankfurt hotel of an apparent drug overdose.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Since today has been a day of little things — reporting insignificant bugs minor TODOs, fixing small errors in S29, writing short sentences on IRC — I thought I'd instead mention three insignificant CSS design principles that I wish everyone on the web would follow. We can't all be visual designers or artists, but we can all take a step back from our creations, look closely at it, think "man, that sucks", and <em>actually fix it</em>. The things I describe are all easily fixed.</p>
+
+<ol>
+<li><strong>Give yourself some space.</strong> Put in margins and padding, and a reasonable line height, letting the contents breathe a little. Maybe programmers tend to think that the more contents you can cram into the same area, the better, but only optimising for content density soon leads to a cluttered feeling. I find that well-thought-out layouts usually manage both to show a lot of content and have a lot of free space.</li>
+<li>Make sure that different element of the page <strong>don't collide.</strong> I'm looking at use.perl's layout as I write this, and at my particular settings and sizes in Firefox, the last link in one of the link rows at the top runs into my user info box. In this case, I'm lucky, and the link is shown above the user info box, so were I to click it, I would probably succeed. It might just as easily have been below the box instead, unclickable. Pages which prevent you from navigating by hiding vital links or article text from you are no fun. It's especially frustrating when article text is hidden by advertising sidebars.</li>
+<li>If an element changes when you hover over it with the mouse pointer <strong>doesn't change size.</strong> I see this sometimes: you hover over something, and the browser goes into a very rapid loop of rendering the item alternately in its hovered and non-hovered states, simply because the rendering of one causes the state to flip. Sometimes things further down on the page dance around too. This doesn't happen if one makes sure from the start that the size of the object is not affected by hovering.</li>
+</ol>
+
+<p>I'm thinking of these sorts of thing now that I'm designing my own layout. After writing the above, I took a critical look at <a href="http://www.november-wiki.org/">november-wiki.org</a>. Well, the design <em>does</em> follow the above three rules — the second two trivially by not having elements that can overlap, nor elements that do funny things when hovered over — but it still isn't particularly sexy. I like to be inspired by layouts at <a href="http://www.csszengarden.com/">CSS Zen Garden</a>, they are often stunningly beautiful, and very inspiring.</p>
+
+<p>Aesthetics is very important in our daily lives, including on web pages.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,127 @@
+http://strangelyconsistent.org/blog/july-31-2012-the-finished-game
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 31 2012 &#8212; the finished game :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-31T23:24:18+02:00" pubdate="pubdate">31 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-31-2012-the-finished-game">July 31 2012 &#8212; the finished game</a></h1>
+  </header>
+
+  <p>All last days of a project should be like this.</p>
+
+<p>No stress. No looming deadline, just a normal deadline. No tearing one's
+hair. No failing test, just 144 really good passing ones.</p>
+
+<p>First, I fixed something that I realized earlier today: I don't need to
+special-case the wrapper methods for <code>take</code> and <code>put_thing_on</code> with special
+handling of the tiny disk and its interaction with the bounded Hanoi context.
+Now that all the disks and rods are objects in the game, I'll just <a href="https://github.com/masak/crypt/commit/4a89e8f3f057ca8be7d9e448abc9968be991b839">add more
+hooks</a>.
+Nice.</p>
+
+<p>Then it was time to split the big script file into smaller modules and test
+files.</p>
+
+<pre><code>$ wc bin/crypt 
+  3483   8026 103863 bin/crypt
+</code></pre>
+
+<p>100 KB! All of it written this month... that means I've netted around 3 KB of
+code per day. Hm, that actually sounds about right.</p>
+
+<p>Anyway, some splitting later...</p>
+
+<pre><code>$ wc `find bin lib t -type f`
+   334   1007  12198 bin/crypt
+   938   1931  25364 lib/Adventure/Engine.pm
+   276    612   9013 lib/Crypt/Game.pm
+     9     31    274 lib/Event.pm
+   327   1021   9950 lib/Hanoi/Game.pm
+   309   1010   9726 t/hanoi.t
+   714   1227  16398 t/crypt.t
+   633   1359  17366 t/adventure-engine.t
+  3540   8198 100289 total
+</code></pre>
+
+<p>The script file completely deflated; it now only contains the <code>MAIN</code> routine
+for the game. Even it could be largely factored out into an
+<code>Adventure::Engine::REPL</code> or something, but right now it's a little too coupled
+with crypt for me to attempt that.</p>
+
+<p>Much of the general logic went into <code>Adventure::Engine</code>, not surprisingly.
+<code>Crypt::Game</code> now mostly contains the world-building logic and some wrapper
+methods.</p>
+
+<p>The test files also distribute easily. 54 <code>hanoi.t</code> tests. The <code>crypt.t</code> and
+<code>adventure-engine.t</code> tests were all mixed together in one <code>MAIN</code> multi, but
+they were easy to tease apart. (A deeper issue there is that some tests in
+<code>crypt.t</code> would need to be duplicated, anonymized ("de-crypted", heh), and put
+into <code>adventure-engine.t</code> so that it gets better coverage. I might get to
+that.)</p>
+
+<p>If you're wondering why things got <em>smaller</em> from this, I think it was because
+some amount of indentation actually disappeared from the test files. Those
+tests were all in separate <code>MAIN</code> routines previously &mdash; indented one
+level. Now they're not.</p>
+
+<p>But, just splitting things apart wasn't enough. I had promised to move
+<code>Adventure::Engine</code> into its own repository as an independent module, so <a href="https://github.com/masak/crypt/commit/e10a8b7f252667d3fa61b3df44ae6b0fdc09fb79">I did
+that</a>.
+It can now be found at
+<a href="https://github.com/masak/Adventure-Engine"><code>github/masak/Adventure-Engine</code></a>.</p>
+
+<p>Then I took the chance to publish crypt as well. I published it as
+<code>Crypt::Game</code>, which was probably a mistake from an module naming perspective.
+I'll investigate tomorrow what it takes to rename the module <code>Game::Crypt</code>.</p>
+
+<p>Both modules can be found at <a href="http://modules.perl6.org/"><code>modules.perl6.org</code></a>,
+of course. You should be able to install it with Panda now, though I haven't
+tried.</p>
+
+<p>The contest for finding bugs in the adventure game is now closed as well, and I
+do have a winner &mdash; to be announced. If anyone wants to sneak in at the
+end with lots of bug reports and suggestions for improvements, I won't be
+impossible. The later they are, though, the more awesome they have to be in
+order for me not to consider them to be too late.</p>
+
+<p>...and that concludes this day's work, and this blogging month. Thanks for
+following along this far. I'll probably sum up the month and what I learned,
+when I've regained enough strength to do that.</p>
+
+</article>
+
+  </body>
+</html>

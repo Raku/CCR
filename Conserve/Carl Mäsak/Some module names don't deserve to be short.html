@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/some-module-names-dont-deserve-to-be-short
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Some module names don't deserve to be short :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-12-11T06:29:00+01:00" pubdate="pubdate">11 Dec, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/some-module-names-dont-deserve-to-be-short">Some module names don't deserve to be short</a></h1>
+  </header>
+
+  <p>carlin++ is doing some much-appreciated testing of the <code>installed-modules</code> branch of proto. He's now at the point where he's hunting down module name conflicts across projects.</p>
+
+<p>Why are we interested in conflicts? Because the job of the <code>installed-modules</code> branch is to install Perl 6 modules into a common modules directory, and then module name collisions suddenly become a reality.</p>
+
+<p>Some collisions were due to modules both resting in the perl6-examples repo, and having moved out of it to separate repositories. Those were the easy ones to take care of. Nice to be rid of duplicates, too.</p>
+
+<p>carlin dug up one collision that surprised me. There was a <code>Tags</code> module in November, and a <code>Tags</code> module in Web.pm. This never occurred to me before, despite the fact that I've witnessed the creation of both. The module in November handles the subject tagging of article pages in the wiki, as well as tag clouds (ihrd++). The module in Web.pm helps serialize HTML tags (Tene++). So this is not an easy case where one of the modules is a stale copy; they're actually non-homologous.</p>
+
+<p>Yet the solution was clear after only a moment's thought: <code>Tags</code> in the Web.pm repo had the right to the short name (for now, at least), whereas <code>Tags</code> in November should really be <code>November::Tags</code>. I fixed that, and carlin could move on, unblocked.</p>
+
+<p>Then I had a look at November, as if with new eyes. There are lots of modules there which really don't <em>deserve</em> such short names. Not in a connected world, that is, where a project suddenly needs to take other projects into account, and not just clobber namespaces willy-nilly.</p>
+
+<p>These were the ones I decided to prefix with <code>November::</code>: <code>CGI</code>, <code>Cache</code>, <code>Config</code>, <code>Session</code>, <code>Tags</code>, <code>Utils</code>. Most of them because they simply <em>are</em> November-specific, so it makes more-than-sense to shove them into a <code>November::</code> namespace, for clarity as well as for civility.</p>
+
+<p>The exception is <code>CGI</code>, which could actually be in its own repo and used by other projects. I chose to shove that into the <code>November::</code> namespace as a sort of social marker: <code>November::CGI</code> is our mess, we're getting rid of it as soon as we can, and we'd rather other people didn't use it.</p>
+
+<p>Use <a href="http://github.com/masak/web">Web.pm</a> instead. ☺</p>
+
+</article>
+
+  </body>
+</html>

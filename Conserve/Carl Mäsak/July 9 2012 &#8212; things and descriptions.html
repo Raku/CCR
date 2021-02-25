@@ -1,0 +1,83 @@
+http://strangelyconsistent.org/blog/july-9-things-and-descriptions
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 9 2012 &#8212; things and descriptions :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-09T23:39:34+02:00" pubdate="pubdate">9 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-9-things-and-descriptions">July 9 2012 &#8212; things and descriptions</a></h1>
+  </header>
+
+  <p>I did what was on the agenda today, which wasn't much. Since there isn't much
+today, I'll break away from my habit of only talking about the commits that
+"matter" for the game development, and talk about the two "in-between" commits
+I did as well. These commits don't usually make a good story, but today they
+might help.</p>
+
+<p>First thing I did was run the tests. They had broken after the "show exits"
+commit I did yesterday, and I hadn't noticed because I hadn't re-run the tests
+after making that additions. (Note to self: changing the events API always
+merits a test run.) So I <a href="https://github.com/masak/crypt/commit/f8d2a55f31a534887d202a2796ea6ea77f8b9b32">fixed the
+tests</a>.</p>
+
+<p>Next up, the happy path of today's work: <a href="https://github.com/masak/crypt/commit/02858d2a97204ed09586f296eb42625766ed0f0c">examining an
+object</a>
+that was placed in the room. Works fine. As usual, look how "clean" the
+addition is. Practically no code at all.</p>
+
+<p>At this point I realized that one of the attributes on an old event was
+unfortunately named. This is why good design takes time; you have to actually
+use the stuff for a while for these things to surface. So I <a href="https://github.com/masak/crypt/commit/015b292d311ebac11c70158deac916fcbda3d655">renamed the
+attribute</a>.
+And yes, I did run the tests this time.</p>
+
+<p>Finally, the sad path of examining an object: if you examine something that's
+simply not there, the game <a href="https://github.com/masak/crypt/commit/fcd3e8d0927d447907867137777cc0a6072ab464">tells you it's not
+there</a>.
+Perhaps most interesting is to note that <em>the placing logic ends up in this
+commit</em>, not in the previous one. Why? Because due to the way we're only ever
+testing external reactions from the game, it's not until we test sad-path
+activities that we actually need to do validation against the game state, and
+it's not until we do validation that we need to actually apply events. That
+feels backwards before one gets used to it... but in a way it makes one
+remember to write sad-path code for everything, because those are the tests
+that <em>allow</em> you to write the validation code.</p>
+
+<p>Still very much liking where this year's version is going. Stay tuned.</p>
+
+</article>
+
+  </body>
+</html>

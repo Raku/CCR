@@ -1,0 +1,109 @@
+http://strangelyconsistent.org/blog/november-22-2010-bring-em-on
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 22 2010 &#8212; bring 'em on! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-23T01:34:00+01:00" pubdate="pubdate">23 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-22-2010-bring-em-on">November 22 2010 &#8212; bring 'em on!</a></h1>
+  </header>
+
+  <p>67 years ago today, President Franklin Roosevelt of the United States, Prime Minister Winston Churchill of the United Kingdom, and Generalissimo Chiang Kai-shek of the Republic of China met up in Cairo for what was to become known as the <a href="http://en.wikipedia.org/wiki/Cairo_Conference">Cairo Conference</a>.</p>
+
+<div class="quote">[The conference] addressed the Allied position against Japan during World War II and made decisions about postwar Asia. [...] Soviet leader Stalin refused to attend the conference on the grounds that since Chiang was attending, it would cause provocation between the Soviet Union and Japan.</div>
+
+<p>I like <a href="http://en.wikipedia.org/wiki/File:Cairo_conference.jpg">the photo</a>. Winston Churchill looks a little sad.</p>
+
+<div class="quote">The three main clauses of the Cairo Declaration are that "Japan be stripped of all the islands in the Pacific which she has seized or occupied since the beginning of the First World War in 1914", "all the territories Japan has stolen from the Chinese, such as Manchuria, Formosa, and the Pescadores, shall be restored to the Republic of China", and that "in due course Korea shall become free and independent".</div>
+
+<p>Mainland China did get Manchuria back, in the midst of its civil war, but Formosa and the Pescadores eventually went their own way. In due course, Korea became free and independent, but just as China, it split and hasn't been reunited yet.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>So. Yesterday we left of with this error:</p>
+
+<pre><code>Method 'page_tags_path' not found for invocant of class 'November;Tags'
+  in 'November::Tags::read_page_tags' at line 74:lib/November/Tags.pm
+  in 'November::Tags::page_tags' at line 142:lib/November/Tags.pm
+  [...]
+</code></pre>
+
+<p>That one was easy. Rakudo had <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=79564">regressed</a> on a certain feature, but it turned out we weren't dependent on that feature anyway. So I just <a href="https://github.com/viklund/november/commit/0d56401f5f29db0e042d5ddf925e0832511475aa">remove it</a>. Next!</p>
+
+<pre><code>Method 'e' not found for invocant of class 'Str'
+  in 'Enum::ACCEPTS' at line 5250:CORE.setting
+  [...]
+</code></pre>
+
+<p>Oh yeah, that's <code>$file ~~ :e</code> being <code>$file.IO ~~ :e</code> nowadays. I thought I fixed all of those, but evidently not. <a href="https://github.com/viklund/november/commit/cab63ddded11183ba7a3aa77c5a2191bc4ea386e">Fixing now</a>. Next!</p>
+
+<pre><code>postcircumfix:&lt;{ }&gt; not defined for type Array()
+  in &lt;anon&gt; at line 1
+  in 'HTML::Template::substitute' at line 1
+  in 'HTML::Template::output' at line 28:lib/HTML/Template.pm
+  [...]
+</code></pre>
+
+<p>Ooh, interesting. Rakudo has changed a bit in how it loops over listy things in scalars; while you'd previously write <code>for ($contents&lt;chunk&gt; // ()) -&gt; $chunk { ... }</code>, now it's just <code>for $contents&lt;chunk&gt;.list -&gt; $chunk {</code>. <a href="https://github.com/masak/html-template/commit/f841583f6130e5fd5814909b6be7d2d5bcdb098f">Fixing</a>. Next!</p>
+
+<pre><code>Method 'HOW' not found for invocant of class 'Hash'
+  in 'November::CGI::send_response' at line 1
+  in 'November::CGI::send_response' at line 47:lib/November/CGI.pm
+  in 'November::response' at line 388:lib/November.pm
+  [...]
+</code></pre>
+
+<p>Eh? Ooh, something goes wrong when not passing in a hash to a routine with an optional hash parameter. That's a new one. <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=79642">Submitting bug</a>, <a href="https://github.com/viklund/november/commit/86acff6014e03f5941f4f75ef64a151b6867f3cd">fixing</a>. Next!</p>
+
+<p>At this point, I'm getting actual output from November. I'm so stuck in debug mode that I don't realize that's output. Instead, I think it's just a long error message. <em>Oh no</em>, I think.</p>
+
+<p>But yay, it's output! It works!</p>
+
+<p>Well. Um. Kinda. It outputs stuff like this.</p>
+
+<pre><code>Are y u eager t  see Per  6  eing re eased, s  y u  an write      
+pr grams in it with ut w rrying if the  anguage is "d ne" yet?
+</code></pre>
+
+<p>(Yes, sentence chosen for maximum irony. So sue me.)</p>
+
+<p>Anyway, there seems to be something wrong with <code>Text::Markup::Wiki::MediaWiki</code>. I have no idea what; never seen something like this before. But it's old code, so maybe not too surprising that it fails.</p>
+
+<p>Seems the bug causing this hates the letters <code>b</code>, <code>c</code>, <code>l</code>, and <code>o</code>... oh, I know what that is! Will track down and fix tomorrow. I have a lingering feeling we're going to run into our old friend <code>.trans</code> again.</p>
+
+</article>
+
+  </body>
+</html>

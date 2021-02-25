@@ -1,0 +1,85 @@
+http://strangelyconsistent.org/blog/code-generation-and-stone-soup
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Code generation and stone soup :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-01-22T06:41:00+01:00" pubdate="pubdate">22 Jan, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/code-generation-and-stone-soup">Code generation and stone soup</a></h1>
+  </header>
+
+  <p>I don't know what kept me away from generating code for so long. Fear and prejudice, perhaps.</p>
+
+<p>I've been trying it the last few days, and I have two things to say. First, it's like learning to program all over again. Remember that sense of power from the early days, when just picking up coding? "Hey, I can program this piece of code to do whatever I want." Well, guess what? That feeling comes back when one starts down on the path to madn... erm, to code generation. Only it's stronger. "Hey, I can program this piece of code to program <em>that</em> piece of code to do whatever it wants!" I think I've just discovered meta-hubris. Most likely, I'm not the first to do so.</p>
+
+<p>Second, there's a flip-side to the feeling of power. That other feeling is how you feel when you knit your brows and wish that your neurons would line up a bit better so you could think more clearly about the problem at hand. Who would have thought, that feeling is also stronger when you're suddenly writing two different, entwined and related programs at the same time, in the same file. In my case, the knitted brows turn into an empty stare and a jaw left slackly agape, as I sit there wishing that I was better at context-switching between runloops.</p>
+
+<p>Honestly, I think I expected <code>eval</code> to be the source of much programmer confusion, but I have to confess that it seems I underestimated the vistas it opens up when you buy into the idea of generating exactly the piece of code you need for the task (from an AST, say), and then <code>eval</code> it into a closure. That's what <a href="http://en.wikipedia.org/wiki/Compiler#Back_end">the back end of a compiler</a> ends up doing, so maybe I shouldn't be so surprised that it's a versatile technique.</p>
+
+<p>Lately, I've been in the business of squeezing every drop of juice out of the already implemented control flow constructs already implemented in Rakudo. I'm writing a p6regex→p6 compiler, you see. (Yes, that's <a href="http://masak.org/carl/bpw-2009-gge/talk.pdf">a rather crazy notion</a>; thanks for asking.) Along the way, I've often felt the need for not-yet-implemented control flow. This has led me to this hope-inducing maxim:</p>
+
+<p><em>Every type of control flow in programming languages is just convenient sugar for <code>if</code> statements and <code>while</code> loops.</em></p>
+
+<p><code>if</code>s and <code>while</code>s are the stone soup to which all the rest of our control flow can be added as seasoning. <code>if</code>s let you conditionally skip ahead in code, and <code>while</code>s allow you to conditionally skip back. That's all you need.</p>
+
+<p>Here are some examples.</p>
+
+<ul>
+<li>Switch statements are just sugar for chained <code>if</code>/<code>elsif</code>/<code>else</code> statements. Even Perl 6's <code>given</code>/<code>when</code> constructs.</li>
+<li>The variants <code>next</code>, <code>last</code> and <code>redo</code>, either with or without a label to affect a less-than-innermost loop, can be desugared to sad boolean-ish variables, plus some <code>if</code> statements to appropriately regulate the expression of the code inside the loop. (Yes, go ahead and twitch just thinking of it. That sugar is there for a reason.)</li>
+<li>Subroutines and subroutine calls can be simulated with the appropriate use of a switch statement and an explicit <a href="http://en.wikipedia.org/wiki/Call_stack">call stack</a> stored in an array variable.</li>
+<li>Even exceptions, or more generally continuations, can be desugared in this way. As soon as you have total control of the call stack, you're free to save and rewind to some previous state to your heart's content.</li>
+</ul>
+
+<p>Aside from the switch statements and unlabeled <code>next</code> etc, which already work very well in Rakudo, I've been doing the whole list of desugarings in <a href="http://github.com/masak/gge">GGE</a> (the regex compiler). The part with the continuations was especially fun. I needed them for backtracking, at least as long as the compiler was only an interpreter.</p>
+
+<p>But then, during a fruitful discussion with diakopter++, I was told how to emulate (delimited) <code>goto</code>s with a switch and a loop. The idea is quite obvious in retrospect: just keep the current 'label' in a variable, and switch on it in each iteration. Presto! I should have thought of that. I don't even need to <a href="http://strangelyconsistent.org/blog/adding-goto-to-your-perl-6-program">flee to PIR</a> any more.</p>
+
+<p>I took the idea and generalized it to delimited <code>gosub</code>s: instead of keeping the current label in a scalar, keep it at the top of a stack. Define macro-like constructs to push to (<code>local-branch</code>) and pop from (<code>local-return</code>) the stack. Suddenly I don't need continuations as much.</p>
+
+<p>Result: <a href="http://gist.github.com/283799">this</a>. We send in the regex <code>/&lt;[a..b]&gt; | &lt;[b..e]&gt;/</code> on the top line, along with the target string <code>c</code> to match on. The program generates an AST, an anonymous subroutine which executes the regex in atomic Perl 6 operations, and finally a match object which indeed finds <code>c</code> to be a match.</p>
+
+<p><a href="http://gist.github.com/283928">Here's</a> a similar but slightly more involved example. And <a href="http://gist.github.com/284959">here's</a> one doing captures and backreferences inside a quantified non-capturing group. Isn't that exquisite? (Ok, bad choice of word. Sorry.)</p>
+
+<p>As I said, I wrote most of with a feeling of being not just in over my head, but of being in over my head <em>twice</em>. I'm still a bit surprised it works. The runtime compilation seems to introduce a bit of a speed penalty, but (1) it's a one-time cost, since you can re-use the regex object, and (2) I told you it would be slow.</p>
+
+<p>The code-generating work still resides only in a local branch on my computer. I'll push it to <code>master</code> as soon as I'm done bringing GGE back to its former capabilities. (<strong>Update 2010-01-24:</strong> Done, and <a href="http://github.com/masak/gge/commit/f9e2d4a3d33533270a54a523277d0b9bebd995cc">done</a>.)</p>
+
+<p>Code writing code. What a concept!</p>
+
+</article>
+
+  </body>
+</html>

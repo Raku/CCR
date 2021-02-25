@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/november-29-2010-some-kind-of-resolution
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 29 2010 &#8212; some kind of resolution :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-30T00:12:00+01:00" pubdate="pubdate">30 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-29-2010-some-kind-of-resolution">November 29 2010 &#8212; some kind of resolution</a></h1>
+  </header>
+
+  <p>63 years ago today, a plan for partitioning Palestine was adopted by the General Assembly of the United Nations.</p>
+
+<div class="quote">The resolution sought to address the conflicting objectives and claims to the Mandate territory of two competing nationalist movements, Zionism (Jewish nationalism) and Arab nationalism, as well as to resolve the plight of Jews displaced as a result of the Holocaust. The resolution called for the withdrawal of British forces and termination of the Mandate by 1 August 1948, and establishment of the new independent states by 1 October 1948. A transitional period under United Nations auspices was to begin with the adoption of the resolution, and lasting until the establishment of the two states. However, war broke out and the partition plan was never implemented by the Security Council.</div>
+
+<p>The comparison between the proposed borders and the armistice lines from two years later looks like <a href="http://en.wikipedia.org/wiki/File:1947-UN-Partition-Plan-1949-Armistice-Comparison.png">an attempt to beat the 4-color theorem</a>.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today, I handled the tests of Routes, Astaire and Squerl.</p>
+
+<ul>
+<li><p>I removed Routes. The last commit on it is from June 2009 and has the message <code>add comment-question about rakudobug, Routes is broken for now</code> (by Ilya, who no longer contributes actively to Web.pm). The commit contains debug output, and has no easy fix. Under those conditions, I see no way to get Routes working. Probably best to consider it a work-in-progress that never really got there.</p></li>
+<li><p>Astaire had one test file that looked nice but had never run. I skipped it for now.</p></li>
+<li><p>Squerl had four failing tests that simply needed <code>TODO</code>ing. I also tried implementing them, but ran into unknown (!) problems, something I don't often do nowadays. I got as far in my diagnosing the problem as identifying that it occurred in the boundary between a caller and a callee. Beyond that, I have no idea what's going wrong.</p></li>
+</ul>
+
+<p>It's rather nice to see the Web.pm test suite run with result <code>PASS</code>. Might be the first time it does that, I don't recall.</p>
+
+</article>
+
+  </body>
+</html>

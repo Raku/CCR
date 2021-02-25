@@ -1,0 +1,118 @@
+http://strangelyconsistent.org/blog/the-april-list-things-i-think-ought-to-work-in-rakudo-star
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The April List: things I think ought to work in Rakudo Star :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-09-08T11:56:00+02:00" pubdate="pubdate">8 Sep, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-april-list-things-i-think-ought-to-work-in-rakudo-star">The April List: things I think ought to work in Rakudo Star</a></h1>
+  </header>
+
+  <p>I took an hour or so to go through the RT bug list of known Rakudo issues, searching for things that I think should be fixed by April. Here they are.</p>
+
+<p>There are currently over 400 new/open bugs in RT. These only form a slice of those. My criteria for slicing have been, more or less, "what would hurt more, fixing this bug, or having to explain to the hordes of new users in Q2 2010 why this particular bug exists?". Whenever the latter weighs heavier, I include the ticket in the list.</p>
+
+<p>(This also shows a different statistic, and quite a positive one: while there are many bugs in RT right now, many of them pertain to corner cases, or minor issues. In other words, Rakudo is getting more usable.)</p>
+
+<p>For those in a hurry, I've marked the most egregious issue in each category in bold.</p>
+
+<h2>Command line</h2>
+
+<p>On the command line, Rakudo...</p>
+
+<ul>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=52242">#52242</a>) <strong>thinks that unknown command line options are files</strong> </li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58592">#58592</a>) cannot combine the --target and -e command options</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=62462">#62462</a>) has no -V flag</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=68752">#68752</a>) has a --version flag, but it's useless</li>
+</ul>
+
+<h2>Parsing</h2>
+
+<p>During parsing, Rakudo...</p>
+
+<ul>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=53804">#53804</a>) parsefails on adverbial blocks</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=61494">#61494</a>) <strong>gives different errors depending on the amount of whitespace between some things</strong> (<em>Update 2010-03-20:</em> This particular parsefail is no longe plaguing us.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=61838">#61838</a>) doesn't complain when a variable is used before it's declared</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=64170">#64170</a>) uses the old 'is also' instead of the new 'augment' (<em>Update 2010-03-20:</em> Now uses 'augment'.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=64526">#64526</a>) doesn't complain when a variable is used in the statement where it's declared</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=64688">#64688</a>) can't import other modules inside class declaration</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=65904">#65904</a>) dies horribly when declaring a sub with an invocant</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=65962">#65962</a>) doesn't allow multiple 'my' declarations in loop init (<em>Update 2010-06-22:</em> Has been fixed a while now.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=66034">#66034</a>) parses dotty and infix '.=' differently (<em>Update 2010-05-04:</em> Parses them the same now.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=66498">#66498</a>) two words: snowman. comet. (<em>Update 2010-03-20:</em> No more.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=66948">#66948</a>) should parse reduce metaops as listops</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=66996">#66996</a>) doesn't parse all pair constructors correctly (<em>Update 2010-03-20:</em> Now it does.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=68086">#68086</a>) allows the same positional to be declared multiple times in a param list (<em>Update 2010-05-04:</em> Fixed since quite a while back.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=68918">#68918</a>) ignores decimal points in base conversions (<em>Update 2010-05-04:</em> Doesn't ignore them anymore.)</li>
+</ul>
+
+<h2>Runtime</h2>
+
+<p>At runtime, Rakudo...</p>
+
+<ul>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58258">#58258</a>) <strong>oddly thinks that each line of interactive code is in an invisible block</strong> </li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58372">#58372</a>) dies when indexing undef</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=61566">#61566</a>) doesn't do type checking on binding</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=61732">#61732</a>) dies horribly on the return value of empty statements</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=63126">#63126</a>) treats junctions combined with indexing not-so-good</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=63430">#63430</a>) can't handle CATCH and &amp;return together</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=63912">#63912</a>) can't &amp;return a list of values (<em>Update 2010-05-13:</em> Now it can.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=64522">#64522</a>) allows constants to be modified (<em>Update 2010-05-13:</em> Also fixed now.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=64888">#64888</a>) tries (and fails) to redeclare anonymous classes when same code is re-run (<em>Update 2010-05-04:</em> Now tries and succeeds.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=66890">#66890</a>) dies horribly in for loops when args don't match up with list</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=67142">#67142</a>) ranges aren't immutable (<em>Update 2010-03-20:</em> They are now.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=67234">#67234</a>) dies [during <a href="http://videos.sapo.pt/yapc/50dllc2fnsM7phJy24fP">TimToady's keynote</a>] when an undef is sent to PGE (<em>Update 2009-10-20:</em> now fixed)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=67372">#67372</a>) doesn't give line numbers with &amp;warn (<em>Update 2010-06-22:</em> It does now.)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=68116">#68116</a>) doesn't accept subs as &amp;-sigilled parameters (<em>Update 2010-05-04:</em>Does now.)</li>
+</ul>
+
+<h2>TODOs</h2>
+
+<p>Perhaps the most subjective part of my list. What finally made it on this list are features which are "almost there", and which people will probably ask about if they're not fully implemented.</p>
+
+<ul>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=60672">#60672</a>) %C in sprintf</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=62476">#62476</a>) <strong>:by on ranges</strong> (<em>Update 2009-09-22:</em> :by is now deprecated by recent spec changes)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=63292">#63292</a>) triangle reduce metaoperator (*Update 2010-05-04: *We can haz it!)</li>
+<li>(<a href="http://rt.perl.org/rt3/Ticket/Display.html?id=65654">#65654</a>) texas quotes not yet awesome</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

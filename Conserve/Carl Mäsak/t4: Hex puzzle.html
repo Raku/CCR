@@ -1,0 +1,189 @@
+http://strangelyconsistent.org/blog/t4-hex-puzzle
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t4: Hex puzzle :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-05-16T18:05:28+02:00" pubdate="pubdate">16 May, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t4-hex-puzzle">t4: Hex puzzle</a></h1>
+  </header>
+
+  <p>Despite a rather long absence from such matters, we haven't forgotten that
+we're still in the midst of reviewing <a href="http://strangelyconsistent.org/blog/the-2011-perl-6-coding-contest">Perl 6 Coding Contest
+2011</a> code
+submissions. The t4 task was of the puzzle kind. See the post about <a href="http://strangelyconsistent.org/blog/counting-t4-configurations">counting
+t4 configurations</a>
+for some overview of the static parts of the problem.</p>
+
+<p>In this post, it's time to get dynamic and look at how to solve actual hex
+puzzles. The rest of the problem went like this:</p>
+
+<pre><code>A valid playing move on this board consists of sliding a piece along
+its groove, either forwards or backwards. There are a few things which
+are *not* allowed:
+
+* Two pieces may never overlap and occupy the same location. (Note that
+  the above three representations of the board actually denote the same
+  board; the three sets of grooves intersect each other.)
+
+* A piece may not "push" another piece as it slides; it is simply locked
+  in by that other piece.
+
+* A piece may not "jump" over another piece as it slides; it is restricted
+  in its movement by the current positions of the other pieces.
+
+* A piece may not rotate, move sideways, or otherwise leave its groove.
+
+It's perfectly valid for a groove to contain more than one piece (as
+long as they don't overlap).
+
+For this problem, we will restrict ourselves to initial board configurations
+with a piece at l1 and l2 (written as "l12"). We call this piece the "bullet".
+The goal is to slide the bullet to l56, through a valid sequence of moves.
+Thus, other pieces may have to be moved in order to get the bullet to l56.
+
+                ..  ..  ..  ..  ..
+              ..  ..  ..  ..  ..  ..
+                ..  ..  ..  ..  ..
+    start --&gt; l1  l2  ..  ..  l5  l6 &lt;-- goal
+                ..  ..  ..  ..  ..
+              ..  ..  ..  ..  ..  ..
+                ..  ..  ..  ..  ..
+
+Some initial configurations won't have a solution at all. (For example, the
+bullet will never get through if there are other pieces in its groove.)
+
+Write a program that accepts an initial board configuration on standard input.
+The format looks as follows:
+
+    d67
+    i12
+    l12
+    u345
+    v34
+
+The program should reject any initial board configuration that has illegal
+piece specifications, contains overlapping pieces, or lacks the bullet at
+l12.
+
+If there is possible solution, the program should output
+
+    No solution.
+
+Otherwise it should output one solution as a sequence of valid moves on
+this format:
+
+    u[345 -&gt; 456]
+    d[67 -&gt; 23]
+    u[456 -&gt; 123]
+    v[34 -&gt; 23]
+    l[12 -&gt; 56]
+
+A solution doesn't have to be minimal in the number of moves, but it may
+count in your favor if it is. Even more so if it's minimal in the total
+distance the pieces were moved. Arriving at a solution quickly is an
+even more important success metric than minimal solutions.
+</code></pre>
+
+<p>I strongly encourage you to try a few problems; they're often quite exquisite.
+Each puzzle instance requires you to move the bullet from one side of the board
+to the other, but in order to do so, you must move aside other pieces, and in
+order to do <em>that</em>, you must move yet other pieces. Everyone who has ever tried
+their hand at <a href="http://en.wikipedia.org/wiki/Sokoban">Sokoban</a> knows that this
+quickly grows non-trivial. (The problem of solving Sokoban puzzles has been
+proven to be NP-hard. I know of no such result for this hex puzzle, but let's
+just say it wouldn't surprise me.)</p>
+
+<p>The necessity of moving pieces aside forms an implicit dependency tree. If that
+were all, these puzzles would be merely mechanical and boring. But what often
+happens is that <em>the dependencies are not cleanly separated</em>, and you have the
+additional problem of not tripping over your own pieces. Here's an example:</p>
+
+<p><img style="display: block; margin-left: auto; margin-right: auto; padding: 1em" src="http://strangelyconsistent.org/blog/images/t4-example-conf.png" /></p>
+
+<p>We trivially notice that in order to get the bullet (the <code>l</code> piece) across, we
+need to move aside the <code>e</code> piece and the <code>c</code> piece. But in the starting
+configuration, both of these pieces are blocked by other pieces. So we must move
+them first. And so on.</p>
+
+<p>Reasoning about this kind of board takes place in a backwards manner. We figure
+out which pieces we have to move out of the way to be able to move the pieces we
+are really interested in. We follow the dependencies backwards until we bottom
+out.</p>
+
+<p>In this particular problem, it's a bit worse than that: the two subproblems of
+"move aside the <code>e</code> piece" and "move aside the <code>c</code> piece" interact. Why?
+Because the <code>c</code> piece is blocked by the <code>k</code> piece, which is blocked by the <code>e</code>
+piece. So we can't just solve the subproblems in any order we like, we have to
+find a way to solve them that works.  The whole thing has a feel of people
+attempting to execute a ballet number in a crowded elevator. It's exquisite.
+It's frustrating.</p>
+
+<p>So, people solve this problem by reasoning backwards. This is the only working
+approach I've seen, and I've talked to quite a few people about this problem.
+How should a machine solve it?</p>
+
+<p>Well, there's always the brute force approach. Try all possible moves from the
+starting configuration, and all moves from the configurations that result, and
+so on until you either (a) run out of new configurations to try, or (b) solve
+the problem. If you do this in a breadth-first way, i.e. you examine the new
+configurations in a first-in-first-out manner, you're also guaranteed to find
+a shortest possible solution first. (Shortest in terms of moves required.)</p>
+
+<p>This is fine. It's slow, but it's fine. What some of our contestants ended up
+doing was to improve on this by using <a href="http://en.wikipedia.org/wiki/A*_search_algorithm">A*
+search</a> to guide the search.
+A perfect fit, it seems, for this kind of problem. The extra complexity from
+upgrading from BFS to A* is paid back in spades by the problems being solved
+faster. A success story.</p>
+
+<p>The other possible approach, which none of the submitted entries attempted,
+is to do the reasoning about blocking dependencies much in the way humans do.
+Though such a solution is certainly possible, I have a creeping suspicion that
+it would be far more complex than the A* approach. It's unclear how many
+special cases it would need to contain in order to work out all the
+dependencies. One gets a bit of extra respect at the pattern-matching and
+hypothetical-future algorithms in one's own brain when trying to code up the
+same things as a program.</p>
+
+<p>Be that as it may. <a href="http://strangelyconsistent.org/p6cc2011/">Have a look at people's
+solutions</a>. Admire people's ingenuity
+on this one. Even though virtually everyone solves the problem in the same way,
+there's no end to how differently they factor their solutions.</p>
+
+</article>
+
+  </body>
+</html>

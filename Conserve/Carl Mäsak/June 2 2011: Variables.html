@@ -1,0 +1,84 @@
+http://strangelyconsistent.org/blog/june-2-2011-variable
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 2 2011: Variables :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-02T22:49:42+02:00" pubdate="pubdate">2 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-2-2011-variable">June 2 2011: Variables</a></h1>
+  </header>
+
+  <p>Yesterday we wrote a program that engaged in a bit of dialogue with the user.</p>
+
+<pre><code>say "Hello.";
+prompt "What is your name? ";
+say "Nice to meet you.";
+</code></pre>
+
+<p>Problem is, by the time the program reaches the last line and prints <code>Nice to meet you.</code>, it's already "forgotten" the user's name. We'd like some way for the program to keep the name around so that we can re-use it later.</p>
+
+<p>There's a mechanism for this, and it's called a <em>variable</em>. With two simple additions to our program, we can make it do what we want:</p>
+
+<pre><code>say "Hello.";
+<b>my $name =</b> prompt "What is your name? ";
+say "Nice to meet you<b>, $name</b>.";
+</code></pre>
+
+<p>See how we use the variable <code>$name</code> first to scoop up the result from the <code>prompt</code> command, and then again in the string we print? That's generally the two things that we do with variables: we assign values to them, and later we use those values. They're like little sticky notes that we write things on to remember for later.</p>
+
+<p>We can decide for ourselves what we want to call a variable. Here we went with <code>$name</code>, since it stores a name. The dollar sign up front (<code>$</code>) needs to be there: that's how we know it's a variable and not a command. (In other words, <code>say</code> is a command, but <code>$say</code> would be a variable.) The dollar sign is called a <em>sigil</em>. We'll see other sigils later on, but for now we only need the dollar sign. For the rest of the variable name, we're allowed to use letters, numbers, underscores (<code>_</code>), even a dash (<code>-</code>) if we're nice. The variable name should start with a letter though, after the sigil.</p>
+
+<p>The first time we mention a variable in a program, we need to write <code>my $variable</code>, or we'll get an error when we try to compile the program. We call this practice of writing <code>my</code> the first time <em>variable declaration</em>: we declare that we're going to use a variable. It needn't be that way — some languages allow you to go ahead and just use a variable without declaring it first. That may be less work, but it's also far easier to slip up and make a typo somewhere. If you make a typo in a Perl 6 variable, you'll notice right away when you try and compile.</p>
+
+<p>Note that when we use the variable, we use it inside of a <em>string value</em>. That's perfectly fine, and will do what we mean. One of the nice things about having sigils on our variables is that we can put them inside string values like that, and they will be recognized and handled (<em>interpolated</em>) appropriately. Interpolation will only work if you use double quotes around your string, by the way.</p>
+
+<p>In other words, string interpolation allows us to write this:</p>
+
+<pre><code>say "Nice to meet you, $name.";
+</code></pre>
+
+<p>Instead of something like this:</p>
+
+<pre><code>say "Nice to meet you, ", $name, ".";
+</code></pre>
+
+<p>In most languages, you have to do the latter trick: do a bit of a string, then a variable, and then a string again. In Perl, you just effortlessly switch between the two without thinking about it much.</p>
+
+<p>So... it was nice to meet you, <code>$name</code>. Tomorrow we'll talk about <code>if</code> statements and their relation to saunas.</p>
+
+</article>
+
+  </body>
+</html>

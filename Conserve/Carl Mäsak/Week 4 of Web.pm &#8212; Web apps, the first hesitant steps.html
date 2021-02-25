@@ -1,0 +1,76 @@
+http://strangelyconsistent.org/blog/week-4-of-webpm-web-apps-the-first-hesitant-steps
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 4 of Web.pm &#8212; Web apps, the first hesitant steps :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-04-12T21:16:00+02:00" pubdate="pubdate">12 Apr, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-4-of-webpm-web-apps-the-first-hesitant-steps">Week 4 of Web.pm &#8212; Web apps, the first hesitant steps</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>goliath walkd out to see david n laffd at him "Srsly lil kitteh, am i lyke sum dog dat u try to beat me up wit a stik? srsly dood, dat is teh suckz. come here n see me so i can groun u up lyke so much bird food." goliath yelld.</i> </dd>
+<dd>&#160;</dd>
+<dd> <i>n david sed, "u coem to meh wit all ur fancy armrz n stuffz, but i coem to u teh naem of teh Cat of teh Ceiling's armis, u kno, ceiling catz armis dat u leik to teez so much. today, ceiling cat wil totaly taek u, n i'm so goin to kill u and cutz off ur hed n stuff. n den, I will will groun all ur fighterkitteh leik so much bird food n den evryone will kno dat ceiling cat livs n israel! n evryone here wil kno dat ceiling cat savs his kittehs n he doan evn need any of dat fancy armor stuff. Dis is totaly ceiling cat's battl n he will so gif u to me. kthnx."</i> </dd>
+<dd>&#160;</dd>
+<dd> <i>s0 goliath cam fwd to meet david n david ranz at him. he grabd one of hiz rockz an den he leik thru it at goliath! n teh rock hit goliath in teh hed n he fell over and dyd. Pwnd!</i> &#8212; 1 Samuel 17:41-48</dd>
+</dl>
+
+<p>A combination of persistently distracting <code>$WORK</code> and and initial lack of overview of the problem at hand has delayed this blog post more than an extra week. I had a clear goal, but no clear way of getting there.</p>
+
+<p>My clear goal was this: get the Lobster running locally on the browser. For this, I would use the <code>HTTP::Daemon</code> module written by mberends++. I had significant problems using that code, most of which later turned out to be due to my own inability to follow mberends' given instructions. Scant progress and plenty of distractions are a bad combination.</p>
+
+<p>When I finally managed to hook the Lobster up to HTTP::Daemon, things went quickly. Strangely enough, nothing happened when clicking the 'flip!' link... a moment's reflection gave the cause of this: a few days ago, TimToady has syntactically separated reversal of <code>List</code> (<code>.reverse</code>) from the reversal of <code>Str</code> (<code>.flip</code>); my code was like three weeks old and was still using <code>.reverse</code> for strings, which in the newest Rakudo got interpreted as one-elem lists, and list-reversed with no visible effect whatsoever. I fixed that, and found the fact that the link in the Lobster app was already called 'flip' an indication of the appropriateness of the name change. Perl 6 just keeps getting nicer and nicer.</p>
+
+<p>You could head over to github and <a href="http://github.com/masak/web/blob/master/lib/Web/Lobster.pm">look at the Lobster</a> in its functioning form. (By the way, I'm considering changing the Lobster to a <a href="http://images.google.com/images?q=nibbler+futurama">Nibbler</a>, so as to retain some originality wrt Rack. Anyone who masters the ancient art of ASCII images is welcome to help me out, thus being immortalized as the artist of the example webapp of Web.pm.)</p>
+
+<p>According to the plan, this week should go to "Changing November to run on top of the framework". I've chosen to postpone this a bit, because there's lower-hanging fruit to be picked before that, namely Druid. So I spent this morning hooking up Druid to HTTP::Daemon the same way I did Lobster. It's nice to see the Druid board in the browser things are really ugly so far (a <code>pre</code> with the ASCII board, followed by a list of links with possible moves), but I have high hopes for improvements for the following weeks.</p>
+
+<p>As a bonus, I got to test Tene++'s <code>Tags</code> module when creating the Druid web output. My use of it looked <a href="http://gist.github.com/93929">like this</a>. I can definitely learn to live with that.</p>
+
+<p>A strange thing happened though, when I rebuilt after including <code>Tags</code> in the webapp: the <code>new</code> method in <code>Druid::Game</code> broke! WTF? To repeat, I included one module, and another, completely unrelated one, stopped working. Not good.</p>
+
+<p>After a bit of the usual detective work, I found the culprit: the <code>Tags</code> module exported a sub called <code>map</code>, and <code>Druid::Game.new</code> tried to use the vanilla <code>map</code> that we all know and love. ☺ I'm glad I was the one to find that... feature. (I've since patched the module so that it doesn't do that.)</p>
+
+<p>What else? Oh, just a lot of small details that I've skipped over. Things that don't jump out as plain wrong until you try to run them. Fixing those is tedious, but the advantage is that my piece of Web.pm is no longer a theoretical construct, it's practiaclly useable (and used!).</p>
+
+<p>I will spend the next week solidifying this groundwork, as well as giving <code>Druid::Webapp</code> some love, and starting to look at porting November over to use Web.pm. I also want to spend some time getting back to the overall plan for Web.pm what we have so far, how the pieces fit together, and where we're heading.</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

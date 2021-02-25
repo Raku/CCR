@@ -1,0 +1,87 @@
+http://strangelyconsistent.org/blog/laziness-for-the-impatient
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Laziness for the impatient :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-10-11T17:35:00+02:00" pubdate="pubdate">11 Oct, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/laziness-for-the-impatient">Laziness for the impatient</a></h1>
+  </header>
+
+  <p>In the future — the not too distant future, if I read the <a href="http://github.com/rakudo/rakudo/raw/master/docs/ROADMAP">ROADMAP</a> correctly — Rakudo will be able to handle potentially infinite streams of values.</p>
+
+<pre><code>my @a = gather {
+    my $count = 5;
+    take $count++ while True;
+};
+
+ .say for @a[0..4]; # 5\n6\n7\n8\n9
+</code></pre>
+
+<p>Actually, not only the <code>gather</code> construct does this, but lists themselves:</p>
+
+<pre><code>my @a = 5 ... *;
+ .say for @a[0..4]; # 5\n6\n7\n8\n9
+</code></pre>
+
+<p>Neither of these two work yet. The former hangs, and the latter <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=69728">just earned me a rakudobug</a>. (<em>Update 2009-10-13:</em> A rakudobug which, 46 hours later, moritz++ <a href="http://github.com/rakudo/rakudo/commit/3d1afedfd18a85d570c96937d9abe7f0d6128c49">fixes</a>. Complaining is extra rewarding when the reaction is swift.)</p>
+
+<p>Anyway, awaiting <a href="http://en.wikipedia.org/wiki/Lazy_evaluation">all that lazy goodness</a>, we can always fall back on the "old-fashioned" way of lazily generating a stream, namely a closure. The following code <em>does</em> work in Rakudo:</p>
+
+<pre><code>class LazyIterator {
+    has $!it;
+
+    method get() {
+        $!it();
+    }
+}
+
+class Counter is LazyIterator {
+    method new(Int $start) {
+        my $count = $start;
+        self.bless(*, :it({ $count++ }));
+    }
+}
+
+my $c = Counter.new(5);
+say $c.get for 0..4; # 5\n6\n7\n8\n9
+</code></pre>
+
+<p>In our daily fight against <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming#Motivation_and_basic_concepts">scattered and tangled</a> code, closures are a fine weapon to have in one's arsenal. The fact that they are capable of giving us laziness in Rakudo today, <em>before it is actually implemented</em>, is a nice example of that.</p>
+
+</article>
+
+  </body>
+</html>

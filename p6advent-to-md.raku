@@ -77,11 +77,12 @@ sub MAIN(IO() $source where .starts-with('Conserve/') && .IO.f, :$force) {
     ($content,$footer) = $content.split('<div id="jp-post-flair"');
 
     $header ~~ / '<h1 class="entry-title">' (<-[<]>+) /;
-    my $title = ~$0;
+    my $title = (~$0).subst(/ ^ 'Day' \s* \d+ \s* ':' \s* /);
     $header ~~ / '<span class="posted-on"><a href="' (<-["]>+) /;
     my $url   = ~$0;
     $header ~~ / '"entry-date published" datetime="' (<-["]>+) /;
-    my $date  = .day ~ " @month[.month] " ~ .year given $0.substr(0,10).Date;
+    my $date = $0.substr(0,10).Date;
+    my $published = .day ~ " @month[.month] " ~ .year given $date;
 
     cleanup $content;
     cleanup $title;
@@ -89,20 +90,52 @@ sub MAIN(IO() $source where .starts-with('Conserve/') && .IO.f, :$force) {
     $content = qq:to/HEADER/;
 # $title
     
-*Originally published on [$date]($url) by $author.*
-$content
+*Originally published on [$published]($url) by $author.*
+
+$content.trim()
 HEADER
 
     my $destination = $title;
     $destination = $destination
-      .subst(',',      :global)
-      .subst('.',      :global)
-      .subst('!',      :global)
-      .subst(' ', '-', :global)
+      .subst(',',       :global)
+      .subst('.',       :global)
+      .subst('(',       :global)
+      .subst(')',       :global)
+      .subst(';',       :global)
+      .subst('+',       :global)
+      .subst('!',       :global)
+      .subst('?',       :global)
+      .subst("'",       :global)
+      .subst('’',       :global)
+      .subst('“',       :global)
+      .subst('”',       :global)
+      .subst('&quot',   :global)
+      .subst('…',  '-', :global)
+      .subst('/',  '-', :global)
+      .subst(':',  '-', :global)
+      .subst(' ',  '-', :global)
+      .subst('–',  '-', :global)  # EN DASH
+      .subst(/ '-'+ /, '-', :global)
     ;
+    $destination = $destination.substr(1) if $destination.starts-with('-');
+    $destination = $destination.chop      if $destination.ends-with('-');
     $destination = "Remaster/$author/$destination.md".IO;
     if $force or !$destination.f {
         $destination.IO.spurt($content);
+        
+        my $readme = "Remaster/$author/README.md".IO;
+        my $prefix = "- $date.yyyy-mm-dd()";
+
+        my @links = $readme.lines.grep: *.starts-with("- ") if $readme.e;
+        @links = @links.grep: { !.contains($prefix) } if $force;
+        @links.push: "$prefix [$title]($destination.basename())";
+        $readme.spurt: qq:to/INDEX/;
+This directory contains remastered versions of {+@links} blog posts by $author.
+
+@links.sort.join("\n")
+INDEX
+
+        say $destination.basename;
     }
     else {
         note "File $destination already exists and --force not specified"

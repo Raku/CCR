@@ -1,0 +1,132 @@
+http://strangelyconsistent.org/blog/june-10-2011-a-moon-lander
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 10 2011: a moon lander :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-10T23:35:04+02:00" pubdate="pubdate">10 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-10-2011-a-moon-lander">June 10 2011: a moon lander</a></h1>
+  </header>
+
+  <p>The good news: you've made it all the way to the moon. Congratulations!</p>
+
+<p>The bad news: due to a terrible misjudgment, your moon lander doesn't have as much fuel available as would be desirable. It will take all your concentration to make a soft touch-down. Use the fuel you have, by all means, but <em>not too soon</em>! (Also, don't use it too late.)</p>
+
+<p>Here we go.</p>
+
+<pre><code>my $altitude = 70;
+my $velocity = 0;
+my $fuel     = 7;
+
+my $LANDER = "&lt;|";
+my $GROUND = "|";
+
+loop {
+    my $int_alt = $altitude.Int;
+    my $view = " " x (70 - $int_alt) ~ $LANDER ~ " " x $int_alt ~ $GROUND;
+
+    say $view;
+    say "Altitude: $altitude -- Velocity: $velocity -- Fuel: $fuel";
+
+    given prompt "command&gt; " {
+        when "thrust" {
+            if $fuel &gt; 0 {
+                $fuel--;
+                $velocity += 3;
+            }
+            else {
+                say "You can't, you're out of fuel!";
+            }
+        }
+        when "wait" {
+            # Waiting means doing nothing
+        }
+        when "quit" {
+            say "Good-bye. It was nice trying to land with you.";
+            last;
+        }
+        default {
+            say "Available commands:";
+            say "";
+            say "thrust -- fire the thruster";
+            say "wait   -- don't fire the thruster";
+            say "quit   -- exit the simulation";
+            say "help   -- get this list of commands";
+
+            redo;
+        }
+    }
+
+    $velocity -= 1.5;
+    $altitude += $velocity;
+
+    if $altitude &lt;= 0 {
+        last;
+    }
+}
+
+if $velocity &gt;= -3 {
+    say " " x 70, $LANDER, $GROUND;
+    say "You land softly on the moon.";
+}
+else {
+    say " " x 70, "*#", $GROUND;
+    say "You crash fatally into the moon's surface.";
+    say "Condolences will be sent to your family.";
+}
+
+say "Thanks for playing.";
+</code></pre>
+
+<p>Slightly longer than we've seen so far, but that's just because it's quite a nice game. There's nothing especially new in there.</p>
+
+<p>Well, there are a few things that deserve a mention:</p>
+
+<ul>
+<li><p>We've used capitals for the variables <code>$LANDER</code> and <code>$GROUND</code> because we don't expect them to change during the course of the program. That's a way of indicating that they're really constants.</p></li>
+<li><p>The <code>$int_alt</code> variable is there merely for esthetic purposes. <code>.Int</code> converts the altitude to an integer (a whole number), which comes out nicer when we use it for building strings on the next line. Sometimes the altitude is something-point-five, which makes the ground wobble a little. We don't want that.</p></li>
+<li><p>We don't bother saving <code>prompt "command&gt; "</code> into a variable this time &mdash; we just throw it straight into a <code>given</code> statement. That's quite alright.</p></li>
+<li><p>Recall that <code>$velocity += 3</code> means <code>$velocity = $velocity + 3</code>. It's just a short form for when we have the same variable on both sides of the assignment.</p></li>
+<li><p>Yeah, we're cheating a bit with the <code>"help"</code> command. We're putting it in a <code>default</code> clause, so that it actually catches all miscellaneous commands... including <code>"help"</code>.</p></li>
+<li><p>You'll recall that <code>last</code> immediately takes us out of a loop. <code>redo</code>, on the other hand, immediately restarts the loop. Which is what we want after showing the list of available commands, rather than crashing into the moon.</p></li>
+<li><p>There are a number of better ways to write the big <code>loop {}</code>, in this case, because we know when the game is over: when the altitude gets nonpositive. We could write any of these ways instead: <code>while $altitude &gt; 0 { ... }</code> or <code>until $altitude &lt;= 0 { ... }</code> or <code>repeat until $altitude &lt;= 0 { ... }</code> or <code>repeat { ... } until altitude &lt;= 0</code> (or other obvious permutations). The presence of the <code>repeat</code> keyword would simply guarantee that we run the loop at least once.</p></li>
+</ul>
+
+<p>Have fun playing! I know I did. The moon is harder than it looks. <code>:-)</code></p>
+
+</article>
+
+  </body>
+</html>

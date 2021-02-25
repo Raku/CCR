@@ -1,0 +1,78 @@
+http://strangelyconsistent.org/blog/july-13-2012-things-which-you-can-read
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 13 2012 &#8212; things which you can read :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-13T23:15:06+02:00" pubdate="pubdate">13 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-13-2012-things-which-you-can-read">July 13 2012 &#8212; things which you can read</a></h1>
+  </header>
+
+  <p>Today, as promised, we're going to learn how to read.</p>
+
+<p>The implementation of this (from last year) is easier than I remembered.
+Reading things is the same as examining them. Except that you can only read
+readable things. Simple.</p>
+
+<p>If you're following along this series, you'll notice that this is the third day
+we implement a feature with approximately the same commits:</p>
+
+<ul>
+<li>You can <a href="https://github.com/masak/crypt/commit/e6f9ee6e27f7d97761af8e20c51a73c859c38b36">read
+things</a>.</li>
+<li>But only <a href="https://github.com/masak/crypt/commit/9dc36152ae8556842cb36174dd15753cdfa5fda0">if they're declared
+readable</a>.</li>
+</ul>
+
+<p>As you can see, it's the usual happy-path, sad-path stuff. With the validation
+creeping in towards the end.</p>
+
+<p>Oops, I actually introduced another event <code>Adventure::PlayerRead</code> along the
+way, rather than re-using <code>Adventure::PlayerExamined</code>. Didn't mean to do that.
+But thinking about it, I think I'll leave it that way. Examining something and
+reading something <em>could</em> be different things, even if they aren't in <code>crypt</code>.</p>
+
+<p>Another oops: I realized I'm not at all checking that the things the player
+reads (or puts, for that matter) are there in the same room as the player. I
+could write tests for that today, but I'll just put it on my TODO list and get
+back to it. We're going to have to revise the whole "which things can I
+see/take/do things with" a few times along the way anyway.</p>
+
+<p>Tomorrow it's time for things which play peek-a-boo.</p>
+
+</article>
+
+  </body>
+</html>

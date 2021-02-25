@@ -1,0 +1,118 @@
+http://strangelyconsistent.org/blog/that-is-so-octal
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>That is so octal :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-02-06T00:33:00+01:00" pubdate="pubdate">6 Feb, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/that-is-so-octal">That is so octal</a></h1>
+  </header>
+
+  <p>There's a whole universe of impartial games out there, and in the middle of them all sits Nim, an insignificant little game of heaps of stones. Nim is the stuff of which all of the other impartial games are made.</p>
+
+<p>We saw in the <a href="http://strangelyconsistent.org/blog/the-thing-with-nim">last blog post</a> on the topic that all many-heap Nim positions can be summarized as a single Nim heap. But it goes further than that: <em>all positions in all impartial games can be summarized as a Nim heap</em>. That's the gist of the <a href="http://en.wikipedia.org/wiki/Sprague%E2%80%93Grundy_theorem">Sprague-Grundy theorem</a>.</p>
+
+<p>Before I go any further, I'd just like to say that <a href="http://en.wikipedia.org/wiki/Winning_Ways_for_your_Mathematical_Plays">Winning Ways</a> is what I'm basing this and the last blog post on. The book is sitting next to me as I write this. If you like thinking mathematically about games, you should definitely consider getting your hands on a copy. The authors are skilled and entertaining, and they invent notation that takes LaTeX for pretty wild rides sometimes. (Besides, one has to love a book where one of the mathematical results is "The green jungle slides down the purple mountain!") Chapter 4 is called "Taking and breaking", and is like a cookbook of the games I'm about to describe now.</p>
+
+<p>One way to generalize Nim is to say that in each move, you're only allowed to remove up to <em>N</em> stones. In fact, as a kid I sometimes encountered this game called "21" where, starting with 21 stones in a single heap, each player was only allowed to remove one or two stones at a time; as usual, last-to-move wins. The notation for codifying this game would be <em>S(1, 2)</em>, with the <em>S</em> standing for <em>subtraction game</em>.</p>
+
+<p>The strategy for this game is simple: let the opponent start. If she takes one stone, take two; if she takes two stones, take one. That way, both your moves combined always removes three stones, and you'll be sure to make the last move. Generalizing, if you're playing <em>S(1, 2 ... N)</em>, make sure that your move leaves the single heap with a multiple of <em>N + 1</em> stones.</p>
+
+<p>We could imagine a <em>nim-sequence</em> for the game: an infinite sequence that tells us, for each heapsize, what size of a Nim-heap (or what <em>nimber</em>, remember?) that heapsize represents. For the game "21", the (zero-based) nim-sequence looks like this:</p>
+
+<p>0.120120120120120120120...</p>
+
+<p>(The dot is not a decimal dot, it's just there for show.)</p>
+
+<p>It keeps repeating like that forever. Recall that you want to play into a 0-position, because that means your opponent is on his way to lose. Every third heapsize is a 0-position in the game "21", which is why we want to adopt the strategy of making both players' moves sum up to 3.</p>
+
+<p>How is the above sequence calculated? The general rule is that a particular position is calculated as "the mex of its options". By <em>mex</em>, I mean the "minimum excluded number", and by <em>options</em>, I mean all (values of the) game positions available by making a single move. So, for example, in calculating G(21), the nim-value of the position with 21 stones, we only need to know that <em>G(19)</em> is 1 and <em>G(20)</em> is 2, so <em>G(21) = mex(1, 2) = 0</em>.</p>
+
+<p>Here's a Perl one-liner to calculate the sequence:</p>
+
+<pre><code>$ perl6 -e 'my @g = 0, 1; print "0.1"; loop { my %set; ++%set{@g[* - $_]}
+            for 1, 2; my $mex = first { !%set.exists($_) }, 0..*;
+            print $mex; push @g, $mex }'
+0.12012012012012012012012012012^C
+</code></pre>
+
+<p>We could imagine other interesting sets of numbers to put inside the <em>S(...)</em>. Something like "you're only allowed to take 5, 12, or 30004 stones" &mdash; that is, <em>S(5, 12, 30004)</em> &mdash; would make a game. The important thing is that any such set of numbers would produce a nim-sequence like the one above (one we can compute), and so that particular subtraction game would translate back to Nim. In a sense, the game produced would just be a warped version of Nim.</p>
+
+<p>But let's generalize Nim into something that includes problem p4 in the Perl 6 Coding Contest. Let's introduce the following <em>operations</em> on heaps:</p>
+
+<pre><code>1 -- Remove, leave as zero heaps
+2 -- Remove, leave as one heap
+4 -- Remove, leave as two heaps
+8 -- Remove, leave as three heaps
+...
+</code></pre>
+
+<p>The operations are orthogonal, and can be added together to give a sort of bitmask of what's allowed. For example, 6 would mean "remove stones, leave remainder as one or two (non-empty) heaps". 0 would of course mean that no operations are permitted.</p>
+
+<p>Finally, we encode a particular game with the notation <strong>·d<sub>1</sub>d<sub>2</sub>d<sub>3</sub></strong>, where the three numbers represent the permitted operations when removing 1, 2, or 3 stones, respectively. So <strong>·600</strong> (or just <strong>·6</strong>, for short) would represent a game where in each move, you remove a stone from a heap, and then have the additional choice to leave the remainder as one heap or two.</p>
+
+<p>Collectively, due to the notation employed, these games go under the name <em>octal games</em>. I find the notation to be a bit opaque, but I suppose one gets used to that. It's clearly a nice way to systematize this type of game.</p>
+
+<p>For example, the authors describe the game Kayles. In this game, players knock down pins standing on a row. They can knock down either one pin or two adjacent pins.</p>
+
+<p>Well, this game is just <strong>·77</strong> &mdash; the 7s are to be read as "you're allowed to remove a row of pins entirely, diminish it a bit, or split it into two", but since there are only two digits, you're only allowed to do this while removing one pin or two. So <strong>·77</strong> is equivalent to the informal description above.</p>
+
+<p>So, what octal game would p4 correspond to? Let's find out.</p>
+
+<p>We note that, after the initial (arbitrary) move breaks the circle, all we'll ever get in the p4 game is a bunch of heaps. The only allowed move is to take exactly two stones from a heap, either from the edge (diminishing it) or from the inside (breaking it up into two). This gives us <strong>·07</strong>, a game known in the book as <em>Dawson's Kayles</em>.</p>
+
+<p>Here's the Perl one-liner to calculate the nim-sequence for <strong>·07</strong>:</p>
+
+<pre><code>$ perl6 -e 'my @g = 0, 0; print "0.0"; loop { my %set;
+            ++%set{@g[$_] +^ @g[* - $_ - 2]} for 0 .. @g/2 - 1;
+            my $mex = first { !%set.exists($_) }, 0..*;
+            print $mex; push @g, $mex }'
+0.0112031103322405223301130211045274
+  0112031103322445523301130211045374
+  8112031103322445593301130211045374
+  8112031103322445593301130211045374
+  8112031103322445593301130^C
+</code></pre>
+
+<p>I've taken the liberty of line-breaking the output so that one particular detail stands out: the nim-sequence of <strong>·07</strong> is "ultimately periodic", with a period of 34. (We could, but won't, prove that it's ultimately periodic.)</p>
+
+<p>And this, dear reader, finally brings us face-to-face with the question these p4-preparatory posts were meant to answer, at least sketchily: is p4 solvable? Is there a strategy for rings of arbitrarily many stones? The answer is yes, there is, and all the required information can be found in the above sequence.</p>
+
+<p>Don't you just hate it when math turns out to have all the answers? ☺ Well, perhaps not all... Where in the world does that period of 34 come from...?</p>
+
+</article>
+
+  </body>
+</html>

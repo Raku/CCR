@@ -1,0 +1,102 @@
+http://strangelyconsistent.org/blog/november-14-2008-pioneers
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 14, 2008 &#8212; pioneers :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-14T14:53:00+01:00" pubdate="pubdate">14 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-14-2008-pioneers">November 14, 2008 &#8212; pioneers</a></h1>
+  </header>
+
+  <p>98 years ago today, <a href="http://en.wikipedia.org/wiki/Eugene_Burton_Ely">Eugene Ely</a> performs history's first take off from a ship. He took off from a makeshift deck on the <a href="http://en.wikipedia.org/wiki/USS_Birmingham_(CL-2">USS Birmingham</a>) in a <a href="http://en.wikipedia.org/wiki/Glenn_Curtiss">Curtiss</a> <a href="http://en.wikipedia.org/wiki/Pusher_configuration">pusher</a>.</p>
+
+<blockquote><div><p>On November 14, 1910, Ely took off in a Curtiss pusher from a temporary platform erected over the bow of the light cruiser USS Birmingham. The aeroplane plunged downward as soon as it cleared the 83-foot platform runway; and the aircraft wheels dipped into the water before rising. Ely's goggles were covered with spray, and the aviator promptly landed on a beach rather than circling the harbor and landing at the Norfolk Navy Yard as planned. Following this flight, Ely was made a lieutenant in the California National Guard to qualify for a $500 prize offered to the first reservist to make such a flight.</p></div></blockquote>
+
+<p>Barely one year later, in October 1911, he crashed during a flying exhibition in Macon, Georgia. He was posthumously awarded the <a href="http://en.wikipedia.org/wiki/Distinguished_Flying_Cross_(USA">Distinguished Flying Cross</a>) in recognition of his contribution to naval aviation.</p>
+
+<p>So he was a cool guy. But I especially like how he got into flying. <a href="http://en.wikipedia.org/wiki/Eugene_Burton_Ely#Background">Wikipedia</a> again:</p>
+
+<blockquote><div><p>They [Ely and wife] relocated to Portland, Oregon in early 1910, where he got a job as a salesman, working for E. Henry Wemme. Soon after, Wemme purchased one of Glenn Curtiss' first four-cylinder biplanes and acquired the franchise for the Pacific Northwest. Wemme was unable to fly the Curtiss biplane, but Ely, believing that flying was as easy as driving a car, offered to fly it. He ended up crashing it instead, and feeling responsible, bought the wreck from Wemme. Within a few months he had repaired the aircraft and learned to fly.</p></div></blockquote>
+
+<p class='separator'>&#10086;</p>
+
+<p>I don't have time to do any serious hacking today, but I do have time to give a quick overview of the data model of November. If you have November checked out, you can follow along by looking inside the <code>data</code> directory, either in <code>p5w</code> or in <code>p6w</code>. The things I describe below are roughly the same in both implementations.</p>
+
+<p>November, being a wiki engine, stores articles containing (markup) text. It also stores earlier revisions of each article, as well as a list of the recent changes to the wiki as a whole. On top of that, there's a tagging system with which you can associate a 'tag' ('label', 'category', whatever) with a page.</p>
+
+<p>The directory <code>data/articles</code> contains files describing the revision history of the wiki's articles. One would perhaps think that these files could contain the (latest) contents of the article instead, and in fact they once did, sometime early this summer. But that direct model was changed and replaced by the current scheme involving one level of indirection, to make article histories and recent changes work.</p>
+
+<p>A typical file in <code>data/articles</code> looks like this:</p>
+
+<pre><code>[
+  '1218057494',
+  '1218057386',
+  '1218056287',
+  '1215026471'
+]
+</code></pre>
+
+<p>There are two things to note about this file. First, it's legal Perl. Turned out that was by far the easiest way to read stuff from files, by parsing them with <code>eval</code>. This design decision will likely be replaced some time in the future... but currently it works well for us.</p>
+
+<p>Second, the numbers (which are strings for some reason) are unique IDs -- actually return values from the <code>&amp;time</code> builtin. They function as pointers to files with the same name in <code>data/modifications</code>. The revisions are stored latest-first. So, for example, information about the latest modification of the article above can be found in the file <code>data/modifications/1218057494</code>. It could look something like this:</p>
+
+<pre><code>[
+  'Example_article',
+  'Look, I\'m the contents of an illustrative example!
+
+I even contain newlines, fancy that.',
+  'carl'
+]
+</code></pre>
+
+<p>Again, this is an array reference, readily parseable by Perl. It contains three elements: the title, the contents and the user who made the change.</p>
+
+<p>Now you know enough to figure out how the file <code>data/recent-changes</code> is structured. That's right, it's a serialized array of unique IDs, much like those in the files in <code>data/articles</code>.</p>
+
+<p>In fact, all files in the <code>data</code> directory are similarly serialized data structures. (Except for the files in <code>data/page_tags</code>, for some reason. I should find out why.)</p>
+
+<p>Finally, tags. For every article that has tags, <code>data/page_tags</code> has a file with that article's name containing a single line with a comma-separated list of tag names.</p>
+
+<pre><code>automobiles, airplanes, trains, space vessels
+</code></pre>
+
+<p>And the <code>data/tags_count</code> contains a simple serialized hash which keeps track of the number of occurrences of each tag on the page. As far as I can see, this file does not reflect the actual number of tags on the wiki in the repository right now — most likely, it's only for testing purposes at this stage.</p>
+
+<p>All this time, you were just a few minutes' reading from understanding the internal data model of November. Now you do.</p>
+
+</article>
+
+  </body>
+</html>

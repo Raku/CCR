@@ -1,0 +1,108 @@
+http://strangelyconsistent.org/blog/july-7-saving-and-restoring
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 7 2012 &#8212; saving and restoring :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-07T22:15:24+02:00" pubdate="pubdate">7 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-7-saving-and-restoring">July 7 2012 &#8212; saving and restoring</a></h1>
+  </header>
+
+  <p>I'm a bit extremely tired today. So I'll make this a quick one, because it's
+really easy anyway.</p>
+
+<p>Today we're implementing <code>save</code>/<code>restore</code> functionality, so saving in the
+clearing and then restoring from somewhere else takes you back from the
+clearing.</p>
+
+<pre><code>$ bin/crypt 
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+
+&gt; save
+Game saved.
+
+&gt; east
+Hill
+
+A flat, broad hill interrupts the dense-ish forest here. Only grass and
+small bushes grow on the hill.
+
+&gt; in
+Chamber
+
+This is a cramped space just inside the hidden opening in the hill. The
+sun gets in enough to illuminate the place. There are some scribblings on
+the wall.
+
+&gt; restore
+Clearing
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+
+&gt; quit
+</code></pre>
+
+<p>Saving and restoring is usually a pain in games, because you have to capture
+all the game state and serialize it somehow. Since we're doing everything with
+events, our job is easier. We just <a href="https://github.com/masak/crypt/commit/02ca38f7d6a2cf7cf42a777922283455be157796">save all the
+events</a>,
+put them somewhere, and when we want to restore the game, we apply all the
+saved events on a fresh game engine.</p>
+
+<p>(I didn't choose to save to file here, so a save doesn't persist between
+program runs. However, it's the principle I want to show here, and messing with
+files would mostly just hide the interesting bits.)</p>
+
+<p>It's <em>very</em> important in an adventure game that when you restore you're not
+left with extra items or lingering state somehow. This cannot happen in our
+factoring, because everything is flushed and re-created from the event stream.
+The game is literally replayed behind the scenes to the point where you saved.</p>
+
+<p>And there we are. Good night. <code>:-)</code></p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,108 @@
+http://strangelyconsistent.org/blog/november-16-2010-the-polite-revolt
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 16 2010 &#8212; the polite revolt :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-16T23:19:00+01:00" pubdate="pubdate">16 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-16-2010-the-polite-revolt">November 16 2010 &#8212; the polite revolt</a></h1>
+  </header>
+
+  <p>22 years ago today, Estonia took its first step towards independence, after having been <a href="http://en.wikipedia.org/wiki/History_of_Estonia">continually occupied</a> since 1940 by first the Soviet Union, then by Nazi Germany, and then once again by the Soviet Union.</p>
+
+<div class="quote">The Republic of Estonia was occupied by the Soviet Union in June 1940. [...] After Nazi Germany invaded the Soviet Union on June 22, 1941, and the Wehrmacht reached Estonia in July 1941, most Estonians greeted the Germans with relatively open arms and hoped to restore independence. But it soon became clear that sovereignty was out of the question. Estonia became a part of the German-occupied "Ostland". [...] By the late autumn of 1944, Soviet forces had ushered in a second phase of Soviet rule on the heels of the German troops withdrawing from Estonia, and followed it up by a new wave of arrests and executions of people considered disloyal to the Soviets.</div>
+
+<p>In the climate of Gorbachev's <a href="http://en.wikipedia.org/wiki/Perestroika">Perestroika</a>, however, Estonia could begin taking steps towards regaining independence.</p>
+
+<div class="quote">The Estonian Sovereignty Declaration was issued on November 16, 1988.</div>
+
+<p><em>Sovereignty</em> isn't the same as <em>independence</em>. This was only the first step in a chain of events that didn't end until 1994 with Russian (no longer Soviet) armed forces withdrawing from Estonia. It's the steps in the middle that are awesome, however. A new parliament was formed through a <em>grassroots</em> movement:</p>
+
+<div class="quote">A grassroots Estonian Citizens' Committees Movement launched in 1989 with the objective of registering all pre-war citizens of the Republic of Estonia and their descendants in order to convene a Congress of Estonia. Their emphasis was on the illegal nature of the Soviet system and that hundreds of thousands of inhabitants of Estonia had not ceased to be citizens of the Estonian Republic which still existed *de jure*, recognized by the majority of Western nations. Despite the hostility of the mainstream official press and intimidation by Soviet Estonian authorities, dozens of local citizens' committees were elected by popular initiative all over the country. These quickly organized into a nation-wide structure and by the beginning of 1990, over 900,000 people had registered themselves as citizens of the Republic of Estonia.</div>
+
+<p>Estonia was unusual among the Baltic states both in the leading role it took in negotiating its independence, and the bloodlessness by which it happened.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Ok, remember how yesterday, I left off with a <code>"Cannot modify readonly value"</code> error? Turns out the reason for the error is at least of mild interest. Here's a simplified version of what happened in November (the wiki engine):</p>
+
+<pre><code>$ perl6 -e 'sub foo($x is rw = "OH HAI") { $x .= lc; say $x };
+&gt;           my $y = "TESTING"; foo($y);
+&gt;           foo()'
+testing
+Cannot modify readonly value
+  in '&amp;infix:&lt;=&gt;' at line 1
+  in 'foo' at line 1
+  in main program body at line 1
+</code></pre>
+
+<p>See what's happening there? Our parameter <code>$x</code> is declared to be modifiable (<code>is rw</code>), but we can only actually modify it if we send in a variable from the outside. If we let the parameter assume its provided default (<code>"OH HAI"</code>), it no longer allows modification.</p>
+
+<p>Is this correct? I can argue both ways on that point, I guess.</p>
+
+<p>On one hand, assigning the default <code>"OH HAI"</code> to <code>$x</code> could be seen as equivalent to passing in the literal <code>"OH HAI"</code> to <code>&amp;foo</code>. In this case, we do expect any modification to blog up with a <code>"Cannot modify readonly value"</code> error, because what we've bound to <code>$x</code> isn't really a variable, it's a constant literal.</p>
+
+<p>On the other hand, we did specify that <code>$x</code> be <code>rw</code>, and we're not really passing in <code>"OH HAI"</code>, we're providing it as a default. So what's stopping Rakudo from <em>assigning</em> (rather than binding) <code>"OH HAI"</code> to <code>$x</code>, allowing for subsequent modification?</p>
+
+<p>I'm currently leaning towards the other hand. ☺ But I'm betting jnthn++ will have useful input to offer, since he's the signature binder guy.</p>
+
+<p>Here's an even smaller example of the same underlying issue:</p>
+
+<pre><code>$ perl6 -e 'sub foo($x? is rw) { $x = "OH HAI" }; foo()'
+Cannot modify readonly value
+  in '&amp;infix:&lt;=&gt;' at line 1
+  in 'foo' at line 1
+  in main program body at line 1
+</code></pre>
+
+<p>That is, when we don't pass in a value, it doesn't matter that <code>$x</code> has been declared <code>is rw</code>; we still can't modify it.</p>
+
+<p>As a temporary workaround, <code>is copy</code> seems to solve all the perceived issues.</p>
+
+<pre><code>$ perl6 -e 'sub foo($x is copy = "OH HAI") { $x .= lc; say $x };
+&gt;           my $y = "TESTING"; foo($y);
+&gt;           foo()'
+testing
+oh hai
+</code></pre>
+
+<p>So maybe the answer to my worries is simply "use <code>is copy</code> and stop whining!". Actually, now that I look at the original failing code, it's pretty clear to me tha <code>is copy</code> is a better fit in this case. But I'm still curious whether we can do better when <code>is rw</code> interacts with defaults. [<strong>Update:</strong> This is now <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=79288">rakudobug #79288</a>.] [<strong>Update on the update:</strong> By the decree of a spec patch, <a href="https://github.com/perl6/specs/commit/44511d749bbbae4286dd1675ad6264c72acd2433">this discussion is now moot</a>.]</p>
+
+<p><a href="https://github.com/viklund/november/commit/57a5c0e1ceab1e53711700f3bbb1249aa84ada3f">Applying that workaround</a> I find, unsurprisingly, more bitrot-related runtime errors that require fixing. Some <code>$file ~~ :e</code> need to be <a href="https://github.com/viklund/november/commit/d157b1e59d06df794cae9f4a1a2b72d4889f1588">turned into <code>$file.IO ~~ :e</code></a>. I end today's bushwhacking on a faulty <code>Str.trans</code> call somewhere in <code>Text::Markup::Wiki::MediaWiki</code>.</p>
+
+</article>
+
+  </body>
+</html>

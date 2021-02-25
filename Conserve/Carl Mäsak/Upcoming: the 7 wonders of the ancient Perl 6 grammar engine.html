@@ -1,0 +1,54 @@
+http://strangelyconsistent.org/blog/upcoming-the-7-wonders-of-the-ancient-perl-6-grammar-engine
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Upcoming: the 7 wonders of the ancient Perl 6 grammar engine :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-25T17:06:00+01:00" pubdate="pubdate">25 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/upcoming-the-7-wonders-of-the-ancient-perl-6-grammar-engine">Upcoming: the 7 wonders of the ancient Perl 6 grammar engine</a></h1>
+  </header>
+
+  <p>As <a href="http://en.wikipedia.org/wiki/Parser_Grammar_Engine">PGE</a> is successively being replaced and superceded by pmichaud++'s <a href="http://github.com/perl6/nqp-rx">nqp-rx</a>, I find myself stuck in the past, wanting to investigate how regex-based parsing has been done all this time in Rakudo. I became so hung up on it that I started <a href="http://github.com/masak/gge/">writing my own Perl 6 port</a> of it, and <a href="http://masak.org/carl/bpw-2009-gge/talk.pdf">gave a presentation</a> about it at Baltic Perl Workshop.</p>
+
+<p>But somehow, that wasn't enough. I want more. I plan to <a href="http://strangelyconsistent.org/blog/code-reviews-a-manifesto">write a code review</a> of PGE, somewhere around Christmas 2009. But before that, I'd like to blog about the things I've learned looking at the PGE code: about parsing, about parsers, and about regular expressions.</p>
+
+<p>That's why, as soon as <a href="http://strangelyconsistent.org/blog/here-we-go-again-another-full-month-of-november">this November thing</a> comes to a conclusion, I'll be blogging about "the 7 wonders of the ancient Perl 6 grammar engine". The intended target group is people who feel they could use a comprehensive walk through the internals of a regex parser, thus getting a firmer grip on regular expressions. I figure if I unload all such info in a series of posts, the review itself can focus more on the literary aspects of the PGE source code. Also, the series, about two posts a week, will coincide with my finishing up GGE, the PGE port.</p>
+
+<p>You might ask yourself what the 7 wonders might be. I don't know yet, but I have some ideas already. Those who watched my presentation know I like quantifiers, and readers of this blog know <a href="http://strangelyconsistent.org/blog/what-you-can-do-with-ggeoptable-that-you-couldnt-without">I have a soft spot for <code>OPTable</code> </a>. But we'll see; no need for premature solidification.</p>
+
+</article>
+
+  </body>
+</html>

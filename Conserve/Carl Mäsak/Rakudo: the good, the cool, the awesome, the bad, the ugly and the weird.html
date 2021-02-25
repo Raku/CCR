@@ -1,0 +1,134 @@
+http://strangelyconsistent.org/blog/rakudo-good-cool-awesome-bad-ugly-weird
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Rakudo: the good, the cool, the awesome, the bad, the ugly and the weird :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-08-29T13:36:00+02:00" pubdate="pubdate">29 Aug, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/rakudo-good-cool-awesome-bad-ugly-weird">Rakudo: the good, the cool, the awesome, the bad, the ugly and the weird</a></h1>
+  </header>
+
+  <p>If you decide to use Rakudo Perl 6 today, you're in for a few pleasant surprises. Quite a number of Perl 6 features already work today. A few of these features are in themselves reason enough to check Rakudo out, and some are truly awesome, as in I-won't-ever-be-satisfied-with-conventional-coding-after-this awesome.</p>
+
+<p>(And by the way, when I say "check Rakudo out" I literally mean</p>
+
+<pre><code> $ svn co https://svn.perl.org/parrot/trunk parrot
+ $ cd parrot
+ $ perl Configure.pl; make; cd languages/perl6/; make perl6
+ $ ./perl6 -e 'say ~&lt;Just Another Early Perl 6 Adopter&gt;'
+</code></pre>
+
+<p>You know you want to.) <strong>[Update: Nowadays, you might want to check out <a href="http://rakudo.org/how-to-get-rakudo">these instructions</a> instead.]</strong></p>
+
+<p>Then there's the issues, the kind that inevitably exist in projects at this early stage (both Parrot and Rakudo). They are mentioned here not as criticism, only as honest commentary about the (rapidly changing) state of the Perl 6 implementation on Parrot. (They may also serve as a reminder that the project warmly welcomes testers, bug reporters, patch contributors, documenters, spec writers and early adopters.)</p>
+
+<p>Current flaws in Rakudo range from missing features to actual problems, the latter which you can often work around, albeit laboriously. There are also defects which even fall outside of this spectrum; bugs that conjure up thoughts about bureaucratic red tape, sudden epilleptic seizures, or Heisenberg's uncertainty relation.</p>
+
+<p>Many of the features described are in use in <a href="http://github.com/viklund/november/">November</a> today. Some of the problems described are felt (with varying severity) in November today.</p>
+
+<h2>The good</h2>
+
+<p>A good deal of basic things that you as a Perl 5 user might expect to work, mostly do. This includes <code>$_</code>, <code>my</code> declarations, <code>if</code>/<code>while</code>/<code>for</code>, <code>sub</code>, scalars, arrays, hashes (and their respective functions), <code>map</code>/<code>grep</code>, arithmetic and string operators. Since these constructs form the basis of all other coding, having them in Rakudo today is good.</p>
+
+<p>String manipulation, the universal problem solver, is mostly available -- including very decent double-quoted string interpolation. As an extra bonus, <code>sprintf</code> helps with your everyday formatting needs. That's very good.</p>
+
+<p>File handling, as in <code>open</code> and <code>readline</code>, is in place. You can even iterate over the lines in a file using the <a href="http://perlcabal.org/syn/S03.html#line_681">prefix iteration operator '<code>=</code>'</a>. That's good too.</p>
+
+<p>You can put your code in separate modules. <code>use</code> works. Being able to divide code into modules is good.</p>
+
+<p>You can write parameter lists for your <code>sub</code>s. Not just Perl 5 prototypes, <a href="http://perlcabal.org/syn/S06.html#Parameters_and_arguments">real parameter lists</a>. (With type constraints!) You can keep using <code>@_</code> and <code>shift</code> if you want, but you don't have to. Having this choice is good.</p>
+
+<h2>The cool</h2>
+
+<p>Objects/classes work to a great extent (jonathan++). That includes <a href="http://perlcabal.org/syn/S12.html#Methods">methods</a>, <a href="http://perlcabal.org/syn/S12.html#Attributes">attributes</a>, class attributes, <a href="http://perlcabal.org/syn/S12.html#Construction_and_Initialization">constructors</a>, the <a href="http://perlcabal.org/syn/S12.html#line_163"> <code>self</code> keyword</a>, <a href="http://perlcabal.org/syn/S12.html#line_101">derived classes</a>/overriding, <a href="http://perlcabal.org/syn/S12.html#Roles">roles</a> and <a href="http://perlcabal.org/syn/S12.html#line_1278"> <code>does</code> </a>, <a href="http://perlcabal.org/syn/S12.html#Enums">enums</a>, dynamic dispatch and <a href="http://perlcabal.org/syn/S10.html">namespaces</a>. Being able to program object-orientedly in Perl 6 today is cool!</p>
+
+<p>The keyword <a href="http://perlcabal.org/syn/S04.html#Switch_statements"> <code>given</code> </a> has been implemented. So have <a href="http://perlcabal.org/syn/S12.html#Types_and_Subtypes"> <code>subset</code>s</a>, <a href="http://perlcabal.org/syn/S03.html#Chained_comparisons">chained comparison operators</a>, <a href="http://perlcabal.org/syn/S03.html#Junctive_operators">junctions</a>, <a href="http://perlcabal.org/syn/S03.html#line_260">implicit <code>$_</code> in method calls</a> and <a href="http://perlcabal.org/syn/S06.html#Placeholder_variables">implicit parameters in blocks</a>. The fact that you can use these features today, is quite cool!</p>
+
+<p>Having <code>Data::Dumper</code> around in Perl 5 is very useful, but even a module that comes bundled with Perl is still at most just a close relative of the family. Being able to use <a href="http://perlcabal.org/syn/S02.html#line_1337"> <code>.perl</code> </a> without a <code>use</code> statement is cool!</p>
+
+<p>Since about a week ago, modules can be compiled down to standalone PIR files, and any <code>use</code> statement which finds a <code>Module.pir</code> will choose that file over <code>Module.pm</code>, eliminating needless compilation of that module. A 17-fold increase in running time resulting from these caching effects, is cool! (pmichaud++)</p>
+
+<h2>The awesome</h2>
+
+<p>PGE, the <a href="http://search.cpan.org/~rgrjr/parrot-0.7.0/compilers/pge/README.pod">Parrot Grammar Engine</a>, forms a vital part of the compilation process in Parrot. It's a very usable implementation of Perl 6 rules (pmichaud++), and is used to parse source code into a parse tree. Needless to say, a parser that can understand as much Perl 6 as Rakudo can, needs to be pretty developed already.</p>
+
+<p>In an almost Escher-like fashion, PGE is also being exposed in Rakudo, through the <code>grammar</code>, <code>regex</code>, <code>token</code> and <code>rule</code> keywords. Where you previously had to use special tools to create a parser for your programs, you now simply put together a grammar just like you would implement a class in any other language. A lexer and a parser are automatically generated for you behind the scenes.</p>
+
+<p>The sheer power of this is beginning to be felt in the wiki project, as we move more and more of our text handling over to grammars. We've been parsing the wiki syntax itself using a grammar for weeks now, and the code for this is shorter, more nicely separated, and easier to maintain than its Perl 5 counterpart.</p>
+
+<p>In the past few days, we've been <a href="http://github.com/viklund/november/tree/new-html-template">rewriting</a> our <code>HTML::Template</code> module to use grammars instead of bare regexes. The code got smaller (5.4 kb before, 3.9 kb after), <em>and</em> it handles nested templates! A grammar makes a parse tree of the template, and a method with some loops and if statements traverse the tree and do the appropriate things. The future addition of the <code>{*}</code> construct (which allows methods to hook seamlessly into regexes) would make even the traversal code go away.</p>
+
+<p>Whereas Perl philosophy involves making easy tasks easy and hard tasks possible, this new ability to create your own grammars effectively shifts a whole category of problems from hard to easy. It expands the boundaries of the "Practical Extraction" that Perl can reasonably do. That's pretty awesome.</p>
+
+<h2>The bad</h2>
+
+<p>There's no list assignment yet. Calling this "bad" might actually be a bit harsh, it's just... unfortunate. List assignment is one of those features you don't realize you love until you suddenly find yourself without it. <strong>[Update 2009-03-01: Well, we have it nowadays. It rocks.]</strong></p>
+
+<p>There's a string substitution method called <code>.subst</code>, that can be used to produce a new string with some pattern replaced by some substring. It's a crude tool compared to a full-blown <code>s///</code> implementation, and every time we have to code something using <code>while</code> loops, variables, and <code>.subst</code> instead of a well-placed <code>s///</code>, it feels a bit bad. <strong>[Update 2010-03-17: It took quite a while, but jnthn++ implemented it yesterday. Oh joy!]</strong></p>
+
+<p>We miss long dots, heredocs, and dot-assignment a bit. Not having them makes code look bad at times. <strong>[Update 2008-11-03: I missed when it happened, but we have long dots and dotty method calls now.]</strong></p>
+
+<p>Due to as-yet unimplemented details in the area of control exceptions, <code>when</code> blocks in a <code>given</code> <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=57652">do not automatically leave</a> the innermost <code>$_</code>-binding block upon completion (as, per spec, they ought to). Depending on your plans for the <code>given</code> block, this may or may not be bad. <strong>[Update 2009-03-01: Fixed somewhere along the way.]</strong></p>
+
+<p>Things like <code>return if $key == 0</code> fail to parse, because statement modifiers <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=57334">aren't recognized</a> as ending a statement yet. You have to write <code>return() if $key == 0</code>. Having to cater to the parser because it doesn't completely grok the Perl 6 grammar yet is fairly bad. (Especially when you forget it, and have to find out why it doesn't work.) <strong>[Update 2008-10-11: Fixed in r31163. pmichaud++]</strong></p>
+
+<p>As stated earlier, you can do advanced things with the PGE stuff exposed through grammars in Rakudo. This includes creating your own regexes, tokens and rules. Just don't call one of them "text", because Rakudo will <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=57864">shun you</a> for no good reason if you do. Not being able to use the non-reserved word "text" as an identifier in your grammars is bad. <strong>[Update 2009-10-22: This has been working for over six months now. pmichaud++]</strong></p>
+
+<h2>The ugly</h2>
+
+<p>You can't smartmatch against pairs yet. This is used for various file tests, for example checking if a file exists, a <em>very</em> common operation. It could be as simple as <code>$file ~~ :e</code>. How do we currently check whether a file exists? We <code>open</code> it for reading in a <code>try</code> block, and set a boolean to <code>True</code> if the <code>open</code> hasn't already made the <code>try</code> block bail out. This emerged as a common pattern in our code, so we quarantined it in a <code>sub</code>. Still, it's ugly. <strong>[Update 2008-10-18: Fixed in r32009.]</strong></p>
+
+<p>Integers above a million (1<em>000</em>000) are represented as <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=57790">floating-point values</a> internally. Where binary arithmetics on 16-bit colour values (using the already available operators <code>?&amp;</code>, <code>?|</code> and <code>?^</code>) could have been possible -- even easy -- any attempts in that direction instead soon turn ugly. <strong>[Update 2009-03-01: No longer the case at all. Someone fixed this big time.]</strong></p>
+
+<p>Calling a method that you defined outside of a class can easily <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58138">become ugly</a>. (Easily avoided, to be sure, but should it be allowed at all?) <strong>[Update 2008-09-12: Fixed in r30990. jonathan++]</strong></p>
+
+<p>Planning to use a regexp match in the condition of an <code>if</code> or a <code>while</code>, and then pull things out of <code>$/</code> inside the block? Sorry, <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=57858">you</a> <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58352">can't</a>, at least not without matching again inside the block. If you have nested blocks, you'll have to match once in every new block where you plan to use <code>$/</code>. (moritz prefers to <a href="http://irclog.perlgeek.de/perl6/2008-08-25#i_445858">bind</a> the match variable instead of matching again.) A "tax" you have to pay as long as this bug persists, putting duplicated matches at the start of blocks makes your code ugly. <strong>[Update 2008-09-11: Fixed in r30987. jonathan++]</strong></p>
+
+<h2>The weird</h2>
+
+<p>Once you reach a certain code size, the compiler will greet you with frequent "Segmentation fault" and "Bus error" messages, even for correct code. Remove a comment, and your code compiles again. Half an hour later, it collapses again; add an empty print statement, and you're good to go again. Effects like this clearly fall in the "weird" department. The will also most likely be sorted out as Parrot's garbage collector grows more stable. <strong>[Update 2009-03-01: I'm going ahead and marking this as fixed, since a big "double free" segfault was found by jonathan++ and fixed by him and pmichaud++ the other day. Haven't had a "Bus error" in months, I think.]</strong></p>
+
+<p>Having a subroutine calling itself recursively inside a <code>for</code> loop will summon some <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58392">strange bugs</a> indeed. What's even stranger, this bug appeared in a cleanup commit to Rakudo a couple of weeks back, a commit that shouldn't have had any effect on programs at all. On the other hand, the behaviour <em>before</em> the commit was to do nothing whatsoever... so maybe this never worked. Weird. <strong>[Update 2009-03-01: But now it works, thanks to massive work by pmichaud++.]</strong></p>
+
+<h2>In conclusion</h2>
+
+<p>Play with Rakudo today! Frolic like a newborn calf in the good, the cool and the awesome. If you find something bad, ugly, or weird, send us a message via <a href="http://irclog.perlgeek.de/perl6/today">#perl6</a> or <a href="mailto:rakudobug@perl.org">rakudobug</a> — think of it as your way of bringing Christmas one step closer.</p>
+
+<p>Enjoy!</p>
+
+</article>
+
+  </body>
+</html>

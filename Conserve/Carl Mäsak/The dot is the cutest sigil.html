@@ -1,0 +1,104 @@
+http://strangelyconsistent.org/blog/the-dot-is-the-cutest-sigil
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The dot is the cutest sigil :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-10-04T12:47:00+02:00" pubdate="pubdate">4 Oct, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-dot-is-the-cutest-sigil">The dot is the cutest sigil</a></h1>
+  </header>
+
+  <p>I've recently gotten into this style of programming:</p>
+
+<pre><code>given %some-hash {
+    if .&lt;foo&gt; {
+        .&lt;bar&gt; = .&lt;baz&gt; + .&lt;austria&gt;;
+    }
+}
+</code></pre>
+
+<p>I keep thinking of it as a wonky kind of sigil, the <code>.&lt;&gt;</code> sigil, which has its very own variable namespace inside of the hash I've chosen as topic.</p>
+
+<p>Now let's say that the above piece of code was part of a prototyped program which later evolved to use objects instead of sloppy hashes. Then the same code becomes even nicer:</p>
+
+<pre><code>given $some-object {
+    if .foo {
+        .bar = .baz + .austria;
+    }
+}
+</code></pre>
+
+<p>The advantages of objects to hashes are immediate (and well-known):</p>
+
+<ul>
+<li>Less to write.</li>
+<li>The translation between the old style and the new is automatic. Just remove the pointy elbows.</li>
+<li>Spelling errors are now caught at runtime, as opposed to never.</li>
+<li>The reason assignments (like the assignment to <code>.bar</code> above) work is that attribute accessors can be made <code>rw</code>. The flip side of that is that one can omit the <code>rw</code> and avoid assignment accidents. That's also an improvement over the hash.</li>
+<li>Now the dot really looks like a cute little sigil. It isn't, of course, it's still the call-public-method twigil we know and love. But it's even easier to pretend that the attributes are special variables namespaced under the chosen object.</li>
+</ul>
+
+<p>All this is fairly trivial; I just think it's a nice syntax. But it is with this example that the truth finally sinks in: <em>keeping <code>$_</code> and <code>self</code> separate from each other in Perl 6 was a really good idea</em>.</p>
+
+<p>With the syntax Perl 6 settled on, it's like there are two topics in a method: the common one (<code>$_</code>), and the OO one (<code>self</code>). And each has wonderful shortcuts: with <code>$_</code> you just use <code>prefix:&lt;.&gt;</code> as above, and with <code>self</code>, you can use <code>$.</code> or <code>@.</code> or <code>%.</code> ad lib. The OO form is slightly longer than the common form, since OO is more intricate (and less ubiquitous).</p>
+
+<pre><code>Long form     Short forms
+=========     ===========
+$_.foo        .foo
+
+self.foo      $.foo
+              @.foo
+              %.foo
+</code></pre>
+
+<p>And since they're disjunct from each other, you never have to context-switch or worry about what it is you're looking at when you see <code>.foo</code>. Unless you explicitly mix the two together with <code>given self</code> or invocant <code>$_</code> which you're entirely free to do, but remember that it only buys you one character.</p>
+
+<p>As an added bonus, we can now re-write the code example in the <a href="http://dev.perl.org/perl6/rfc/342.html">rejected rfc 342</a> so that it works in today's Perl 6, without introducing extra syntax:</p>
+
+<pre><code>my $record = loadrecord($studentID);
+given $record {
+    my $spam = open .minimum;
+    $spam.say: qq:to'SPAM';
+    Dear {.name}:
+            Your tuition is now due.  Please send in a payment
+    of at least {.minimum}.
+    SPAM
+};
+</code></pre>
+
+</article>
+
+  </body>
+</html>

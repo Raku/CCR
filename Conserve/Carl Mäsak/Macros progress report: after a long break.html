@@ -1,0 +1,120 @@
+http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros progress report: after a long break :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-10-02T17:28:59+02:00" pubdate="pubdate">2 Oct, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break">Macros progress report: after a long break</a></h1>
+  </header>
+
+  <p>I am going to make no pretense at covering everything here. My goal with this post is simply to bring us largely up-to-date with the current ideas about macros in Perl 6 and possible directions we're taking. A post about this has been sorely missing for a while now.</p>
+
+<p>In order not to retread old ground, this post assumes that you have read <a href="http://perl6advent.wordpress.com/2012/12/23/day-23-macros/">day 23's post about macros</a> in the 2012 Perl 6 Advent calendar. That post remains a very good high-level summary of all the work so far.</p>
+
+<h2>Current status</h2>
+
+<p>In brief, D2 has been completed, and the half-way point of the grant has been reached. For convenience, here are the four implementation deliverables from the <a href="http://news.perlfoundation.org/2011/09/hague-grant-application-implem.html">grant application</a>:</p>
+
+<ul>
+<li>D1: declare and call macros</li>
+<li>D2: splicing</li>
+<li>D3: hygiene/unhygiene</li>
+<li>D4: delayed declarations</li>
+</ul>
+
+<p>D3 and D4 still remain. In fact, D3 is "half done" too, as hygiene naturally fell out of the way we did D1 and D2. Though that does mean that unhygiene will be the comparatively tricky one to get right.</p>
+
+<h2>Snag: what people really want</h2>
+
+<p>Over the years, I've noticed three odd things about Perl 6 macros:</p>
+
+<ul>
+<li>Many trivial uses of macros can be written as a subroutine instead. (And the compiler/optimizer will take care of things like inlining and dead code elimination.)</li>
+<li>Many Perl 6 regulars keep using phrases like "it's really a macro" and "it's macroish" in ways that don't conform with current spec.</li>
+<li>People who are trying out macros for the first time tend to try one specific thing &mdash; I'll get back to which one &mdash; that simply doesn't work.</li>
+</ul>
+
+<p>From these three pieces of data, I conclude the following: <strong>we're implementing the wrong thing</strong>. (And I didn't even mention "Everybody hates the <code>{{{ }}}</code> syntax.")</p>
+
+<p>Let me qualify that a bit. We do want macros, in the sense that we do want a construct that can <a href="http://scalamacros.org/">"generate, analyze and typecheck code"</a>. However that construct ends up looking, we want it to be hygienic, and composable, and to cover the use cases people tend to expect macros to cover.</p>
+
+<p>The implementation outlined in <a href="http://perlcabal.org/syn/S06.html#Macros">S06</a>, with its quasiquoting and its focus on lexical scopes, tries to be a good citizen by rising above the horrid level of C macros and Perl 5 source filters. The intention is admirable, but the result ends up being not more than the sum of its parts, but less.</p>
+
+<p>Just like textual C macros, S06's macros focus on generating code. That is, the typical use case is "the macro desugars to some code". There's no rich awareness of the context in which the macro is evaluated, nor of the pieces of program structure that are passed to the macro (through parameters) or created within it (through quasiquoting). The <code>AST</code> objects being passed around are basically tiny useless black boxes rather than (say) awesome hyperintelligent extraterrestrial self-assembling nanorobots with X-ray vision and a sense of tact and grace. This fact puts a huge damper on the "analyze and typecheck" part of things.</p>
+
+<p>People have proposed a way to fix this: just make the <code>AST</code> objects transparent, and allow read-write access to the underlying QAST. This was my first thought as well three years ago when I started thinking about these things, but I now believe that will lead to macros being largely horrible. We can talk more about the exact reasons for this in a later post, but in summary they are: QAST is an implementation detail internal to nqp. It's brilliantly designed, but its target audience is the compiler. Even though macros run during compilation, the macro author is not a compiler, and would not enjoy having to think like one. The abstractions inside of QAST cut up territories very unlike the abstractions inside of a macro author's head.</p>
+
+<p>But it's worse. S06 has two examples of unquotes in quasiquotes, and both of them are inside of expressions. The premise here is that a quasi-unquote splices an expression into a bigger expression. Let me repeat, because this is important: <strong>expression</strong>, as in <code>EXPR</code>, as in S03 and operators and precedence. So far so good.</p>
+
+<p>Now we come to the thing that all macro newcomers (rightly, in my view) expect to work. It's something like this:</p>
+
+<pre><code>sub {{{$subname}}}() { ... }
+
+class {{{$classname}}} { ... }
+</code></pre>
+
+<p>There are two reasons this does not work.</p>
+
+<p>One: the unquotes are not standing in for an expression, nor for a part of one. In this case, they are standing in for an identifier (that's being declared) <strong>in a syntactic form</strong>. That's indeed not an expression; if it were, then it would be valid to write <code>sub 2 + 2() { ... }</code>. (It's not.)</p>
+
+<p>Two: recall the way an AST macro is invoked. The parser parses the macro name and all the arguments, builds ASTs of all the arguments, and invokes the macro, passing those ASTs. At no point during the parsing of the macro argument does the parser acknowledge that it's parsing a macro. Therefore, just like with a normal subcall (or operator expression), the only thing the arguments (operands) can be is expressions. <a href="http://www.sadtrombone.com/">☹</a>.</p>
+
+<p>So we're left in the situation where the spec only allows unquotes inside expressions, but most of the useful and interesting cases of macros that people naturally come up with want to use unquotes in places that are not expressions.</p>
+
+<h2>Rethinking macros</h2>
+
+<p>We're in a situation where we need to do two things with Perl 6 macros to get them to live up to their potential and deserve to make it into Perl 6.0:</p>
+
+<p>Firstly, we need to <strong>let the macros establish themselves</strong> in the evolving story about Perl 6 slangs. Thanks to jnthn++, slangs have rudimentary support in Rakudo already. Thanks to FROGGS++ and the <code>v5</code> slang, we know a whole lot more about the requirements and limitations of slangs. Macros need to fit into this, and provide a kind of bridge to slangs. (Have too many routines and types? Put them in a module! Have too many macros? Turn them into a slang!) As part of this, macros even need to establish themselves in the story of grammars and parsing. S06 was written a year after S05, but the real maturation of grammars happened half a decade after that.</p>
+
+<p>I want us to have the cake and eat it. I want syntactic macros (whether hygienic or not), but I also want to define special forms in the language, on the same level as <code>if</code> statements. Special forms almost universally bend TTIAR somewhere. Why can't our syntactic macros do that? Why do we have to resort to textual macros for that? Unacceptable.</p>
+
+<p><em>If you want some of my raw thought-dumps about these things, I refer you to the IRC logs. Specifically, look <a href="http://irclog.perlgeek.de/perl6/2014-09-07#i_9311489">here</a> and <a href="http://irclog.perlgeek.de/perl6/2014-09-09#i_9322451">here</a>.</em></p>
+
+<p>Secondly, we need an abstraction representing a <strong>program element</strong>. Something that can be traversed, filtered, inspected, and transformed. Want a macro that flips the blocks in an <code>if-else</code> statement? The macro lets you get hold of an object of type <code>Q::IfStatement</code>, and it has easily discoverable methods to do the rest. Meanwhile, in a parallel universe, a ragged, hapless copy of yourself scowls at a <code>QAST::Op</code> node with its <code>$!op</code> attribute set to <code>"if"</code>, trying to make it do the right thing.</p>
+
+<p>Zooming out and looking more generally, we need a "third level" to our program structure. The first level is the parse tree (or "concrete syntax tree"), generated by the Perl 6 parser itself. The second level is <code>QAST</code>, generated by actions firing as parser rules complete successfully. QAST is what gets sent on through the optimizer and eventually gets serialized to backend output. But what we need is one level above that: something that captures the programmer's concept of the program structure. We need "QAST but without the AST". Let's call it "Q" or "Qtree" so we can talk about it. If you want a sneak peek at this, have a look at what IntelliJ does with <a href="https://github.com/JetBrains/intellij-community/tree/master/java/java-psi-api/src/com/intellij/psi">PSI element types for Java program elements</a>. (And many other languages, such as Python and Ruby and JavaScript.)</p>
+
+<p><em>Again, IRC infodump: <a href="http://irclog.perlgeek.de/perl6/2014-08-22#i_9229284">here</a>.</em></p>
+
+<p>In the subsequent macro grant posts, expected at least once every two weeks from now on, I explore these topics further. I intend to explore existing macro systems, drawing examples and inspiration for mechanisms from things like Scheme, Scala, Racket, Clojure, AngularJS, and sweet.js.</p>
+
+<p>Here's to macros! 🍸</p>
+
+</article>
+
+  </body>
+</html>

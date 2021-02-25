@@ -1,0 +1,87 @@
+http://strangelyconsistent.org/blog/what-you-can-do-with-ggeoptable-that-you-couldnt-without
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>What you can do with GGE::OPTable that you couldn't without :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-22T16:31:00+01:00" pubdate="pubdate">22 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/what-you-can-do-with-ggeoptable-that-you-couldnt-without">What you can do with GGE::OPTable that you couldn't without</a></h1>
+  </header>
+
+  <p>In order to explain what I think is exciting about the OPTable parser in GGE,and what you can suddenly do in Rakudo with it that you couldn't before, I put together a small script that parses and evaluates simple algebraic expressions.</p>
+
+<pre><code>$ <b>perl6 examples/algebra</b> 
+Redeclaration of variable $top
+Redeclaration of variable $topprec
+Use of uninitialized value
+&gt; <b>2 + 2</b> 
+4
+&gt; <b>2 + 2 + 2 + 2 + 2 + 2 + 2</b> 
+14
+&gt; <b>2 2</b> 
+Could not parse the arithmetic expression
+&gt; <b>10 * 10 + 4</b> 
+104
+&gt; <b>4 + 10 * 10</b> 
+104
+&gt; <b>0x20 * 0x4</b> 
+128
+&gt; <b>0123</b> 
+Leading 0 does not indicate octal in Perl 6
+123
+&gt; <b>0b1101110 + 0o412</b> 
+376
+&gt; <b>4e3 + :4&lt;301&gt;</b> 
+4049
+&gt; <b>^D</b> 
+$
+</code></pre>
+
+<p>Sorry about the warnings in the beginning, I'll track them down eventually. 哈哈 (<strong>Update 2009-12-01:</strong> Found them. Leaving them in for historical authenticity.)</p>
+
+<p>Anyway, you'll see from the above that the script understands the addition and multiplication operators, it can take long chains of them, it gets their precedence right, and it understands hexadecimal, binary, octal, scientific notation and arbitrary radices.</p>
+
+<p>And it weighs in at <a href="http://github.com/masak/gge/blob/master/examples/algebra">56 lines of code</a>! (48 if you don't count the empty lines.) No, that was not me going mad trying to compress a lot of code into those ~50 lines, I'm just leveraging <code>GGE::OPTable</code> (for generating the parse tree) and <code>Perl6::Grammar</code> (for parsing the different types of numbers). Even the warning about the leading 0 for the non-octal <code>0123</code> gets through intact from the Perl 6 parser. Unintended but kinda nice.</p>
+
+<p>In a sense, Perl 6 (and Rakudo) already has this kind of expressive awesomeness built in, because you can define your own operators as subs and methods. But in another sense, it doesn't, because in order to use those operators, you have to put them in your program, or eval them. With <code>GGE::OPTable</code>, you can create your own domain-specific expression language, feed in an expression, and get an AST back.</p>
+
+<p>I'm sure other bloggers can run with this and produce even more impressive examples than just the parsing of <code>+</code> and <code>*</code>. Happy hacking!</p>
+
+<p>(<strong>Update:</strong> After thinking about it a bit, I refactored the parsing sub in <code>examples/algebra</code> into <code>GGE::OPTable</code>, so that people don't have to write their own. Now the code is cleaner, and only 45 lines long, or 39 if you don't count the empty lines.)</p>
+
+</article>
+
+  </body>
+</html>

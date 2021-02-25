@@ -1,0 +1,88 @@
+http://strangelyconsistent.org/blog/a-farewell-to-ideas
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>A farewell to ideas :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-01-08T11:14:00+01:00" pubdate="pubdate">8 Jan, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/a-farewell-to-ideas">A farewell to ideas</a></h1>
+  </header>
+
+  <p>Isn't it oddly typical? When I finally hatch a plan for equipping my <a href="http://github.com/masak/druid/">Druid</a> computer player with some better-than-random awareness of the game, I don't come up with <em>one</em> idea worthy of pursuing, but <em>two</em>. And this happens exactly in the transition between the holidays, when tuits are free and abundant, and the return of $COURSE and $WORK, when they aren't. G'ah!</p>
+
+<p>I figure the least I can do is write about the two ideas in sufficient detail. Doing this will have several gains:</p>
+
+<ul>
+<li>I get to put them into words.</li>
+<li>It will protect them somewhat against wetware routine garbage collection, so that I can come back to them later.</li>
+<li>Lazyweb might surprise. Forking someone on github is saying <a href="http://tomayko.com/writings/github-is-myspace-for-hackers">"I care"</a>.</li>
+</ul>
+
+<p>Before you read the ideas, I'd recommend playing at least one game against the Druid computer player. Doing that will help you realize why this is needed. Download <a href="http://github.com/masak/druid/">Druid</a> and give it a shot.</p>
+
+<h2>Idea #1: Patterns</h2>
+
+<p>Think regular expressions, but for a 2D board game. Patterns match against a local configuration on the board. Instead of matching for word boundaries and character classes, what interests us here are the colors of stones, (and more likely the relative "player's color" vs "opponent's color" rather than the absolute "vertical" vs "horizontal"), the positions of such pieces, and perhaps the distance and direction to the closest friendly edge.</p>
+
+<p>Tied to the patterns could be positive actions (saying "if this situation occurs, try that move"), or negative actions (saying "don't do that move; I know it seems tempting but it's actually rather bad"). There could be positive actions that play out during several successive moves, retaining the state of the action until it has all played out.</p>
+
+<p>Of course, when I said "2D board game" above, I fibbed slightly becuase, as anyone who has tried Druid knows, it's only <em>mostly</em> 2D. Sometimes the gameplay makes ambitious excursions into the heavens, dauntlessly saluting higher powers with stunning edifices. Though it's only a hunch, I think that it'd still be a good idea to keep the pattern language in 2D. It will be easier to handle and to reason about, and patterns can be easily visualized using ordinary strings. The cost of "hiding" the 3D will then <a href="http://en.wikipedia.org/wiki/Waterbed_theory">waterbed</a> into the syntax of the pattern language, and part of the challenge will be to design that wisely.</p>
+
+<h2>Idea #2: Shortest path</h2>
+
+<p>This is actually an old idea, but one with merit in connection games. Think of the board as a graph, where each cell corresponds to a node. Furthermore, add your two edges as nodes, giving them the evocative names "source" and "sink", respectively. Neighboring cells are connected through (graph) edges, and the (board) edges are also connected to their adjacent cells.</p>
+
+<p>Now, the act of finding a good move can be seen as evaluating which path you have the best chances of connecting "source" and "sink". It seems a fair bet that a shorter path will have better chances. The friendly and enemy stones already on the board facilitate and obstruct such paths, respectively: a friendly stone can be seen as nuking its own node out of existence, but tying its neighbors together, effectively making the graph smaller in that locality. An enemy stone nukes its own node, deleting its edges in the process, impeding or completely blocking routes through that area.</p>
+
+<p>Now, a shortest path can be found using a <a href="http://en.wikipedia.org/wiki/Breadth-first_search">breadth-first search</a>, starting at "source". I'm asking myself whether <em>all</em> shortest paths ought to be found, or just the first one that the BFS happens to come upon. I don't know, but I'm leaning towards the former, on the grounds of general algorithm pessimism.</p>
+
+<p>Also, if this procedure is carried out for both players, we get two sets of "interesting nodes" — the intersection of these two sets intuitively feels like it could contain a good move.</p>
+
+<p>After this basic setup has been made to work, a number of obvious improvements could be made. For example, stones which are two steps apart can still be connected in one move in Druid; by rights, they should have an edge of their own. (And, from the perspective of the opponent, chains trying to make their way between them should be cut off.) The heights come into play here; both those of the positions which are two steps apart (<code>$a</code> and <code>$c</code>, say), but also the height of a possible enemy tower in-between (<code>$b</code>). If <code>$b &gt; min($a, $c)</code>, the two towers are disconnected. If <code>$b == min($a, $c)</code>, they can be connected, but the position is threatened. Finally, if <code>$b &lt; min($a, $c)</code>, the difference <code>min($a, $c) - $b</code> says something about the urgency of connecting the towers (the higher the difference, the less urgent), while <code>abs($a-$c) + 1</code> gives the required number of moves to do it.</p>
+
+<p>Diagonally adjacent stones, while not <em>actually</em> connected, still make fairly secure connections (correspond as they do to the <a href="http://www.hexwiki.org/index.php?title=Bridge">bridge</a> in Hex). If weighted edges are used, maybe diagonally adjacent cells ought to have edges with a real-numbered weight strictly between 1 and 2. (And then <a href="http://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijkstra's algorithm</a> would have to be employed instead of BFS.)</p>
+
+<p>Lintels, the long pieces in Druid, can be used both for bridging gaps and for stealing territory already claimed by the opponent. So far, I've only described how the shortest-path algorithm can be made to find good moves on unoccupied cells, or good bridges. But it also seems to me that enumerating all possible territory-stealing moves, and then evaluating what happens to shortest paths in each of the cases, might be something worth trying.</p>
+
+<h2>A farewell to ideas</h2>
+
+<p>I'd very much like to sit down and spend time on these two ideas. But work must come before play... and even then, I want to have time to look at November and S29 more. Also, right now, I'm implementing <code>unpack</code> in Rakudo.</p>
+
+<p>So, see you later, ideas.</p>
+
+</article>
+
+  </body>
+</html>

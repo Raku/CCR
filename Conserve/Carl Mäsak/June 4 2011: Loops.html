@@ -1,0 +1,80 @@
+http://strangelyconsistent.org/blog/june-4-2011-loops
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 4 2011: Loops :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-04T23:25:24+02:00" pubdate="pubdate">4 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-4-2011-loops">June 4 2011: Loops</a></h1>
+  </header>
+
+  <p>Even with <code>if</code> statements giving us the power to make a program do some things but not others, the program execution is still restricted to flowing from top to bottom, making one pass over everything, and then stopping.</p>
+
+<p>We're about to change that.</p>
+
+<p>In fact, let's break in this new loop feature by utterly mis-using it. Let's write a program that loops <code>forever</code>.</p>
+
+<pre><code>loop {
+    say "Infinite tube of toothpaste!";
+}
+</code></pre>
+
+<p>This program will repeat its message about eternal dental hygiene until you pull the plug, hit Ctrl-C, or issue a <code>kill</code> command from a different terminal window. It simply has no instruction to stop. The <code>loop</code> here really means "loop forever".</p>
+
+<p>Before entirely writing this off as a feature we'll never use, let's just point out that most games work just like this. The central action of a game is usually a loop with some game logic inside.</p>
+
+<p>Of course, there's always a "quit" menu option, or some winning condition, or other ways to end the game. Likewise, there's a <code>last</code> command that bails us out of a loop.</p>
+
+<pre><code>loop {
+    my $had-enough = prompt "Have you had enough yet? ";
+
+    if $had-enough eq "yes" {
+        last;
+    }
+}
+</code></pre>
+
+<p>This loop doesn't loop forever, only until we cry uncle.</p>
+
+<p>Note that we have to write exactly the string "yes" to get out of that loop. Writing "Y" or "yeah" or even "Yes" will not do. That's because eq, the string comparison operator, compares two strings <em>exactly</em>, just as the numeric comparison operator == compares two numbers exactly. Either things are exactly equal or, well, they're not.</p>
+
+<p>Let's address a possible point of confusion right away: just because the command is called <code>last</code>, it doesn't just mean "after we're finished with this round of the loop, we won't do any more". It really means "stop doing the loop <em>right now</em>, and continue after it". Of course, in the case above, there's no code after the loop, so the program ends.</p>
+
+<p>We now have all the pieces in place for building a guessing game. We'll do that tomorrow.</p>
+
+</article>
+
+  </body>
+</html>

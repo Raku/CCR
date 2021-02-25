@@ -1,0 +1,129 @@
+http://strangelyconsistent.org/blog/macros-thunkish-parameters
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: thunkish parameters :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-10-13T16:53:04+02:00" pubdate="pubdate">13 Oct, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-thunkish-parameters">Macros: thunkish parameters</a></h1>
+  </header>
+
+  <p><em>The macro thing is big, and I/we need to think about the design a bit, and what we want. This is the first of a series of blog posts in which I focus on one issue at a time, leaving space for people to comment and discuss. My hope is that a solution will emerge/crystallize from the individual needs and features discussed. For a while, though, it will feel like I'm writing RFCs. Don't expect me to stay consistent from one such RFC to another.</em></p>
+
+<h2>Feature: macro parameters</h2>
+
+<p>Macros today are declared at the routine level. That is, a macro is a kind of subroutine, or very close to a subroutine. We find it in normal sub form or in operator form:</p>
+
+<pre><code>macro foo($x, $y) { ... }
+macro infix:&lt;!&gt;($x, $y) { ... }
+</code></pre>
+
+<p>But if you're a parameter, you might feel discriminated by this deal. The parameters that come into a macro are always <code>AST</code> objects, because that's what's being a macro means. The parameters have no choice about it &mdash; with the current design.</p>
+
+<p>What if they could choose? What if a routine was a macro if at least one of the parameters was "thunked"?</p>
+
+<pre><code>sub foo(THUNK $x, THUNK $y) { ... }
+sub infix:&lt;!&gt;(THUNK $x, THUNK $y) { ... }
+</code></pre>
+
+<p>"Thunk" is a concept that we use in the spec today to mean "evaluated lazily/by need". S06 describes it as "a closure that uses the current lexical scope parasitically". That is, it has some block-like characteristics (not evaluated immediately; has its own <code>$/</code> and <code>$!</code>), but not others (no separate scope; variable declarations "leak" outside).</p>
+
+<p><em>By the way, syntax is negotiable and the diametrical opposite of set in stone. In this post and subsequent ones, I will reach for whatever syntax comes to mind, and then not give it a second thought. My focus will be on semantics, and syntax will have to come after that when we know what we want.</em></p>
+
+<h2><code>macro</code> keyword gone</h2>
+
+<p>The <code>macro</code> keyword is gone under this regime. It's no longer needed to indicate that a routine is a macro, since the <code>THUNK</code> keyword already signals this. (<em>Or</em>, in the universe with toggled beardedness, the <code>macro</code> keyword stays and has to be used iff the <code>THUNK</code> keyword is used. Assuming normal beardedness for the rest of the post, though.)</p>
+
+<p>What does this give us? It gives us the ability to have some parameters be normal values, and others not.</p>
+
+<pre><code>sub foo(THUNK $x, $y) { ... }
+sub infix:&lt;!&gt;($x, THUNK $y) { ... }
+</code></pre>
+
+<h2>Actual, real-world examples</h2>
+
+<p>But here we actually have better examples than just <code>foo</code> and <code>infix:&lt;!&gt;</code>. This is needed today with some thunkish operators, like the logicals and <code>xx</code>, both of which thunkify their operands in different ways:</p>
+
+<pre><code>sub infix:&lt;||&gt;($lhs, THUNK $rhs) { ... }
+sub infix:&lt;xx&gt;(THUNK $elem, $n) { ... }
+</code></pre>
+
+<p>This is less about "OMG, <code>infix:&lt;||&gt;</code> should be defined in user space" (which may or may not be possible, due to circular chainsaw-itis) and more about "wouldn't it be nice if thunking of parameters/operands could happen in user space?".</p>
+
+<p>There are also some thunks that we can't easily define as subroutines: statement-modifying <code>if</code> and <code>for</code>, attribute defaults, and parameter defaults. These are all too tied into the Perl 6 grammar (as "special forms" rather than expressions), and so we can't really reach them. But one can still imagine a statement-mod <code>for</code> being defined like that:</p>
+
+<pre><code>sub statement_mod_loop:sym&lt;for&gt;(THUNK $statement, @values) { ... }
+</code></pre>
+
+<h2>Implementation</h2>
+
+<p>This is easiest to discuss with a relatively real example. Let's pretend that we could implement <code>infix:&lt;xx&gt;</code> like this:</p>
+
+<pre><code>sub infix:&lt;xx&gt;(THUNK $elem, $n) {
+    (^$n).map: { {{{$elem}}} };
+}
+</code></pre>
+
+<p>There's now no longer a sense of the macro code being executed once at parse and once at run. Therefore, the <code>quasi</code> block is gone, because it's no longer being used to separate these two phases. Instead, <code>infix:&lt;xx&gt;</code> gets called every time it occurs in code. For example:</p>
+
+<pre><code>sub star { &lt;★ ✯ ✶&gt;.roll }
+
+for 1..10 -&gt; $stars {
+    say [~] star() xx $stars;
+}
+</code></pre>
+
+<p>This one still needs to do 10 calls to <code>infix:&lt;xx&gt;</code>, and 55 calls to <code>star</code>.</p>
+
+<p>However, there may still need to be some shenanigans happening at parse time in order to set up the routine so that it <code>AST</code>-ifies the thunkish arguments. It's almost as if the argument evaluator needs to be constructed by the macro declaration (so that it knows to evaluate this thing but <code>AST</code>-ify that thing), and then shipped to its appropriate caller locations.</p>
+
+<p>Some consequences of this: I <em>think</em> that makes it possible for macros to be used before declaration. Because the thing is now predominantly runtime. As long as we can guarantee that all caller locations will get the right argument evaluator so that it doesn't send values where it should send <code>AST</code>s. But that information shouldn't be a problem to apply retrospectively, as far as I can see. That same information also <em>has</em> to survive being exported outside of a package, in the case of exported macros.</p>
+
+<h2>Not addressed by this proposal</h2>
+
+<p>Identified in <a href="http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break">a previous post</a>.</p>
+
+<ul>
+<li>The <code>{{{ }}}</code> syntax being universally hated</li>
+<li>Quasi slices only being usable in term position</li>
+<li>Macro parameters/operands being restricted to expressions</li>
+<li>Macros having a story in grammars/slangs</li>
+<li>Manipulexity of program elements</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

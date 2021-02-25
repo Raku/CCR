@@ -1,0 +1,78 @@
+http://strangelyconsistent.org/blog/november-5-2010-aim-for-the-eye
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 5 2010 &#8212; aim for the eye! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-05T23:54:00+01:00" pubdate="pubdate">5 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-5-2010-aim-for-the-eye">November 5 2010 &#8212; aim for the eye!</a></h1>
+  </header>
+
+  <p>454 years ago today, the (second) Battle of Panipat was joined in northern India. The <a href='http://en.wikipedia.org/wiki/Battle_of_Panipat_(1556)'>Wikipedia entry</a> could use some editing, but here's the interesting strategic part of the battle:</p>
+
+<div class="quote">It seemed Hemu was on a winning track and Akbar's army would rout. However, Khan Zaman I, the veteran of many a wars and an able general had planned otherwise. With a much smaller army, his plan was clear. The warriors of that time, including Hemu wore armour completely covering their body specially the vulnerable organs except the eyes. After repeated attempts a stray arrow struck Hemu's eye and he was knocked down senseless, almost dead in his <em>howda</em> (elephant seat) on the elephant. Not seeing Hemu in his howda, Hemu’s army was in disarray and defeated in the ensuing confusion.</div>
+
+<p>Some nice things about this: (1) they were using elephants in battle, that's got to look impressive; (2) one of the combatants is named Akbar. But he's on the winning side, so it does not make much sense for him to yell <a href="http://en.wikipedia.org/wiki/Admiral_Ackbar#Popular_culture">"it's a trap!"</a>. Neither was he a admiral; he was an emperor.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Instead of taking eight minutes to munch generate stuff for my blog, my static page generator now takes slightly above three minutes.</p>
+
+<p>The change I made is adding in this subroutine, which returns <code>True</code> if a given <code>$target</code> file doesn't exist, or if it is older than its corresponding <code>$source</code> file.</p>
+
+<pre><code>sub nonexistent-or-older($target, :than($source)!) {
+    return $target.IO !~~ :e
+           || $target.IO.changed before $source.IO.changed;
+}
+</code></pre>
+
+<p>I especially like the last line. I read it out loud as "or target IO changed before source IO changed", which is pretty much what the code is doing. I took a <em>teeny</em> bit of a liberty in using <code>before</code> rather than <code>&lt;</code>, because it reads better. Generally I don't like that kind of catering to English-like code, but here it seemed too good to resist. Note that I kept <code>||</code> in favor of <code>or</code> &mdash; even I have my limits.</p>
+
+<p>Anyway, it turned out that the subroutine was generalized and lost its pretty perfectly-readable last line; some files like <code>index.html</code> and <code>feed.atom</code> are composed from several source files, and they all need to be checked against the target. So the final version I ended up with was this:</p>
+
+<pre><code>sub nonexistent-or-older($target, :than(@sources)!) {
+    return $target.IO !~~ :e
+           || any map { $target.IO.changed before $_.IO.changed }, @sources;
+}
+</code></pre>
+
+<p>[<strong>Addendum:</strong> sorear++ points out that I should be writing the above as <code>$target.IO.changed before any(@sources).IO.changed</code>. Clearly that's what the above code <em>wants</em> to look like, platonically speaking. And we're back at extreme readability. I have much to learn still about the wonders of Perl 6.]</p>
+
+<p>Much of the work that remains with <code>psyde</code> is pushing calls such as this into a data structure so that whatever code the user produces, things like this will be called automatically. Right now I do it manually, and my <code>psyde</code> script is ~200 lines long. When everything is stacked neatly into an API, I might get away with as little as ~40. Maybe less.</p>
+
+</article>
+
+  </body>
+</html>

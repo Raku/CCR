@@ -1,0 +1,143 @@
+http://strangelyconsistent.org/blog/june-24-2011-types
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 24 2011: Types :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-02T00:24:17+02:00" pubdate="pubdate">2 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-24-2011-types">June 24 2011: Types</a></h1>
+  </header>
+
+  <p>I can put a string value in a variable:</p>
+
+<pre><code>my $greeting = "Hello again!";
+</code></pre>
+
+<p>The <em>type</em> of the string value is <code>Str</code>. That's the kind of value it is; it's different from <code>Int</code> and <code>Regex</code>, for example.</p>
+
+<p>If I want to make sure that all that ever ends up in that variable is a string value, I can write it like this:</p>
+
+<pre><code>my Str $greeting = "Hello again!";
+</code></pre>
+
+<p>In a very real sense, <code>my Str $greeting</code> means "here's the new variable <code>$greeting</code>, and it will only ever contain <code>Str</code> values". If we later try to do this:</p>
+
+<pre><code>$greeting = 5;    # not a Str
+</code></pre>
+
+<p>...then Perl 6 will throw a fit and say that it expected a <code>Str</code> but got an <code>Int</code>. Clever implementations might even do this during program compilation, i.e. before it even runs.</p>
+
+<p>That's types. They catch mistakes in the code, like variables that are supposed to contain one type of value but gets assigned another. They're like little checkpoints that make sure everything's OK.</p>
+
+<p>A reasonable question at this point is: yes, but what good are they? You never make mistakes when you code, right? (Right, right?) Well, even under the assumption that our own code is perfect and free of bugs all the time, there's always... other programmers. They use your variables and your subroutines all wrong, because they don't know better. And you can restrict that misuse by giving the variables types.</p>
+
+<p>Yes, subroutine parameters can be given types as well:</p>
+
+<pre><code>sub duplicate(Str $s) {
+    return $s ~ $s;
+}
+</code></pre>
+
+<p>Now people <em>have</em> to call your <code>duplicate</code> subroutine with a <code>Str</code> value.</p>
+
+<pre><code>say duplicate("hi!");      # "hi!hi!"
+duplicate(42);             # Expected Str, got Int
+</code></pre>
+
+<p>Actually, we might decide that a type error there is a bit harsh. After all, Perl figures out that <code>42 ~ 42</code> is a string concatenation of two things that happen to be <code>Int</code>s, so why shouldn't <code>duplicate</code>? We'd like to loosen the restriction a little, be a bit more forgiving. That's when we use the <code>Cool</code> type:</p>
+
+<pre><code>sub duplicate(Cool $s) {
+    return $s ~ $s;
+}
+
+say duplicate("hi!");       # "hi!hi!"
+say duplicate(42);          # "4242"
+</code></pre>
+
+<p><code>Cool</code> is a type that brings together all those values in Perl that traditionally are exchangable for one another: <code>Str</code>, <code>Int</code>, <code>Num</code>, <code>Bool</code>, <code>Array</code>, <code>Hash</code>. Not all scalar values are <code>Cool</code>; <code>Regex</code> isn't <code>Cool</code>, for example.</p>
+
+<p>We're starting to see that some types "contain" other types, in the sense that a <code>Str</code> value is always a <code>Cool</code> value, but a <code>Cool</code> value doesn't have to be a <code>Str</code> value. The tree of all such containments is called the type hierarchy, and the bits we've talked about so far hang like this in that hierarchy:</p>
+
+<pre><code>                             Mu
+                              |
+                              |
+                     +--------+---------+
+                     |                  |
+                     |                  |
+                    Any              Junction
+                     |
+                     | 
+             +-------+---------+-------+
+             |                 |       |
+             |                 |       |
+           Cool             Whatever Routine
+             |                         |
+             |                         |
+ +----+---+---+----+-----+        +----+----+
+ |    |   |   |    |     |        |         |
+ |    |   |   |    |     |        |         |
+Bool Int Num Str Array Hash      Sub      Regex
+</code></pre>
+
+<p>Many important types are collected under <code>Cool</code>. <code>Cool</code> contains a great many useful methods, that are thereby all accessible from the subtypes of <code>Cool</code>.</p>
+
+<p>The <code>Whatever</code> type contains one value: the <code>*</code> that we've seen in array indexings and <code>substr</code> calls. <code>Sub</code> is the type of subroutines, <code>Regex</code> is the type of regexes, and both of these belong to a type called <code>Routine</code>. (There are more types of <code>Routine</code>, but we haven't introduced them yet. Soon, young padwan.)</p>
+
+<p>All normal types are subtypes of <code>Any</code>. In fact, if you don't give a variable a type declaration, <code>Any</code> is the type it will have. <code>Any</code> is in many senses the top type of the "normal" type system.</p>
+
+<p>The only thing that lies outside of it is <code>Junction</code>, the special scalar value that can act like many values simultaneously. Junctions with their autothreading and inside-out behaviors may appear magical at times, but all that magic really stems from the fact that they're outside of the "normal" type hierarchy.</p>
+
+<p>At the very top, uniting the normal <code>Any</code> and the abnormal <code>Junction</code>, sits the ur-type... <code>Mu</code>. It is the mother of all types, the emptiness from which the world sprang forth. It is the silent lowing of the cosmic cow, a disturbing ripple in the fabric of existence itself. It is the riddle of emptiness in a world of chaos. It is nothing, and everything.</p>
+
+<p>In practice, <code>Mu</code> doesn't show up much in code. The silent lowing kinda gets to you after a while. <code>:-)</code> In the majority of cases, <code>Any</code> is adequate.</p>
+
+<p>We'll let our old friend the smartmatch operator (<code>~~</code>) make a final reappearance in this post:</p>
+
+<pre><code>  say Str      ~~ Cool;  # "Bool::True"
+  say Regex    ~~ Cool;  # "Bool::False"
+
+  say Array    ~~ Any;   # "Bool::True"
+  say Any      ~~ Any;   # "Bool::True"
+  say Junction ~~ Any;   # "Bool::False"
+</code></pre>
+
+<p>Indeed, this is the usual way to test for type matching.</p>
+
+<p>Enjoy!</p>
+
+</article>
+
+  </body>
+</html>

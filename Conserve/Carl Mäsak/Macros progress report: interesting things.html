@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/macros-progress-report-interesting-things
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros progress report: interesting things :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-01-29T19:26:35+01:00" pubdate="pubdate">29 Jan, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-progress-report-interesting-things">Macros progress report: interesting things</a></h1>
+  </header>
+
+  <p>I'm here to report that the macros grant is coming along nicely. I've been busier with <code>$dayjob</code> than anticipated, and so the schedule in the grant application is slipping a bit. But I have a fairly good view of the obstacles and to-do items ahead.</p>
+
+<p>When we <a href="http://strangelyconsistent.org/blog/macros-progress-report-a-bit-of-d1">last saw each other</a>, I was saying that "variable lookups from inside of the quasiquote end up confused". That's still true, and it's the big thing I want to fix before merging my work so far into the <code>master</code> branch, er, into the <code>nom</code> branch.</p>
+
+<p>What I've done since last time:</p>
+
+<ul>
+<li><p>I <a href="https://gist.github.com/1548053">wrote a thorough explanation</a> of why ASTs need to carry around their original lexical environment. (Short explanation: they need to act like closures, but they aren't really so they need to fake it.)</p></li>
+<li><p>I <a href="https://github.com/rakudo/rakudo/tree/macros2">re-based the <code>macros</code> branch</a> on the latest <code>nom</code>, and fixed a bunch of regressions in my code that fell out of that.</p></li>
+<li><p>I <a href="https://github.com/perl6/roast/blob/master/S06-macros/macros-d1.t">started a test file</a> with macro tests that are more adapted to the work that I'm doing than the tests that are already there. I hope to be able to absorb the ones that are there as we go along; right now they're not much use to me.</p></li>
+</ul>
+
+<p>Now I'm well poised to go in and actually implement the lexical fixup I need for the ASTs to behave as if they're normal, honest-to-goblin closures. I just thought I'd blog this report in case I end up walking into the source code, never to return. <code>:-)</code></p>
+
+<p>The trick is this: <a href="https://github.com/rakudo/rakudo/blob/9719f7d99602fdaaa277a6bdec40a2fad5d5c5ea/src/Perl6/Actions.pm#L468"><code>.SET_BLOCK_OUTER_CTX</code></a>. It lets you say "block, your <code>OUTER</code> is now this thingy". It's the kind of internal fixup that makes the cat walk by twice inside the Matrix.</p>
+
+<p>Ok, I'm going in. See you on the other side.</p>
+
+</article>
+
+  </body>
+</html>

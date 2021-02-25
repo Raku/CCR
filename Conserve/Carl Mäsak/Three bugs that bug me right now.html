@@ -1,0 +1,71 @@
+http://strangelyconsistent.org/blog/three-bugs-that-bug-me-right-now
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Three bugs that bug me right now :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-01-27T23:06:00+01:00" pubdate="pubdate">27 Jan, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/three-bugs-that-bug-me-right-now">Three bugs that bug me right now</a></h1>
+  </header>
+
+  <p>I'm stuck, <em>thrice</em>, and the Rakudo devs are nowhere to be seen. So I'm venting my frustration on you, the reader, an innocent third party, instead. Unfair? You bet.</p>
+
+<pre><code>&lt;masak&gt; moritz_: how can I tell RT "I care a lot about this bug"?
+&lt;moritz_&gt; masak: blog about it *g*
+&lt;masak&gt; 哈哈
+</code></pre>
+
+<h2>Bug number one</h2>
+
+<p>Happily hacking away on my not-yet-ready-for-the-world SVG emitter, I trigger a <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=62730">pairs passing bug</a> while sending things to a constructor, and then once more when passing a hash through a method. Development comes to a screeching halt.</p>
+
+<h2>Bug number two</h2>
+
+<p>I'm working on the list parsing in the MediaWiki parser for November. List parsing is tricky, but fortunately the grammar and PGE stuff is really stable already. There's this new method, though: <code>Grammar.parse("string")</code>, to be used instead of the obsoleted syntax <code>"string" ~~ Grammar</code>. I use the <code>.parse</code> method, and things <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=62704">blow up</a>. I might be able to work around this one, temporarily putting <code>Grammar::TOP</code> in a regex. But it'll mean rewriting a whole lot of code that should work as it is. [<strong>Update 2009-01-28:</strong> It didn't need that much rewriting, but unfortunately it turned out that the bug was endemic, not merely limited to <code>.parse</code>. So, still stuck.] [<strong>Update 2009-03-06:</strong> Fixed in 0bbdb57 by pmichaud++.]</p>
+
+<h2>Bug number three</h2>
+
+<p>I'm hunting down a silly bug in the did-somebody-just-win subroutine in Druid — a subroutine to which I might dedicate a blog post of its own one day, by the way — only to discover that under some very special circumstances, <code>.clone</code> <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=62828">messes up the original objects</a>. The result is spooky action at a distance, and my algorithm ends up returning basically random results. Not good. [<strong>Update 2009-02-11:</strong> Fixed in 59024e0 by jonathan++.]</p>
+
+<h2>kthxbai</h2>
+
+<p>I know that when the most constructive thing I can do is to complain, I'm pretty far down the Maslow hierarchy. I've tried to analyze the above bugs myself by reading Rakudo source, but haven't gotten anywhere so far. I'm eager to continue what I was doing in each of the above projects. I look forward to putting updates in this post, with little plus marks next to the person that decides to have pity on my rakudobug suffering.</p>
+
+<p>plz fix. kthxbai.</p>
+
+</article>
+
+  </body>
+</html>

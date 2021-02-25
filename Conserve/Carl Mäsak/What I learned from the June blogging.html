@@ -1,0 +1,80 @@
+http://strangelyconsistent.org/blog/what-i-learned-from-the-june-blogging
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>What I learned from the June blogging :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-25T22:47:37+02:00" pubdate="pubdate">25 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/what-i-learned-from-the-june-blogging">What I learned from the June blogging</a></h1>
+  </header>
+
+  <p>So, I confess: I had fun. Pushing out a blog post a day for a month sounds like a lot of work, but it was mostly enjoyable.</p>
+
+<p>I've been wanting to try this kind of thing for a year or so. Now that it's behind me, it feels like the material produced begs for being put into a form other than just blog posts. Therefore, I've <a href="http://github.com/masak/adventure-game-book">created a repository</a> for the chapters. From now on, changes/improvements will go into those, and the blog posts are essentially frozen. I expect to have a PDF of all the chapters soonish.</p>
+
+<p>Having done three November blogging months, I guess I didn't expect to learn much new. But this kind of setup was sufficiently different, and I ended up with a few take-aways.</p>
+
+<h2>What I learned from blogging once a day</h2>
+
+<ul>
+<li><p><strong>It's easy to fall off.</strong> More exactly, I have a full-time job now, thanks to Perl 6. I thought that, if anything, would be what would prevent me from doing this. But no, it was essentially going to a conference and do the usual last-minute dance with slide preparations. D'oh! Having fallen off, it was a bit hard to get back on again.</p></li>
+<li><p><strong>It's fun.</strong> My regular hobby hacking more or less got put on hold, but every day I feel like I've accomplished something. It's great. There was never any real lack of things to write about; making up the topics ahead of time took more thinking than actually writing the posts.</p></li>
+<li><p><strong>I should have had a blog commenting system when doing a blogging month.</strong> Been wanting to build one, but <code>ENOTUITS</code>. <a href="http://disqus.com/">Disqus</a> looks great, and people have been pointing me to it, but I think I'd prefer in the long run to build something myself. Yeah, that means it's going to take a bit longer, I know. As it was, I got a lot of good feedback from <code>#perl6</code> (as usual). But not everyone hangs out on <code>#perl6</code>.</p></li>
+</ul>
+
+<h2>What I learned from trying to bootstrap Perl 6 knowledge</h2>
+
+<ul>
+<li><p><strong>Things can be bootstrapped fairly easily.</strong> This surprised me. There's at least one fairly linear order for concepts to be introduced.</p></li>
+<li><p><strong>I need to go back and re-do everything.</strong> For most games, but <em>especially</em> the last one, I found myself using concepts that I <em>should</em> have introduced in some earlier chapter, but didn't. Of course I should've mentioned bareword keys in the post about hashes. It's evident in retrospect that I should've spent more time on public accessors and constructors in the chapter about classes. And probably <code>.can</code> and the <code>.?method</code> syntax too. While the themes for each day seem to have been mostly well-chosen, there's just so much that I failed to mention.</p></li>
+<li><p><strong>It's easier to explain a concept than to explain why you wrote a game the way you did.</strong> Or rather, it got more difficult to adequately explain the games the bigger they got. It's like small games contain all these interesting little decisions, and that's fine to explain. But then as they grow bigger they also start to contain all these overarching, architectural decisions. And there just isn't enough blog space and reader attention to focus both on the big and the small issues, so I increasingly focused on the big ones. But the little decisions are still there, even in the bigger games.</p></li>
+<li><p><strong>There's just so much to tell.</strong> I'm thinking of adding sections to each chapter named "The full story" or something, just to bring up the slightly more advanced topics that aren't necessarily in the path of someone who just wants to learn the basics and implement a game.</p></li>
+</ul>
+
+<h2>What I learned from writing a text adventure game</h2>
+
+<ul>
+<li><p><strong>It was just as enjoyable as I hoped it would be.</strong> I had been looking forward to this.</p></li>
+<li><p><strong>It is a bigger project and takes more time than one might think.</strong> How hard can it be, right? Just four, no five, no six rooms. Be done in a jiffy. Looking at the commit logs for the game, it seems it took closer to 14 days. Keep in mind, that's for a game I expected to have ready in two days. Oh, the optimism.</p></li>
+<li><p><strong>I wish I had written tests for it.</strong> Not sure how it would have affected the code, but the game <em>definitely</em> is complex enough to merit tests. Henceforth, my answer to the question "Shall I write tests?" will be "Is it more than a screenful of code?". (The sad thing is, I <em>know</em> this, and have for a long time. I should listen more to myself.)</p></li>
+<li><p><strong>The game isn't finished.</strong> I had to push it out into the world, but feedback keeps coming in, and it'll keep settling and evolving for quite some time yet. It's a big little program now, and won't just sit around doing nothing. All I can do as a proud parent is look on from a distance and hope for the best.</p></li>
+</ul>
+
+<p>Fun as it was, I can't think of a followup for this project for next June. Let's just see where we are at that point and decide then. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

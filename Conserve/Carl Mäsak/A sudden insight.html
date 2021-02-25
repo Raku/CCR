@@ -1,0 +1,87 @@
+http://strangelyconsistent.org/blog/a-sudden-insight
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>A sudden insight :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-10-15T18:22:00+02:00" pubdate="pubdate">15 Oct, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/a-sudden-insight">A sudden insight</a></h1>
+  </header>
+
+  <p>Sometimes things seem to click and fall into place inside my brain. Previously
+unrelated concepts turn out to be have commonalities after all.</p>
+
+<p>For example, I said yesterday on #perl6 that I'd realized, teaching Perl 5,
+that taking away <code>wantarray</code> was only a logical next step after taking away
+sigil variance. Moritz was way ahead of me, though: he had <a href="http://perlgeek.de/blog-en/perl-6/immutable-sigils-and-context.html">blogged about
+exactly
+this</a>
+a year ago.</p>
+
+<p>But a much deeper insight hit me on the Sunday, when jnthn++ was talking, and
+explaining how <code>Capture</code>s and <code>Signature</code>s form two sides of a function call
+binding:</p>
+
+<pre><code> caller                     callee
+
+Capture &lt;---&gt; binder &lt;---&gt; Signature
+</code></pre>
+
+<p>and then showing a slide that looked like this:</p>
+
+<pre><code>my ($some, $random, $things) := some-function();
+</code></pre>
+
+<p>The point of the slide is that <code>Signature</code>s aren't just used in function
+declarations; they're used in the above case as well. I've always thought that
+this was a random, fortuitous bonus use of it...</p>
+
+<p>...but then Liz turned to me and whispered "that's because <code>return</code> is just
+another function call". And right then and there, I went through some sort of
+mini-enlightenment. How beautiful!</p>
+
+<p>Later, Liz divulged that this was the kind of insight that came naturally when
+one had programmed in <a href="http://en.wikipedia.org/wiki/Continuation-passing_style">continuation-passing style</a>
+for a while. It'd be interesting to learn whether CPS is the reason for
+<code>Signature</code>s being used in bindings like this in Perl 6. For some reason, my
+guess is no.</p>
+
+<p>Anyway, Perl 6 surprising me with its consistency is only appropriate,
+given the name of this blog.</p>
+
+</article>
+
+  </body>
+</html>

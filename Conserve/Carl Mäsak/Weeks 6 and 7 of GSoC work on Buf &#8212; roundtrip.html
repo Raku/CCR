@@ -1,0 +1,60 @@
+http://strangelyconsistent.org/blog/weeks-6-and-7-of-gsoc-work-on-buf-roundtrip
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Weeks 6 and 7 of GSoC work on Buf &#8212; roundtrip :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-07-10T01:25:00+02:00" pubdate="pubdate">10 Jul, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/weeks-6-and-7-of-gsoc-work-on-buf-roundtrip">Weeks 6 and 7 of GSoC work on Buf &#8212; roundtrip</a></h1>
+  </header>
+
+  <p><em>Warning: this blog post doesn't contain any puns at all. It's just a boring update about my progress. If you don't believe me, just go ahead and read it. I dare you.</em></p>
+
+<p>Been working on file I/O and <code>Buf</code>s lately. It's tough work, but I'm now at a point where things run. Some highlights:</p>
+
+<ul>
+<li>I <a href="http://irclog.perlgeek.de/parrot/2010-07-04#i_2513924">asked on Parrot</a> how to write binary data. Got enough help to get me started coding an <code>IO.write</code> method.</li>
+<li>I realized that I didn't like at all how the IO spec described <code>IO.read</code> and <code>IO.write</code>. So I <a href="http://perlcabal.org/svn/pugs/revision/?rev=31543">rewrote</a> it.</li>
+<li>Having got the <code>IO.write</code> method working, I wrote an <code>IO.read</code> method along the same lines. <a href="http://github.com/rakudo/rakudo/commit/692aa15f2538858028934b8e26910199cc5fdc53">Here they are</a>.</li>
+</ul>
+
+<p>Now, these new methods obviously write and read bytes to and from files, but the tests indicate that things don't properly round-trip yet. Part of that is because <a href="http://svn.pugscode.org/pugs/t/spec/S16-filehandles/io.t">the tests</a> want the example string "föö" to encode as iso-8859-1, but there's no logic that does that yet. My slightly sleepy brain tells me there's more to the story though, or the string wouldn't come back garbled as "fÃ¶". (Interesting how that somehow <em>feels</em> like a small piece of <a href="http://en.wikipedia.org/wiki/Mojibake">mojibake</a>, before the brain even takes in the individual characters.)</p>
+
+<p>Another nice highlight was my question about <a href="http://irclog.perlgeek.de/perl6/2010-07-09#i_2534120">how <code>Buf</code>s should stringify</a>, which <a href="http://irclog.perlgeek.de/perl6/2010-07-09#i_2535805">TimToady just answered</a> on #perl6. That should be a smop to implement.</p>
+
+</article>
+
+  </body>
+</html>

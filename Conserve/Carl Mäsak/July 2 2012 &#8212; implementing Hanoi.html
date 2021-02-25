@@ -1,0 +1,199 @@
+http://strangelyconsistent.org/blog/july-2-2012-implementing-hanoi
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 2 2012 &#8212; implementing Hanoi :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-02T22:52:30+02:00" pubdate="pubdate">2 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-2-2012-implementing-hanoi">July 2 2012 &#8212; implementing Hanoi</a></h1>
+  </header>
+
+  <p><a href="http://strangelyconsistent.org/blog/july-2-2012-implementing-hanoi">Yesterday</a> was about the interface. Today is about the implementation.</p>
+
+<p>Look, a game!</p>
+
+<pre><code>$ bin/crypt hanoi
+
+     |            |            |     
+     =            |            |     
+    ===           |            |     
+   =====          |            |     
+  =======         |            |     
+ =========        |            |     
+-------------------------------------
+
+&gt; okay...
+Sorry, the game doesn't recognize that command. :/
+'help' if you're confused as well.
+
+&gt; help
+Goal: get all the disks to the right rod.
+You can never place a larger disk on a smaller one.
+Available commands:
+  add &lt;disk&gt; &lt;target&gt;
+  move &lt;source&gt; &lt;target&gt;
+  remove &lt;disk&gt;
+  q[uit]
+  h[elp]
+  s[how]
+
+Disks: tiny disk, small disk, medium disk, large disk, huge disk
+Rods: left, middle, right
+
+&gt; show  
+
+     |            |            |     
+     =            |            |     
+    ===           |            |     
+   =====          |            |     
+  =======         |            |     
+ =========        |            |     
+-------------------------------------
+
+&gt; move left right 
+
+     |            |            |     
+     |            |            |     
+    ===           |            |     
+   =====          |            |     
+  =======         |            |     
+ =========        |            =     
+-------------------------------------
+
+&gt; move middle left
+Cannot move from the middle rod because there is no disk there.
+
+&gt; move left middle
+
+     |            |            |     
+     |            |            |     
+     |            |            |     
+   =====          |            |     
+  =======         |            |     
+ =========       ===           =     
+-------------------------------------
+
+&gt; move small disk right
+Cannot put the small disk on the tiny disk.
+
+&gt; quit
+</code></pre>
+
+<p>Now, let's implement this.</p>
+
+<h2>Moving disks</h2>
+
+<ul>
+<li><a href="https://github.com/masak/crypt/commit/35435dc33a99f2da443f7786658aa648a7593ed6">A legal move</a>. Things are introduced as we go.</li>
+<li><a href="https://github.com/masak/crypt/commit/b0affd256cd439fefa0810ecdf8f3f474339d172">Can't put a larger disk on a smaller one</a>. We introduce a bit of infrastructure for handling exceptions.</li>
+<li>More illegal things: you can't move <a href="https://github.com/masak/crypt/commit/4b7c1d2dd1301e7f09d8c105fe38260431a5d074">from or to nonexistent rods</a> or <a href="https://github.com/masak/crypt/commit/efa9ba6fdb1a179af0c41c40f656a3fe40b8360e">from a rod with no disks</a>. We create up the exception classes as we go.</li>
+<li><a href="https://github.com/masak/crypt/commit/b9caadefe07b226e23aedcf77845f76760603f02">Winning the game</a>. There's actually a little hanoi solver in the test suite, because it made more sense to write out the moves than to generate them. <a href="https://github.com/masak/crypt/commit/6aa70d45d0ce1a8ecb6361894e72597db3539bca">You can't win twice in a row</a>.</li>
+<li><a href="https://github.com/masak/crypt/commit/96d9cf3bbc2e1b9bc7d56f82fa3fa017471531ce">However, you can un-win</a> by moving both the tiny and the small disk.</li>
+<li><a href="https://github.com/masak/crypt/commit/e2a3e5d9f70c5c21ce432a3c2ea03b85c83cf366">If you want, you can say which disk to move</a> instead of which rod to move from. Basically a case of Postel's law: we recognize this and do the right thing with it.</li>
+<li>But of course being accomodating creates problems, too. With the new syntax, it's possible to <a href="https://github.com/masak/crypt/commit/e2a3e5d9f70c5c21ce432a3c2ea03b85c83cf366">try to remove a covered disk</a>.</li>
+</ul>
+
+<p>Let's just pause here for a while and say a bit about this method of working.
+The tests exercise the Hanoi game. They do this by saying either "calling this
+method returns this event" (success) or "calling this method throws this
+exception" (failure). The Hanoi game keeps state around, but the attributes are
+completely private. There are no getter methods. The public methods (<code>.move</code>,
+and later <code>.remove</code> and <code>.add</code>) may read attributes, but the attributes are only
+written to in a private <code>!apply</code> method. (The <code>!</code> means "private".) The
+<code>!apply</code> method is called with an event.</p>
+
+<p>So the only way to actually change the game state is to send an event of some
+kind to the <code>!apply</code> method. This keeps us honest in a way; we have to
+publicize all the important internal updates of the Hanoi game as events.</p>
+
+<h2>Removing disks</h2>
+
+<ul>
+<li><a href="https://github.com/masak/crypt/commit/a47664cab42119a83d7c6469326da4b2152d33d3">You can remove a disk</a>.</li>
+<li><a href="https://github.com/masak/crypt/commit/94cf486c7de4c841c85ad5e4fc3df0cbb0b0954b">Removing disks that are not the tiny disk is forbidden</a>. In the adventure game, the larger disks are too heavy to be lifted away from the Hanoi rods. In the Hanoi game, weight doesn't really exist, so we only say it can't be done.</li>
+<li><a href="https://github.com/masak/crypt/commit/b6edc9c5658bd095128b7ccde640a020abc6a697">If you try to remove a covered disk, you get another exception</a>. If you uncover it and try to remove it and it's still not the tiny disk, <a href="https://github.com/masak/crypt/commit/26f2c6bcf1654e134e49c9642bb24e0813787856">it's still forbidden</a>. Tough.</li>
+<li><a href="https://github.com/masak/crypt/commit/50e0179cdb3d359149f6a78040c74fd09ecbc801">You can't remove a disk that you already removed</a>. Implementing this is really about thinking about all the possible actions in all the possible situations.</li>
+<li><a href="https://github.com/masak/crypt/commit/c9e01dda9cd8a4a0ca13dc3536231a5ff159e5e8">You can't <em>move</em> a removed disk either</a>. Introducing new commands can create new exceptional conditions in old ones.</li>
+</ul>
+
+<p>Now this last point is interesting. We introduce <code>.remove</code>, and suddenly we
+have to go back to <code>.move</code> and patch a "vulnerability" that suddenly opened up.
+I think many bugs are of this kind; old operations which end up in new
+situations for which they were not designed.</p>
+
+<h2>Adding disks</h2>
+
+<ul>
+<li><a href="https://github.com/masak/crypt/commit/89ce1449010437126f1dea47b90a5c88420df0bf">You can add a disk</a> that you removed before. We're always talking about the tiny disk in these cases, but it doesn't matter much.</li>
+<li>You can't add a disk <a href="https://github.com/masak/crypt/commit/41501d67f9e1c8e948ce155d29d0d1a9e62cdb68">with a made-up name</a> or <a href="https://github.com/masak/crypt/commit/4d11a9df30cf2e3eb9205daa79b3e33b480220ac">that's already there</a>.</li>
+<li>At this point I realized that <a href="https://github.com/masak/crypt/commit/0f569fa20ecf7c37aa9250487bfded1e4fde1dcb">some of my events attributes could be improved</a>. The design was presented as a completed fact yesterday, but it very much evolved together with the test and the implementation. It's comforting to see that that works really well.</li>
+<li>You can't add to <a href="https://github.com/masak/crypt/commit/2fecc9137c1a24bcb20eb8527c7e86a39ee20a1c">a rod that doesn't exist</a>, either.</li>
+</ul>
+
+<h2>Command-line client</h2>
+
+<p>As soon as I <a href="https://github.com/masak/crypt/commit/72ef665c3faec428968eaa7a4db66c43ea3f4802">implemented the client</a> that you see above, I got feedback from people. There's a lesson in there somewhere. I got many good bug reports and could put in things that I'd forgotten.</p>
+
+<ul>
+<li><a href="https://github.com/masak/crypt/commit/45fb27113b9d47d1a65ce446ea9b517e25328f6c">Removing a non-existent disk</a> gave the wrong exception back. Coke++ discovered this, and I fixed it.</li>
+<li><a href="https://github.com/masak/crypt/commit/ed7110e4517169d40acd99933f78e9c6ae4871da">The client didn't tell you when you won</a> or un-won. It does now. Coke++.</li>
+<li>But the best one, and the one that I consider a real omission and mental error of mine, also discovered by Coke++: <a href="https://github.com/masak/crypt/commit/ed7110e4517169d40acd99933f78e9c6ae4871da">you could only win by moving a disk, not by adding a disk</a>. Ouch. I fixed.</li>
+</ul>
+
+<p>See how easy it is to miss some cases? One could argue that this is a great
+weakness of this way of developing, but I would argue the opposite: this way of
+focusing on verbs and their results <em>enhances</em> the ability to think in terms of
+these situations. Also note how small and self-contained each commit is, even
+the fixes.</p>
+
+<p>I'm really proud how the client turned out. Have a look at <a href="https://github.com/masak/crypt/blob/9f9b0becffa6fbca5c511fa6e78e7226a09b4331/bin/crypt#L231">the 'final' client</a>. I especially call your attention to the fact that we don't just list the available commands, we <em>ask the Hanoi game for them</em>. (Yay introspection!) Also, the <code>print_board</code> subroutine turned out really nice, for something that does formatted output. There's a little "cheating" that makes the command parser treat things like 'large disk' as one argument even though it's two words.</p>
+
+<h2>So</h2>
+
+<p>75 tests pass and support this hanoi game. I can't guarantee there are no
+remaining bugs to find, but I'm very confident it'll be easy and even a bit fun
+to integrate what we now have into the adventure game when the time comes.</p>
+
+<p>Also, I imagine the subsequent posts will be a bit smaller in scope than these
+two first ones. Still, this was probably a good introduction to the style of
+programming we'll be using for the rest of the month. Commands, events, and
+exceptions. We'll see more advantages as we go along.</p>
+
+<p>Now we can leave Hanoi behind us for a while, and... let the adventure begin!</p>
+
+</article>
+
+  </body>
+</html>

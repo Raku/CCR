@@ -1,0 +1,96 @@
+http://strangelyconsistent.org/blog/july-26-2012-doom-and-cavern-collapse
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 26 2012 &#8212; doom and cavern collapse :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-27T00:11:17+02:00" pubdate="pubdate">27 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-26-2012-doom-and-cavern-collapse">July 26 2012 &#8212; doom and cavern collapse</a></h1>
+  </header>
+
+  <p>If there is one thing I regret from the design of last year's game, it's making
+<code>Doom</code> a thing.</p>
+
+<p>Now, <code>Doom</code> was simply what killed you in the game. It was the only thing that
+could kill you, in fact. But it wasn't really a <em>thing</em> in the game. You
+couldn't pick it up, or see it. It wasn't anywhere. It just killed you. But at
+that point, I had already created separate classes for most things in the game
+to give them special behaviors, so creating yet another class for a <em>non</em>-thing
+felt bad, but not very bad.</p>
+
+<p>This year, I'm doing it right. In case you were wondering.</p>
+
+<p>"What's right?" I hear you ask. What's right is a factoring which doesn't need
+to put this functionality on an object, but just allows the game engine to
+carry out what <code>Doom</code> used to do. Which, if we look at it, was three things:</p>
+
+<ul>
+<li><a href="https://github.com/masak/crypt/commit/f5c6aa34e8e2973eefd157c2348bb6ba84f6ddb1">End the
+game</a>...</li>
+<li>...<a href="https://github.com/masak/crypt/commit/d6f6977816eb76dc0722e070e0b6fd7c5416f49f">after N
+turns</a>...
+(N is 3 in crypt)</li>
+<li>...unless <a href="https://github.com/masak/crypt/commit/f8718d1d2ceec763ef0709476d90ecf927e7c675">the danger is
+averted</a>.</li>
+</ul>
+
+<p>The interesting new technology here is <em>fuse hooks</em>, delayed actions which you
+put into the game as closures. Other kinds of hooks go off when things are
+handled in certain ways; fuse hooks go off after a given number of <em>ticks</em>
+&mdash; discrete player actions.</p>
+
+<p>Unless the game engine decides to defuse the fuse hook, in which case it never
+goes off.</p>
+
+<p>Note; this kind of factoring of things feels entirely natural and in line with
+the rest of the design. I'm happy.</p>
+
+<p>I ran to jnthn (on IRC), waving my arms enthusiastically and shouting "closures
+are awesome because they give downstream the freedom to supply arbitrary code,
+while giving upstream the freedom to choose when to invoke it!" jnthn said
+everyone already knows this. So, um, well. OK. 哈哈</p>
+
+<p>Anyway, we're well positioned to implement the last room of the game tomorrow.
+Then the rest is just polishing and refactoring.</p>
+
+<p><em>A hat tip to lue++ who contributed <a href="https://github.com/masak/crypt/commit/bcff5bfaf658265634e9a41986770fd8bf90373a">a failing
+test</a>
+today. lue, <a href="https://github.com/masak/crypt/commit/999dfc8571f7c69ae33af86775f00630faad365d">your test now
+passes</a></em></p>
+
+</article>
+
+  </body>
+</html>

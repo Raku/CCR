@@ -1,0 +1,66 @@
+http://strangelyconsistent.org/blog/week-2-of-webpm-creating-a-minimal-web-framework
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 2 of Web.pm &#8212; Creating a minimal Web framework :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-03-16T06:40:00+01:00" pubdate="pubdate">16 Mar, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-2-of-webpm-creating-a-minimal-web-framework">Week 2 of Web.pm &#8212; Creating a minimal Web framework</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>All jordan base are belong to teh Gilead kittehs, so dey go to to Efraim; wen Efraim kitty not pwned want cross an say, "i can crosez ovar?" Gilead den ask, "yuo = efraim?" den he say, "NO, DUH" den has test, "ok den, say shibboleth. " but he sai "sibboleth" cuz hez stupid and cant sai rite, so dey aggrod him. 42000 efraim kitteh got aggrod cuz dey ALL stupid like dat.</i> &#8212; Judges 12:5-6</dd>
+</dl>
+
+<p>Two things of note have happened this week.</p>
+
+<p>First, lively discussion on dispatching continued. It took place mostly on <a href="http://irclog.perlgeek.de/november-wiki/">#november-wiki</a> and <a href="http://groups.google.com/group/november-wiki">november-wiki@googlegroups.com</a>. (We've decided to use these as our platform for Web.pm discussion. Anyone interested is encouraged to join in.) ihrd, moritz and ruoso contributed most of the discussion.</p>
+
+<p>There are a lot of possible ways to do dispatch. We want a good, reasonable default way in Web.pm. What eventually emerged was the idea of building the URL dispatch on top of the <a href="http://perlcabal.org/syn/S12.html#Multisubs_and_Multimethods">MMD (multi-method dispatch)</a> already built into Perl 6. After that, the discussion focused mainly on exactly how to do this. I look forward to seeing a working example of this really soon.</p>
+
+<p>Second, I started porting Rack. In doing this, I realised, on a slightly deeper level than I had before, that Rack embodies many things that Web.pm wants to be. Peruse <a href="http://chneukirchen.org/talks/#introducingrack">this presentation</a> by chneukirchen, and you might start to see what I mean.</p>
+
+<p>The obvious first targets to port are Rack::Request and Rack::Response, both of which depended on Rack::Utils, so I started with that. <a href="http://github.com/masak/web/blob/8bf8c15674b675497a87091df27fa621a2979806/lib/Web/Utils.pm">Porting Ruby code</a> was exhilirating. Not only that, there's a feel about Rack that it's very stable, thoroughly used and tested code. None of the short-term hacks November is currently built on.</p>
+
+<p>I also broke our decision to target the latest Rakudo developer release, by writing code that used <code>unpack($str, 'H2')</code> and its inverse. Since I don't want to be the one to introduce broken code into the repository, I've decided to spend parts of tomorrow patching Rakudo's <code>unpack</code> to handle this case. The next developer release of Rakudo ('Rakudo Oslo') is on Thursday.</p>
+
+<p>All in all, it feels like I'm on track. I've been increasingly asking myself "What will November need to start using Web.pm in a few weeks?". The answer to that question — which seems to be "requests and responses, templating, sessions" — is what I'll be concentrating my efforts on in the next few weeks. I can already tell that cleaning up those parts of November and moving them over to Web.pm is something I will enjoy very much.</p>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

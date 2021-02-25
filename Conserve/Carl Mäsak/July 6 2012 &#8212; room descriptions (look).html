@@ -1,0 +1,226 @@
+http://strangelyconsistent.org/blog/july-6-room-descriptions-look
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 6 2012 &#8212; room descriptions (look) :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-06T23:09:14+02:00" pubdate="pubdate">6 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-6-room-descriptions-look">July 6 2012 &#8212; room descriptions (look)</a></h1>
+  </header>
+
+  <p>Now that we have the mechanical underpinnings for connecting rooms the way we
+want, let's <a href="https://github.com/masak/crypt/commit/262cd871708df58ea91b3c81b828fb050e59a255">connect all the
+rooms</a>
+in the entire dungeon. The game is not really this simple, but being able to
+walk between all the rooms will serve us well today.</p>
+
+<p>Oh, and the CLI should really <a href="https://github.com/masak/crypt/commit/e478ae2393329b113606eea037562ddce66e15fd">announce the
+rooms</a>
+as we enter them, so that we know where we are.</p>
+
+<p>Does it work? Well, have a look for yourself:</p>
+
+<pre><code>CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+&gt; walk east
+Hill
+
+&gt; walk in
+Chamber
+
+&gt; walk south
+Hall
+
+&gt; walk down
+Cave
+
+&gt; walk northwest
+Crypt
+
+&gt; walk southeast
+Cannot walk southeast because there is no exit there.
+
+&gt; quit
+</code></pre>
+
+<p>So we can walk all the way into the dungeon... but when we try to turn around
+and go back, we get a disappointing "no exit there" error.</p>
+
+<p>Why? Well, we haven't made room connections bidirectional yet. <a href="https://github.com/masak/crypt/commit/9a7f528d5b92e1659cfa32c12f43a9b21581a6cf">Let's do
+that</a>.</p>
+
+<p>Now we can walk into the crypt, and then back out again.</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+&gt; walk east
+Hill
+
+&gt; walk in
+Chamber
+
+&gt; walk south
+Hall
+
+&gt; walk down
+Cave
+
+&gt; walk northwest
+Crypt
+
+&gt; walk southeast
+Cave
+
+&gt; walk up
+Hall
+
+&gt; walk north
+Chamber
+
+&gt; walk out
+Hill
+
+&gt; quit
+</code></pre>
+
+<p>But I'm getting tired far too fast of having to write <code>walk</code> all the time. So
+we <a href="https://github.com/masak/crypt/commit/a9c83c02de04f9604e4eb7a5dead4e5c5e148b7d">allow an abbreviated
+way</a>
+to write this. More abbreviations to come, of course.</p>
+
+<pre><code>CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+&gt; east
+Hill
+
+&gt; west
+Clearing
+
+&gt; quit
+</code></pre>
+
+<p>It works. Nice.</p>
+
+<p>Finally, we make the adventure engine <a href="https://github.com/masak/crypt/commit/8896863e9baa0130977bad88c65106e58dd95cef">automatically <code>look</code> at new
+rooms</a>
+(whether we walk into them or are transported there). And then we make the CLI
+<a href="https://github.com/masak/crypt/commit/1c7f6e2f38bba5261ecba4d3e6f9be50b1106088">print descriptions when we
+look</a>.
+(Only when doing this last commit did I notice that I had accidentally removed
+the <code>look</code> command earlier in the commit history. Well, now it works again, and
+without a special case.) We also add in all the room descriptions from last year.</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+
+&gt; east
+Hill
+
+A flat, broad hill interrupts the dense-ish forest here. Only grass and
+small bushes grow on the hill.
+
+&gt; in
+Chamber
+
+This is a cramped space just inside the hidden opening in the hill. The
+sun gets in enough to illuminate the place. There are some scribblings on
+the wall.
+
+&gt; south
+Hall
+
+It's hard to believe that this kind of room can fit under a hill. It's tall,
+long, and quite spacious. Hieroglyphs adorn all four of the walls. The
+floor slants a bit.
+
+&gt; down
+Cave
+
+This is a perfectly cylindrical chamber. An oversized fire-pit takes up most
+of the floor space in the middle of the room. Ancient runes run along the
+circumference of the wall. It's hot and stuffy.
+
+&gt; northwest
+Crypt
+
+The air is stale and smells a bit metallic. Three impenetrable sarcophagi
+sit next to each other on the floor. On the walls are numerous finely
+inscribed ideograms.
+
+&gt; quit
+</code></pre>
+
+<p>So, it's all starting to look like an adventure game. We can walk around and
+look at stuff.</p>
+
+<p>Tomorrow we'll add save/restore functionality to the game. This is wonderfully
+easy because we're basing our whole design on serializable events.</p>
+
+</article>
+
+  </body>
+</html>

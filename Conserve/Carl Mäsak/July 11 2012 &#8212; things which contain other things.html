@@ -1,0 +1,89 @@
+http://strangelyconsistent.org/blog/july-11-2012-things-which-contain-other-things
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 11 2012 &#8212; things which contain other things :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-11T23:24:10+02:00" pubdate="pubdate">11 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-11-2012-things-which-contain-other-things">July 11 2012 &#8212; things which contain other things</a></h1>
+  </header>
+
+  <p>Today I showed a fourteen-year-old how to do rot-13 using Perl 6. Reaction:
+"that's awesome". It's things like this that make me realize why I value
+talking about programming and explaining programming.</p>
+
+<p>Though I botched it up. I messed around with <code>chr</code> and <code>ord</code> and modulo, when
+there's a much shorter and neater way to do it:</p>
+
+<pre><code>sub rot13 { $^s.trans('a..z' =&gt; 'n..za..m', 'A..Z' =&gt; 'N..ZA..M') }
+</code></pre>
+
+<p>On the bright side, I get to show that solution tomorrow, and he'll probably
+thin it's even more awesome. 哈哈</p>
+
+<p>Today was another pleasant day of just writing tests and implementing them. I
+thought I would have one happy path and two sad paths, just like yesterday. But
+checking with the original game from last year showed that the last sad path
+was actually a happy path too.</p>
+
+<p>Here's today's action:</p>
+
+<ul>
+<li>You can <a href="https://github.com/masak/crypt/commit/a9fe2f791bd27ee81d84eb9b66d6ed6849bb8299">put things in
+things</a>.</li>
+<li>But only if the latter <a href="https://github.com/masak/crypt/commit/0161050d5f4c52c58d7d4f23b07b50dbdb1181eb">are
+containers</a>.</li>
+<li>If you put something in a container which is closed, the game will assume you
+meant to <a href="https://github.com/masak/crypt/commit/38a7ce04933e14c6dfbc0a4a79970cd33d6865aa">open it
+first</a>.</li>
+</ul>
+
+<p>This was the first time I was tempted to call one behavior (<code>open</code>) from
+another (<code>put_thing_in</code>). Eventually I decided against, because my factoring
+doesn't make that easy. Which means I will be duplicating some opening logic
+inside of the other method. That may or may not become a pain point in the
+future; I'll certainly keep an eye out for code smells.</p>
+
+<p>The last commit of the day still leaves things in a slightly unfinished state;
+the <code>put_thing_in</code> neglects to apply the events like all other such methods do.
+Rather than just instinctively adding that bit of code, I'll note that it
+should be added as part of a test failing. So there's at least one missing
+test. <code>:-)</code> I can think of a test to expose this case of a missing <code>apply</code>; can
+you?</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,94 @@
+http://strangelyconsistent.org/blog/july-10-2012-things-which-can-be-opened
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 10 2012 &#8212; things which can be opened :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-10T23:21:03+02:00" pubdate="pubdate">10 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-10-2012-things-which-can-be-opened">July 10 2012 &#8212; things which can be opened</a></h1>
+  </header>
+
+  <p>Another day of relatively little coding. Well, that suits me fine; no sense in
+burning out early in the month. And I <em>am</em> kind of on vacation this week.</p>
+
+<p>So, we make a thing openable, and then <a href="https://github.com/masak/crypt/commit/97260bd778c12718e4be5cf6a5a1f045d553b6f5">we open
+it</a>.
+And it works, fantastic!</p>
+
+<p>But then there are two sad paths, one where the thing we try to open <a href="https://github.com/masak/crypt/commit/e0ac8d7cd40d94b7d3f73032e6e4181e3e0e5ee9">doesn't
+exist</a>,
+and the other where the thing <a href="https://github.com/masak/crypt/commit/7132e8509553e6e4ed78302af2efa429b0e488eb">is already
+open</a>.</p>
+
+<p>Again, note how basically all the interesting logic goes in with the sad paths,
+just like yesterday. This is a pretty new style of coding for me too. I
+reflected over this via privmsg to jnthn today:</p>
+
+<pre><code>&lt;masak&gt; I think the single most important idea in BDD is "black box testing".
+        the idea that if we have to resort to getters in the 'then' part, we've 
+        failed.
+&lt;masak&gt; we've failed *because* we need to break encapsulation to get important
+        result information out of the object.
+&lt;masak&gt; it's the testing equivalent of the Internet meme "pics or it didn't
+        happen".
+&lt;masak&gt; black box testing naturally leads to a wider focus on sad-path testing,
+        because every sad path corresponds to one way to validate, and is what 
+        necessitates keeping state between calls.
+</code></pre>
+
+<p>Maybe the right way to think about this is to engage in a kind of dialogue with
+the client (or yourself, as it were):</p>
+
+<pre><code>&lt;dev&gt; *why* do you want to use a getter afterwards to check that the car
+      is open?
+&lt;client&gt; because otherwise how will I know it actually is open?
+&lt;dev&gt; by testing whether it behaves as if it were open. what's particular about
+      an open car? are there exceptions thrown now that weren't before?
+&lt;client&gt; well, heh, I guess if I try to open it again, it should throw...
+&lt;dev&gt; and that's all we need.
+</code></pre>
+
+<p>The trick is realizing that this is a general principle, not just something
+that works here. We don't install windows into the black box, because that kind
+of ruins its black-box-ness. Instead we make it behave sensibly through return
+values and exceptions on its <em>behaviors</em>.</p>
+
+<p>I have a feeling the next two days will be a bit more challenging and may make
+some decisions jump around a bit.</p>
+
+</article>
+
+  </body>
+</html>

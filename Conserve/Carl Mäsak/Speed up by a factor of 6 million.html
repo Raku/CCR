@@ -1,0 +1,273 @@
+http://strangelyconsistent.org/blog/speed-up-by-a-factor-of-6-million
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Speed up by a factor of 6 million :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-04-22T23:39:00+02:00" pubdate="pubdate">22 Apr, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/speed-up-by-a-factor-of-6-million">Speed up by a factor of 6 million</a></h1>
+  </header>
+
+  <p>By the end of March, I received an email saying this:</p>
+
+<pre><code>$ time perl t4.pl
+total: 4783154184978
+
+real    0m0.185s
+user    0m0.176s
+sys     0m0.004s
+
+(requires a perl with 64bit integers)
+</code></pre>
+
+<p>There was a <code>t4.pl</code> file attached.</p>
+
+<p>You may recognize the total that the program prints out is the total number of t4 configurations, the same number that it took my C program <a href="http://strangelyconsistent.org/blog/counting-t4-configurations">two weeks to calculate</a> on a decent box. So somehow, Salvador Fandino, perl.org blogger and occasional reader of my blog, managed to find way to arrive at the answer <a href="http://www.wolframalpha.com/input/?i=two+weeks+divided+by+0.185+seconds">6 million times as fast</a>.</p>
+
+<p>Well, that's interesting. To say the least.</p>
+
+<p>Maybe I should be super-embarrassed. Maybe my cheeks should cycle through previously un-attained shades of crimson as I ponder the fact that my program was 6 million times as slow as someone else's. Ouch! But, I dunno. I don't really see it that way. I got to write about something I care about. Salvador++ cared enough to improve on my methods. The world is a better place. Blogging is cool &mdash; I learn stuff. Prestige doesn't much enter into it &mdash; the next time I'll have a better tool in my toolbox.</p>
+
+<p>So, let's investigate this new tool, and how it's better.</p>
+
+<p>First off, to get a factor-6e6 speedup, you don't apply some simple optimization somewhere; you use a different method. Salvador's code doesn't try to <em>enumerate</em> all the configurations, it just gets at the number. Which makes a lot of sense in retrospect, since we're not using the individual configurations for anything. My program arrives at each individual configuration, but then just throws it away immediately. Wasteful.</p>
+
+<p>Salvador's blog post is <a href="http://blogs.perl.org/users/salvador_fandino/2012/03/solving-carl-masaks-counting-t4-configurations-problem-in-pure-perl-5.html">as brief as his email</a>. But let's copy the code over here and talk about it a bit:</p>
+
+<pre><code>#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $tab = &lt;&lt;EOT;
+-----xxx
+------xx
+x-----xx
+x------x
+xx-----x
+xx------
+xxx-----
+EOT
+
+my $vertical = index $tab, "\n";
+my $diagonal = $vertical + 1;
+
+my $acu = { $tab =&gt; 1 };
+
+for my $ix (0 .. length($tab) - 1) {
+    my %next;
+    while (my ($k, $c) = each %$acu) {
+        my $s = substr($k, 0, 1, '');
+        $next{$k} += $c;
+        if ($s eq '-') {
+            my $k1 = $k;
+            if ($k1 =~ s/^-/x/) { # horizontal xx
+                $next{$k1} += $c;
+                if ($k1 =~ s/^x-/xx/) { # horizontal xxx
+                    $next{$k1} += $c;
+                }
+            }
+            $k1 = $k;
+            if ($k1 =~ s/^(.{$vertical})-/${1}x/os) { # vertical xx
+                $next{$k1} += $c;
+                if ($k1 =~ s/^(.{$vertical}x.{$vertical})-/${1}x/os) {  # vertical xxx
+                    $next{$k1} += $c;
+                }
+            }
+            $k1 = $k;
+            if ($k1 =~  s/^(.{$diagonal})-/${1}x/os) { # diagonal xx
+                $next{$k1} += $c;
+                if ($k1 =~ s/^(.{$diagonal}x.{$diagonal})-/${1}x/os) {  # diagonal xxx
+                    $next{$k1} += $c;
+                }
+            }
+        }
+    }
+    $acu = \%next;
+}
+
+my ($k, $c) = each %$acu;
+print "total: $c\n";
+</code></pre>
+
+<p>The code is wonderfully idiomatic and to-the-point. Here are a few highlights, as I see them:</p>
+
+<ul>
+<li>The board is a string. It's one-dimensional, but it plays a 2D array on TV. Some cute regexes then do matches on it according to this 2D representation.</li>
+<li>We've "compressed" the hexagonal aspect of the board into a rectangular view. You know brick walls? On every other level the bricks are "between" those on the levels above/below. It's like they have half-valued x coordinates. This board representation removes the halves and just puts the bricks right on top of each other. It's bad for building walls, but useful for memory layout. It does mean that one of the diagonals on the hex layout becomes a vertical in the rectangular layout.</li>
+<li>The script "munches" through the board, eating it one character at a time. In a very real way, this program solves the problem by eating it.</li>
+<li>At each point it finds an empty location, it tries to put all kinds of 2-pieces and 3-pieces at that location. It <em>diverges</em> into all alternatives, keeping track for each alternative what locations it's used up.</li>
+<li>The alternatives will then <em>converge</em> naturally as the same half-munched board shows up in various alternative paths. The script just needs to keep track of multiplicity of each alternative.</li>
+<li>By the time we've muched the whole board down to an empty string, everything will have converged, so the multiplicity of the empty board will magically equal all possible ways to munch up the original one.</li>
+</ul>
+
+<p>The program does far too much destructive updating for my tastes. I realize when I look at it that I no longer "think" in terms of these destructive updates. But it does it so <em>successfully</em> and idiomatically, that I find it difficult to list it as a disadvantage. Maybe it's a Perl 5 thing. Constructs like <code>s///</code> are terribly convenient, and their default is to mutate things. (Even though Perl 5.14 <a href="http://perldoc.perl.org/perl5140delta.html#Regular-Expressions">adds <code>/r</code> for non-destructive substitution</a>).</p>
+
+<p>I was curious how this script would look (and perform) in Perl 6, so I wrote a straight port of it, trying to stick to the original as closely as possible:</p>
+
+<pre><code>my $tab = join "\n", &lt;
+    -----xxx
+    ------xx
+    x-----xx
+    x------x
+    xx-----x
+    xx------
+    xxx-----
+&gt;;
+
+my $vertical = index $tab, "\n";
+my $diagonal = $vertical + 1;
+
+my %acu = $tab =&gt; 1;
+
+my $vertical_xx = eval("/^ (. ** $vertical) '-'/");
+my $vertical_xxx = eval("/^ (. ** $vertical 'x' . ** $vertical) '-'/");
+my $diagonal_xx = eval("/^ (. ** $diagonal) '-'/");
+my $diagonal_xxx = eval("/^ (. ** $diagonal 'x' . ** $diagonal) '-'/");
+
+for ^$tab.chars {
+    my %next;
+    for %acu.kv -&gt; $k, $c {
+        my $s = $k.substr(0, 1);
+        my $k0 = $k.substr(1);
+        %next{$k0} += $c;
+        next unless $s eq '-';
+        my $k1 = $k0;
+        if $k1.=subst(/^ '-'/, 'x') ne $k0 { # horizontal xx
+            %next{$k1} += $c;
+            my $k2 = $k1;
+            if $k2.=subst(/^ 'x-'/, 'xx') ne $k1 { # horizontal xxx
+                %next{$k2} += $c;
+            }
+        }
+        $k1 = $k0;
+        if $k1.=subst($vertical_xx,
+                      -&gt; $/ { $0 ~ 'x' }) ne $k0 { # vertical xx
+            %next{$k1} += $c;
+            my $k2 = $k1;
+            if $k2.=subst($vertical_xxx,
+                          -&gt; $/ { $0 ~ 'x' }) ne $k1 { # vertical xxx
+                %next{$k2} += $c;
+            }
+        }
+        $k1 = $k0;
+        if $k1.=subst($diagonal_xx,
+                      -&gt; $/ { $0 ~ 'x' }) ne $k0 { # diagonal xx
+            %next{$k1} += $c;
+            my $k2 = $k1;
+            if $k2.=subst($diagonal_xxx,
+                          -&gt; $/ { $0 ~ 'x' }) ne $k1 { # diagonal xxx
+                %next{$k2} += $c;
+            }
+        }
+    }
+    %acu := %next;
+}
+
+say "total: %acu.values()";
+</code></pre>
+
+<p>Ugh! This script is longer than the Perl 5 version, and it looks messier, too. A few factors contribute to that. First, you can't just do <code>s///</code> in Rakudo in an <code>if</code> statement. (You can in Niecza, though.) Second, there are problems with <code>&lt;atom&gt; ** $repeats</code>, and I got to submit <a href="https://rt.perl.org/rt3/Ticket/Display.html?id=112450">two</a> <a href="https://rt.perl.org/rt3/Ticket/Display.html?id=112454">tickets</a> about that, and then do a workaround with the <code>eval</code>s you see above. (Aah. Feels like the old days.)</p>
+
+<p>Furthermore, jnthn++ could put this program into the profiler, and get <a href="https://github.com/rakudo/rakudo/commit/f524138d1d29c99fa9963c7463afd34eda69c133">two</a> <a href="https://github.com/rakudo/rakudo/commit/d6cd1e2bd19e03a81132a23b2025920577f84e37">optimizations</a> out of it. It went from 40s on my machine, to 37s.</p>
+
+<p>But in the end, I felt that my straight-port version suffers from not playing off Perl 6's strengths. So I wrote a version that leans more towards immutability and closures.</p>
+
+<pre><code>my $tab = join "\n", &lt;
+    -----xxx
+    ------xx
+    x-----xx
+    x------x
+    xx-----x
+    xx------
+    xxx-----
+&gt;;
+
+my $vertical = index $tab, "\n";
+my $diagonal = $vertical + 1;
+
+my %acu = $tab =&gt; 1;
+
+sub make_substituter($rx) {
+    return sub ($tab) {
+        my $newtab = $tab;
+        return $newtab
+            if $newtab.=subst($rx, -&gt; $/ { $0 ~ 'x' }) ne $tab;
+    };
+}
+
+sub make_2x_substituter($rx) {
+    return sub ($tab) {
+        my $newtab = $tab;
+        return $newtab
+            if $newtab.=subst($rx, -&gt; $/ { [~] $0, 'x', $1, 'x' }) ne $tab;
+    };
+}
+
+my @pieces = 
+    make_substituter(rx/^ ('') '-'/),
+    make_substituter(eval("/^ ({'.' x $vertical}) '-'/")),
+    make_substituter(eval("/^ ({'.' x $diagonal}) '-'/")),
+    make_2x_substituter(rx/^ ('') '-' ('') '-'/),
+    make_2x_substituter(eval("/^ ({'.' x $vertical}) '-' ({'.' x $vertical}) '-'/")),
+    make_2x_substituter(eval("/^ ({'.' x $diagonal}) '-' ({'.' x $diagonal}) '-'/"));
+
+for ^$tab.chars {
+    my %next;
+    for %acu.kv -&gt; $k, $c {
+        my $s = $k.substr(0, 1);
+        my $k0 = $k.substr(1);
+        %next{$k0} += $c;
+        next unless $s eq '-';
+        for @pieces -&gt; &amp;piece {
+            if &amp;piece($k0) -&gt; $newtab {
+                %next{$newtab} += $c;
+            }
+        }
+    }
+    %acu := %next;
+}
+
+say "total: %acu.values()";
+</code></pre>
+
+<p>Hmm. The loop is shorter now, but at the cost of some abstractions in other places. It's an improvement on my first version, but I don't really feel I got close to the succinctness of Salvador's Perl 5 version here either. (And this version runs slower, predictably. Something like 52s on my machine.)</p>
+
+<p>I'm pretty sure it's possible to make even more idiomatic versions. This is a large enough problem to make things interesting. I encourage others to try.</p>
+
+</article>
+
+  </body>
+</html>

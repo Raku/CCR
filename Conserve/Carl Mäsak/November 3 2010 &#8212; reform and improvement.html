@@ -1,0 +1,66 @@
+http://strangelyconsistent.org/blog/november-3-2010-reform-and-improvement
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 3 2010 &#8212; reform and improvement :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-03T19:28:00+01:00" pubdate="pubdate">3 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-3-2010-reform-and-improvement">November 3 2010 &#8212; reform and improvement</a></h1>
+  </header>
+
+  <p>75 years ago today, the Nationalist government in the Republic of China instituted a <a href="http://en.wikipedia.org/wiki/Fiat_currency">fiat currency</a> reform, immediately stabilizing prices and also raising revenues for the government.</p>
+
+<div class="quote">Great strides also were made in education and, in an effort to help unify Chinese society, in a program to popularize the Standard Mandarin language and overcome other Spoken Chinese variations. Newspapers, magazines, and book publishing flourished, and the widespread establishment of communications facilities further encouraged a sense of unity and pride among the people.</div>
+
+<p>And then the <a href="http://en.wikipedia.org/wiki/Sino-Japanese_War_(1937-1945)">war against Japan</a> happened, unfortunately. And then the <a href="http://en.wikipedia.org/wiki/Chinese_Civil_War">Civil war</a>, which by the way <a href="http://en.wikipedia.org/wiki/Cross-Strait_relations">never officially ended</a>. So here we are, half a century later, unsure just how many Chinas there are.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>I'm in Austria, severely distracted by the beauty of the Vienna. For those of you who have been following my relationship with Austria over the years, I'll just add that I'm not here in capacity of author of <code>proto</code>, I'm here because we're attending the premiere of a documentary in which my mother figures as one of the key characters. Way to go, mom!</p>
+
+<p>Today I toyed around with the idea of making <code>psyde</code> more efficient. I'll step back a few steps to explain what this means.</p>
+
+<p><code>psyde</code> is the name of the application that generates static HTML for my blog. Right now, <em>all</em> it can do is generate my blog; when I'm done generalizing it, it's supposed to be capable of generating any static web page one tells it to.</p>
+
+<p>Also &mdash; and this will probably sound a bit insane &mdash; every time I run <code>psyde</code>, it nukes my current local copy of the static web site, and generates a brand new one. That takes on the order of seven minutes. Now, most pages won't change from one such run to the next. <code>psyde</code> currently doesn't care; it just nukes it all and generates it from scratch. Not good.</p>
+
+<p>So what would be a better option? Well, something akin to the ways <code>Makefile</code>s work would be neat. And in fact, this is exactly the problem Hakyll solves, the piece of software <code>psyde</code> is based on. Hakyll uses Kleisli arrows (a data structure similar to monads) to keep track of dependencies and what needs to be updated. I meant to do something similar in <code>psyde</code>, I just haven't gotten around to it yet.</p>
+
+<p>But today I've toyed a bit with the idea, locally. Maybe tomorrow I'll even have enough working code to attempt to put it in <code>psyde</code> itself. It'll be interesting to see how much the run time goes down.</p>
+
+</article>
+
+  </body>
+</html>

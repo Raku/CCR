@@ -1,0 +1,141 @@
+http://strangelyconsistent.org/blog/t1-tell-knights-from-knaves
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t1: Tell knights from knaves :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2013-02-22T23:39:50+01:00" pubdate="pubdate">22 Feb, 2013</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t1-tell-knights-from-knaves">t1: Tell knights from knaves</a></h1>
+  </header>
+
+  <div class="quote"><code>&lt;grondilu&gt; masak: are you sure problem #1 is computationnaly doable?  It's not NP = P or something, is it?<br>
+* grondilu thinks of it and realizes the number of possibilities is not so large<br>
+&lt;grondilu&gt; .oO( 2**number_of_islanders  possibilities anyway )</code></div>
+
+<p>And so, the time-honored tradition of reviewing <a href="http://github.com/masak/p6cc2012#readme">p6cc</a> solutions begins. Again.</p>
+
+<p>For our first task, we have the very human conundrum of figuring out who is telling the truth and who is lying. Fortunately, on the island of Smul, that's a much more tractable problem than in the real world.</p>
+
+<p>The problem description follows.</p>
+
+<pre><code>## Tell knights from knaves based on what they say
+
+On the mythical island of Smul, people suffer from a rare genetic disorder that
+make them either tell the truth all the time, or lie all the time. These are
+the only two types of people on the island, known as knights and knaves,
+respectively.
+
+Write a program that takes as input a number of utterances by islanders, and
+outputs for each person whether that person is a knight or a knave. If there is
+no possible assignment that works, the program should report that no solution
+exists. In the case of multiple solutions, the program should report every
+possible solution.
+
+The islanders can make four different classes of utterances:
+
+    X is a knight.
+    X is a knave.
+    X and Y are of the same type.
+    X and Y are of different types.
+
+(Here, X and Y are used as metavariables, of course, and can in fact be any
+name of an islander.)
+
+Islanders can refer to each other. The same islander can make several
+utterances. If an islander mentions another islander that doesn't say anything,
+your program should consider the entire input to be erroneous.
+
+Here are a few examples:
+
+    A: A is a knight.
+
+Both a knight and a knave would assert the same thing. So this input has two
+solutions.
+
+    B: B is a knave.
+
+Neither a knight or a knave would ever say this about themselves. So this input
+allows no solution.
+
+    C: C and D are of the same type.
+    D: D and C are of different types.
+
+Here, the two islanders are contradicting each other, so one of them must be a
+knight and the other a knave. But this is exactly what D is saying, so D is the
+knight. One solution.
+</code></pre>
+
+<p>Let's get one obvious thing out of the way: we can solve this with a brute-force method, supposing for each islander in a situation first that he is a knight and then that he is a knave. Each islander thus bifurcates the universe in two possible universes. Two islanders will yield four possible universes to investigate. Three islanders will yield eight universes. Ten islanders will yield 1024 universes. The universes grow exponentially with the islanders. The brute-force solution will always <em>work</em>, but at an exponential slowdown.</p>
+
+<p>Many people choose the brute-force solution. I don't blame them; it's there for the picking. Some people get fancy with logical propositions or "affiliations" between islanders, but they all fall down the exponential pit at one point or another. The brute-forcers are all over the place in terms of style and brevity, and it's quite fun to watch.</p>
+
+<p>Then there's this <em>one</em> contestant that gets the nice solution. It always thrills me when that happens.</p>
+
+<p>Here, let me lay it out for you. Let 0 mean <code>False</code>/knave and 1 mean <code>True</code>/knight. Then let's translate the four possible utterances to equations:</p>
+
+<ul>
+<li>"A: X is a knight." → A = X</li>
+<li>"A: X is a knave." → A = 1 xor X</li>
+<li>"A: X and Y are of the same type." → A = 1 xor X xor Y</li>
+<li>"A: X and Y are of different types." → A = X xor Y</li>
+</ul>
+
+<p>By some amazing coincidence, all the utterances can be put into more or less the same mold, and the only operator used is xor. It's actually fun to translate these formulas back, and get alternative formulations of things, sometimes giving a different perspective on things:</p>
+
+<ul>
+<li>A = X → "A is as truthful as X"</li>
+<li>A = 1 xor X → "A or X is truthful, but not both"</li>
+</ul>
+
+<p>From that first formulation we see why, when A is asserting that A is a knight, that utterance devolves into a tautology A = A. It's as if an islander cannot assert his own knighthood solely on his own authority.</p>
+
+<p>From the second formulation we see why, when A is asserting that A is a knave, such an utterance devolves into a contradiction A = 1 xor A. There just isn't any such number A. (We'd have to look in the murky domain of fuzzy logic, but that's outside the realm of the island of Smul.)</p>
+
+<p>Anyway, translating all the utterances to this form is a <em>big</em> win. Now we can make a linear equation system of all the utterances, and solve the linear equation system. Do we have fast algorithms for that? Yes, we do! Gaussian elimination has an arithmetic complexity of O(n<sup>3</sup>). That's quite an improvement on exponential brute force!</p>
+
+<p>We must take care to do all the additions and subtractions as xors, though. This is because our underlying algebra is truth values, outside of which we may not stray. So we're really doing Gaussian elimination on the <a href="https://en.wikipedia.org/wiki/Quotient_ring">quotient ring</a> Z/2Z.</p>
+
+<p>In the literature, we find this problem as <a href="https://en.wikipedia.org/wiki/3SAT#XOR-satisfiability">XOR-satisfiability</a>. Wikipedia dignifies it with two sentences.</p>
+
+<p>One contestant did it this way. Yay him. You should check out his solution.</p>
+
+<p><a href="http://github.com/masak/p6cc2012/tree/master/t1/review">Here are the solutions</a>, and my reviews of same. Enjoy.</p>
+
+<p>Next up: rectangle haikus, possibly the most fun I've ever had with a p6cc task.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,151 @@
+http://strangelyconsistent.org/blog/step-1-on-the-road-to-recovery-admitting-you-have-a-problem
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Step 1 on the road to recovery: admitting you have a problem :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-03-29T06:37:00+01:00" pubdate="pubdate">29 Mar, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/step-1-on-the-road-to-recovery-admitting-you-have-a-problem">Step 1 on the road to recovery: admitting you have a problem</a></h1>
+  </header>
+
+  <p>In order to be better, we had to refactor Rakudo. It wasn't a question of 'if', it wasn't a question of 'when'. If we were to meet the goals of Rakudo Star in 2010Q2, we'd have to pull Rakudo apart and put it back together. It would lead to a lot of downstream breakage, but better now than later.</p>
+
+<p>We're currently at the 'downstream breakage' part. Until now, I haven't really taken a look at the scope of the breakage. Today, I will. I suspect I'll spend much of April doing damage control.</p>
+
+<p>In other words, the "admitting you have a problem" from the blog post topic refers to the fact that until now, I've been an alpha guy. "alpha" is the code name for "the old Rakudo master branch". You know, the one on which my code works. But being an alpha guy will feel more and more quaint, and I hope I don't have to be an alpha guy up until the point Rakudo Star is released. That would feel terribly inconsistent.</p>
+
+<p>So. Let's try to run my favourite apps on Rakudo master.</p>
+
+<h2>November</h2>
+
+<p>Trying to compile November, I get the error message "Unable to parse blockoid, couldn't find final '}' at line 8" on the first file I attempt to compile. After some digging, it turns out that the error isn't actually <em>located</em> in that file, but in a file used by a file used by that file. The error message is due to this regex definition.</p>
+
+<pre><code>token port       { (\d**1..5)                    <b>&lt;?{{</b> $I0 = match[0]
+                         $I1 = 0
+                         if $I0 &gt; 65535 goto fail
+                         $I1 = 1
+                       fail:
+                         .return ($I1)
+                    <b>}}&gt;</b> 
+                   &lt;!before \d&gt; };</code></pre>
+
+<p>The trained rakudologist immediately picks out the PIR code assertion (highlighted in bold), a construct no longer supported in Rakudo after the refactor. But real, non-PIR code assertions <em>are</em> supported, so the above should simply be swapped out for <code>&lt;?{ $0 &lt; 2 ** 16 }&gt;</code>.</p>
+
+<p>I swap it out and move on.</p>
+
+<p>Next fun error message: "You can not add a Method to a module; use a class, role or grammar". This occurs in a file where I'm decidedly in a class, and not a module. Rakudo is wrong; I am right.</p>
+
+<p>So what <em>is</em> going on to make me get that error message? This:</p>
+
+<pre><code>$ <b>cat A.pm</b> 
+grammar A {
+}
+
+$ <b>cat B.pm</b> 
+class B;
+
+method foo() {
+    use A;
+}
+
+$ <b>perl6 B.pm</b> 
+You can not add a Method to a module; use a class, role or grammar
+[...]</code></pre>
+
+<p>My guess is that the parser gets confused about the kind of scope it's in when switching between files. I submit this as <a href="http://rt.perl.org/rt3/Public/Bug/Display.html?id=73886">a rakudobug</a> and move on.</p>
+
+<h2>Druid</h2>
+
+<p>Stuck at the Configure step. The error message is familiar: "You can not add a regex to a module; use a class, role or grammar". That's just pure bigotry. And it's been <a href="http://irclog.perlgeek.de/perl6/2010-03-09#i_2083599">discussed</a> <a href="http://irclog.perlgeek.de/perl6/2010-03-26#i_2156700">before</a>, but not resolved yet.</p>
+
+<p>Luckily, the regex can be easily inlined in this case, so I do that and move on to the next message:</p>
+
+<pre><code>$ <b>perl6 Configure</b> 
+
+Configure.pm is preparing to make your Makefile.
+
+Method 'postcircumfix:&lt;{ }&gt;' not found for invocant of class 'Failure'
+[...]</code></pre>
+
+<p>Please bask in the sheer informativeness of it all while I try to find the cause.</p>
+
+<p>Ah. The reason for the error message is that alpha has a <code>%*VM&lt;config&gt;&lt;build_dir&gt;</code>, but master currently doesn't even have a <code>%*VM</code>. I could hack around that, but I'll submit <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=73888">a rakudobug</a> instead.</p>
+
+<h2>proto</h2>
+
+<pre><code>$ <b>./proto</b> 
+Can't locate File/HomeDir.pm in @INC [...]</code></pre>
+
+<p>In all the chaotic mess that is Rakudo error messages, it feels comforting and a bit relieving to get a Perl 5 error. And one as mundane as this, to boot.</p>
+
+<p>Hm, I heard mberends++ <a href="http://irclog.perlgeek.de/perl6/2010-03-28#i_2162767">mention</a> that he was doing biggish changes in proto. Seems this is one of the results. I must have a look at them later they seem interesting but right now I'm looking for Perl 6 errors. So, moving on.</p>
+
+<h2>Web.pm</h2>
+
+<p>Same regex-in-module bigotry as with Druid. And after that, same <code>%*VM</code> trouble. Not too surprising in retrospect; they use the same <code>Configure.pm</code> module.</p>
+
+<h2>GGE</h2>
+
+<p>GGE also uses that <code>Configure.pm</code> module, so I just skip the configure step and manually replace <code>alpha</code> with <code>perl6</code> in the <code>Makefile</code>. This is the error I get:</p>
+
+<pre><code>$ <b>make</b> 
+env PERL6LIB='/Users/masak/gwork/gge/lib:/Users/masak/gwork/gge/lib:/Users/masak/wo  k/hobbies/parrot/languages/rakudo' perl6 --target=pir --output=lib/GGE/Match.pir lib/GGE/Match.pm
+Placeholder variables cannot be used in a method at line 39, near "multi meth"
+[...]</code></pre>
+
+<p>The <a href="http://github.com/masak/gge/blob/master/lib/GGE/Match.pm#L39">method</a> in question contains zero (0) placeholder variables. So what's going on here?</p>
+
+<p>As usual, the answer turns out to be "something completely different". It's in the method above, which <em>also</em> doesn't contain any placeholder variables, that the error originates:</p>
+
+<pre><code>$ <b>perl6 -e 'class A { multi method new(*%\_) { |%\_ } }'</b> 
+Placeholder variables cannot be used in a method at line 1, near "}"
+[...]</code></pre>
+
+<p>And that's just wrong, so I submit <a href="http://rt.perl.org/rt3/Public/Bug/Display.html?id=73892">a rakudobug</a> and call it a day.</p>
+
+<h2>Conclusion</h2>
+
+<p>A good first harvest.</p>
+
+<p>It's difficult to judge whether I've found 10% of the total breakage, or 1%. But regardless, this needs to be done, and sooner rather than later. I think the allure of easy-to-reap rakudobugs will urge me on in this quest.</p>
+
+<p>I still haven't given up the thought of doing nightly builds of all the projects. That would amount to automatic (or at least greatly simplified) bug finding and collection.</p>
+
+<p>Looking forward to the first automatically found rakudobug. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

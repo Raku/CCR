@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/blast-from-the-past-e02
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Blast from the past: E02 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-02-04T16:47:00+01:00" pubdate="pubdate">4 Feb, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/blast-from-the-past-e02">Blast from the past: E02</a></h1>
+  </header>
+
+  <p>SF took <a href="http://irclog.perlgeek.de/perl6/2010-02-03#i_1954377">my challenge</a> to heart and started producing a "modern Perl 6" version of the example code in <a href="http://dev.perl.org/perl6/doc/design/exe/E02.html">E02</a>. His thought process can be seen <a href="http://lastofthecarelessmen.blogspot.com/2010/02/binary-tree.html">here</a>, and <a href="http://lastofthecarelessmen.blogspot.com/2010/02/binary-tree-almost-complete-script.html">here</a>.</p>
+
+<p>After being a bystander for a few hours, I coulndn't restrain myself anymore: I produced <a href="http://gist.github.com/294621">my own version</a>. I should say at once that it's quite different from SF's: while he keeps close to the original <a href="http://dev.perl.org/perl6/doc/design/exe/E02.html">E02</a> (which, in turn, sets out to prove that Perl 6 is/was not very different from Perl 5), my version is a bit more liberal in its interpretation. I do mix in some of my personal preferences into it. Some examples:</p>
+
+<ul>
+<li>We don't do <code>$ARGS prompts("Search? ")</code> anymore, but there's a nice <code>&amp;prompt</code> function which I used instead, together with a <code>while</code> loop.</li>
+<li>The <code>&amp;show</code> function now uses <code>gather/take</code>, rather than printing directly.</li>
+<li>Also, I avoided the statement-modifying mess from the original E02 <code>&amp;show</code> code.</li>
+<li>Also, E02's <code>&amp;show</code> makes a point of using a slurpy <code>@_</code> rather than naming the parameters. I don't. (Neither does SF.)</li>
+<li>It just makes sense to use a <code>given/when</code> construct in the <code>&amp;insert</code> function. To its credit, E02 tantalizingly hints of it, but then does a MIB mind-wipe. (You don't recall that bit? Oh well...)</li>
+<li>In the same function, E02 puts <code>undef</code> to initiate the child nodes to some empty value. Both SF and I independently realized that just any undefined value won't work if <code>&amp;insert</code> is to have <code>%tree</code> in the signature, because <code>%tree</code> only binds to an <code>Associative</code> value. SF solved it by putting <code>Hash</code> (an undefined <code>Hash</code> type object) in the child nodes, and changed it to <code>Hash.new</code> in the later version. I used <code>{}</code>, which should be equivalent to <code>Hash.new</code>, but IMHO more idiomatic.</li>
+<li>The whole traits business hadn't solidified in 2002, but I believe that the end result is both more realiable, more useful, and prettier. You'll have to judge for yourself.</li>
+</ul>
+
+<p>I believe rewriting the exigeses in modern form is a very worthy activity. I hope we'll see more of that. Perl 6 suffers a bit from stale, outdated documentation, and having these in new versions would be valuable.</p>
+
+<p>It's also a very interesting <em>historical</em> activity to read the old apocalypses and exigeses, as I increasingly find. Perl 6 has come a long, long way since 2001.</p>
+
+</article>
+
+  </body>
+</html>

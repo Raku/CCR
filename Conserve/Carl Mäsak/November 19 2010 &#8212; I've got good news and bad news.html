@@ -1,0 +1,102 @@
+http://strangelyconsistent.org/blog/november-19-2010-ive-got-good-news-and-bad-news
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 19 2010 &#8212; I've got good news and bad news :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-20T01:20:00+01:00" pubdate="pubdate">20 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-19-2010-ive-got-good-news-and-bad-news">November 19 2010 &#8212; I've got good news and bad news</a></h1>
+  </header>
+
+  <p>69 years ago today off the coast of western Australia, two ships engaged each other in battle &mdash; the German <em>Kormoran</em> one and the Australian HMAS <em>Sydney</em>. The final outcome of the battle was that <a href="http://en.wikipedia.org/wiki/Battle_between_HMAS_Sydney_and_German_auxiliary_cruiser_Kormoran">both ships were destroyed</a>.</p>
+
+<div class="quote">How and why <i>Sydney</i> was sunk by the weaker <i>Kormoran</i> has been the subject of speculation and controversy, with numerous books on the subject, along with government inquiries published in 1999 and 2009. According to the German accounts, which were accepted as truthful by their interrogators and most subsequent commentators, the cruiser sailed too close to the disguised merchant raider, negating the advantages of armour and superior gun range, and was destroyed by heavy fire and a torpedo strike after <i>Kormoran</i> revealed herself.</div>
+
+<p>There's a lot of nifty details about the signaling before the battle, which I will not relay here. But here's one thing I didn't know before: you have to <a href="http://en.wikipedia.org/wiki/Battle_ensign">flag that you're going into battle</a> according to international laws of war (and there is speculation whether the Germans really did this). To me as an outsider, it seems like a surprisingly honest thing to have to do in a battle situation.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Seeking to patch up <code>.trans</code> to handle regexes today, I failed in unexpected and interesting ways.</p>
+
+<p>Having distracted myself during <code>$dayjob</code> with thoughts of how to go about implementing regexes in <code>.trans</code>, I finally dug into the task in the evening. This is what I had concluded while just thinking about it:</p>
+
+<ul>
+<li>Need to store the regexes in a data structure just like a store the constant strings to be replaced.</li>
+<li>But I can't hash the regexes, since we can only have <code>Str</code> as hash keys right now in Rakudo. No worries, an array works in this case.</li>
+<li>There will be some special logic in the main loop that determines whether to do a constant string replacement or a regex replacement.</li>
+</ul>
+
+<p>This is what I learned by implementing it:</p>
+
+<ul>
+<li>Huh, need to store three pieces of information for each regex: the regex, its substitution, and the position of the next match. (Since this is how my new <code>.trans</code> algorithm operates: it <a href="http://strangelyconsistent.org/blog/november-7-2010-man-we-suck-at-this">keeps all the "next match" positions up to date</a> for all things it's matching on.) Ended up with an array of pairs, the keys of which were also pairs. Hello, <code>cadr</code>.</li>
+<li>Since the constant strings and the regexes were in different data structures, a fair amount of code was needed to bring out the first matching position for each of them, and then compare them to determine whether to do a string or regex substitution.</li>
+<li>Even that's an oversimplification. What happens if there are two or more regexes matching on the same position? The answer is that the longest regex should win. If they still tie, I guess the earliest one should win. Huh. Good thing I stored them in an array.</li>
+<li>Need to go in positionally and update the first-match position information for the regex array. Which means I have to <em>find</em> the element for the corresponding regex. Oh man, this is primitive!</li>
+<li>Wait, what happens if a constant string ties with a regex match? We need to compare their lengths. And if they still tie? Uuurgh...</li>
+</ul>
+
+<p>The last guttural sound there was me giving up due to an exceptional amount of minutia that I hadn't anticipated in the design phase. ☺</p>
+
+<p>TimToady++ on the channel understood immediately what the trouble might be.</p>
+
+<pre><code>&lt;masak&gt; today, I've tried to patch .trans for handling regexes.
+        giving up for the day -- it was more complicated than I
+        imagined it would.
+&lt;masak&gt; time to blog about the unexpected overwhelm fail. :)
+&lt;TimToady&gt; masak: that will be very difficult unless you know how to
+           hook into the LTM implied by .trans
+&lt;masak&gt; TimToady: yeah.
+&lt;TimToady&gt; espcially since rakudo doesn't really do LTM yet
+&lt;masak&gt; TimToady: the current .trans impl does it right for constant
+        strings.
+&lt;jnthn&gt; The current Rakudo does LTM right in some cases for constant
+        strings. :)
+&lt;masak&gt; TimToady: but... I found I had to special-case regexes, and
+        then there were a lot of "interesting" corner cases across
+        the boundary.
+&lt;masak&gt; I think I'd be better off attacking the problem after hiding
+        some of that complexity first.
+&lt;masak&gt; essentially runtime-polymorphing on constant strings and regexes.
+</code></pre>
+
+<p>And that, in a nutshell, is what I intend to do if-and-when I attack this problem again. Need to build a little LTM engine that hides the complexity of handling both constant strings and regexes in the key position of the pairs sent in to <code>.trans</code>.</p>
+
+<p>That should take care of another problem I had with the code: it wasn't fun to read. Putting an LTM engine as an API between the <code>.trans</code> code and the complexity should help.</p>
+
+</article>
+
+  </body>
+</html>

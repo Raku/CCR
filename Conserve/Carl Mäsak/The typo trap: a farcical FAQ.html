@@ -1,0 +1,163 @@
+http://strangelyconsistent.org/blog/the-typo-trap-a-farcical-faq
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The typo trap: a farcical FAQ :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-02-08T14:54:00+01:00" pubdate="pubdate">8 Feb, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-typo-trap-a-farcical-faq">The typo trap: a farcical FAQ</a></h1>
+  </header>
+
+  <p><em>[Update 2010-04-03: The below post is about <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=62732">a bug</a> which jnthn++ just <a href="http://github.com/rakudo/rakudo/commit/9a20634ae6cf444b432d5b8dce40688a78b461fa">fixed</a> in Rakudo master. That means that the cause for the main complaint of the post — not getting any sensible error diagnostics whatsoever — has been removed. Yay!]</em></p>
+
+<p><strong>Help! I'm getting the error "invoke() not implemented in class 'Undef'" in my large application. What did I do wrong?</strong></p>
+
+<p>You've mistyped a class name which sits inside a namespace.</p>
+
+<p><strong>How am I supposed to figure that out?</strong></p>
+
+<p>I didn't say it was a particularly good error message.</p>
+
+<p>It's like this: if you mistype a class name which is not in a namespace, you'll get an informative error message:</p>
+
+<pre><code>$ perl6 -e 'A.foo'
+Could not find non-existent sub A
+in Main (file src/gen_setting.pm, line 324)
+</code></pre>
+
+<p>However, if you mistype a class name which <em>is</em> in a namespace, you will get an <em>un</em>informative error message:</p>
+
+<pre><code>$ perl6 -e 'A::B.foo'
+invoke() not implemented in class 'Undef'
+in Main (file &lt;unknown&gt;, line &lt;unknown&gt;)
+</code></pre>
+
+<p>So there's your error message. Linking it to the actual cause is something which you'll learn by experience.</p>
+
+<p><strong>So in that case, I don't get the name of the class which was mistyped in my program?</strong></p>
+
+<p>Correct.</p>
+
+<p><strong>And I don't get the line number of my typo?</strong></p>
+
+<p>Indeed not.</p>
+
+<p><strong>Or the file?</strong></p>
+
+<p>Right. You'll get no information about the location of the typo.</p>
+
+<p><strong>Is that intentional?</strong></p>
+
+<p>Well, no. As you see from the error message above, the information is meant to be printed, but it comes out as <code>(file &lt;unknown&gt;, line &lt;unknown&gt;)</code> instead.</p>
+
+<p><strong>Why?</strong></p>
+
+<p>Rakudo is built on top of Parrot. Usually, Rakudo generates its own error messages, but in some cases, Parrot will also generate an error. The error <code>invoke() not implemented in class 'Undef'</code> is such a case. When a Parrot-internal error like this one occurs, Rakudo will not be able to extract the annotation information required to provide a sensible line number and file.</p>
+
+<p><strong>I... I see.</strong></p>
+
+<p>Yeah. Sorry about that.</p>
+
+<p><strong>Are you able to pick up the irony in the fact that when I use namespaces to help mitigate the complexity of my project, I end up with an error message that in fact makes it harder for me to manage the complexity of my project?</strong></p>
+
+<p>Hold on.</p>
+
+<p>Yes. We are able to pick up the irony in that. Quite easily, in fact.</p>
+
+<p>Consider not using namespaces at the present juncture. They are very useful, but they are also known as a frequent source of annoyances like this.</p>
+
+<p><strong>By the way, I couldn't help but note that the line number and file information in your first example doesn't make any sense either. What the heck is <code>src/gen_setting.pm</code> and <code>line 324</code>?</strong></p>
+
+<p>Well, uh, that's the last line of internal Rakudo code that actually has a working line-and-file annotation. It's nothing that should reach the user, really.</p>
+
+<p><strong>So that's kinda broken, too?</strong></p>
+
+<p>Annotations are currently broken, yes. Apologies.</p>
+
+<p><strong>Back to my mistyped type name. My program is distributed over fifteen modules and ten thousand lines of code. How do you propose I find my typo?</strong></p>
+
+<p>First off, we recommend that you compile often. That way, the diff from the last working code will not be too large, and you will not have to visually scan so much text hunting for your typo.</p>
+
+<p>Secondly, it's often useful to have your project in a version tracker such as Git, so that you can do <code>git diff</code> to see the changes against the index, or against the latest commit.</p>
+
+<p>Thirdly, when all else fails, you can always insert print statements into your code, to try to bisect the origin of the error.</p>
+
+<p><strong>So in other words, Rakudo is no help whatsoever when this occurs?</strong></p>
+
+<p>Now, that's not quite fair. Rakudo tells you <em>that</em> the error occurs. That's actually useful information.</p>
+
+<p><strong>And you consider that adequate?</strong></p>
+
+<p>No, I didn't say that! No-one is happy about this situation. It's just the way things are.</p>
+
+<p><strong>So it can't be fixed?</strong></p>
+
+<p>Theoretically, yes. But not easily. Remember that the error occurs in Parrot.</p>
+
+<p><strong>Don't Rakudo and Parrot developers confer with each other?</strong></p>
+
+<p>Oh, sure we do. Do not assume that we're deliberately causing this situation. It's just that the current way Rakudo and Parrot are welded together makes the situation non-trivial to rectify.</p>
+
+<p><strong>So this problem is going to go away with the advent of the new <code>ng</code> branch?</strong></p>
+
+<p>There's nothing to indicate that this would be the case. In <code>ng</code>, you currently get a Null PMC access:</p>
+
+<pre><code>$ ./perl6 -e 'A::B.foo' # ng branch
+Null PMC access in invoke()
+current instr.: '_block14' pc 29 (EVAL_1:0)
+called from Sub '!UNIT_START' pc 984 (src/glue/run.pir:17)
+called from Sub 'perl6;PCT;HLLCompiler;eval' pc -1 ((unknown file):-1)
+called from Sub 'perl6;PCT;HLLCompiler;command_line' pc 1489 (src/PCT/HLLCompiler.pir:794)
+called from Sub 'perl6;Perl6;Compiler;main' pc -1 ((unknown file):-1)
+</code></pre>
+
+<p>To its credit, Rakudo <code>ng</code> does provide more information in this case, but unfortunately the information is of a kind which was concealed from the user in Rakudo <code>master</code> about a year ago (because it tended to be very uninformative).</p>
+
+<p><strong>Just to summarize: this all sucks, right?</strong></p>
+
+<p>That would be a succinct description of the state of this particular error message, yes.</p>
+
+<p><strong>I heard that the Perl 6 community has adopted very high standards with respect to error messages. There's talk about "awesome error messages", and last summer I was in the audience when Larry Wall demonstrated how good Perl 6 was at reporting error messages to the user. How does this error message square with all of that?</strong></p>
+
+<p>The awesome error messages are like a platonic ideal towards which all implementations aspire. Rakudo, being rooted in our imperfect physical world, doesn't always get all the way. Yet.</p>
+
+<p><strong>I'm about to go visually scan ten thousand lines of code, looking for where my error message might have originated. Any last words?</strong></p>
+
+<p>We value your efforts as an early adopter of Rakudo. Your feedback is important to us. Have a nice day.</p>
+
+</article>
+
+  </body>
+</html>

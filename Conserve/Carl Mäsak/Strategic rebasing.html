@@ -1,0 +1,91 @@
+http://strangelyconsistent.org/blog/strategic-rebasing
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Strategic rebasing :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2015-12-31T23:35:58+01:00" pubdate="pubdate">31 Dec, 2015</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/strategic-rebasing">Strategic rebasing</a></h1>
+  </header>
+
+  <p>Just a quick mention of a Git pattern I discovered recently, and then started
+using a whole lot:</p>
+
+<ol>
+<li><p>Realize that a commit somewhere in the commit history contained a mistake
+(call it commit <code>00fbad</code>).</p></li>
+<li><p>Unless it's been fixed already, fix it immediately and push the fix.</p></li>
+<li><p>Then, <code>git checkout -b test-against-mistake 00fbad</code>, creating a branch
+rooted in the bad commit.</p></li>
+<li><p>Write a test against the bad thing. See it fail. Commit it.</p></li>
+<li><p><code>git rebase master</code>.</p></li>
+<li><p>Re-run the test. Confirm that it now passes.</p></li>
+<li><p>Check out <code>master</code>, merge <code>test-against-mistake</code>, push, delete the branch.</p></li>
+</ol>
+
+<p>There are several things I like about this pattern.</p>
+
+<p>First, we're using the full power of Git's <a href="https://xkcd.com/1597/">beautiful (distributed) graph
+theory model</a>. Basically, we're running the branch in
+two different environments: one where the thing is broken and one where the
+thing is fixed. Git doesn't much care where the two base commits are; it just
+takes your work and reconstitutes it in the new place. Typically, rebasing
+is done to "catch up" with other people's recent work. Here, we're doing
+<em>strategic rebasing</em>, intentionally starting from an old state and then
+upgrading, just to confirm the difference.</p>
+
+<p>Second, there's a more light-weight pattern that does this:</p>
+
+<ol>
+<li><p>Fix the problem.</p></li>
+<li><p>Stash the fix.</p></li>
+<li><p>Write the test. See it fail.</p></li>
+<li><p><code>git stash pop</code></p></li>
+<li><p>Confirm test now passes.</p></li>
+<li><p>Commit test and fix.</p></li>
+</ol>
+
+<p>This is sometimes fully adequate and even simpler (no branches). But what I
+like about the full pattern is (a) it prioritizes the fix (which makes sense
+if I get interrupted in the middle of the job), and (b) it still works fine
+even if the problem was fixed long ago in Git history.</p>
+
+<p>Git and TDD keep growing closer together in my development. This is yet another
+step along that path.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,70 @@
+http://strangelyconsistent.org/blog/notation-and-the-business-case-for-perl-6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Notation, and the 'business case' for Perl 6 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-12-27T20:39:00+01:00" pubdate="pubdate">27 Dec, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/notation-and-the-business-case-for-perl-6">Notation, and the 'business case' for Perl 6</a></h1>
+  </header>
+
+  <p>A few days before Christmas, I was sitting in the car with my father. I decided to try to explain why I'm spending time doing Perl 6.</p>
+
+<p>I compared the evolution of programming languages with the evolution of mathematical notation. In maths, it was <a href="http://en.wikipedia.org/wiki/Linguistic_relativity">tricky to imagine</a> the concept of <a href="http://en.wikipedia.org/wiki/Zero#Early_history">zero</a> before it was formalized down to a number; the idea of derivatives was tossed around in vague forms before <a href="http://en.wikipedia.org/wiki/Derivative">Newton and Leibniz</a> made notations for it; we slowly but surely got a standard way of saying <a href="http://en.wikipedia.org/wiki/Equals_sign">"is equal to"</a>. And so on.</p>
+
+<p>I was just about to connect this back to how each new programming language can be seen as a contribution to an ongoing, open debate about notation within the programming world, one that has only been going on in earnest for half a century or so. But I never got that far, because my father interrupted me and asked what the <a href="http://en.wikipedia.org/wiki/Business_case">business case</a> is for Perl 6.</p>
+
+<p>I was half stumped, half amused by this interjection. I didn't have a good answer for him, besides trying to explain FOSS and the fact that we're not developing Perl 6 with the expectation that someone will buy it from us. But I still felt he had a point; so, earlier today, I took the question to <code>#perl6</code>, and got a set of good <a href="http://irclog.perlgeek.de/perl6/2009-12-27#i_1871329">replies and musings</a> by Su-Shee++, moritz++, vorner++ and mdxi++. If you have time, do read it.</p>
+
+<p>I'll have to give the 'business case' train-of-thought a lot more time to mature before I can say anything coherent about it myself. But I'd like to say a bit more about notations.</p>
+
+<p>Perl 6 isn't truly revolutionary in a lot of respects. It's mostly lots and lots of minor improvements. (The exception being, I think, things surrounding grammars. Those are truly revolutionary.)</p>
+
+<p>What Perl 6 does do, is provide a 'strangely consistent' notation where a lot of thoughts, with practice, are easy to express. This is very much in the Perl spirit, and the main reason (according to me) to still call Perl 6 a language in the Perl family.</p>
+
+<p>The notational convenience really consists of a thousand little things, but here are a few haphazardly chosen examples:</p>
+
+<ul>
+<li>The prefix symbols <code>?</code>, <code>+</code> and <code>~</code> have been co-opted to signify conversion to the 'contexts' <code>Bool</code>, <code>Num</code> and <code>Str</code>, respectively. This parallels their use in binary (infix) operators specific to those contexts, such as <code>+</code>, <code>~</code>, <code>?&amp;</code>, <code>+&amp;</code>, and <code>~&amp;</code> </li>
+<li>The three short and common verbs <code>is</code>, <code>has</code> and <code>does</code> all do useful work in the OO system. Not only that, but they are a good fit for what they do, and summarize both established and modern OO research.</li>
+<li>Some syntactic/semantic features are re-used where you least expect it, reducing the total number of independent components in the language. The left-hand side of a list assignment uses the same signature mechanism as do routines. (I.e. the <code>(Bool $a, Int $b, Str $c)</code> in <code>my **(Bool $a, Int $b, Str $c)** = True, 42, 'foo';</code> is the same kind of beast as in <code>sub foo**(Bool $a, Int $b, Str $c)** { ... }</code>.) Smartmatching with <code>~~</code> is implicitly re-used in <code>when</code> expressions, and the <code>given</code>/<code>when</code> construct is re-used as the <code>CATCH</code> exception handling mechanism. And so on.</li>
+</ul>
+
+<p>It's things like these that I think make Perl 6 a convenient, attractive notation for thinking about programming. Seeing that notation come alive, and seeing people use it in cool new ways for amazing ends, is the main reason I spend time helping with Perl 6.</p>
+
+</article>
+
+  </body>
+</html>

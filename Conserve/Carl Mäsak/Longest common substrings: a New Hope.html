@@ -1,0 +1,103 @@
+http://strangelyconsistent.org/blog/longest-common-substrings-a-new-hope
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Longest common substrings: a New Hope :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-03-15T21:55:00+01:00" pubdate="pubdate">15 Mar, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/longest-common-substrings-a-new-hope">Longest common substrings: a New Hope</a></h1>
+  </header>
+
+  <p>Ok, here's my new runs for the p5 task of my Perl 6 Coding Contest. They do indeed paint a different picture.</p>
+
+<p>First off, what do I now consider to have gone wrong the first time around? Two things:</p>
+
+<ul>
+<li>The data was one-sided. It was synthetically generated from a small number of different characters, and so favored some algorithms to others.</li>
+<li>All the data for one algorithm was collected during one run of that program. That probably allowed for quite heavy measurement errors as memory usage increased (thus decreasing the speed) with each new measurement.</li>
+</ul>
+
+<p>With that in mind, the new measurements run each program anew. (But the timings are still done at runtime, so as not to penalize parsing.)</p>
+
+<p>Here's the data I used this time:</p>
+
+<pre><code>Mostly, we're just a bunch of ants all cooperating (sort of) to haul food
+toward the nest (on average). There are many groups of people working on
+various bits and pieces as they see fit, since this is primarily a volunteer
+effort.  This document does not attempt to summarize all these subprojects--see
+http://perl6.org for such information. What we can say here is that, unlike
+how it was with Perl 5, none of these projects is designed to be the Official
+Perl.
+
+It is my fond hope that those who are fond of Perl 5 will be fonder still of
+Perl 6. That being said, it's also my hope that Perl will continue trying to be
+all things to all people, because that's part of Perl too.  While I accept the
+RFC in principle (that is, I don't intend to go raving mad), I have some major
+caveats with it, because I think it is needlessly fearful that any of several
+programming paradigms will "take over" the design. This is not going to happen.
+</code></pre>
+
+<p>I did three runs. Run A did just the first sentence from each of the paragraphs. Run B did the first two sentences. Run C did the whole paragraphs.</p>
+
+<p>Here are the results. Again, lower is better, and the Y axis is logarithmic.</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/p5-plot-a.png"></p>
+
+<p><strong>Run A.</strong> colomon, fox, and moritz are doing fine down at the bottom, around 15-20 seconds.</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/p5-plot-b.png"></p>
+
+<p><strong>Run B.</strong> The players are spreading over the field. moritz pulls up slightly, fox a bit more.</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/p5-plot-c.png"></p>
+
+<p><strong>Run C.</strong> fox and util are gone; I didn't get any data from them. My guess is that they maxed out on memory and the OS killed their processes. (I only got 3 out of 10 data points for matthias, for what I guess are similar reasons, and 9 out of 10 data points due to a GC error.) That difference you see there between colomon and moritz corresponds to a factor of about two.</p>
+
+<p>I must say these results feel much better. Might have something to do with the algorithm actually fastest on paper now also being fastest in the graphs.</p>
+
+<p>Looking at the <a href="http://justrakudoit.wordpress.com/2011/03/09/more-on-masaks-p5/">statistics provided by colomon</a> I have this conclusion: if you ever find yourself with a choice between these five algorithms for comparing strings:</p>
+
+<ul>
+<li>Strings really short, as in &lt;30 characters? use fox's or moritz'.</li>
+<li>Strings shortish (&lt;100 characters) but DNA? use moritz' or colomon's.</li>
+<li>Strings long (>100 characters)? Use colomon's.</li>
+</ul>
+
+<p>So there we are. Stand by for the very exciting conclusion of this contest.</p>
+
+</article>
+
+  </body>
+</html>

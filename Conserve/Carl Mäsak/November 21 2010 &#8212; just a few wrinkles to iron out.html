@@ -1,0 +1,108 @@
+http://strangelyconsistent.org/blog/november-21-2010-just-a-few-wrinkles-to-iron-out
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 21 2010 &#8212; just a few wrinkles to iron out :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-22T03:58:00+01:00" pubdate="pubdate">22 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-21-2010-just-a-few-wrinkles-to-iron-out">November 21 2010 &#8212; just a few wrinkles to iron out</a></h1>
+  </header>
+
+  <p>227 years ago today, the brothers Montgolfier made their first untethered flight with human passengers in a <a href="http://en.wikipedia.org/wiki/History_of_ballooning#First_manned_flight">hot air balloon</a>.</p>
+
+<div class="quote">These brothers came from a family of paper manufacturers and had noticed ash rising in paper fires. [...] The first hot air balloons were essentially cloth bags (sometimes lined with paper) with a smoky fire built on a grill attached to the bottom. They were susceptible to catching fire, often upon landing, although this occurred infrequently.</div>
+
+<p>I wanted to know whether this was the <a href="http://en.wikipedia.org/wiki/First_flying_machine">first human flight</a> ever, and found a curious tale of a <a href="http://en.wikipedia.org/wiki/Abbas_Ibn_Firnas">Muslim scientist</a> attempting flight in the 9th century, though it's unclear to how large an extent he succeeded.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Hah! <a href="http://strangelyconsistent.org/blog/november-20-2010-leftmost-longest-whale-wins">Just as I thought</a>.</p>
+
+<pre><code>if $title {
+    return qq|&lt;a href="$url"&gt;$title&lt;/a&gt;|;
+} else {
+    return qq|&lt;a href="$url"&gt;$url&lt;/a&gt;|;
+}
+</code></pre>
+
+<p>See what's amiss? I'll give you a few seconds.</p>
+
+<p>Here's what's happening: through the various rules of string interpolation, all about which you can read in S02, the things interpolated above aren't <code>$url</code>, <code>$title</code>, <code>$url</code>, and <code>$title</code>. Instead, it's <code>$url</code>, <code>$title&lt;/a&gt;</code>, <code>$url</code>, <code>$url&lt;/a&gt;</code>. Of course that shouldn't happen, but it does, after jnthn++ <a href="https://github.com/rakudo/rakudo/commit/93fa3d5561df1122a32c3b6d985dc75394ad4d84">implemented better string interpolation</a> in the new Rakudo.</p>
+
+<p>Now the error message makes a lot of sense, doesn't it?</p>
+
+<pre><code>postcircumfix:&lt;{ }&gt; not defined for type Str()
+</code></pre>
+
+<p>(The reason it's <code>postcircumfix:&lt;{ }&gt;</code> and not <code>postcircumfix:«&lt; &gt;»</code> is that the latter, being a kind of syntactic sugar, delegates to the former.)</p>
+
+<p>So, what's the obvious fix? Trouble is, there isn't one. It's not that it's <em>hard</em> to fix, it's just that this problem is annoying to get in the first place. It's an unplesant surprise to get in the first place, and basically <em>everyone</em> who dabbles in interpolating strings with HTML tags will be bitten by this, sooner or later.</p>
+
+<p>Perhaps that will teach people not to roll their own HTML serialization. Hahaha. *sob*</p>
+
+<p>I'd describe this as <em>the one remaining wrinkle in string interpolation</em>. And probably one that we won't get around to ironing out. It's highly likely that we'll settle for providing one of those spot-on warnings that make Perl a joy to use, and move on with life.</p>
+
+<p>Oh, and the obvious fix, adding a backslash to break things up?</p>
+
+<pre><code>qq|&lt;a href="$url"&gt;$title\&lt;/a&gt;|
+</code></pre>
+
+<p>Won't work, due to a wonderful little invention called <em>unspace</em>, which is also very nice but which just happens to work against us in this particular instance. So the modified thing means exactly the same as without the backslash. [<strong>Update:</strong> No, I'm wrong, says TimToady++. It means exactly what it should mean, and fixes the problem. It's just that it's not <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=79568">implemented in Rakudo yet</a>.]</p>
+
+<p>Here are the real fixes:</p>
+
+<ul>
+<li>End the string, concat with a new one: <code>qq|&lt;a href="$url"&gt;$title| ~ '&lt;/a&gt;'</code></li>
+<li>Use curly braces around the troublesome variable: <code>qq|&lt;a href="$url"&gt;{$title}&lt;/a&gt;|</code></li>
+</ul>
+
+<p>The latter fix seems to be the one culturally winning out. Thing is, knowing to put them there in the first place is something you'll have to learn the hard way.</p>
+
+<p>Maybe I should make a shot at putting that warning into Rakudo. Along with a way for experienced users to switch it off in a lexical scope.</p>
+
+<p>Ok, <a href="https://github.com/viklund/november/commit/39ea975ced8ee0509b8f050574b292fc676d57b5">fixing that</a>. Next error:</p>
+
+<pre><code>Method 'page_tags_path' not found for invocant of class 'November;Tags'
+  in 'November::Tags::read_page_tags' at line 74:lib/November/Tags.pm
+  in 'November::Tags::page_tags' at line 142:lib/November/Tags.pm
+  [...]
+</code></pre>
+
+<p>Oooh. Now that looks interesting. And I have no idea why that would happen. Join us tomorrow, or some other day, in the exciting quest to find out.</p>
+
+</article>
+
+  </body>
+</html>

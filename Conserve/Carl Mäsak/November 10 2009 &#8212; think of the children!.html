@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/november-10-2009-think-of-the-children
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 10 2009 &#8212; think of the children! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-11T00:59:00+01:00" pubdate="pubdate">11 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-10-2009-think-of-the-children">November 10 2009 &#8212; think of the children!</a></h1>
+  </header>
+
+  <p>40 years ago today, a <a href="http://en.wikipedia.org/wiki/Sesame_Street">children's TV show</a>, which was to turn out to be very successful and educational to boot, debuted:</p>
+
+<div class='quote'><p>In Sesame Street's first season, the Educational Testing Service (ETS) reported that the cognitive skills of its young viewers had increased by 62%. They found that children who viewed the show the most often did 62% better at correctly recognizing a rectangle than less frequent viewers.</p></div>
+
+<p>How long before we see a children's show teaching programming?</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Since it's <a href="http://strangelyconsistent.org/blog/november-3-2009-doing-it-with-style-and-sophistication">Temporal Tuesday</a> today, I've been making commits on the <a href="http://github.com/masak/rakudo">temporal Rakudo fork</a>. Things are moving forward, if a bit slowly.</p>
+
+<p>The only challenging part today was <a href="http://github.com/masak/rakudo/commit/72fd37f7117461629a75807b447c0c0c5b707c4d">converting day-of-year to month and day-of-month</a>. I'm not sure I got that 100% right (i.e. need to write more tests); also, I cheated a bit and disregarded leap years for now. I have a feeling this detail might undergo some change before the dust lands. Still, I like the feature (specifying year and day-of-year), and can see its use in some situations. It's valid ISO 8601, just as all the other datetime formats I'm implementing.</p>
+
+<p>The reason I'm doing this work at all, is because I think the current way Rakudo handles dates and times is too bare-bones. I also think that adding a few convenience methods here and there to make it more useable out-of-the box — scratch that; I want to make it <em>super-simple</em> — is important, because most every semi-large application one writes will involve date and time. My argument boils down to not wanting to write</p>
+
+<pre><code>Temporal::DateTime.new(:date(Temporal::Date.new(:year(2010), :month(4), :day(1))), :time(Temporal::Time.new(:hour(0), :minute(0), :second(0))), :timezone(Temporal::Timezone::Observance.new(:offset(0), :isdst(False), :abbreviation(''))))
+</code></pre>
+
+<p>when I want to refer to April 1st, 2010. I'd prefer something like</p>
+
+<pre><code>DateTime.new('2010-04-01')
+</code></pre>
+
+<p>(You think the former syntax is a joke? Go look at the <a href="http://github.com/rakudo/rakudo/blob/master/src/setting/Temporal.pm">Rakudo source</a>!)</p>
+
+<p><strong>Update:</strong> and in no way whatsoever do I wish to blame mberends++, the chief author of Rakudo's current Temporal.pm. He's basically implemented things to spec... which is why the spec needs <a href="http://github.com/masak/temporal-flux-perl6syn/blob/master/S32-setting-library/Temporal.pod">changing</a>, too.</p>
+
+</article>
+
+  </body>
+</html>

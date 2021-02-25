@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/week-17-of-webpm-putting-druid-on-the-web
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 17 of Web.pm &#8212; putting Druid on the Web :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-10-12T06:00:00+02:00" pubdate="pubdate">12 Oct, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-17-of-webpm-putting-druid-on-the-web">Week 17 of Web.pm &#8212; putting Druid on the Web</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>OK so iz liek teh nites and Jesus camez out, and he iz srsly wlking ontop of teh waterz. Teh dscpls sawed him and ar scured and tehy sayed "OMG haxx!" But Jesus sez "O hai! Iz just me. lol." "Hay dood. dat u?" sez Peter, "I can comez ontop teh waterz plz?" "yah lol," sez Jesus. Den Peter camed ontop teh waterz and iz goes to Jesus. But Peter sawed teh windz and he got scareded and he fallz in teh waterz and wus liek "Halp! Invisible sidewalk! DO NOT WANT!" Jesus halps Peter and sez "U n00b, ur doin it rong. Why U not beleev?"</i> &#8212; Matthew 14:25-31</dd>
+</dl>
+
+<p>I decided to spend this week getting <a href="http://github.com/masak/druid">Druid</a> online. It's been a while since I spent tuits on Druid, but getting it into a web app has been a goal for a long time.</p>
+
+<ul>
+<li>What's the first time that greets a Perl 6 developer who has been away from a project for a few months? Bitrot. This time, it was <code>int()</code> and <code>infix:&lt;/&gt;</code> that needed to be <code>.Int</code> and <code>infix:&lt;div&gt;</code>, respectively.</li>
+<li>Next step was to make a game position survive from one web request to the next. We're not fortunate enough yet to have technology which lets us run the same Rakudo process for the whole lifespan of a web application. Instead, we start a new process for each web request. Consequently, the game state needs to be persisted somewhere.</li>
+<li>Now, <a href="http://strangelyconsistent.org/blog/week-16-of-webpm-more-squerl-work">Squerl</a> would be perfect for this: just make up a table and stick the game state in there. But I chose to do something simpler for the time being: write to file. That's what Squerl will have to do anyway. As the Druid web application grows, and needs to persist more things than just one game state, Squerl will naturally step up to buffer the added complexity.</li>
+<li>What, then, is running under the hood to make Druid show up as a web app? First off, it's using the core Web.pm interface with <code>Web::Request</code> and <code>Web::Response</code> to produce <a href="http://github.com/masak/druid/blob/master/lib/Druid/Webapp.pm">the actual web application</a>. This is working fairly well nowadays. Separate from this is a <a href="http://github.com/masak/druid/blob/master/bin/web-druid">small wrapper script</a> which connects the web app to a <code>Web::Handler</code>, an adapter to a specific webserver backend. In this case, we're using the handler <a href="http://github.com/masak/web/blob/master/lib/Web/Handler/HTTPDaemon.pm">Web::Handler::HTTPDaemon</a> which connects to mberends++' <code>http-daemon</code>. It's quite satisfying to see all that infrastructure in place to support creating a web app in a simple way.</li>
+<li>Oh, and I found another piece of bit rot in <code>Web::Handler::HTTPDaemon</code>: jnthn++ had recently fixed the bug where Rakudo thinks that <code>Callable &amp;foo</code> means that foo is <code>Callable</code>, rather than a <code>Callable</code> returning a <code>Callable</code> (or <code>Callable[Callable]</code> for short). So I <a href="http://github.com/masak/web/commit/c3b9264c9db8adf7920a6fb4c3a1846e581c27c7">fixed that</a>.</li>
+<li>I'm actually ready to have a small, really unimpressive live demo here. But alas, I feel I have run out of time. So the best thing I can do now is to give instructions for how to run the live demo at home. Basically, do this: <code>cd druid; bin/web-druid</code> — but for that to work, you'll need Druid, Web.pm and http-daemon, all available through proto. It's a good idea to precompile all three of them for speed reasons. When you run <code>bin/web-druid</code>, it'll tell you which URL to go to in order to play the game.</li>
+<li>Oh, and don't expect too much. The web app is very bare-bones right now. I'm kinda hoping people will recognize that it's a great game, and help improve the interface. Adding SVG would be kinda nice, for example.</li>
+</ul>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

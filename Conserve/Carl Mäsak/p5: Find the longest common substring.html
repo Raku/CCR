@@ -1,0 +1,178 @@
+http://strangelyconsistent.org/blog/p5-find-the-longest-common-substring
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>p5: Find the longest common substring :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-03-08T15:45:00+01:00" pubdate="pubdate">8 Mar, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/p5-find-the-longest-common-substring">p5: Find the longest common substring</a></h1>
+  </header>
+
+  <p><em>With another Yapsi release behind me, I now turn back to the last and much-awaited post to publish and summarize the solutions of the <a href="http://strangelyconsistent.org/blog/masaks-perl-6-coding-contest">Perl 6 coding contest</a>.</em></p>
+
+<p><strong>(Also, see the update near the end of the post. New findings have come in
+since it was originally written.)</strong></p>
+
+<pre class="quote"><code>&lt;masak&gt; colomon: from my perspective, just looking at the statistics,
+        it's clear who "won" p5.
+&lt;masak&gt; I think you'll agree.
+* moritz_ agrees
+&lt;colomon&gt; but you're not going to tell us yet?
+&lt;masak&gt; colomon: look at the statistics :)
+&lt;masak&gt; <a href='https://gist.github.com/853570'>https://gist.github.com/853570</a>
+&lt;colomon&gt; !!!!!!!!</code>
+</pre>
+
+<p>Oh man.</p>
+
+<p>p5 didn't <em>look</em> hard to judge, not like p4. But after having gone through
+all the preparation for this post, I'd say it's just about comparable. Sorry
+for delaying this post; it turns out I needed a several-day hackathon to even
+find the time to write it. But here we go.</p>
+
+<p>Here's the problem description for p5:</p>
+
+<pre><code>== Find the longest common substring among two long strings
+
+The two strings "otherworldlinesses" and "physiotherapy" have many substrings
+in common, for example "s", "ot", and "ther", but only "other" is a longest
+common substring of the two strings.
+
+Your goal is to find a longest common substring of two long strings. You
+only need to find one; if there should be several longest common substrings,
+stopping after finding the first one is fine.
+
+Note that as the length of both strings grows, a naive algorithm will perform
+very badly. Pretend that the use case for this problem is something that
+would benefit from a fast solution, such as identifying common regions between
+two long DNA sequences.
+</code></pre>
+
+<p>Leafing through the solutions, we see that they fall into three classes:</p>
+
+<dl>
+  <dt>Brute-force</dt>
+  <dd>The algorithm loops through every possible combination of positions in
+      the two strings, checking the length of the two common substrings
+      starting from those positions.</dd>
+
+  <dt>DP/table-driven</dt>
+  <dd>The algorithm keeps a table of the lengths we've seen so far, building
+      new rows of the table from old rows.</dd>
+
+  <dt>Suffix tree</dt>
+  <dd>The algorithm concatenates the two strings, builds a suffix tree in
+      linear time from the concatenated string, and then uses the scary
+      voodoo of suffix trees to just pluck out the LCS in linear time.</dd>
+</dl>
+
+<p>matthias does the brute-force one. fox, moritz_, and Util do a table-driven
+thing with varying degrees of additional tricks applied. colomon goes all-out
+with the suffix tree.</p>
+
+<p>Now let's get one thing clear. The brute-force algorithm is bad, basically
+cubic in time complexity because there is one nested loop per string, and then
+one more for iterating through the common substring. The table-algorithm is
+quadratic, because... well, because it's a two-dimensional table. The suffix
+tree solution is linear. So it should be clear that colomon won this one
+based on algorithmic niceness.</p>
+
+<p>And then we turn to <a href="https://gist.github.com/853570">the statistics</a>. Oh man.</p>
+
+<p>The three columns respectively contain the string lengths tested, whether there
+was a common substring, and the time in seconds the algorithm took. Let's
+summarize what the statistics tell us.</p>
+
+<ul>
+<li>fox and Util's algorithms end up being the slowest ones. Expected, since they're cubic.</li>
+<li>moritz's algorithm is doing quite well against colomon's, which is a surprise. Two factors seem to play out here: for smaller values, moritz's algorithm has less setup to do. And then for larger values, colomon's algorithm is quite GC heavy. Somewhere in the middle, colomon's algorithm wins.</li>
+<li>matthias's algorithm just blows all the others out of the water.</li>
+</ul>
+
+<p>Here, I made a graph to show the general trends:</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/p5-runtimes.png"></p>
+
+<p>Reading this graph, keep in mind that the Y axis is logarithmic, so straight
+line trends in the graph translate into exponential trends in the data. (Which
+is kinda what we expect, since the strings keep doubling in length, and we
+don't expect to get off cheaper than linear.) But having trends as approximate
+lines allows us to estimate the time complexity of each algorithm by looking at
+the slope of the lines.</p>
+
+<p>Doing that, we observe a couple of things:</p>
+
+<ul>
+<li>fox, moritz, and util seem to have about the same slope. This conforms
+to theory.</li>
+<li>colomon's trend starts higher up, but is less steep. It looks a wee bit
+bent, which is either an illusion or due to the weight of the objects
+created.</li>
+<li>matthias's algorithm just blows all the others out of the water.</li>
+</ul>
+
+<p>I'd summarize things like this: colomon wins the moral victory in formulating
+the most scalable algorithm on paper. matthias, however, puts the fastest
+algorithm on the table.</p>
+
+<p>I'm loath to let the moral of this be "ignore theory". I think under some
+circumstances, colomon's algorithm would overtake matthias's. I'm not sure
+those circumstances can be acheived on Rakudo, though. Already in preparing
+these statistics, I started hitting upon the limits of what Rakudo can handle.</p>
+
+<p>Maybe the message should instead be that while <em>O()</em> is a fine tool, those
+little constants that the notation abstracts away really do matter when it
+comes to the practical application of algorithms. And that settling on an
+algorithm before benchmarking for those little constants counts as premature
+optimization.</p>
+
+<p><strong>Update: Seems I was using terribly one-sided data. colomon++ has the scoop
+<a href="http://justrakudoit.wordpress.com/2011/03/09/benchmarking-p5/">here</a> and
+<a href="http://justrakudoit.wordpress.com/2011/03/09/more-on-masaks-p5/">here</a> &mdash;
+essentially, the landscape is much more detailed than the above statistics
+reveal. I expect to be doing a followup post myself, if for no other reason
+than to make a new diagram and to re-assess people's algorithms.</strong></p>
+
+<p>I'll leave it at that. Please also see <a href="http://strangelyconsistent.org/p6cc2010">my
+reviews</a> of the solutions.</p>
+
+<p>I'm supposing you're all expecting a winner at this point. I'll give it a
+day or two of deep thought (and preparation), and then I'll post an
+announcement.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,65 @@
+http://strangelyconsistent.org/blog/e03-the-modern-pragmatic-honest-version-with-corners-cut
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>E03, the modern, pragmatic, honest version, with corners cut :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-02-20T01:30:00+01:00" pubdate="pubdate">20 Feb, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/e03-the-modern-pragmatic-honest-version-with-corners-cut">E03, the modern, pragmatic, honest version, with corners cut</a></h1>
+  </header>
+
+  <p>I was a bit optimistic with time. So what else is new.</p>
+
+<p>Anyway, various distractions such as $WORK kept interrupting my translation of E03 today, but now I've finally got it all ported to modern Rakudo-Perl 6. <a href="http://gist.github.com/309333">Here it is</a>. Two biggish things remain:</p>
+
+<ol>
+<li>I haven't tried running the code. I'm pretty sure it won't run on the new Rakudo master yet. But I've written it with alpha (the old development branch) in mind, and it should run there.</li>
+<li><p>I haven't looked at <a href="http://lastofthecarelessmen.blogspot.com/2010/02/e03-first-stab.html">SF's E03 translation</a> yet. (Yes, I'm linking to a blog entry which I haven't read yet.) I saw that the title of his post is "first stab", which makes me feel a little better.</p>
+
+<p>Here are a few random comments about the code. </p></li>
+<li><p>The original code in E03 is the strangest example code I've ever read. All due props to Damian, but... quod? A program whose task it is to "locate a particular data file in one or more directories, read the first four lines of each such file, report and update their information, and write them back to disk"? Come again? (My suspicion is that this was the program arrived at by simply cramming in as much of A03 as possible into the same piece of code, but nevermind.)</p></li>
+<li>A few nice things are still missing from Rakudo. The <code>s{}{}</code> syntax is the last still unimplemented request in an <a href="http://strangelyconsistent.org/blog/rakudo-good-cool-awesome-bad-ugly-weird">old blog post</a> of mine. It'd be pretty nice to have. I think we'll have it soon, thanks to ng.</li>
+<li>You can't open files <code>rw</code> in Rakudo. Then again, you can't <code>seek</code> or <code>truncate</code> them either, so I guess opening them <code>rw</code> wouldn't make much sense anyway. Due to this, I had to work around a central part in the program, where filehandles were stored in a hashtable, to be read from in one subroutine and written to in the next one. Had to store the filenames instead, and re-open the files for writing.</li>
+<li>We don't have the <code>:r</code> and <code>:w</code> filetests yet, but <code>:e</code> and (strangely enough) <code>:s</code> are implemented. Someone with tuits should really do <code>:r</code> and <code>:w</code>.</li>
+<li>A fair amount of the updates in E03 are out-of-date. I guess operators and related things are an area where Perl 6 really has evolved a lot in the past few years, or even in the past year. As I speak, the exact semantics for <code>infix&lt;...&gt;</code> is still being discussed on #perl6.</li>
+<li>When I say things have changed around a lot, I should really mention that I say that with a sort of relief of the sort that means "gee, I'm glad we didn't stick to what we thought we wanted back then!". Things have, by and large, improved greatly. I actually hope to write more about that.</li>
+</ol>
+
+<p>This exigesis-modernising is kinda fun! Now I'm eager to go read what SF++ has been up to.</p>
+
+</article>
+
+  </body>
+</html>

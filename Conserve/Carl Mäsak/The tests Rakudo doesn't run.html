@@ -1,0 +1,67 @@
+http://strangelyconsistent.org/blog/the-tests-rakudo-doesnt-run
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The tests Rakudo doesn't run :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-05-09T17:03:00+02:00" pubdate="pubdate">9 May, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-tests-rakudo-doesnt-run">The tests Rakudo doesn't run</a></h1>
+  </header>
+
+  <p>Just a short note.</p>
+
+<p>After an <a href="http://irclog.perlgeek.de/perl6/2010-05-05#i_2295885">enlightening discussion with mberends</a> a couple of days ago, I became curious about how many spectests Rakudo <em>doesn't</em> run.</p>
+
+<p>So I wrote a short script which takes a list of all spectest <code>.t</code> files, a list of all the files mentioned in Rakudo's <code>t/spectest.data</code> (including the commented-out ones), and did hash subtraction on them.</p>
+
+<p>By the way, a common Perl 5 idiom in this situation is difficult to do in Rakudo, because some blocks are still erroneously parsed as hashes:</p>
+
+<pre><code>$ perl6
+&gt; my @array; my %hash = map { $_ =&gt; 1 }, @array;
+No candidates found to invoke
+&gt; say { $_ =&gt; 1 }.WHAT
+Hash()
+</code></pre>
+
+<p>Working around this, I arrived at the number 185. That's out of a total of 722. Here's the <a href="http://gist.github.com/395182">whole list</a>.</p>
+
+<p>Not too surprisingly, upon showing this list to #perl6, <a href="http://irclog.perlgeek.de/perl6/2010-05-09#i_2311203">I was quickly informed</a> (by the ever-knowledgeable moritz++) that there's already <a href="http://github.com/rakudo/rakudo/blob/master/tools/update_passing_test_data.pl">a Rakudo tool script</a> which processes exactly this list of tests, and prints the much more useful subset of files with at least one test passing, thus being eligible for inclusion into <code>t/spectest.data</code>.</p>
+
+<p>I hope to be able to explore the spectest suite further, in my copious spare time. My long-term goal is to create alluring SVG graphs over the tests currently passing in Rakudo master, Rakudo alpha, and Pugs.</p>
+
+</article>
+
+  </body>
+</html>

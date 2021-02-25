@@ -1,0 +1,96 @@
+http://strangelyconsistent.org/blog/the-c-flag
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The -c flag :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-12-28T21:49:17+01:00" pubdate="pubdate">28 Dec, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-c-flag">The -c flag</a></h1>
+  </header>
+
+  <p>The p6cc contest is underway. Yay.</p>
+
+<p>[Coke]++ discovered on the channel that Rakudo nom didn't have a <code>-c</code> flag. The five <code>base-test</code> files all syntax-check the corresponding <code>code</code> files using the <code>-c</code> flag. Which made Rakudo nom and the <code>base-test</code> files incompatible. Oh noes.</p>
+
+<pre><code>&lt;moritz&gt; moritz-- # not reviewing the test harness properly
+</code></pre>
+
+<p>The fault is even more mine, of course, since I <em>wrote</em> the test harness. And I may be an "early adopter" with Perl 6, but I'm always very late at switching over to a new Rakudo branch.</p>
+
+<p>I was late at switching over to <code>ng</code>, back when it was still called <code>ng</code>. And I'm late this time in switching over from <code>b</code> (the new name for <code>ng</code>, since the <code>n</code> stands for "new" and <code>ng</code> isn't new anymore) to <code>nom</code> (the new "new").</p>
+
+<p>I'll take the leap any day now, I promise.</p>
+
+<p>moritz++ was quick in patching up the <code>-c</code> omission.</p>
+
+<pre><code>&lt;dalek&gt; rakudo/nom: a9bead6 | moritz++ | src/ (2 files):
+&lt;dalek&gt; rakudo/nom: reimplement -c command line option
+&lt;dalek&gt; rakudo/nom: review: https://github.com/rakudo/rakudo/commit/a9bead6d48
+&lt;moritz&gt; masak: there you go
+&lt;masak&gt; moritz++
+</code></pre>
+
+<p>What this means in practice is: you can't use the latest Rakudo nom compiler release to solve the p6cc problems. Not without modifying the <code>base-test</code> files anyway. But you <em>can</em> use the bleeding-edge git checkout of the nom branch.</p>
+
+<p>If you're on either Niecza or Rakudo b, things should be fine: those have a working <code>-c</code> flag already.</p>
+
+<p>Those are the breaks. Perl 6 is evolving, and the mat is constantly being pulled out from under us. To keep up, one has to do a jig now and then.</p>
+
+<p>We added a <a href="http://strangelyconsistent.org/p6cc2011/NOTES"><code>NOTES</code></a> file to keep track of information of this kind that we didn't manage to get into the contest instructions.</p>
+
+<p>On the channel, we also had some nice concluding discussion about the nature of the <code>-c</code> flag.</p>
+
+<pre><code>&lt;moritz&gt; to me it felt a bit like a cheat
+&lt;moritz&gt; because there is already some mechanism for specifying the target stage
+&lt;moritz&gt; but it's too tightly coupled to the output from the existing stages to
+         be easily usable
+&lt;moritz&gt; so I feel like hijacking an existing mechanism
+&lt;masak&gt; I guess.
+&lt;masak&gt; in some sense, "checking syntax" isn't so much of a compiler stage as...
+        a decision not to go past a certain compiler stage.
+&lt;TimToady&gt; in a sense, -c adds the final CHECK, that just exits with status
+&lt;masak&gt; right.
+&lt;TimToady&gt; it can even be implemented that way, since CHECKS do lifo order
+&lt;masak&gt; "everything turns out to be yet another setting" :)
+&lt;TimToady&gt; yes, it could also be done with a variant setting, but that seems
+           a bit heavyweight
+&lt;TimToady&gt; otoh, it would be possible to sneak CHECK pushes in before the -c,
+           so maybe a setting is the cleaner way
+</code></pre>
+
+</article>
+
+  </body>
+</html>

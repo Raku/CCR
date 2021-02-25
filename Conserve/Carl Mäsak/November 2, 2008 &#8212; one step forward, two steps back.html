@@ -1,0 +1,62 @@
+http://strangelyconsistent.org/blog/november-2-2008-one-step-forward-two-steps-back
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 2, 2008 &#8212; one step forward, two steps back :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-03T00:21:00+01:00" pubdate="pubdate">3 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-2-2008-one-step-forward-two-steps-back">November 2, 2008 &#8212; one step forward, two steps back</a></h1>
+  </header>
+
+  <p>Twenty years ago today, the <a href="http://en.wikipedia.org/wiki/Morris_worm">Morris worm</a>, was launched from MIT. Never meant to cause any serious harm, it nevertheless had a massive effect on the Internet at that time, got a lot of media attention, and resulted in the convicion of its inventor. The Wikipedia article explains:</p>
+
+<blockquote><div><p>The critical error that transformed the worm from a potentially harmless intellectual exercise into a virulent denial of service attack was in the spreading mechanism. The worm could have determined whether or not to invade a new computer by asking if there was already a copy running. But just doing this would have made it trivially easy to kill; everyone could just run a process that would answer "yes" when asked if there was already a copy, and the worm would stay away. The defense against this was inspired by Michael Rabin's mantra, "Randomization." To compensate for this possibility, Morris directed the worm to copy itself even if the response is "yes", 1 out of 7 times. This level of replication proved excessive and the worm spread rapidly, infecting some computers multiple times. Rabin remarked when he heard of the mistake, that he "should have tried it on a simulator first."</p></div></blockquote>
+
+<p>Those were more innocent times indeed. Nowadays, worms and botnets are a global phenomenon, and a lucrative business for those not encumbered by a conscience.</p>
+
+<p>&#x2766;</p>
+
+<p>Today I've been submitting bug reports and making the occasional patch to Rakudo, but it didn't feel big enough for a good deed. Thus I turned to November, and brought the <code>mediawiki-markup</code> branch up to speed. I was going to start actually implementing stuff when I ran <code>./test_wiki.sh</code> and got the error "Unrecognized directive: TMPL_VAR".</p>
+
+<p>The offending statement was <a href="http://github.com/viklund/november/tree/43ac68be3d1dc1959aebf78018694ea052cb092b/p6w/HTML__Template.pm#L40">this one</a>, which of course should never die with that error message, by the rules of basic logic.</p>
+
+<p>This is something that worked before. A regression in Rakudo. And dang, it affects the <code>master</code> branch as well. (Of course.)</p>
+
+<p>So, I worked around that, adding another '# RAKUDO' comment. But the time spent for actual coding was used for tracking down this error, so actual improvements will have to wait till another day. Report from the front: everything takes at least twice as long as you'd expect, <a href="http://en.wikipedia.org/wiki/Hofstadter's_law">even when you're prepared for exactly that</a>.</p>
+
+</article>
+
+  </body>
+</html>

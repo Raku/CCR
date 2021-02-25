@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/november-18-2009-the-history-mystery
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 18 2009 &#8212; the history mystery :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-19T00:55:00+01:00" pubdate="pubdate">19 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-18-2009-the-history-mystery">November 18 2009 &#8212; the history mystery</a></h1>
+  </header>
+
+  <p>146 years ago today, King Christian IX of Denmark signs the so-called <a href="http://en.wikipedia.org/wiki/History_of_Schleswig-Holstein#The_November_Constitution">November constitution</a> that declares Schleswig to be part of Denmark. As a consequence, Germany attacks to reclaim that area a few months later.</p>
+
+<div class='quote'><p>Denmark's new king, Christian IX, was in a position of extraordinary difficulty. The first sovereign act he was called upon to perform was to sign the new constitution. To sign was to violate the terms of the London Protocol which would probably lead to war. To refuse to sign was to place himself in antagonism to the united sentiment of his Danish subjects, which was the basis of his reign. He chose what seemed the lesser of two evils, and on November 18 signed the constitution.</p></div>
+
+<p>So, wow, it turns out there's this whole <a href="http://en.wikipedia.org/wiki/Schleswig-Holstein_Question">Schleswig-Holstein Question</a> of which, despite thorough history schooling, I was previously completely unaware. I will spend some time reading up on it, as well as trying to say "Schleswig-Holstein Question" many times in a row, as rapidly as possible.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Ok, hm. So today, in order to fix <a href="http://github.com/viklund/november/issues#issue/10">lichtkindbug 10</a>, I added back the <a href="http://github.com/viklund/november/commit/8075afb2390f598a3f8e3ff20c476677766665f0">view history</a> action into November. I say "added back", because all signs indicate that it had been there before. All the plumbing necessary to do a history action was there, and I only needed to write the method.</p>
+
+<p>(No, I haven't done any source code archeology thing with <code>git log</code> and <code>git blame</code>. Yes, I probably should.)</p>
+
+<p>However, when I'd done this, and compiled, <a href="http://november-wiki.org/history/Perl">it still fails</a>. And in exactly the same way.</p>
+
+<p>I have a feeling there's something I'm missing here. Do I need to add the new 'history' action somewhere else in the system? I don't think so. The Dispatcher should just use the new action directly.</p>
+
+<p>In other words, what could have been a ridiculously easy addition turned into a mystery instead, whose solution will inevitably have to come another day. Oh well.</p>
+
+</article>
+
+  </body>
+</html>

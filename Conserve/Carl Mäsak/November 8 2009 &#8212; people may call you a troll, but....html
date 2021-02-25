@@ -1,0 +1,85 @@
+http://strangelyconsistent.org/blog/november-8-2009-people-may-call-you-a-troll-but
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 8 2009 &#8212; people may call you a troll, but... :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-08T21:39:00+01:00" pubdate="pubdate">8 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-8-2009-people-may-call-you-a-troll-but">November 8 2009 &#8212; people may call you a troll, but...</a></h1>
+  </header>
+
+  <p>489 years ago today, the <a href="http://en.wikipedia.org/wiki/Stockholm_Bloodbath">Stockholm Bloodbath</a>, an invasion of Sweden by Danish forces, had its quiet beginnings:</p>
+
+<div class='quote'><p>At dusk (November 8), Danish soldiers, with lanterns and torches, broke into the great hall and carried off several people. Later in the evening, the remainder of the king's guests were imprisoned. All these people had previously been marked down on Archbishop Trolle's proscription list.</p></div>
+
+<p>Nowadays, Trolle is known by Swedish children as <a href="http://www.last.fm/music/Trolles+Trafikskola">a traffic-teaching troll</a>.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Here's the scene that I left the reader with <a href="http://strangelyconsistent.org/blog/november-7-2009-hasten-the-process-of-debranchification">yesterday</a>.</p>
+
+<pre><code>$ ./proto install november
+Downloading november...downloaded
+Downloading html-template...downloaded
+Building html-template...configure failed, see /Users/masak/gwork/proto/cache/html-template/make.log
+Building november...configure failed, see /Users/masak/gwork/proto/cache/november/make.log
+Installing html-template...Method 'protected-files' not found for invocant of class 'Ecosystem'
+in Main (file src/gen_setting.pm, line 324)
+</code></pre>
+
+<p>So, checking on that first problem, of the two projects' builds failing. Opening a make.log file, I see</p>
+
+<pre><code>Couldn't find perl6.pbc file in /Users/masak/gwork/rakudo/parrot_install/lib/1.7.0-devel/languages/perl6/lib, have you compiled?
+</code></pre>
+
+<p>Yes, I have compiled. But just to make sure, I remove the <code>rakudo</code> directory and compile again.</p>
+
+<p>Nope, same error. Time to find out why.</p>
+
+<p>Hm, an even stranger thing: the command that fails, <code>perl Makefile.PL</code>, has nothing to do with Perl 6. When I run it, I get</p>
+
+<pre><code>Please set $PARROT_DIR (see README).
+</code></pre>
+
+<p>Which is an error I understand, and can probably fix.</p>
+
+<p>But the mystery right now is, why am I getting a different error through proto, and where is it coming from?</p>
+
+<p>Exhaustion prevents me from properly addressing that question. Will try again soon.</p>
+
+</article>
+
+  </body>
+</html>

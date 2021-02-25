@@ -1,0 +1,117 @@
+http://strangelyconsistent.org/blog/i-can-haz-constant
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>I can haz constant? :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-04-22T15:31:00+02:00" pubdate="pubdate">22 Apr, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/i-can-haz-constant">I can haz constant?</a></h1>
+  </header>
+
+  <p>Let's try this format. Mixing #perl6 IRC logs with more detailed explanations, sort of like a movie and a commentator track.</p>
+
+<pre><code>&lt;masak&gt; over lunch, since I'm so into scoping of different kinds right now, we got to talking about class-bound variables again. my colleague jonalv, whose home language is Java, thought that it was a shocking omission not to have class-based variables.
+&lt;masak&gt; I explained how 'my' and 'our' didn't do what was intended, since lexpads and packages are orthogonal to OO inheritance.
+</code></pre>
+
+<p>"Orthogonal" is quickly becoming one of my favourite terms in language design. It doesn't mean "at an angle of ninety degrees", but rather "along independent dimensional axes", that is, "not having anything to do with one another".</p>
+
+<p>The two things that are orthogonal here are ordinary variable scoping on the one hand, and (method) inheritance on the other. In particular, a deriving class typically isn't lexically nested inside its base class, nor is it a subpackage of it, not even in the case of <code>A::B</code> deriving from <code>A</code>. (Unless they're nested in code, but in the general case they aren't.)</p>
+
+<pre><code>&lt;masak&gt; when I talked about 'state' variables, he was a bit mollified and admitted that the need wasn't as great for class-bound variables.
+&lt;masak&gt; and when I explained about the non-need for class-level methods due to type objects, I had almost convinced myself that we don't need class/static variables :)
+&lt;masak&gt; but one use case that I can see is something akin to a constant defined in a class, which ought to be reachable from all its methods and the methods in derived classes.
+</code></pre>
+
+<p>When I learned about <code>static</code> fields in Java, even the examples were contrived. They looked much like this:</p>
+
+<pre><code>class Car { // this is Java code
+    static long cars_produced = 0;
+
+    public Car() {
+        ++cars_produced;
+    }
+}
+</code></pre>
+
+<p>Here's where Perl 6's <code>state</code> initializer feels a <em>little</em> bit like Java's <code>static</code> scope declarator.</p>
+
+<pre><code>class Car { # this is Perl 6 code
+    submethod BUILD() {
+        state $cars-produced = 0;
+        ++$cars-produced;
+    }
+}
+</code></pre>
+
+<p>In both pieces of code above, the variable counting all the cars ever produced since the beginning of the program will begin at 0 and increase by one every time we construct a new car.</p>
+
+<p>However, the visibility is different. In Perl 6, the variable is only visible inside the <code>BUILD</code> submethod. If we want all methods to see it, we'll have to move it out to the larger class scope. (And then we don't need <code>state</code>, because the class block is only run once. We can use <code>my</code> to tie it to the lexical class block, or <code>our</code> to tie it to the class package. In the latter case, it can be referred to from the outside as <code>Car::cars-produced</code>.)</p>
+
+<p>But that <em>still</em> doesn't give us the inheritance that we like to associate with classes. The Java code would keep ticking up cars even if we derived a <code>RollsRoyce</code> class from <code>Car</code>, as long as we called <code>super()</code> from within the <code>RollsRoyce</code> constructor. The Perl 6 code will behave the same (and automatically) since we put our initialization in the <code>Car.BUILD</code> submethod, which would get called by <code>RollsRoyce.BUILDALL</code>. But in Perl 6, we can only <em>see</em> the variable when inside <code>Car</code>, not when inside <code>RollsRoyce</code>. Java doesn't have this issue.</p>
+
+<p>Excuse the crappy non-real-life example. 哈哈 But two more realistic use cases bring us back to the IRC discussion in question.</p>
+
+<p>The first is one or more constants that a class might want to share with its deriving classes. That feels pretty natural. The second is enums, which are basically constants packaged in a convenient form.</p>
+
+<p>I like throwing out items for discussion like this on #perl6. You never know who will pick them up, but I usually learn something from them, and sometimes the spec even gets improved as a result. This time, TimToady replied:</p>
+
+<pre><code>&lt;TimToady&gt; std: has constant $.pi = 3;
+&lt;p6eval&gt; std 30419: OUTPUT«ok 00:01 110m␤»
+&lt;jnthn&gt; o.O
+&lt;TimToady&gt; masak++ was conjecturing class-based constants, but it already falls out
+&lt;TimToady&gt; in fact, that was one of the reasons the constant declarator moved from being a scope_declarator to being a type-declarator, so we could use it in arbitrary scopes
+</code></pre>
+
+<p>Well, that does take care of the constants use case. Nice! You use <code>has</code> and twigils to get you the inheritance behaviour. Why didn't I think of that?</p>
+
+<p>Here's why I think it's extra nice: rather than make this an issue of scoping and visibility, the <code>has constant</code> construct makes it an issue of <em>immutability</em>. Given this information, the compiler is free to optimize as much as it can, but (unlike Java) we never had any need to invent a "class level" scope, where static things are stored. That aligns with the rest of Perl 6; we don't have 'static methods' either, for example — but you can achieve much the same things through other means.</p>
+
+<pre><code>&lt;masak&gt; TimToady: 'has constant' still makes me happy. what's my best solution if I want to do something similar with an enum? (i.e. share it between a class and all its descendants.) enum is also a type declarator, but the name doesn't have a twigil...
+[...]
+&lt;TimToady&gt; masak: testing a patch for 'has enum $.meth &lt;foo bar&gt;'
+&lt;masak&gt; TimToady: \o/
+</code></pre>
+
+<p>I love it when existing parts of the design just melt together into something even more useful than the sum of its constituent parts. The fact that I can be part of that process makes the work on Perl 6 feel much less like work and much more like an adventure.</p>
+
+<p>So now, I can haz constant! And enums! I expect they will come in handy, especially since I will be on the lookout for possible uses for them.</p>
+
+<p>As for class-based <em>variables</em>, Perl 6 still doesn't have them. I don't see a similarly good way to add them to the language. On the other hand, I also don't have a better use case for them than that crappy <code>Car</code> example.</p>
+
+</article>
+
+  </body>
+</html>

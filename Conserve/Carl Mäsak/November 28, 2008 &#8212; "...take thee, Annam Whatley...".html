@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/november-28-2008-take-thee-annam-whatley
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 28, 2008 &#8212; "...take thee, Annam Whatley..." :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-29T00:52:00+01:00" pubdate="pubdate">29 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-28-2008-take-thee-annam-whatley">November 28, 2008 &#8212; "...take thee, Annam Whatley..."</a></h1>
+  </header>
+
+  <p>426 years ago today, William Shakespeare and <a href="http://en.wikipedia.org/wiki/Anne_Hathaway_(Shakespeare">Anne Hathaway</a>) paid a £40 bond for their marriage license. He 18, she 26 and pregnant. This has led some historians to speculate that perhaps this was a <a href="http://en.wikipedia.org/wiki/Shotgun_wedding">shotgun wedding</a>. <a href="http://en.wikipedia.org/wiki/Anne_Hathaway_(Shakespeare">Wikipedia</a>):</p>
+
+<blockquote><div><p>The argument was apparently supported, though, by documents from the Episcopal Register at Worcester, which records in Latin the issuing of a wedding licence to "Wm Shaxpere" and one "Annam Whatley" of Temple Grafton. The day afterwards, Fulk Sandells and John Richardson, relatives of Hathaway from Stratford, signed a surety of &#163;40 as a financial guarantee for the wedding of "William Shagspere and Anne Hathwey". Frank Harris, in The Man Shakespeare (1909), argues that these documents are evidence that Shakespeare was involved with two women. He had chosen to marry Whatley, but, when this became known, he was immediately forced by Hathaway's family to marry their pregnant relative. According to the Oxford Companion to Shakespeare, most modern scholars take the view that the name Whatley was "almost certainly the result of clerical error".</p></div></blockquote>
+
+<blockquote><div><p>Germaine Greer argues that the age difference between Shakespeare and Hathaway was typical of couples of their time. Women such as the orphaned Hathaway often stayed at home to care for younger siblings and married in their late twenties, often to younger eligible men. Furthermore, a "handfast" marriage and pregnancy were frequent precursors to legal marriage at the time. Shakespeare, certainly, was bound to marry Hathaway, having made her pregnant, but there is no reason to assume that this had not always been his intention. It is likely that the respective families of the bride and groom had known one another.</p></div></blockquote>
+
+<p class='separator'>&#10086;</p>
+
+<p>Back on MediaWiki markup again. Started out on the parsing of italic and bold text; made a solution using regexes that I'm almost certain won't take me the whole way.</p>
+
+<p>This is actually a situation where regexes are especially badly suited, as far as I can see. Or rather, successively transforming the same string with one regex after the other is kind of a dead end in this case. I would advise anyone who doubts this to take a look at <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w/t/markup/mediawiki/07-italic-and-bold.t">the tests</a> and try to mentally concieve of a series of regex transforms that will satisfy those tests. ☺</p>
+
+<p>Instead, I will probably build a simple tokenizer (which perhaps uses regexes in some way), because tokens are much easier to handle than text. Whatever the final solution, it will almost surely have to iterate through the stream of tokens, flip bits for italic and bold text, and watch out for all the mis-nesting pitfalls.</p>
+
+<p>4 tests out of 14 pass by this naïve approach. Let's see if I can make us less naïve tomorrow.</p>
+
+<p>Also, today pmichaud++ said he's going to start working on array assignment. Another improvement in which to bask.</p>
+
+</article>
+
+  </body>
+</html>

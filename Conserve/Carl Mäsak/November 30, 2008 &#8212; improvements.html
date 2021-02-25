@@ -1,0 +1,85 @@
+http://strangelyconsistent.org/blog/november-30-2008-improvements
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 30, 2008 &#8212; improvements :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-12-01T01:28:00+01:00" pubdate="pubdate">1 Dec, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-30-2008-improvements">November 30, 2008 &#8212; improvements</a></h1>
+  </header>
+
+  <p>136 years ago today, the first <a href="http://en.wikipedia.org/wiki/Scotland_v_England_(1872">international soccer match</a>) was played. Scotland versus England. There's a <a href="http://en.wikipedia.org/wiki/Image:England_v_Scotland_(1872">drawing</a>.jpg), which reveals that at this early time, soccer was played by hobgoblins and elves. <a href="http://en.wikipedia.org/wiki/Scotland_v_England_(1872">Wikipedia</a>#The_match):</p>
+
+<blockquote><div><p>The Scots had a goal disallowed in the first half after the umpires decided that the ball had cleared the tape which was used before crossbars were introduced. [...] Scotland would come closest to winning the match when, in the closing stages, a Robert Leckie shot landed on top of the tape which was used to represent the crossbar. At some point in the game, the England goalkeeper, Robert Barker, decided to join the action outfield when he switched places with William Maynard.</p></div></blockquote>
+
+<p>The match finished 0-0.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>After blogging yesterday, I stayed up all night programming. Repeatedly attacking the problem of parsing mis-nested italics and bold tags, I made more and more tests pass. When I had to give up from exhaustion and go to bed, three tests still failed.</p>
+
+<p>Today I woke up and continued. Now all fourteen tests in <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w/t/markup/mediawiki/07-italic-and-bold.t">07-italic-and-bold.t</a> pass. What follows is a short summary of the four components in <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w/Text/Markup/Wiki/MediaWiki.pm">Text::Markup::Wiki::MediaWiki</a> that accomplish this, with an eye to Perl 6 features which made the job easier.</p>
+
+<p>First, a tokenizer picks apart a line of text, separating "just text" from tokens with special meaning, such as <code>''</code> and <code>'''</code>. Note that a tokenizer doesn't care about hierarchical structure; it just dispassionately records the order in which the tokens arrive. A small grammar takes away the pain of iterating manually through the string. Yay Perl 6!</p>
+
+<p>Second, the tokens are traversed in a <code>for</code> loop, and acted upon one by one. "Just text" passed through unharmed, whereas the special tokens changed the state of the traversal mechanism in some way. My goal with this loop was to carry enough state that I wouldn't have to care about anything except for the state and the current token. (For example, I didn't want to post-process the text that I had already output.) I don't know if this type of design is called something, but that seemed wise. Because of this, I could create the final result with a <code>given</code> block.</p>
+
+<p>Third, the part of state that kept track of which styles I had already enabled in the current position in the token stream. It's a stack (<code>@style_stack</code>), because I have to disable styles in reverse order. The nasty parts of this algorithm consist of digging through the stack, looking for things. I have to do that because the input is not guaranteed to be balanced. The task was slightly improved by smartmatching and a helper sub. Subs are not particular to Perl 6, but being able to call <code>take</code> from within the sub is.</p>
+
+<p>Fourth, another array called <code>@promises</code> turned out to be necessary, also because of the non-niceness guarantee of the input. To illustrate, consider the following string:</p>
+
+<pre><code>a'''b''c'''d''e
+</code></pre>
+
+<p>Note that italic and bold tokens are mis-nested. A possible output corresponding to this would be this:</p>
+
+<pre><code>a&lt;b&gt;b&lt;i&gt;c&lt;/i&gt;&lt;/b&gt;&lt;i&gt;d&lt;/i&gt;e
+</code></pre>
+
+<p>The array <code>@promises</code> would be responsible for briefly carrying the information about an <code>i</code> element needing to be re-opened before the <code>d</code> text token. We cannot do this in the iteration before <code>d</code>, because we don't know at that time that the next token isn't a <code>''</code>, like this:</p>
+
+<pre><code>a''b'''c'''''d
+</code></pre>
+
+<p>In this case, nothing would be re-opened, because a second <code>''</code> token would have already ended the italic style mode before the <code>d</code>.</p>
+
+<p>This was the hard part of parsing MediaWiki markup (I hope), and with this part behind me, I'm now aiming for being in a position when replacing our current parser with the <code>MediaWiki</code> parser is desirable. Basically, I just need to fix links (which I partly broke during my implementation of styles), and then we're ready to use MediaWiki markup parsing. I will continue work on the mediawiki-markup branch after that, adding features one by one, and merging to master regularly.</p>
+
+<p>A couple of days ago, two non-trivial skins. Then, nice URLs (ihrd++). Now, or very soon, solid markup. In a very short time, November has shifted from something that we whipped up during the summer, to something that actually looks good. Don't get me wrong, much work still remains. But we're heading in the right direction, and we're building quite a bit of speed.</p>
+
+</article>
+
+  </body>
+</html>

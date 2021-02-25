@@ -1,0 +1,91 @@
+http://strangelyconsistent.org/blog/the-root-of-all-eval
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The root of all eval :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2017-04-22T13:49:38+02:00" pubdate="pubdate">22 Apr, 2017</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-root-of-all-eval">The root of all eval</a></h1>
+  </header>
+
+  <p>Ah, the <code>eval</code> function. Loved, hated. Mostly the latter.</p>
+
+<pre><code>$ perl -E'my $program = q[say "OH HAI"]; eval $program'
+OH HAI
+</code></pre>
+
+<p>I was a bit stunned when the <code>eval</code> function was renamed to <code>EVAL</code> in Perl 6 (back in 2013, after spec discussion <a href="https://github.com/perl6/specs/issues/50">here</a>). I've never felt really comfortable with the rationale for doing so. I seem to be more or less alone in this opinion, though, which is fine.</p>
+
+<p>The rationale was "the function does something really weird, so we should flag it with upper case". Like we do with <code>BEGIN</code> and the other phasers, for example. With <code>BEGIN</code> and others, the upper-casing is motivated, I agree. A phaser takes you "outside of the normal control flow". The <code>eval</code> function doesn't.</p>
+
+<p>Other things that we upper-case are things like <code>.WHAT</code>, which look like attributes but are really specially code-generated at compile-time into something completely different. So even there the upper-casing is motivated because something outside of the normal is happening.</p>
+
+<p><code>eval</code> in the end is just another function. Yes, it's a function with potentially quite wide-ranging side effects, that's true. But a lot of fairly standard functions have wide-ranging side effects. (To name a few: <code>shell</code>, <code>die</code>, <code>exit</code>.) You don't see anyone clamoring to upper-case those.</p>
+
+<p>I guess it could be argued that <code>eval</code> is very special because it hooks into the compiler and runtime in ways that normal functions don't, and maybe can't. (This is also how TimToady explained it in <a href="https://github.com/perl6/specs/commit/0b7df09ecc096eed5dc30f3dbdf568bbfd9de8f6">the commit message</a> of the renaming commit.) But that's an argument from implementation details, which doesn't feel satisfactory. It applies with equal force to the lower-cased functions just mentioned.</p>
+
+<p>To add insult to injury, the renamed <code>EVAL</code> is also made deliberately harder to use:</p>
+
+<pre><code>$ perl6 -e'my $program = q[say "OH HAI"]; EVAL $program'
+===SORRY!=== Error while compiling -e
+EVAL is a very dangerous function!!! (use the MONKEY-SEE-NO-EVAL pragma to override this error,
+but only if you're VERY sure your data contains no injection attacks)
+at -e:1
+------&gt; program = q[say "OH HAI"]; EVAL $program⏏&lt;EOL&gt;
+
+$ perl6 -e'use MONKEY-SEE-NO-EVAL; my $program = q[say "OH HAI"]; EVAL $program'
+OH HAI
+</code></pre>
+
+<p>Firstly, injection attacks are a real issue, and no laughing matter. We should educate each other and newcomers about them.</p>
+
+<p>Secondly, that error message (<code>"EVAL is a very dangerous function!!!"</code>) is completely over-the-top in a way that damages rather than helps. I believe when we explain the dangers of code injection to people, we need to do it calmly and matter-of-factly. Not with three exclamation marks. The error message makes sense to <a href="http://bobby-tables.com/">someone who already knows about injection attacks</a>; it provides no hints or clues for people who are unaware of the risks.</p>
+
+<p>(The Perl 6 community is not unique in <code>eval</code>-hysteria. Yesterday I stumbled across a StackOverflow thread about how to turn a string with a type name into the corresponding constructor in JavaScript. Some unlucky soul suggested <code>eval</code>, and everybody else immediately piled on to point out how irresponsible that was. Solely as a knee-jerk reaction "because eval is bad".)</p>
+
+<p>Thirdly, <code>MONKEY-SEE-NO-EVAL</code>. Please, can we just... not. 😓 Random reference to monkies and the weird attempt at levity while switching on a nuclear-chainsaw function aside, I find it odd that a function that <em>enables</em> <code>EVAL</code> is called something with <code>NO-EVAL</code>. That's not Least Surprise.</p>
+
+<p>Anyway, the other day I realized how I can get around both the problem of the all-caps name and the problem of the necessary pragma:</p>
+
+<pre><code>$ perl6 -e'my &amp;eval = &amp;EVAL; my $program = q[say "OH HAI"]; eval $program'
+OH HAI
+</code></pre>
+
+<p>I was so happy to realize this that I thought I'd blog about it. Apparently the very dangerous function (<code>!!!</code>) is fine again if we just give it back its old name. 😜</p>
+
+</article>
+
+  </body>
+</html>

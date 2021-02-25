@@ -1,0 +1,116 @@
+http://strangelyconsistent.org/blog/refactoring-the-universe
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Refactoring the universe :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2019-05-05T10:45:58+02:00" pubdate="pubdate">5 May, 2019</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/refactoring-the-universe">Refactoring the universe</a></h1>
+  </header>
+
+  <p>I'm here to share a thing I'm working on, and chew gum; and I'm all out of gum. The purpose of this post is both to break a disagreeable silence that has befallen this blog, and to be able to geek out about a niche topic here in writing, partially sparing friends and family.</p>
+
+<p>I'm currently refactoring 007's type system in a branch. Basically, ever since 007 was created, a type in 007-land has corresponded to a class/role in Perl 6, the host system that's implementing 007.</p>
+
+<p>Here's what the implementation of <code>Int</code> looks like <a href="https://github.com/masak/007/blob/475701461f4931dd899d7ebc442aa8e2aedf0657/lib/_007/Val.pm6">currently</a>:</p>
+
+<pre><code>class Val::Int does Val {
+    has Int $.value;
+
+    method truthy {
+        ?$.value;
+    }
+}</code></pre>
+
+<p>And here's what it looks like as I'm doing the <a href="https://github.com/masak/007/blob/18cfd26ab11964f53b21d9f5d9f91513b2ffd75c/lib/_007/Value.pm6">refactor</a>:</p>
+
+<pre><code>constant TYPE is export = {};
+
+BEGIN {
+    # ...
+    TYPE&lt;Int&gt; = make-type "Int", :backed;
+    # ...
+}</code></pre>
+
+<p>So, instead of corresponding to <em>types</em> on the host level, all the 007 types are about to correspond to <em>values</em>. The former implementation was the one that felt obvious at the time (four-plus years ago), but it's become blindingly, painstakingly obvious that it really needs to be the latter.</p>
+
+<p>Here's why: as soon as you want to implement class declarations in 007, in the former model you also need to bend over backwards and come up with an entirely new type in the host system. The Perl 6 code to do that looks like <a href="https://github.com/masak/007/blob/475701461f4931dd899d7ebc442aa8e2aedf0657/lib/_007/Val.pm6#L496">this</a>:</p>
+
+<pre><code>return $.type.new(:type(EVAL qq[class :: \{
+    method attributes \{ () \}
+    method ^name(\$) \{ "{$name}" \}
+\}]));</code></pre>
+
+<p>Which is... even someone as <a href="http://strangelyconsistent.org/blog/the-root-of-all-eval">EVAL-positive</a> as I wishes for a less clunky solution.</p>
+
+<p>In the new model, a new class comes down to calling <code>make-type</code> and dropping the result in that <code>TYPE</code> hash. (Wait. Or not even dropping it in the <code>TYPE</code> hash. That hash is only for things used by 007 itself, not for user types.)</p>
+
+<p>This is a refactor I've tried once before, back in 2017, but I failed back then because the code got too complicated and ran too slow. This time around I have a much better feeling.</p>
+
+<p>By the way, there's also an <code>is-type</code> subroutine, and similarly a <code>make-int</code> and an <code>is-int</code> subroutine, and so on for every registered type. I figure why not wrap those simple things up in very short function names. So far that turns out to have been a very good decision. "Fold the language of your domain model into your code", and so on.</p>
+
+<p>This is one of the things I'm doing better this time around; last time one of the problems was that each line I touched got longer and messier because there were more layers of indirection to dig through. Concerns were scattered all over the place. This time, it feels like the codebase is getting <em>simpler</em> thanks to those named subroutines. Maybe it can be likened to putting all your database-specific code in one place.</p>
+
+<p>I sometimes get slight vertigo due to the bootstrapping aspects of this type system. One example: <code>Object</code> is an instance of <code>Type</code>, but the <em>base class</em> of <code>Type</code> is <code>Object</code> &mdash; a circularity. But, it turns out, if you have absolute power over the object graph, you can always bend things to your will:</p>
+
+<pre><code>BEGIN {
+    TYPE&lt;Type&gt; = _007::Value.new(:type(__ITSELF__), slots => { name => "Type" });
+    TYPE&lt;Object&gt; = make-type "Object";
+    {
+        # Bootstrap: now that we have Object, let's make it the base of Type and Object
+        TYPE&lt;Type&gt;.slots&lt;base&gt; = TYPE&lt;Object&gt;;
+        TYPE&lt;Object&gt;.slots&lt;base&gt; = TYPE&lt;Object&gt;;
+    }
+    # ...
+}</code></pre>
+
+<p>I'm slightly reminded of a thing <a href="https://gbracha.blogspot.com/">Gilad Bracha</a> wrote once (which I can't find the exact quote for, unfortunately): that if mutual dependencies and recursive definitions are something that stump you, what you need is a healthy dose of <code>letrec</code>. It's twisty, yes, but it's basically a solved problem.</p>
+
+<p>Like last time, I'm tackling the big task in small steps, one type at a time. I feel I've learned this from Martin Fowler's concept of <a href="https://www.martinfowler.com/bliki/AssetCapture.html">asset capture</a>. The idea is to end up back with a running system with passing tests often. I do this by replacing one old thing at a time by a new thing. Sounds obvious, but I'm actually not sure I would have been sensible enough on my own to tackle it this way, had I not known about asset capture.</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/asset-capture-commits.png"></p>
+
+<p>One drawback is that you're sort of running the old system and the new system in parallel, as the old one is being phased out. Only once the whole thing has been asset-captured can complexity associated with the old system be completely removed.</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/reaction-diagram.png"></p>
+
+<p>It's a pleasant way to work. To me it's been at least a partial answer to the problem of <a href="https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/">the big rewrite</a>. If we're free to refactor the insides, we can successively arrive at a point where the new better thing has completely replaced the old thing. The way there is allowed to be a little bit more complex (on the inside) than either endpoint. Importantly, you keep a running system throughout.</p>
+
+<p>I don't have a concluding thought, except to say that I just managed to asset-capture arrays. Which is harder than it sounds, because arrays are <em>everywhere</em> in the compiler and the runtime.</p>
+
+</article>
+
+  </body>
+</html>

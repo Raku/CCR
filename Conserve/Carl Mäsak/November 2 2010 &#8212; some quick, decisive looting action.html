@@ -1,0 +1,74 @@
+http://strangelyconsistent.org/blog/november-2-2010-some-quick-decisive-looting-action
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 2 2010 &#8212; some quick, decisive looting action :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-02T23:01:00+01:00" pubdate="pubdate">2 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-2-2010-some-quick-decisive-looting-action">November 2 2010 &#8212; some quick, decisive looting action</a></h1>
+  </header>
+
+  <p>248 years ago today, the <a href="http://en.wikipedia.org/wiki/Dawsonne_Drake">Rt. Hon. Dawsonne Drake</a> became governor of Manila in the Philippines. Ruling for 20 years, he was the only British governor of Manila during the British occupation of the <a href="http://en.wikipedia.org/wiki/Seven_Years'_War">Seven Years' War</a>.</p>
+
+<p>At this point, I realized I knew far too little about the Seven Years' War, so I went and read a bit about that too. Take-away points: it was so big that Winston Churchill called it the <a href="http://en.wikipedia.org/wiki/Seven_Years'_War#Nomenclature">first "world war"</a>. Also, <a href="http://en.wikipedia.org/wiki/The_Last_of_the_Mohicans">the Last of The Mohicans</a> takes place during this war.</p>
+
+<p>Anyway, governor Drake. Wikipedia writes about his inglorious return from Manila:</p>
+
+<div class="quote">Upon his return to India in 1764, he was tried by the Madras Council on charges filed by his enemies such as bribery, misappropriation of public funds, and violation of orders from the Company. He was found guilty and was sentenced to be dismissed and shipped back to England. The directors of East India Company at London, however, in consideration of his previous services, modified the sentence by simply demoting his rank.</div>
+
+<p>I hope they did the thing where they rip the medals off his chest.</p>
+
+<div class="quote">Drake continued to serve as member of the Madras Council until his death in 1784. He left a large fortune, including some valuable Spanish paintings which were part of the loot of Manila.</div>
+
+<p>Ok, so he got to keep his job <em>and</em> the loot? Sounds almost like the CEOs of today...</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>I decided to start simple today, and see if <code>pls</code> still passes its tests. It didn't.</p>
+
+<p>Turns out Rakudo has <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=78510">bitrotted</a>, and moritz++ had <a href="http://github.com/moritz/json/commit/a1351a41f1a0245e13912c61f061f47eeb27044d">fixed</a> the <code>json</code> repo. <code>pls</code> carries its own copy of the exact same module files (for bootstrapping purposes), and so I had to apply moritz' commit to <code>pls</code> as well.</p>
+
+<p>A nice thing was that git allowed me to <code>git format-patch</code> moritz' commit and then <code>git am</code> it to the <code>pls</code> branch of <code>proto</code>. It wasn't a big commit at all, but it's nice to know that that works (as long as the directory structures match).</p>
+
+<p>Anyway, now <code>pls</code> passes all tests again. \o/</p>
+
+<p>I'll stop here for today, but I'll note what the next step for <code>pls</code> is: the tests need a slight refactoring, because they currently pretend that a non-fetched project knows about its dependencies. That's not wrong, because the dependency metadata (contained in a <code>deps.proto</code> file, for example) is fetched along with the rest of a project, so we can't know dependences until after fetching. <a href="http://github.com/masak/proto/blob/pls/t/subcommands/fetch.t">This test file</a> is So Full Of Wrong for that reason. Last time I tried to fix it though, I didn't manage to mend things after I'd broken them.</p>
+
+<p>Maybe next time I'll be more lucky. We'll see!</p>
+
+</article>
+
+  </body>
+</html>

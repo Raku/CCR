@@ -1,0 +1,98 @@
+http://strangelyconsistent.org/blog/june-13-regexes
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 13 2011: regexes :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-13T23:50:44+02:00" pubdate="pubdate">13 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-13-regexes">June 13 2011: regexes</a></h1>
+  </header>
+
+  <p>How could we tell whether a string contains another string? There are several ways, but this is one:</p>
+
+<pre><code>my $password = prompt "Enter the secret password: ";
+
+if $password ~~ /sekkrit/ {
+    say "Welcome, sir or madam!";
+}
+else {
+    say "Bah, go away.";
+}
+</code></pre>
+
+<p>With that <code>if</code> statement, the door will kindly open for us regardless if we write <code>sekkrit</code> or <code>sekkrit42</code> or <code>I haz a sekkrit</code>. But not <code>secret</code> or <code>sekkr</code> or <code>sek krit</code>. The exact substring has to be in there.</p>
+
+<p>Oh, and we recognize the smartmatch operator <code>~~</code> in there. That makes sense, since we're making a kind of comparison. But we're comparing against the <em>regex</em> <code>/sekkrit/</code>, which finds us a substring.</p>
+
+<p>That's only the beginning of what regexes can do. Here are some more examples, in quick succession:</p>
+
+<pre><code>/ ^ foo /                # Does the string begin with "foo"?
+/ foo $ /                # ...end with "foo"?
+/ ^ foo $ /              # ...contain only "foo"?
+/ ^ $ /                  # ...contain nothing?
+
+/ \d /                   # ...contain a digit?
+/ \w /                   # ...contain an alphanumeric character?
+/ \s /                   # ...contain a whitespace character?
+
+/ foo || bar /           # ...contain either "foo" or "bar"?
+
+/ fo? /                  # ...contain an "f" and then maybe an "o"?
+/ fo* /                  # ...contain an "f" and zero or more "o"s?
+/ fo+ /                  # ...contain an "f" and one or more "o"s?
+
+/ [foo]+ /               # ...contain one or more "foo"s in sequence?
+/ 'foo'+ /               # (same thing)
+/ [foo] ** 5 /           # ...contain exactly 5 "foo"s in sequence?
+</code></pre>
+
+<p>As you can see, it does quite a bit more than check for substrings.</p>
+
+<p>And not only that. It can also "capture" parts of the thing it matches, and give it back to you in nice, numbered variables:</p>
+
+<pre><code>my $promise = "I will eat my vegetables.";
+if $promise ~~ / (\w+) \s \w+ \s (\w+) \s \w+ \s (\w+) / {
+    say $0;    # "I"
+    say $1;    # "eat"
+    say $2;    # "vegetables"
+}
+</code></pre>
+
+<p>There's much more to say about regexes, and Perl relishes in their power. But now it's my bedtime, and maybe yours, too. Good night.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,221 @@
+http://strangelyconsistent.org/blog/june-30-2011-text-adventure-ii
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 30 2011: Text Adventure II :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-24T23:55:28+02:00" pubdate="pubdate">24 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-30-2011-text-adventure-ii">June 30 2011: Text Adventure II</a></h1>
+  </header>
+
+  <p>Welcome back to the putting-together of a real, actual, old-school text adventure game. Today we'll see the second and final part of building the game. This also marks the finale of this blogging "month". Here we go.</p>
+
+<p>We set the stage yesterday with the rooms of the game, and the ability to walk between them. Today we'll "just" add the things that occupy those rooms &mdash; and this, somewhat typically, turns out to constitute around 80% of the game.</p>
+
+<p>In running through this, we'll see a number of useful techniques mirroring what we've been looking at earlier this month. Everything enters into the mix at this point: input/output, variables, <code>if</code> statements, various kinds of loops, string operators, arithmetic, <code>given</code>/<code>when</code>, arrays, boolean operators, subroutines, hashes, junctions, files, nested data, format strings, <code>map</code> and <code>grep</code> and <code>first</code>, subtypes, signatures, and definitely classes/objects/attributes/methods and roles. Yep, that's the whole month. We need it all to build this game.</p>
+
+<p>Here's an excerpt from the final game:</p>
+
+<pre><code>&gt; s
+Chamber
+
+This is a cramped space just inside the hidden opening in the hill. The
+sun gets in enough to illuminate the place. There are some scribblings on
+the wall.
+There is a sign here.
+There is a basket here.
+You can go north.
+
+&gt; help   
+Here are some (made-up) examples of commands you can use:
+
+look (l)                             | take banana
+examine banana (x banana)            | drop banana
+[go] north/south/east/west (n/s/e/w) | put banana in bag
+open bag                             | close bag
+
+&gt; read walls
+"This sentence no verb."
+
+&gt; read walls
+"Help, I'm stuck!"
+
+&gt; inventory
+You are carrying:
+  A flashlight.
+  A rope.
+
+&gt; read sign
+It says "LEAVE " with big, scrawly lettering. Maybe a warning or a threat.
+On closer inspection, though, it looks like there might once have been one
+more letter at the end, but it has since been worn away.
+
+&gt; put rope in basket
+You put the rope in the basket.
+
+&gt;
+</code></pre>
+
+<p>Here we see the span of different commands that can be issued. A movement command (<code>s</code>) causes a new room to be described, along with the things in the room and the visible exits. There are some "special" commands, such as <code>help</code> and <code>inventory</code>. Apart from that we can do several things (<code>take</code>, <code>drop</code>, <code>open</code>, <code>close</code>) with single objects, as well as move objects in more advanced ways (<code>put rope in basket</code>).</p>
+
+<p>What happens when we write <code>read sign</code> on the command line of the game? The command is <em>parsed</em>, which means that the program assigns some structure to the text. In this case, it is recognized that <code>read</code> is a verb and <code>sign</code> is a noun standing for a thing known to the game. A bit of validation and some magic later, and the user-provided command <code>read sign</code> has been translated to the computer-understandable method call <code>%things&lt;sign&gt;.read</code>. <code>%things</code> is a hash that maps all the nouns to their corresponding objects. In this case, it maps to an instance of the class <code>Sign</code> which just happens to have a <code>.read</code> method, provided through a role <code>Readable</code>.</p>
+
+<p>Similarly, via a slightly different code path, the human command <code>put rope in basket</code> gets translated to the computer command <code>%things&lt;rope&gt;.put( %things&lt;basket&gt; )</code>. The <code>Rope</code> object thus found just happens to have a <code>.put</code> method by virtue of being <code>Takable</code>. (And this has been validated before the method is called.) Not only that, but the <code>Basket</code> object allows things to be put <em>inside</em> of it because it is a <code>Container</code> (that is, doing the <code>Container</code> role) and therefore being provided with an <code>.add</code> method.</p>
+
+<p>From a sufficiently high-level perspective, all the common actions on things in the game are enabled by some class in the source code doing some role. "Program to interfaces", says the experienced OO programmer. This is what that's about. Several things in the game can be read, and that's because their object does the role <code>Readable</code>, giving them a <code>.read</code> method.</p>
+
+<p>I bet you want to have a look at the source code. <a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl">Here it is</a>. If you're concerned that peeking might be considered cheating, you hereby have the author's assurance that learning the principles of programming takes precedence over not gaining inside information in the game. (Or you could just finish the game first, then read the source. ☺)</p>
+
+<p>I'd recommend keeping the source around in a tab while reading the following sections. The program is subdivided in eight parts, and the corresponding sections pull the noteworthy chunky bits out of the source code cookie. The explanations don't contain any particular spoilers, but the source code itself does.</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L1">Predeclarations</a></h2>
+
+<p>Perl 6 programs are read through <em>once</em> by the compiler, from top to bottom. If you refer to a class or role before it's been defined, the compiler becomes confused and gives you an error. (In the future, Rakudo will give a compile-time error. Unfortunately, as of this writing it still gives a run-time error, which is worse.)</p>
+
+<p>In order to avoid references to types that haven't been declared yet, we <em>could</em> be very meticulous about the ordering of our types, so that they always refer backwards to already defined types. For small programs, that's what we tend to do, and it works fine. (Sometimes, though, referral cycles between types are inevitable, and we can't use this solution.)</p>
+
+<p><em>Or</em> we do as in this script: we predeclare everything. A predeclaration looks like this: <code>class Sign { ... }</code>. The three dots there are to be pronounced "yadda yadda yadda", and here they mean that the class isn't defined here. But the class name is registered, and that's exactly what we wanted from the predeclaration. Further down in the code, we get to actually defining the insides of the class (as well as the roles it composes, etc).</p>
+
+<p>In a way, the predeclarations form a "table of contents" of classes and roles. You'll note that they also are grouped suggestively: first comes a list of various roles that give objects various capabilities; then come the things themselves, then a few rooms/locations. As it happens, this is the order that these types are later introduced in the program.</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L44">Global variables</a></h2>
+
+<p>It is generally agreed-upon that global variables are Bad with a capital "B". Especially in a program that otherwise strives to be object-oriented, each global variable is like a defeat, a strike against all that we love and hold dear. Global variables can make people see red, and make them want to rip out all the code and rewrite it.</p>
+
+<p>Why? How come globals are perceived so negatively? Well, it's easy: a global variable has a tendency to thread through the whole program, weaving in and out of classes/roles, forming unholy dependencies everywhere, and making the classes/roles far less re-usable. A class uses a global in a few places, and suddenly that class is dependent on that global. Want to move the class to a different file? That will be difficult; it's coupled to the global variable. Tough luck.</p>
+
+<p>If they're so bad, why are they here, in a program supposed to teach good programmer values? Simply because the cure in this case is deemed to be worse than the desease. We're using these globals in various places &mdash; for example the <code>%things</code> hash &mdash; and encapsulating it properly would merely put it further away from everything else, resulting in more unnecessary code to get to it. Our smug sense of having implemented things right would be complemented by heaps of efficious code "doing the right thing" but amounting to nothing.</p>
+
+<p>Strive to do things right, and by all means keep to principles. But be practical too, and know when to deviate from common rules of thumb. (And be prepared to take the ire from people who don't.)</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L120">Utility subroutines</a></h2>
+
+<p>Just as classes are concrete representations of things in our program that we talk about a lot, so subroutines often "condense" out of relations or circumstances that we find ourselves mentioning in a lot of places around the program. For example, whether there is any light in the current room is central to whether we can examine things, read things, or get any location descriptions at all. So we define <code>there_is_light</code> in one place, and then we can use and re-use the concept everywhere.</p>
+
+<pre><code>sub there_is_light() {
+    my $there_is_sun = $room !~~ Darkness;
+    return True if $there_is_sun;
+
+    my $flashlight = %things&lt;flashlight&gt;;
+    my $flashlight_is_here = player_can_see($flashlight);
+    return True if $flashlight_is_here &amp;&amp; $flashlight.is_on;
+
+    my $fire = %things&lt;fire&gt;;
+    my $fire_is_here = player_can_see($fire);
+    return True if $fire_is_here;
+
+    return False;
+}
+</code></pre>
+
+<p>The sub has four parts.</p>
+
+<ul>
+<li><p>The sun is considered to "be there" if the current <code>Room</code> is one that does not do <code>Darkness</code>. (That's locations that are outside and thus technically not rooms at all, or rooms that are sufficiently close to outside that the sun is shining in.) If the sun is shining, there is light.</p></li>
+<li><p>If there's a flashlight here and it's on, there is light. Note that the player doesn't have to <em>hold</em> the flashlight or anything like that; we only require that <code>player_can_see</code> the flashlight. (This use of "see" has nothing to do with available light sources, so there's no risk of recusion here; <code>can_see</code> simply means that the thing is in the same room and not hidden in a box or something.)</p></li>
+<li><p>If there's a fire in the room, that also counts as a light source.</p></li>
+<li><p>Having exhausted those three options, we give up and return a <code>False</code> value, indicating that the room is without light.</p></li>
+</ul>
+
+<p>A concept such as <code>there_is_light</code> builds on other concepts, such as <code>player_can_see</code>, which in turn build on other concepts. Unlike classes and roles, subroutines don't mind referring to each other forwards or backwards, so we don't have to think about predeclaring those. (When the Perl 6 compiler sees a name of something it hasn't seen before, it assumes that it's a subroutine call. Therefore, referring to subroutines that haven't been defined Just Works.)</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L187">Roles for things and rooms</a></h2>
+
+<p>The meat of the game; also, the most fun part to write. If something is meant to contain things, it's a <code>Container</code>. If something is meant to be picked up and carried around, it's <code>Takable</code>. All things in the game, directly or indirectly, do the general role <code>Thing</code>, which provides them with a name and a description, and an <code>.examine</code> method.</p>
+
+<p>A couple of insights surprised me along the way. Starting out, I didn't suspect that <code>Inventory</code> could be a <code>Container</code>, although it's quite evident in retrospect. Shortly thereafter, it became clear that a <code>Room</code> is also a kind of <code>Container</code>. Then <code>put</code>ting things in different places mostly becomes a matter of moving them between various <code>Container</code>s.</p>
+
+<p>The roles sometimes interact in fanciful ways. A thing can be <code>Openable</code> but not a <code>Container</code> (like a <code>Door</code>), or a <code>Container</code> but not <code>Openable</code> (like the <code>Inventory</code>). But if it <em>is</em> both <code>Openable</code> and a <code>Container</code>, the <code>.open</code> method in <code>Openable</code> makes sure to call <code>self.?on_open</code>, a method that &mdash; voilà &mdash; <code>Container</code> just happens to have. (This method shows the contents of the just-opened container, if any.)</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L369">Things</a></h2>
+
+<p>Most of the work is done and represented in the roles above, which means that in this section when we construct classes for the things in the game, they can be as simple as <code>class Sign does Readable {}</code>. Empty class &mdash; all we needed to say was that the <code>Sign</code> is <code>Readable</code>.</p>
+
+<p>Sometimes, though, we add attributes and methods "at the last minute"; notable among these are <code>Doom</code>, the only thing in the game that can kill the player. It has a ticking <code>$!time_left</code> attribute, and it can cause the whole cave to collapse. Talk about a powerful object.</p>
+
+<p>At other times, a class will override a method from a role. The class <code>Walls</code> would've got a <code>.read</code> method from <code>Thing</code>, but instead it provides its own, which allows random quips to be read from the walls in the various rooms.</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L531">Directions</a></h2>
+
+<p>This is a pleasant case of several language elements cooperating. We define a couple of global variables for the various "standard directions" and their abbreviations; then we define a subtype <code>Direction</code> that restricts <code>Str</code> to only the standard directions. Finally we draw up a subroutine that knows how to get the reverse <code>Direction</code> from a given <code>Direction</code>.</p>
+
+<p>Observe the trick in that subroutine: we only specify one half of the mappings of opposites, and then we "mirror" the hash with <code>%opposites.invert</code>, automatically creating the other half.</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L574">Rooms</a></h2>
+
+<p>A <code>Room</code> is a <code>Container</code> with a few extra methods to handle connecting rooms together, examining the room, and entering the room. A few rooms have a few event methods to trigger various events.</p>
+
+<p>The biggest class in the game is the <code>Hall</code>, a room with its own little subgame. The room redefines how it presents its contents, and encourages the player to move disks between rods. This goes to show that even when we've built a set of roles for our classes to compose, there's still plenty of wiggle-room outside of that framework. At any point, we can let a class bloom out into something quite different. The roles are just there for the standard behaviors.</p>
+
+<h2><a href="https://github.com/masak/crypt/blob/e0c02750325b40cf493e1a7e03ebe6f8de5cea67/crypt.pl#L826">The game itself</a></h2>
+
+<p>The rest of the game consists almost entirely of the command loop with <code>when</code> statements to direct the player's commands to the right method on the right object.</p>
+
+<p>Worth noting is how, in the first few <code>when</code> statements, we use <code>proceed</code> a lot to "massage" any movement commands into a <code>Direction</code> that we can then just use to look up the exit directly. This is slightly easier and more maintainable than one big expression for trying to match and then translate all the possible variants at once.</p>
+
+<p>Sometimes we match commands with string values, but most of the time we match them with regexes. Here the regex syntax comes very much in handy, being able to both match the command string <em>and</em> pull out the pertinent information from it. That's what things like <code>$&lt;verb&gt;</code> are about in this piece of the code: when a regex matches, the special capture variable <code>$&lt;verb&gt;</code> will contain a verb, and we can process it based on that knowledge.</p>
+
+<p>In that vein, it might be instructive to see how we are often working on "two levels", as often happens when interacting with a user.</p>
+
+<pre><code>my $verb = $&lt;verb&gt;;
+if %verb_synonyms{$verb} -&gt; $synonym {
+    $verb = $synonym;
+}
+
+[...]
+
+unless $thing.can($verb) {
+    say "You can't $&lt;verb&gt; the $&lt;noun&gt;.";
+    succeed;
+}
+</code></pre>
+
+<p>On the game level, we prefer to handle <code>$verb</code> which has been de-synonymized and therefor is more regular. (<code>pick up</code>, <code>pick</code> and <code>get</code> all become <code>take</code>, for example.) But on the user interface level, we still refer to it as <code>$&lt;verb&gt;</code>, the thing we got originally. That way, the user who writes <code>get basket</code> will see <code>You can't get the basket.</code> and not <code>You can't take the basket.</code> A small thing, but usability is king.</p>
+
+<p>Finally, the real magic resides in the method call <code>.can</code> above. This method checks ahead of time whether a given method exists in an object. So if the program wants to <code>read</code> a <code>$thing</code>, it first checks whether <code>$thing.can("read")</code> &mdash; if the answer is yes, it proceeds to call the <code>.read</code> method on <code>$thing</code>.</p>
+
+<p>How can we call a method with a name that varies depending on what <code>$verb</code> we provided? We do it like this:</p>
+
+<pre><code>$thing."$verb"();
+</code></pre>
+
+<p>So, if <code>$verb</code> is <code>read</code>, we call <code>$thing.read</code>, etc. This is the core, the treasure, the butterfly of the game code. Most of the verbs are routed through that line, which maps a player's verb into a method.</p>
+
+<p>Have you finished the game yet? If not, get to it! Good luck!</p>
+
+</article>
+
+  </body>
+</html>

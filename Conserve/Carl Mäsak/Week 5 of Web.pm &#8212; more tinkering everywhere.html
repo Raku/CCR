@@ -1,0 +1,81 @@
+http://strangelyconsistent.org/blog/week-5-of-webpm-more-tinkering-everywhere
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 5 of Web.pm &#8212; more tinkering everywhere :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-04-25T23:30:00+02:00" pubdate="pubdate">25 Apr, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-5-of-webpm-more-tinkering-everywhere">Week 5 of Web.pm &#8212; more tinkering everywhere</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>U iz so cute!</i> </dd>
+<dd> <i>U iz so hawt!</i> </dd>
+<dd> <i>Ur eyez iz liek birdz,</i> </dd>
+<dd> <i>an ur hair iz liek goatz</i> </dd>
+<dd> <i>comin down teh mountin. Datz hawt.</i> </dd>
+<dd>&#160;</dd>
+<dd> <i> Ur teefz iz liek sheep</i> </dd>
+<dd> <i>dat just hadded a baff.</i> </dd>
+<dd> <i>Liek twin sheep,</i> </dd>
+<dd> <i>bcz non of ur teefz iz missin.</i> </dd>
+<dd>&#160;&#160;&#160;&#160;&#160;&#160;&#8212; Song of Solomon 4:1-2</dd>
+</dl>
+
+<p>This week, inspired by jnthn, I'll switch summary style and go point-by-point instead of in free discourse mode. Just to try it out.</p>
+
+<p>I would like you to note, reading this, how many different names of people appear among the different items. This is definitely no longer a three-man effort, but significant parts of the Perl 6 community pushing towards a point where we can build awesome (or at the very least slightly above average) web apps on top of Rakudo and Parrot.</p>
+
+<ul>
+<li>Renamed the Lobster into the Nibbler, like I said I would. mpeters++ for the ASCII image.</li>
+<li>mberends++ insisted that we spend the hackathon putting bacek++ and Tene++'s socket work into Rakudo itself, continuing on cosimo++'s work. This, for various reasons, took an evening and a day, but it was very much worth it. Seeing the Nibbler being served fairly rapidly was a significant reward.</li>
+<li>One thing that had to be fixed before we could get sockets to work was that non-Rakudo objects couldn't be passed as return values any more. (There was some type checking going on which assumed that the object in question was a Rakudo object.) Passing non-Rakudo objects is vital in the long term, when we expect Parrot to be a platform for many languages communicating freely with each other. jnthn++ and pmichaud++ fixed.</li>
+<li>Next slight problem that turned up was that <code>IO::Socket::INET</code> turned out to be the first setting module with those double colons in it, and the underlying setting magic choked a bit on them. jnthn++ showed me how and where to fix.</li>
+<li>Wanting to port November over to the Request/Response model of Web.pm, I took a look at November for the first time in a while. Turns out it has bitrotted somewhat, so I had to take care of that.</li>
+<li>Bitrot issue #1: <code>join</code> no longer accepted only one argument. This was a new restriction accidentally added to Rakudo. I reverted the change; moritz++ added the appropriate spectest.</li>
+<li>Bitrot issue #2: In order to prevent autothreading, one of the loops in <code>Dispatcher.pm</code> was spelled <code>for @rules -&gt; Object @pattern, $action { ... }</code>. This had stopped working in Rakudo due to a combination of stricter type matching in signatures and a failure to handle this particular case — the case where an <code>Array</code> is typed as containing <code>Object</code> elements. Fortunately, a workaround turned out to be simply removing the typing for now.</li>
+<li>Still didn't get started on porting November over. I've created the branch "web" locally, and now that the tests pass, I can start moving things over. Will probably be a while before we merge this one back into master. But being rid of <code>CGI.pm</code>, if only in a branch, will be nice.</li>
+<li>As a surprise bonus, azawawi++ came to me on #perl6 with a number of STD.pm parsefails that he discovered while parsing November in Padre. Hm, maybe it's time for a Perl 6 module that tests Perl 6 projects against STD.pm?</li>
+<li>After discussing the Genshi clone with Tene on #november-wiki, I started writing a simple prototype with a grammar that would pick apart an XML string and put it together depending on the values of <code>pe:</code> attributes. I failed, and spectacularly. On the plus side, we discovered quite a number of <code>.perl</code> bugs in bleeding Rakudo.</li>
+<li>Even though the prototype never did what it was supposed to demonstrate, it did give me direction to start writing some tests and a small module. This module doesn't yet do what the prototype almost did.</li>
+<li>Working name for the Genshi clone: Hitomi. I've understood this means "doubly beautiful". That is, once for being based on Genshi, and once for being written in Perl 6. ☺</li>
+</ul>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,183 @@
+http://strangelyconsistent.org/blog/july-4-moving-around-i-compass-directions
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 4 2012 &#8212; moving around I (compass directions) :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-04T22:28:45+02:00" pubdate="pubdate">4 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-4-moving-around-i-compass-directions">July 4 2012 &#8212; moving around I (compass directions)</a></h1>
+  </header>
+
+  <p>We learned to see (<code>look</code>) yesterday, but what about moving around (<code>walk</code>)?</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+&gt; look     
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+
+&gt; walk east
+Sorry, I did not understand that.
+
+&gt; quit
+</code></pre>
+
+<p>Aww, that's not much fun! Let's fix that!</p>
+
+<p>I'm doing this as I go along; I haven't prepared much before. That means that
+sometimes I realize a bunch of stuff as I code. I prefer that; means things are
+still fresh for me to explain. But it also means sometimes I change things back
+and forth as I try for the best way to factor things. I pray your indulgence.</p>
+
+<p>Anyway, taking a step back to design and language for a while:</p>
+
+<blockquote>
+  <p>The player can <strong>walk</strong> in our adventure game, because we have a concept of <strong>rooms</strong>,
+each one having zero or more <strong>exits</strong> connecting to other rooms. We talk about
+<strong>connecting</strong> two rooms to give them exits to each other. Rooms can also be
+<strong>disconnected</strong>. Rooms and their connections form a sort of topology, a graph on
+which the player moves. The topology may change during the course of the game,
+as rooms connect to and disconnect from each other.</p>
+</blockquote>
+
+<p>So, we implement <a href="https://github.com/masak/crypt/commit/0e3976e9f5ae622e4b3c4d662f1d59be4b7ddd59">connecting two
+rooms</a>;
+feels like a good start. And of course, you're not allowed to <a href="https://github.com/masak/crypt/commit/e0290f34333d4ff2cddeac09cf450bc2dd24c8ee">use directions
+that don't
+exist</a>.</p>
+
+<p>Note that in our script, we make a distinction between <code>Crypt::Game</code> and
+<code>Adventure::Engine</code>. The former is the actual crypt game, with its various
+puzzles and descriptions; the latter is a general adventure game engine, which
+handles regular things such as connecting rooms and walking. <code>Crypt::Game</code>
+actually wraps <code>Adventure::Engine</code> and delegates some commands directly to
+it (such as walking), but completely hides other commands (such as connecting
+rooms). This division feels like it makes a lot of sense. (Essentially it
+also means that as the month draws to an end, we could separate out the
+<code>Adventure::Engine</code> parts and publish them on modules.perl6.org. Not that I
+want to give any of you any ideas.)</p>
+
+<p>Anyway, now we can <a href="https://github.com/masak/crypt/commit/4b468fb3606bffe1f15dd1e9bb88101427d748ce">implement
+walking</a>.
+And, as usual, we don't just think "happy path", but make sure <a href="https://github.com/masak/crypt/commit/6dc36736bfbefda2ad41e09f035ba1d4926d42cb">walking doesn't
+work without an
+exit</a>.</p>
+
+<p>The <code>Crypt::Game</code> class now has a <code>BUILD</code> method that sets things up using
+<code>Adventure::Engine</code>. The idea is that this is how you "configure" an adventure
+game; in the <code>BUILD</code> method. We'll see how that works out in practice.</p>
+
+<p>(Actually the biggest point of cheating I introduced today was this line in the
+above commit:</p>
+
+<pre><code>has $!player_location = 'clearing';
+</code></pre>
+
+<p>The problem with it is that it is in <code>Adventure::Engine</code>, which is the wrong
+context for that initialization to be in. (Not all adventure games start in a
+clearing.) I'll fix that in the next few days.)</p>
+
+<p>And then we need to do one more thing to make <code>walk</code> work in the actual game.
+We need to <a href="https://github.com/masak/crypt/commit/457e63f913a539b3f7e991c2736627fbe180e859">bind CLI commands to method
+calls</a>.
+Yes, I adapted that bit from the Hanoi game.</p>
+
+<p>And lo, walking now works!</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+&gt; walk south
+Cannot walk south because there is no exit there.
+
+&gt; walk east
+
+&gt; quit
+</code></pre>
+
+<p>We would really like to get automatic descriptions when we walk into new
+places. We'll handle that (<em>me checks schedule</em>) day after tomorrow. But note,
+we <em>didn't</em> get an error message from walking east, which is exactly what we
+wanted. (Because there is an exit east from the clearing to the hill.)</p>
+
+<p>Just one last thing today. Have a look at what happens if I...</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+&gt; walk east
+
+&gt; walk east
+
+&gt; walk east
+
+&gt; quit
+</code></pre>
+
+<p>Yeah, um. You might actually look at that output and figure out what's wrong.
+Then again, you might not.</p>
+
+<p>We only added one connection, between <code>clearing</code> and <code>hill</code>. Going east a
+second time should blow up on us. <em>Unless</em>... unless the player position never
+gets updated.</p>
+
+<p>What do we do when finding something like this? We <a href="https://github.com/masak/crypt/commit/4d8064f7a7bc76861c94f4e44128abd9cb26dcd4">add a failing test case and
+make it
+pass</a>.</p>
+
+<p>Yay!</p>
+
+<p>That's it for today.</p>
+
+</article>
+
+  </body>
+</html>

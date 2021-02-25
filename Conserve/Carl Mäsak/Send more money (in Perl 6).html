@@ -1,0 +1,360 @@
+http://strangelyconsistent.org/blog/send-more-money-in-perl6
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Send more money (in Perl 6) :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2015-05-25T22:59:01+02:00" pubdate="pubdate">25 May, 2015</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/send-more-money-in-perl6">Send more money (in Perl 6)</a></h1>
+  </header>
+
+  <p>In which I implement four different Perl 6 solutions to <a href="http://blog.plover.com/prog/haskell/monad-search.html">MJD's SEND + MORE = MONEY challenge</a>.</p>
+
+<p>I encourage you to read that post if you haven't already, but here's a short tl;dr: Haskell's <code>do</code> notation is wonderful in that it allows the author to cleanly express a backtracking algorithm without any "noise" such as explicit backtracking information, or indentation. Monads may be weird and frightening, but proponents of other languages should take heed: <code>do</code> notation is nice.</p>
+
+<p>Can we do as nicely in Perl 6?</p>
+
+<h2>Version A: recursion</h2>
+
+<p>Here we're trying to get as close as possible to the original Haskell code without using any tricks. Basically trying to match the essence of the problem line by line. We're hampered by not having a <code>do</code> notation, of course, and no built-in backtracking in the main language. The program pretends to have no indentation, because the indentation isn't really relevant.</p>
+
+<pre><code>my @digits = 0..9;
+
+choose @digits (-) 0, -&gt; $s {
+choose @digits (-) $s, -&gt; $e {
+choose @digits (-) ($s, $e), -&gt; $n {
+choose @digits (-) ($s, $e, $n), -&gt; $d {
+my $send = :10[$s, $e, $n, $d];
+
+choose @digits (-) (0, $s, $e, $n, $d), -&gt; $m {
+choose @digits (-) ($s, $e, $n, $d, $m), -&gt; $o {
+choose @digits (-) ($s, $e, $n, $d, $m, $o), -&gt; $r {
+my $more = :10[$m, $o, $r, $e];
+
+choose @digits (-) ($s, $e, $n, $d, $m, $o, $r), -&gt; $y {
+my $money = :10[$m, $o, $n, $e, $y];
+
+guard $send + $more == $money, {
+say "$send + $more == $money";
+}}}}}}}}};
+
+sub choose(Set $choices, &amp;fn) {
+    for @$choices -&gt; $value {
+        &amp;fn($value);
+    }
+}
+
+sub guard($condition, &amp;fn) {
+    if $condition {
+        &amp;fn();
+    }
+}
+</code></pre>
+
+<p>This takes about 26 minutes to run on my laptop. I despaired at this &mdash; the original Haskell version finishes in less than a second &mdash; but then I wrote an equivalent Perl 5 version, and it took 8 minutes. Paradoxically, that somehow made me feel less bad about Perl 6's performance. ("Wow, we're within an order of magnitude of Perl 5!")</p>
+
+<p>(<strong>Update:</strong> Peter Sergeant sent me <a href="https://gist.github.com/sheriff/c63fb15a4b1502219097">a faster Perl 5 version</a> of the above script. His uses hashes instead of arrays. My <a href="https://gist.github.com/masak/875711cac32ba0244f7a">Perl 6 port</a> of this takes 15 minutes to run. That's two orders of magnitude slower &mdash; not cool.)</p>
+
+<h2>Intermezzo</h2>
+
+<p>If you're new to Perl 6, you might not recognize <code>(-)</code> as set difference. I could also have used <code>∖</code> (U+2216 SET MINUS), but for once, the Texas version felt clearer.</p>
+
+<p>I also like the clarity of <code>$send = :10[$s, $e, $n, $d]</code>. In the Perl 5 versions, I ended up with this helper sub that does the same.</p>
+
+<pre><code>sub base_10 {
+    my (@digits) = @_;
+    my $result = 0;
+    while (@digits) {
+        my $digit = shift @digits;
+        $result *= 10;
+        $result += $digit;
+    }
+    return $result;
+}
+</code></pre>
+
+<p>Perl 6 just treats it as a variant of the base conversion syntax.</p>
+
+<h2>Version B: iteration</h2>
+
+<p>Where the previous version tried to stick close to the original, this version just dumps all such concerns and tries to go fast. It does so by spewing out explicit loops, checks, and native integers. Among all the solutions, this one fails MJD's criteria the hardest... all in the name of speed.</p>
+
+<pre><code>my int $s = -1;
+while ++$s &lt;= 9 {
+    next if $s == 0;
+
+    my int $e = -1;
+    while ++$e &lt;= 9 {
+        next if $e == $s;
+
+        my int $n = -1;
+        while ++$n &lt;= 9 {
+            next if $n == $s;
+            next if $n == $e;
+
+            my int $d = -1;
+            while ++$d &lt;= 9 {
+                next if $d == $s;
+                next if $d == $e;
+                next if $d == $n;
+
+                my int $send = $s*1000 + $e*100 + $n*10 + $d;
+
+                my int $m = -1;
+                while ++$m &lt;= 9 {
+                    next if $m == 0;
+                    next if $m == $s;
+                    next if $m == $e;
+                    next if $m == $n;
+                    next if $m == $d;
+
+                    my int $o = -1;
+                    while ++$o &lt;= 9 {
+                        next if $o == $s;
+                        next if $o == $e;
+                        next if $o == $n;
+                        next if $o == $d;
+                        next if $o == $m;
+
+                        my int $r = -1;
+                        while ++$r &lt;= 9 {
+                            next if $r == $s;
+                            next if $r == $e;
+                            next if $r == $n;
+                            next if $r == $d;
+                            next if $r == $m;
+                            next if $r == $o;
+
+                            my int $more = $m*1000 + $o*100 + $r*10 + $e;
+
+                            my int $y = -1;
+                            while ++$y &lt;= 9 {
+                                next if $y == $s;
+                                next if $y == $e;
+                                next if $y == $n;
+                                next if $y == $d;
+                                next if $y == $m;
+                                next if $y == $o;
+                                next if $y == $r;
+
+                                my int $money =
+                                    $m*10000 + $o*1000 + $n*100 + $e*10 + $y;
+                                next unless $send + $more == $money;
+
+                                say "$send + $more == $money";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>(cygz++ for suggesting many improvements to the above code, which eventually led to the fast version we have now.)</p>
+
+<p>This version takes 22 seconds on my laptop. Certainly an improvement over version A. The corresponding Perl 5 code (which doesn't do natives) takes 1.3 seconds. An NQP version takes 0.69 seconds (beating even Haskell), which leads me to believe we can still be a lot faster in Perl 6, too.</p>
+
+<p>(<strong>Update:</strong> Apparently, if you produce Perl 5, Perl 6 and NQP versions of the same script, then you will be approached by japhb++ who will invite you to become part of a loosely-knit group of heroes known as <a href="https://github.com/japhb/perl6-bench">the Benchmarker initiative</a>. I <a href="https://github.com/japhb/perl6-bench/commit/03de262b7ec114a4d5b649ab9098eab6b62fedb5">added my scripts</a> to the growing number of benchmark scripts. Exciting!)</p>
+
+<p>(<strong>Update:</strong> Wohoo! timotimo++ made some commits to Rakudo, and suddenly this Perl 6 script takes but 15 seconds to run! That's like a 30% time saving!)</p>
+
+<h2>Version C: regex engine</h2>
+
+<p>Now for a version that tries to capitalize on the regex engine having backtracking behavior. The basic idea (using <code>amb</code>) comes from <a href="http://rosettacode.org/wiki/Amb#Perl_6">Rosetta Code</a>. I'm a teeny bit disappointed <code>amb</code> has to resort to building regex fragments as strings, which feels inelegant.</p>
+
+<pre><code>sub amb($var, @a) {
+    "[{
+        @a.map: {"||\{ $var = '$_' }"}
+     }]";
+}
+
+sub infix:&lt;except&gt;(@lhs, @rhs) { (@lhs (-) @rhs).list }
+
+my @digits = 0..9;
+
+"" ~~ m/
+    :my ($s, $e, $n, $d, $m, $o, $r, $y);
+    :my ($send, $more, $money);
+
+    &lt;{ amb '$s', @digits except [0] }&gt;
+    &lt;{ amb '$e', @digits except [$s] }&gt;
+    &lt;{ amb '$n', @digits except [$s, $e] }&gt;
+    &lt;{ amb '$d', @digits except [$s, $e, $n] }&gt;
+    { $send = :10[$s, $e, $n, $d] }
+    &lt;{ amb '$m', @digits except [0, $s, $e, $n, $d] }&gt;
+    &lt;{ amb '$o', @digits except [$s, $e, $n, $d, $m] }&gt;
+    &lt;{ amb '$r', @digits except [$s, $e, $n, $d, $m, $o] }&gt;
+    { $more = :10[$m, $o, $r, $e] }
+    &lt;{ amb '$y', @digits except [$s, $e, $n, $d, $m, $o, $r] }&gt;
+    { $money = :10[$m, $o, $n, $e, $y] }
+
+    &lt;?{ $send + $more == $money }&gt;
+    { say "$send + $more == $money" }
+/;
+</code></pre>
+
+<p>On the plus side, this algorithm nails the linear code layout and gets fairly close to being nice and clean. There's a bit of noise along the fringes, what with all the <code>{ }</code> and <code>&lt;{ }&gt;</code> and <code>&lt;?{ }&gt;</code>, but for a Perl 6 regex, this is good going.</p>
+
+<p>Too bad it's so damn slow. Extrapolating from a shorter run, I estimate that the program would take around 100 minutes to finish. But it gets killed off on my system after 88 minutes because it leaks ridiculous quantities of memory (11 MB a second, or 660 MB a minute). I wonder if I could submit that as a rakudobug.</p>
+
+<p>(<strong>Update:</strong> At the expense of the nice syntactic abstraction offered by <code>amb</code>, I managed to produce a version of the regex that actually completes before it runs out of memory. (And doesn't leak nearly as bad.) <a href="https://gist.github.com/masak/ad33c08b86344f8f315e">Here it is</a>. It runs in little over 6 minutes; worse than version B but better than version A.)</p>
+
+<h2>Version D: macros/speculation</h2>
+
+<p>Now, obviously, the solution that isn't burdened down by properly existing yet is also the cutest one.</p>
+
+<pre><code>use Hypothetical::Solver;
+
+my @digits = 0..9;
+
+solve {
+    my $s = amb @digits (-) [0];
+    my $e = amb @digits (-) [$s];
+    my $n = amb @digits (-) [$s, $e];
+    my $d = amb @digits (-) [$s, $e, $n];
+    my $send = :10[$s, $e, $n, $d];
+    my $m = amb @digits (-) [0, $s, $e, $n, $d];
+    my $o = amb @digits (-) [$s, $e, $n, $d, $m];
+    my $r = amb @digits (-) [$s, $e, $n, $d, $m, $o];
+    my $more = :10[$m, $o, $r, $e];
+    my $y = amb @digits (-) [$s, $e, $n, $d, $m, $o, $r];
+    my $money = :10[$m, $o, $n, $e, $y];
+
+    guard $send + $more == $money;
+    say "$send + $more == $money";
+}
+</code></pre>
+
+<p>Clearly, this won't even compile, as it's missing a dependency. Let's supply it with the smallest possible dependency, just honoring signatures:</p>
+
+<pre><code>module Hypothetical::Solver {
+    sub solve(&amp;block) is export {}
+    sub amb($set) is export {}
+    sub guard($condition) is export {}
+}
+</code></pre>
+
+<p>Which... is useless, because now we have a program which looks pretty but does nothing.</p>
+
+<p>So let's fix that. Here I have <em>another</em> program which eats the first program for breakfast. More exactly, it can parse the program and emit a new one that solves the problem. Be aware that the below is a bit of a hack (I'll get back to that), but at least each individual part is nice and self-contained.</p>
+
+<pre><code>grammar Solver::Syntax {
+    token TOP { &lt;statement&gt;* }
+
+    proto token statement {*}
+
+    token statement:sym&lt;use&gt; {
+        &lt;sym&gt; \s+ ([\w | '::']+) ';' \s*
+    }
+
+    token statement:sym&lt;my&gt; {
+        &lt;sym&gt; \s+ \S+ \s* '=' \s* &lt;!before 'amb'&gt; &lt;-[;]&gt;+ ';' \s*
+    }
+
+    token statement:sym&lt;solve&gt; {
+        &lt;sym&gt; \s+ ('{' \s*) &lt;statement&gt;* ('}' \s*)
+    }
+
+    token statement:sym&lt;guard&gt; {
+        &lt;sym&gt; \s+ (&lt;-[;]&gt;+ ';' \s*)
+    }
+
+    token statement:sym&lt;say&gt; {
+        &lt;sym&gt; \s+ &lt;-[;]&gt;+ ';' \s*
+    }
+
+    token statement:amb-my {
+        'my' \s+ (\S+) \s* '=' \s* 'amb' \s+ (&lt;-[;]&gt;+) ';' \s*
+        &lt;statement&gt;*
+    }
+}
+
+class Solver::Actions {
+    method TOP($/) {
+        make $&lt;statement&gt;».ast.join;
+    }
+
+    method statement:sym&lt;use&gt;($/) {
+        make $0 eq "Hypothetical::Solver" ?? "" !! ~$/;
+    }
+
+    method statement:sym&lt;my&gt;($/) {
+        make ~$/;
+    }
+
+    method statement:sym&lt;solve&gt;($/) {
+        make $0 ~ $&lt;statement&gt;».ast.join ~ $1;
+    }
+
+    method statement:sym&lt;guard&gt;($/) {
+        make "next unless " ~ $0;
+    }
+
+    method statement:sym&lt;say&gt;($/) {
+        make ~$/;
+    }
+
+    method statement:amb-my ($/) {
+        make "for ($1).list -&gt; $0 \{\n" ~ $&lt;statement&gt;».ast.join.indent(4) ~ "\}\n";
+    }
+}
+</code></pre>
+
+<p>(Entire script is <a href="https://gist.github.com/masak/f4cfdc9abc2a579ec531">here</a>.)</p>
+
+<p>The result is closest in spirit to version B above. But it doesn't try to be as optimized. As a result of this, it actually performs like version A, and finishes in 26 minutes.</p>
+
+<p>Let me just conclude by making a few points.</p>
+
+<ul>
+<li>We're doing textual substitution, and the solution carries with it everything I detest about textual macros. (Also sometimes known as "unhygienic macros", though I maintain that if a macro is textual, it's already so bad that the notion of hygiene isn't even applicable.)</li>
+<li>So please consider this a throwaway prototype. Textual substitution just happens to be what we can do right now. The <em>real</em> solution would of course work on the AST level.</li>
+<li>It would also work <em>within</em> the same program and the same runtime, instead of being a program changing another program.</li>
+<li>The most interesting part of this transformation (in my view) is what <code>statement:amb-my</code> does. It's saying "take the remaining statements in this block and nest them inside my block". This naturally paves the way for <em>AST transformers</em>, something I haven't visualized quite so clearly until I started thinking about this problem. One might imagine a standard library of these making life easier for the macro author.</li>
+<li><code>for</code> loops are slow. One would like to optimize them into <code>while</code> loops (and <code>next</code>s) when possible. In this case it's possible, and a real macro transformer would have all the information available to find that it's possible. In fact, it wouldn't take <em>a lot</em> to make the above text-munging solution have enough information to do that optimization. (It'd need to store the statements in an intermediate AST form, which it could them query. <a href="http://strangelyconsistent.org/blog/its-just-a-tree-silly">That's all.</a>)</li>
+</ul>
+
+<p>Lately I've been nosing around languages that compile to JavaScript. Such languages allow us to state the program in a nicer, more fit-for-the-task language than JavaScript, but still get all the advantages of being able to run things in the browser.</p>
+
+<p>The intended use of macros in Perl 6 is similar to this: express the problem in a "nicer way" (variant D), then massage it down to something that you <em>could</em> have written but would rather prefer not to (variant B). The big difference between macros and slangs (IMO) is that macros allow you to parse normally and then mess with the resulting Qtree, whereas slangs allow you to replace the parser with something else entirely (and then mess with the Qtree too, if required).</p>
+
+<p>The fan on my laptop is relieved that I'm done running programs for this post. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

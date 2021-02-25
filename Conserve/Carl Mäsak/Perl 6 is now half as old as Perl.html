@@ -1,0 +1,146 @@
+http://strangelyconsistent.org/blog/perl6-is-now-half-as-old-as-perl
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Perl 6 is now half as old as Perl :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2013-02-16T19:00:54+01:00" pubdate="pubdate">16 Feb, 2013</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/perl6-is-now-half-as-old-as-perl">Perl 6 is now half as old as Perl</a></h1>
+  </header>
+
+  <p>Today Perl 6 is as old as Perl was when Perl 6 was announced.</p>
+
+<pre><code>$ perl6 -e 'say Date.new(2000, 7, 18) + (Date.new(2000, 7, 18) - Date.new(1987, 12, 18))'
+2013-02-16
+</code></pre>
+
+<p>The 1987 date is the release of Perl 1. The 2000 date is the <a href="http://strangelyconsistent.org/blog/happy-10th-anniversary-perl-6">throwing of the mugs</a>, which I consider to be Perl 6's birthday.</p>
+
+<p>It's a bit interesting to compare Perl 6 at this point with Perl back then. They are two fairly different projects, even though the people are overlapping to a great extent.</p>
+
+<h2>Bottom-up vs top-down</h2>
+
+<p>In any programming project, you can start from the small pieces and build upwards to the overreaching goals and ideas, or you can start from the ideas and build downwards to the nitty-gritty stuff.</p>
+
+<p>Perl is a bottom-up project: the Perl 1 release looks puny today. It didn't do much. But it did run. It did solve people's problems. And there's an unbroken chain of commits leading from Perl 1 to today's Perl 5.</p>
+
+<p>Perl 6 is definitely a top-down project. Larry mulled over those RFC's and wrote the Apocalypses. These eventually resulted in the Synopses, which guide implementation work. Implementations reach up towards the spec, and are in some sense always built bottom-up... but on the most zoomed-out scale, Perl 6 is built from the top down.</p>
+
+<p>This difference was very much deliberate. For the Perl 6 project, it was felt that a specification (and a corresponding test suite) was needed. The Pugs project is currently very dormant and not actively developed, but it <em>did</em> result in both the Synopses and the spectest suite. Both are essential artifacts for any Perl 6 implementer.</p>
+
+<h2>Second system syndrome</h2>
+
+<blockquote>
+  <p>"It's important to remember that when you start from scratch there is <strong>absolutely no reason</strong> to believe that you are going to do a better job than you did the first time." &mdash; Joel Spolsky, <a href="http://www.joelonsoftware.com/articles/fog0000000069.html">Things You Should Never Do, Part I</a></p>
+</blockquote>
+
+<p>Look, here's the thing: everyone knows that The Big Rewrite isn't a good idea. That's like, Software Project Management 101. Even the people going into this project knew that. The <a href="http://www.zazzle.com/camelia_second_system_tote_bag-149004096878338512">jokes about second systems</a> have been with us from the start, as a part of our cultural heritage.</p>
+
+<p>There have been efforts to mitigate the risks and to calm people on the way. The Ponie project was an effort to put Perl 5 on Parrot, for example, to provide for a migration path or simply a communication bridge from Perl 5 to Perl 6.</p>
+
+<p>Early on, it was also felt that Perl 6 wouldn't be so different from Perl 5, syntactically. Sure, the sigils would come out being invariant, and a comma would have to be added here and there for consistency. But that was about it. Perl 5 programmers would still feel right at home.</p>
+
+<p>Well, guess what? The Ponie project, even with brilliant developers behind it, slowed and finally halted at the height of the Pugs era. Turns out the reasons people wanted to further themselves from the existing Perl 5 internals &mdash; that they are a big hairy mess of intertwined C macros &mdash; also made porting to Parrot exceedingly difficult. Ponie brought some permanent improvements to the Perl 5 core, but in the end it didn't reach its goal of Perl 5 targeting Parrot.</p>
+
+<p>In the meantime, Perl 6 kept improving and evolving, syntactically as well as semantically. The differences piled up. Perl 6, unfettered by backward-compatibility, could take sometimes vast leaps and reach places in the state-space Perl 5 could only dream of. Also, things kept shaking around and stabilizing, features growing together into a unified whole instead of <a href="http://perl-begin.org/humour/perl6_perl_6_cover_lg.jpg">this</a>. All good and well, but it meant that Perl 6 drifted further away from Perl 5.</p>
+
+<p>So here we are, a decade later, with two distinct languages, and no way for them to interoperate. Having them actually talk to each other is still very much on the agenda. It's just that it's a big undertaking. A couple of recent projects are attempting to put Perl 5 on a platform where it can talk to Perl 6.</p>
+
+<p>I think the biggest thing to realize in all this is that Perl 6, even from the very start, could never have followed the trajectory Perl did. There was one thing that existed in 2000 that didn't exist in 1987, when Perl was announced: Perl. <em>That's</em> why Perl 6 is a top-down project. <em>That's</em> why it's a second system. And <em>that's</em> why the obvious measure-stick of Perl 6 is Perl, with its 13-year head start.</p>
+
+<h2>Rubber, meet road</h2>
+
+<p>I'm not complaining about this, mind. We <em>should</em> compare Perl 6 to Perl. And to all other scripting languages that have popped up in the same niche. We should steal ideas and adapt to modern practices, like we always do, in both Perl and Perl 6.</p>
+
+<p>But for a top-down project, the biggest challenge is always to reach all the way down to the ground: to actually start being useful for someone. That's perhaps our big challenge. It was back in 2008 when I became heavily involved in the Perl 6 effort, and it still is today: be useful. Be usable. <a href="http://www.youtube.com/watch?v=GRfhTBmw9Y8">Put food on someone's family</a>.</p>
+
+<p>Perl 6 is useful to me today. Not to the extent that I can write Perl 6 code all day, but to the extent that it makes me more effective and more productive now and then. Bringing that kind of usefulness to others requires lots of work writing modules, documentation, books, and tutorials, as has been discussed elsewhere. We're making some headway with this. I'm more optimistic than I was two years ago.</p>
+
+<p>We also need to work on things such as performance. Perl 6 is fast enough for some things, but overall implementations are still fairly slow. Sometimes ridiculously slow. Good work is being done in this area, too.</p>
+
+<p>But here's what makes me the most optimistic about the Perl 6 effort: after a few years of watching things evolve, I've noticed that while Perl 6 is being developed top-down on the outermost scale, it's actually a series of bottom-up projects that drive Perl 6 forwards.</p>
+
+<p>jnthn likes to tell about how he promised to implement junctions in Rakudo back in 2008, and then realized that junctions were actually tied to method dispatch and the object system, so he had to implement those, too. Later, while pmichaud was rebuilding the parser according to our current understanding of it, jnthn was building Rakudo's meta-object protocol, a project called 6model. Each step on the way replacing the layer below based on what we had found that the layer above required. The 6model work is part of what now enables us to port nqp and Rakudo to the JVM.</p>
+
+<p>That's what makes me optimistic. While Perl 6 is undeniably, unchangeably a top-down project, highly competent people are factoring that top-down knowledge into the design of components in a bottom-up way. What's been happening in these 13 years is that we've become increasingly better and more efficient at building Perl 6.</p>
+
+<h2>So, how're we doing?</h2>
+
+<blockquote>
+  <p>"Chuck Norris has actually been using Perl 6 since 1987, and has been waiting for Larry to play catch-up. :)" &mdash; dukeleto on #perl6</p>
+</blockquote>
+
+<p>Let's stop and compare the state of Perl 6 today with the state of Perl back in 2000.</p>
+
+<ul>
+<li><p><strong>Mugs</strong>. Back then, Jon Orwant threw coffee mugs against a wall because he felt there was nothing to energize the community and people would walk off to other things.</p>
+
+<p>Are sixers doing any mug-throwing nowadays? Yup, we did, at the Perl Reunification Summit. Liz felt, and still feels, that if we don't actively bring Perl 5 and Perl 6 together, then both projects are eventually going to fizzle out.</p></li>
+<li><p><strong>Crisis</strong>. As part of that, the feeling Jon Orwant was expressing was that Perl was stagnating or going nowhere.</p>
+
+<p>Is Perl 6 stagnating? I wouldn't say so. We're still extremely small compared to Perl 5, but my general sense is that we're still <em>gaining</em> speed, becoming stronger every day. Still very much pre-peak.</p></li>
+<li><p><strong>Usefulness</strong>. In 2000, Perl was on its thirteenth year of solving everyday problems for people.</p>
+
+<p>What about Perl 6 today? Well, it's very different. Part of this is due to the top-down nature of the project. People are waiting for it to be useful to them. Part of it is <em>perception</em>: people are <em>waiting</em>, instead of jumping in and using the language in cases where it could already be useful to them. We see this in the verb tenses people are using when they ask stuff: "Will Perl 6..." Perl 6 is about the future, but if we don't do something about that perception, we'll never get there. The problem with "tomorrow" is that it never actually arrives.</p></li>
+<li><p><strong>Community</strong>. In 2000, Perl drew thousands of people to conferences each year.</p>
+
+<p>Is Perl 6 drawing thousands? No. The Perl people are kind enough to let us piggyback on Perl conferences and workshops, and through them we have an audience of thousands. I keep feeling that there's a big interest in Perl 6, both from within the Perl community and from other communities. But there's also a sense of waiting, of not-yet-production-ready. (And I agree.)</p></li>
+</ul>
+
+<h2>What remains?</h2>
+
+<p>Which brings us to the last, perhaps most important question. What's left for Perl 6 to become a viable, useful solution to most people out there?</p>
+
+<p>For years I wouldn't go near that question. Just working along, head looking down at the current sub-projects, making Perl 6 more useful to myself and hoping that was enough. But my recent visit to FOSDEM made me realize that some kind of production release is actually within reach &mdash; say, a few years away &mdash; and a focused effort to reach a releasable state by some criteria would be highly useful for us and for others.</p>
+
+<p>So here are my four criteria. This is what Perl 6 needs to be ready for the world.</p>
+
+<ul>
+<li><p><strong>Features</strong>. Slightly simplified, this is what we've been working on since the Pugs days. <a href="http://perl6.org/compilers/features">We are doing well</a> on features. There's not much I feel is missing nowadays from the core language. It's a pleasant language to use and to express thoughts in. There are bugs, sure, but with each month that passes, those bugs are becoming less frequent and less serious.</p></li>
+<li><p><strong>Speed</strong>. Working on it. I won't make any promises about the JVM port, but I have a strong feeling it will make a big difference. Parallel to this, there are various already-implemented or to-be-implemented efforts to make the compiler smarter about generating efficient code.</p></li>
+<li><p><strong>Concurrency</strong>. There are some good ideas in the specification about concurrency. Some of them will work fine, some probably won't pan out. What's needed now is a solid implementation of concurrency in either Rakudo or Niecza, a test-bed for the ideas in the spec, so that users can get a feel for what's there and what's missing. I'd really like for Perl 6 to have a decent concurrency story, because it's one of the things that were promised early on for Perl 6, and one of the things that Perl never got right. Also, concurrency in all its various forms seems to be growing increasingly important in the programming world of today.</p></li>
+<li><p><strong>CPAN</strong>. Sure, we have <a href="http://modules.perl6.org/">an ecosystem</a> for Perl 6. But it isn't CPAN. It's three orders of magnitude as small as CPAN. And it's not realistic to port all of CPAN either &mdash; that'll simply never happen. What we really need is a high-bandwidth connection between Perl 5 and Perl 6. We need for them to run in the same runloop. Once they do that, Perl 6 programmers can have their CPAN modules, and Perl 5 programmers can work Perl 6 code into their projects. This is also something that was promised early on. It's not an easy task.</p></li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>Perl 6 is a multi-year project. Though today's date is a little bit arbitrary, it's worthwhile to look both backwards and forwards, to see where we currently are. And though we're structurally different from the Perl project, it's still interesting to make comparisons.</p>
+
+<p>We believe we're building something really nice with Perl 6. 2013 may not be the year when we're finally production-ready, but it sure feels like a year where a lot of significant things will happen (and are already happening). And, unlike 2012, I finally feel ready to speculate about the light at the end of the tunnel.</p>
+
+</article>
+
+  </body>
+</html>

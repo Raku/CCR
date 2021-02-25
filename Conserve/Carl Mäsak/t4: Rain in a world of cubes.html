@@ -1,0 +1,256 @@
+http://strangelyconsistent.org/blog/t4-rain-in-a-world-of-cubes
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t4: Rain in a world of cubes :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-05-30T16:01:27+01:00" pubdate="pubdate">30 May, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t4-rain-in-a-world-of-cubes">t4: Rain in a world of cubes</a></h1>
+  </header>
+
+  <pre class="quote">&lt;flussence&gt; as a minecraft player I figured out what t4 was asking pretty much instantly :)</pre>
+
+<p>This is me trying to emerge from the big strange writer's block that has
+inexplicably formed around the t4 blog post. Here goes.</p>
+
+<p>The t4 task was my clear favorite this year. It has a certain William Gibson
+quality to it, with virtual rain falling inside a three-dimensional world where
+everything is made of cubes which mostly just hang there, suspended, in
+mid-air.</p>
+
+<pre><code>## Simulate rain in a world of cubes
+
+Write a program that calculates the volume of rain water collected in the cube
+world described below.
+
+The cube world &amp;mdash; given as input &amp;mdash; consists of a finite set of cubes
+on integer coordinates `(x, y, z)`. The positive `y` coordinate means "up".
+
+An infinite amount of rain then falls from an infinite height. Both of these
+infinities are taken to really mean "large enough as to make no difference".
+As it lands on cubes, the water will follow predictable rules:
+
+* Rain falls everywhere.
+
+* Water falling will land on the first cube below it. It does not fall through
+  cubes.
+
+* Water will collect on levels where walls on all sides will keep it in.
+
+* Water will produce vertical waterfalls where such walls are missing.
+
+* Cubes are packed tightly enough that gaps between cubes sharing an edge will
+  not let water through. However, the same gaps will readily let air through if
+  water needs to displace air for some reason.
+
+Waterfalls work in the simplest way imaginable: if water "escapes" from a      
+structure of cubes, it will fall straight down along the first available
+"chute" of cube-formed empty cells until it hits a cube. (Which it may not
+necessarily do. A waterfall may go on to infinite depth.) As a waterfall hits a
+cube, it behaves just like other kinds of water: it may spread, collect, and
+form new waterfalls as needed.
+</code></pre>
+
+<p>People had different ideas how to solve this one:</p>
+
+<ul>
+<li><p><strong>Massive flood</strong>. Fill the whole universe with water, and then carefully
+drain it, taking note of what's left.</p></li>
+<li><p><strong>Multiple joining pools</strong>. Keep track of all the individual bodies of water.
+Raise the water level as long as that's still possible, and join together
+bodies of water that touch.</p></li>
+<li><p><strong>Waterfall, Frozen</strong>. Track all bodies of water, following waterfalls in the
+forwards direction. For each cell proven to contain steady-state water, turn
+that block into solid wall, and increase a counter by 1.</p></li>
+</ul>
+
+<p>I had fun guessing what solutions people would come up with. I correctly
+guessed the first two, but not the last one. I guess it's a bit too mutable for
+my FP brain to come up with these days.</p>
+
+<p>Anyway, the mistakes! Oh, the <em>mistakes</em>. Not just one or two contestants for
+this one; <em>all</em> of them. Turns out simulating rain on cubes is hard!</p>
+
+<p>Here follows a choice list of assumptions broken by the contestants, that make
+their programs return odd results.</p>
+
+<h2>Assuming that rain can reach where it can't</h2>
+
+<pre><code>XXX
+X.X
+X.X
+XXX
+</code></pre>
+
+<p>Let me explain the above picture. In order to test the four entrants against
+odd cases, I wrote a small program that builds a cube world from the above
+syntax. It only describes a cross-section; and so walls in the depth direction
+are automatically added. In other words, the above depicts a sealed box with no
+way in.</p>
+
+<p>It should contain no rainwater, of course. One of the programs returns that
+it's full of water.</p>
+
+<p>Oh, and by the way, the script that produces coordinates from pictures like the
+above turned out quite cute and simple, so let me share it:</p>
+
+<pre><code>my %coords =
+    ' ' =&gt; [         ],
+    'X' =&gt; [-1, 0, +1],
+    '.' =&gt; [-1,    +1],
+    '~' =&gt; [-1,    +1],
+;
+
+for lines.kv -&gt; $y, $line {
+    for $line.comb.kv -&gt; $x, $char {
+        for %coords{$char}.list -&gt; $z {
+            say "($x, {-$y}, $z)";
+        }
+    }
+}
+</code></pre>
+
+<h2>Assuming that the water can rise higher than its lowest outlet</h2>
+
+<pre><code>  XXX
+  X.X
+  X.X
+X~X~X
+X~X~X
+X~~~X
+XXXXX
+</code></pre>
+
+<p>It's for cases like this that I felt a need in the problem description to talk
+about gaps between cubes that "will readily let air through if water needs to
+displace air". In other words, if the above is a kind of
+<a href="https://en.wikipedia.org/wiki/File:Barometer_Goethe_01.jpg">barometer</a>, then
+it's a completely useless one, because it leaks air and water find an
+equilibrium based only on itself.</p>
+
+<p>...which means that the correct answer above is 7. That's the number of
+waterfilled cubes when the water level is the same "inside" the barometer and
+at its mouth.</p>
+
+<p>One of the programs got 9, assuming that the barometer fills up completely. Two
+programs got 0, assuming no water can even enter.</p>
+
+<p>Speaking of which...</p>
+
+<h2>Assuming that some vessels are unable to contain water</h2>
+
+<pre><code>    XXX
+X~X X~X
+X~XXX~X
+X~~~~~X
+XXXXXXX
+</code></pre>
+
+<p>Two programs had trouble with this one. I don't know if it's because of the
+banana shape or the cover over one of the ends. But they got 0 cells of
+rainwater collecting in it, when the correct answer is that it fills up all 9
+internal cells.</p>
+
+<h2>Underestimating the size of a vessel</h2>
+
+<pre><code>XXXX~XXXX
+X~~~~~~~X
+X~~~~~~~X
+X~~X~X~~X
+X~~X~X~~X
+XXXXXXXXX
+</code></pre>
+
+<p>A small vessel sitting in a bigger vessel. A naive program might reach the brim
+of the small vessel, figure "oh, ok, we're done here", and then not fill up the
+bigger vessel with water.</p>
+
+<p>This happened with one of the programs.</p>
+
+<h2>Concreteness and TDD</h2>
+
+<p>I've mentioned it in previous posts, but the way I pick problems for the
+contest is I find problems where I myself go "oh, that's easy, I'll just..."
+and then a while later, I go "...oh wait." Problems that <em>look</em> easy on the
+surface, but then turn out to have hidden depths. (A bit like these vessels
+holding water can have hidden depts, tunnels, nooks and crannies.) One of my
+favorite feelings when I design something is having the model "break" for a
+certain case. It's like the floor falling out from under me, and I have to
+re-orient myself inside the solution space to accomodate the new rules.</p>
+
+<p>All the failures above emphasize the need for having <em>actual</em> test cases to run
+the program against. The base tests I send with the problems are
+(intentionally) inadequate for this purpose. The contestant is meant to think
+up their own tests, consider edge cases, special cases, and pathological cases.</p>
+
+<p>To me, that's where unit testing shines. Development suddenly becomes a
+back-and-forth discussion between you and the programming substrate over
+something very tangible: concrete cases.</p>
+
+<h2>Only one champion still standing</h2>
+
+<p>Only one of the programs passes all of the above tests with flying colors.
+Well, I do want to stress that all four contestants made brave efforts. But for
+one reason or another, one of the four programs ended up especially correct.</p>
+
+<p>Check out <a href="https://github.com/masak/p6cc2012/tree/master/t4/review">the
+reviews</a> for details.</p>
+
+<h2>...no, wait</h2>
+
+<p>Hm. What about this case?</p>
+
+<pre><code>XXXX~XXXX
+X~~~~~~~X
+X~~XXX~~X
+X~~~~~~~X
+XXXXXXXXX
+</code></pre>
+
+<p>Should be able to hold 19 cells of water, right? Well, wouldn't you know. Our
+so-far unblemished program fails this one, with the cryptic error message
+<code>Merging non-balanced water masses</code>. (Two other programs get the correct 19,
+and the last one gets 0.)</p>
+
+<p>So I take it back. <em>None</em> of the programs are correct. Pity. But my points
+about deep model thinking and representative test cases still stands.
+Correctness is hard!</p>
+
+<p>Next up: distributing weights evenly in bags.</p>
+
+</article>
+
+  </body>
+</html>

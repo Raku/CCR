@@ -1,0 +1,95 @@
+http://strangelyconsistent.org/blog/july-27-2012-triggering-doom-and-dying
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 27 2012 &#8212; triggering doom and dying :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-28T12:22:03+02:00" pubdate="pubdate">28 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-27-2012-triggering-doom-and-dying">July 27 2012 &#8212; triggering doom and dying</a></h1>
+  </header>
+
+  <p>While we did build the machinery for triggering delayed cavern collapse
+yesterday (which due to general lateness is already day-before-yesterday;
+sorry), there's still a matter of hooking things up so that the cavern
+actually collapses right on top of the hapless adventurer.</p>
+
+<p>Talk about a sad path. 哈哈</p>
+
+<p>I thought I might as well add the conditions for winning while I'm at it.
+This has always been my favorite part of crypt. Even though it's a
+straight-out-of-Indiana-Jones kind of cliché. There's only one item heavy
+enough to replace the butterfly on the pedestal... and it comes from the Hanoi
+subgame, a source of inventory that the player is likely to overlook.</p>
+
+<p>So, today's commits:</p>
+
+<ul>
+<li>If you take the butterfly from its pedestal, you <a href="https://github.com/masak/crypt/commit/cf18e6e8b457feb3a459fd9f5e45d3e93a08673f">trigger the
+alarm</a>
+and you have three moves to get out. Walking is a move. You're four rooms
+in.</li>
+<li>So you panic for three moves and then <a href="https://github.com/masak/crypt/commit/acf6aefb87d17bdd0f0c346f43251f6191067ae9">you
+die</a>.</li>
+<li>Alternatively, you can go <a href="https://github.com/masak/crypt/commit/07222ec4f5360b67bde31915e854359b5167cb9b">get the tiny
+disk</a>
+from the Hanoi game. Note how the tiny disk is essentially created out of
+thin air as we attempt to take it from the game. On second thought, this is
+a bit <em>too</em> magical; I might just put them in a special Hanoi container
+instead. But this was a fun way to do it. :)</li>
+<li>Finally, you <a href="https://github.com/masak/crypt/commit/e3b2633181a2e2f02592496304ce55a559521fb1">replace the butterfly with the
+disk</a>,
+emerge from the cavern, and win the game. Yay!</li>
+</ul>
+
+<p>Well, that's it. You can now play through the whole game and even win it. At
+least the tests claim you can; I haven't played the game through the CLI for
+quite some time now. 哈哈</p>
+
+<p>The next few days will go to various cleanup, adding conveniences (such as an
+inventory, or verb synonyms), and generally refactoring the game and making it
+nicer, shorter, and more future-proof.</p>
+
+<p>The game is about 3k lines long now, by the way. Compare against last year's
+game: 1k lines. Also compare against the biggest Perl 6 source file I know
+(STD.pm6): 6k lines. This is a fairly big project. Adventure games are complex
+stuff.</p>
+
+<p>According to tomorrow's schedule &mdash; today's schedule, that is &mdash; I'll
+be adding movement synonyms. I'll probably do that and a few other cleanups.</p>
+
+</article>
+
+  </body>
+</html>

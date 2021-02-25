@@ -1,0 +1,136 @@
+http://strangelyconsistent.org/blog/june-11-2011-arrays
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 11 2011: arrays :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-11T23:26:45+02:00" pubdate="pubdate">11 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-11-2011-arrays">June 11 2011: arrays</a></h1>
+  </header>
+
+  <p>All the variables we've seen so far have had dollar signs (<code>$</code>) up front. We call them <em>scalar variables</em>. They are distinguished by the fact that they have room for one value at a time.</p>
+
+<pre><code>my $greeting = "Hello, World!";
+say $greeting;
+</code></pre>
+
+<p>Today we'll talk about a new kind of variables, <em>array variables</em>, which can contain a sequence of values, and which are written with an at-sign (<code>@</code>):</p>
+
+<pre><code>my @ingredients = "flour", "salt", "sugar", "milk", "eggs", "butter";
+say "To make pancakes, you need these ingredients:";
+say @ingredients.join(" ");  # "flour salt sugar milk eggs butter"
+</code></pre>
+
+<p>So the variable <code>@ingredients</code> contains six things, all string values in this case. But they could easily be numbers, or other kinds of values.</p>
+
+<p>Note that we made use of the method call <code>.join(" ")</code> when we wanted to print the array. It makes sure to put a space between each value before printing them. (<code>.join</code> takes an array or a list and produces a single string, putting a separator &mdash; <code>" "</code> in this case &mdash; between each element.)</p>
+
+<p>Had we just printed the elements, the ingredients would've been harder to read:</p>
+
+<pre><code>say @ingredients;  # "floursaltsugarmilkeggsbutter"
+</code></pre>
+
+<p>Try saying that quickly five times. :P</p>
+
+<p>There's also a way to fill up an array element by element:</p>
+
+<pre><code>my @ingredients;  # created empty
+push @ingredients, "flour";
+push @ingredients, "salt";
+push @ingredients, "sugar";
+push @ingredients, "milk";
+push @ingredients, "eggs";
+push @ingredients, "butter";
+</code></pre>
+
+<p>And then we can take them out again one by one if we want:</p>
+
+<pre><code># we've already done all the push-ing
+say pop @ingredients; # "butter"
+say pop @ingredients; # "eggs"
+say pop @ingredients; # "milk"
+say pop @ingredients; # "sugar"
+say pop @ingredients; # "salt"
+say pop @ingredients; # "flour"
+</code></pre>
+
+<p>But, hey, look at that! They came out backwards!</p>
+
+<p>That's no coincidence. <code>push</code> adds to the end of the array, and <code>pop</code> removes from the end of the array. Together they make the array act like a so-called <em>stack</em>; think of a stack of plate, where you always add and remove plates at the top.</p>
+
+<p>But surely we could get things out in a non-reversed order if we wanted? Yes, of course:</p>
+
+<pre><code># we've already done all the push-ing
+say shift @ingredients; # "butter"
+say shift @ingredients; # "eggs"
+say shift @ingredients; # "milk"
+say shift @ingredients; # "sugar"
+say shift @ingredients; # "salt"
+say shift @ingredients; # "flour"
+</code></pre>
+
+<p>So, <code>shift</code> removes things from the start of the array. Together, <code>push</code> and <code>shift</code> act like a <em>queue</em>, like a line of people waiting for something. You won't get served until all the people ahead of you have been.</p>
+
+<p>To complete the set of operations, there's a fourth one called <code>unshift</code> which adds something to the start of the array. That's the least used one.</p>
+
+<pre><code>unshift ---&gt; +-------+ &lt;--- push
+             | array |
+  shift &lt;--- +-------+ ---&gt; pop
+
+             +-------+ &lt;--- push
+             | stack |
+             +-------+ ---&gt; pop
+
+             +-------+ &lt;--- push
+             | queue |
+  shift &lt;--- +-------+
+</code></pre>
+
+<p>Finally, there's a way to operate on individual values if we want to:</p>
+
+<pre><code>my @ingredients = "flour", "salt", "sugar", "milk", "eggs", "butter";
+
+say @ingredients[3];        # "milk" -- keep in mind, we start indexing at 0
+
+@ingredients[3] = "cream";  # ooh, luxury pancakes!
+say @ingredients.join(" "); # "flour salt sugar cream eggs butter"
+</code></pre>
+
+<p>I don't know about you, but I'm going to make myself some pancakes <em>right now</em>. Tomorrow we'll tackle <code>for</code> loops.</p>
+
+</article>
+
+  </body>
+</html>

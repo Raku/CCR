@@ -1,0 +1,102 @@
+http://strangelyconsistent.org/blog/some-thoughts-on-tote
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Some thoughts on tote :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-10-06T00:33:00+02:00" pubdate="pubdate">6 Oct, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/some-thoughts-on-tote">Some thoughts on tote</a></h1>
+  </header>
+
+  <p>People reacted approvingly to <a href="http://strangelyconsistent.org/blog/helpfully-addictive-tdd-on-crack">tote</a>, the nicest piece of vaporware I've never written. I received an interesting email pointing out that research on this goes back to "50s and 60s as part of the psychological movement of behaviourism"; my post was featured on <a href="http://www.reddit.com/r/programming/comments/9lkmt/helpfully_addictive_tdd_on_crack/">reddit</a>, and there were some <a href="http://irclog.perlgeek.de/perl6/2009-09-17#i_1508568">mentions</a> <a href="http://irclog.perlgeek.de/perl6/2009-09-18#i_1512051">on</a> <a href="http://irclog.perlgeek.de/november-wiki/2009-09-23#i_1530194">IRC</a>. All of this makes for a nice data point on how much attention you can make people pay something that isn't written yet. I don't think it's likely that tote, even if it turns out to be a nice harness, will ever get that kind of attention again. ☺</p>
+
+<p>Speaking of capturing people's attention, I tend to make it a habit of including something bolded in the second paragraph, sort of my take-home message. I don't really have such a message today, except perhaps to say that in the past few weeks, <strong>I've tried tote, and it works</strong>. I've already spent hours in it, playing it like a game. Unfortunately, the versions I used are too hard-coded to the two projects I tried them on, so I still need to write the real thing from scratch. But I've learned some new things along the way, which I thought I'd relay here, partly for my future self, and partly for any readers interested in the (imminent) development of tote.</p>
+
+<p>I used my tote prototype on two projects. To abstract away non-essentials, let's call them "project A" and "project B", respectively. They were different enough to make me think about the different TDD styles that tote needs to support.</p>
+
+<p>Project A is a port. Its tests need to be ported along with the implementation, so the general workflow becomes (1) write test, (2) write code to make it pass, (3) refactor, if needed. Also known as <a href="http://www.agileprogrammer.com/dotnetguy/archive/2006/08/01/17795.aspx">red-green-refactor</a>. Except that, as the image given by that link shows, the 'red' portion of the loop might be missing, and that might be fine, too. All talk about 'the test should fail' aside, sometimes (such as when porting the test suite) a test will succeed on the first run. We cannot mandate a red part.</p>
+
+<p>Project B is also a port, but one in which the tests could be adapted from the ported project. So I have only steps (2) and (3) above. This had the advantage of making me think more clearly about test results and checkpoints.</p>
+
+<p>My concept of "checkpoint" is akin to "leveling up" in role-playing games. It's when all your tests that used to pass still pass, but also some new test passes. The idea is that tote should be able to parse the test output, and be able to recognize checkpoints, and compare the latest test run against such a checkpoint to see if we've regressed, progressed, or neither. The checkpoint is also a good place to make a commit, maybe automatically with an appropriate commit message calculated from the test messages of the new test that was just made to pass.</p>
+
+<p>Passing/not-passing is a two-state thing, so one way to look at a particular test run is as a long bit string. Now, let's say I want to compare a test run just made to that of the last checkpoint, to see whether we've regressed, progressed, or neither. My first idea was to classify the current test run as 'regressed' if bits had flipped over from 1 to 0, 'progressed' if bits had flipped over from 0 to 1, and 'neither' if the bit strings were equal, or if bits had flipped over in both directions. Here it is in Perl 5 code:</p>
+
+<pre><code>sub compare_passes {
+    my ($new, $old) = @_;
+
+    return -1 if length $new &lt; length $old;
+    my ($regression, $progression) = 0, 0;
+    for my $i (0..length $old) {
+        my ($n, $o) = map { substr($_, $i, 1) }, $new, $old;
+        if ($n &lt; $o) {
+            $regression = 1;
+        }
+        elsif ($n &gt; $o) {
+            $progression = 1;
+        }
+    }
+    return $progression - $regression;
+}
+</code></pre>
+
+<p>It's a mathematically elegant idea, but unfortunately it's flawed in practice. Think of project B, where all of the tests were already written. Those will count in the bitstream, and the bits after the point where you're currently working can distort the test result negatively in three ways: (1) you might have passed the test you were working on, but later tests failed randomly, so the state counts as 'neither' and you get no checkpoint; (2) you might have regressed on some tests before the one you were working on, but later tests succeeded randomly, so the state counts as 'neither', and you don't get a 'regression' notification; (3) the tests up to the test you were working on might be unchanged, but the tests after that might have passed or failed randomly, leading to spurious 'progression' or 'regression' states.</p>
+
+<p>Notice how the idea of 'the test you were working on' spontaneously forced itself into the data model. It can be seen as an emergent attribute of the checkpoint bit string: it's simply the length of the initial run of 1's in that bit string. Expressing the 'regression', 'progression' and 'neither' states in this model is much simpler than before:</p>
+
+<pre><code>sub compare_passes {
+    my ($new, $old) = @_;
+
+    my ($passing_new_tests, $passing_old_tests)
+        = map { /^(1*)/ and length $1 } $new, $old;
+
+    return $passing_new_tests &lt;=&gt; $passing_old_tests;
+}
+</code></pre>
+
+<p>When I tried out <em>this</em> idea in practice, it turned out to have a slight flaw as well, but not a fatal one this time: in project B type projects, some tests you can't reasonably make pass right now, but the "length of the initial run of 1's" model kinda demands that you do. You could move the tests, but that might not always be practical, and suddenly we're doing the tool favors, which sets a bad precedent. But having '# TODO' tests count as 1's in the bit string does the trick. Perhaps a more refined future model will even recognize when a TODO test starts passing, and consider that a checkpoint. But for now, this slightly muddled version will do.</p>
+
+<p>After using the tote prototype for a while, I get that feeling one gets when tests do what they should. First, they form a dialogue between the programmer and the test suite: "Now?" - "Nope." - "Now?" - "Still not." - "How about now?" - "Yes, SUCCESS! Oh yay!". That's nice. An additional bonus, and quite a large one at that, is that the test suite might at any point say "Whoa! If you do that, then this (which used to work) will break. Careful." And that's a safety net, just as version control is a safety net, which actually allows me to be more reckless and try different ideas. And that's really, really nice. None of this is news, of course. But if you're still uncertain about whether to do unit tests, that's the reason you should consider it.</p>
+
+<p>Also, a bit disappointingly, I find myself thrown out of the loop every time I save and the tote prototype goes into compile-then-test mode. I usually automatically Cmd-Tab to the browser and read a paragraph or two in the open tab. It's disappointing because the idea of tote is to keep me inside the loop, and not give me such a loophole. Maybe it's completely OK that this happens, or maybe I should find some way to stay focused on the code... looking for ways to refactor, or looking at the 'git diff' so far. I bring this up because it feels like a weakness of the system. Partly this is because Rakudo is slow, both when compiling and when running the tests. I think with a faster cycle overall, I'd distract myself less often.</p>
+
+<p>Oh, and sometimes I wish there were a way to enter a 'narrow mode', where the tote framework would focus on one test, and one test only. That'd mostly solve the speed problem, actually. Once the test in question passes, 'wide mode' is turned on again and the whole test suite is run to check against regressions. Hm, I like that. The problem is that in the general case, it's not possible to pry out just one test from a test file and run only that. Maybe with some testing frameworks it might be. My old <a href="http://github.com/masak/druid/blob/master/t/01-game-rules.t">Test::Ix</a> could probably be made to work that way, for example.</p>
+
+<p>Each time I mention tote, I want it a little bit more.</p>
+
+</article>
+
+  </body>
+</html>

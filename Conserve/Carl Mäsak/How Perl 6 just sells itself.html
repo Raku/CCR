@@ -1,0 +1,337 @@
+http://strangelyconsistent.org/blog/how-perl-6-just-sells-itself
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>How Perl 6 just sells itself :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-05-24T20:07:00+02:00" pubdate="pubdate">24 May, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/how-perl-6-just-sells-itself">How Perl 6 just sells itself</a></h1>
+  </header>
+
+  <p>Having been away for the weekend, I had the pleasure of backlogging over the following <a href="http://irclog.perlgeek.de/perl6/2009-05-22#i_1168591">exchange</a> on #perl6. I'll reproduce it here (in a condensed form divided into sections), to show three things:</p>
+
+<ul>
+<li>What I mean by "#perl6 is a <strong>friendly</strong> place". (Cf. <a href="http://strangelyconsistent.org/blog/barefoot">"Barefoot"</a>)</li>
+<li>Some of the <strong>excitement</strong> I myself sometimes feel when dealing with Perl 6.</li>
+<li>How Perl 6 basically <strong>sells itself</strong> in some cases.</li>
+</ul>
+
+<p>Enjoy.</p>
+
+<h2>OH HAI</h2>
+
+<pre><code>&lt;sjohnson&gt; hello, anyone awake and wants to chat about perl?
+&lt;jnthn&gt; sjohnson: For some definition of awake. :-)
+</code></pre>
+
+<h2>Community transparency</h2>
+
+<pre><code>&lt;sjohnson&gt; is it possible to submit something to the developers of perl for consideration into the new Perl 6 spec?
+&lt;jnthn&gt; A lot of Perl 6 developers hang out here (well, mabye not loads at this exactly point in time... ;-))
+&lt;jnthn&gt; There's also the perl6-language mailing list.
+&lt;jnthn&gt; What were you thinking of?
+&lt;TimToady&gt; sjohnson: for most such suggestions, there's a good chance it has already been considered at some point :)
+&lt;sjohnson&gt; ok i will tell my ideas
+</code></pre>
+
+<h2><code>.trim</code></h2>
+
+<pre><code>&lt;sjohnson&gt; do you think Mr. Wall would consider a whitespace trim function like in every single other language, instead of 1) having to depend on CPAN or 2) having to write your own regex function or 3) doing the raw regex each time yourself
+&lt;TimToady&gt; it's already there
+&lt;TimToady&gt; S32-setting-library/Str.pod: =item trim
+&lt;jnthn&gt; rakudo: my $x = "  abc  "; say $x.trim;
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«abc␤»
+&lt;jnthn&gt; sjohnson: Implemented in Rakudo even. :-)
+&lt;sjohnson&gt; YESSSSSSSSSSSSSSSSSSs
+&lt;sjohnson&gt; !!!!
+&lt;TimToady&gt; told you we might have considered it already :)
+&lt;sjohnson&gt; i am very happy to ehar that
+&lt;[particle]-&gt; (Mr. Wall)++
+&lt;TimToady&gt; biab, will backlog
+</code></pre>
+
+<h2><code>if</code> and curlies</h2>
+
+<pre><code>&lt;sjohnson&gt; will Perl 6 let you do:  if (1) return 1; .... or give you a syntax error
+&lt;jnthn&gt; You must have the curly braces.
+&lt;jnthn&gt; return 1 if cond; # is fine though
+&lt;sjohnson&gt; ahh so perl 6 will still make the curly braces necessary for that one statement eh.. :(
+&lt;jnthn&gt; sjohnson: Dangling syntax considered nasty.
+&lt;jnthn&gt; sjohnson: On the up side, the parens around the conditional are optional.
+&lt;jnthn&gt; if $x == 42 { say "the answer" }
+&lt;sjohnson&gt; thats kind of nice
+&lt;sjohnson&gt; as i hated those too
+&lt;sjohnson&gt; but i can live with just writing it backwards
+&lt;sjohnson&gt; do something if 1;
+&lt;sjohnson&gt; tho in perl 5 you dont need parens when it's written like that either which is nice
+&lt;jnthn&gt; Yes, true.
+&lt;sjohnson&gt; but that is still good news to me
+</code></pre>
+
+<h2>Indexing strings</h2>
+
+<pre><code>&lt;sjohnson&gt; can you edit strings by doing things like $string[3] = 'a';
+&lt;sjohnson&gt; in perl 6?
+&lt;jnthn&gt; sjohnson: No, not for a string, but there's a type called Buf (short for buffer) that lets you do that kind of thing.
+&lt;jnthn&gt; So far as I know anyway.
+&lt;jnthn&gt; One thing to note is that Perl 6 is very careful in the whole area of units.
+&lt;jnthn&gt; "length" is kinda a dirty word. :-)
+&lt;sjohnson&gt; length($string) will behave a bit differently?
+&lt;jnthn&gt; length is gone.
+&lt;jnthn&gt; You gotta say what you want.
+&lt;jnthn&gt; chars($string) # characters
+&lt;jnthn&gt; bytes($string) # how many bytes
+&lt;jnthn&gt; Note you can call 'em as methods too.
+&lt;jnthn&gt; $string.chars
+&lt;sjohnson&gt; thats not too bad
+</code></pre>
+
+<h2>Switch statements</h2>
+
+<pre><code>&lt;sjohnson&gt; will Perl 6 contain a switch / case structure?
+&lt;japhb&gt; sjohnson: given/when.
+&lt;japhb&gt; sjohnson: and it's quite powerful.
+&lt;sjohnson&gt; wow i am excited
+</code></pre>
+
+<h2><code>.pick</code></h2>
+
+<pre><code>&lt;sjohnson&gt; japhb: Perl has a sort() for arrays without the need for cpan.  Will a shuffle() be available for Perl 6?
+&lt;japhb&gt; sjohnson: yup.  It's called pick
+&lt;japhb&gt; rakudo: say &lt;1 2 3 4 5&gt;.pick(*)
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«53241␤»
+&lt;japhb&gt; rakudo: say &lt;1 2 3 4 5&gt;.pick(2)
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«35␤»
+&lt;sjohnson&gt; there's a shufflefunction called pick() to shuffle arrays?  that's an odd name
+&lt;japhb&gt; sjohnson: pick is the more general function.
+&lt;japhb&gt; shuffle is just the special case of pick on the entire array.
+&lt;jnthn&gt; sjohnson: .pick without an argument gets one item.
+&lt;sjohnson&gt; jnthn:  does it remove it out of the array?  im worried about "picking" twice
+&lt;jnthn&gt; sjohnson: No, it doesn't.
+&lt;jnthn&gt; sjohnson: You can pass a number to .pick to say how many you want.
+&lt;jnthn&gt; sjohnson: If you to .pick(*) it means "all of them"
+&lt;jnthn&gt; When you ask for more than one, though, the order can vary.
+&lt;jnthn&gt; (as in, is random)
+&lt;japhb&gt; sjohnson: both pick-without-replace and pick-with-replace are available.  It's just an adverb on the pick method.
+&lt;jnthn&gt; Ooh, I'd forgot about pick with replace. :-)
+</code></pre>
+
+<p><strong>[Update:]</strong> Nowadays <code>.pick(:replace)</code> is spelled <code>.roll()</code>.</p>
+
+<h2><code>.uniq</code></h2>
+
+<pre><code>&lt;sjohnson&gt; Q:  is there a uniq(@array); function too?
+&lt;japhb&gt; rakudo: say &lt;1 2 3 2 5 6 4 3&gt;.uniq.perl
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«["1", "2", "3", "5", "6", "4"]␤»
+&lt;japhb&gt; yup
+&lt;japhb&gt; :-)
+</code></pre>
+
+<h2>p6eval</h2>
+
+<pre><code>&lt;sjohnson&gt; wow on irc parser eh
+&lt;sjohnson&gt; rakudo: print "hello sjohnson";
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«hello sjohnson»
+&lt;japhb&gt; sjohnson: Because Perl 6 is a spec/testsuite with a number of implementations, the evalbot can actually show you the current response from each known implementation of Perl 6.
+&lt;jnthn&gt; sjohnson: When you prefix something with rakudo: here, it takes it and compiles/runs it.
+</code></pre>
+
+<h2>Method-call syntax</h2>
+
+<pre><code>&lt;sjohnson&gt; japhb: is what you wrote a real perl6 syntax?
+&lt;sjohnson&gt; i dont think you can do that in perl 5... using dots after things like that. am i wrong / right?
+&lt;japhb&gt; sjohnson: Yep.  $object.foo is roughly $object-&gt;foo in Perl 5.
+&lt;jnthn&gt; sjohnson: The . is the Perl 6 method call operator.
+&lt;jnthn&gt; ETOOMANYEXPLAINERS :-)
+&lt;japhb&gt; There can never be too many.
+</code></pre>
+
+<h2>Extacy</h2>
+
+<pre><code>&lt;sjohnson&gt; fuck i cant wait for perl 6
+&lt;japhb&gt; sjohnson: It's here.  Just not 100% implemented yet.
+&lt;sjohnson&gt; print "happy "house".trim;
+&lt;sjohnson&gt; rakudo:  print "    happy house    \n".trim;
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«happy house»
+&lt;sjohnson&gt; fuck i am in love
+&lt;sjohnson&gt; sorry for the course language
+&lt;sjohnson&gt; but all of this is WAY better than perl 5
+&lt;japhb&gt; It's a strong emotion, we understand. ;-)
+&lt;jnthn&gt; sjohnson: There's even more cool stuff. :-)
+&lt;skids&gt; sjohnson: rumor has it perl6 might swear occasionally too :-)
+</code></pre>
+
+<h2>Introspection</h2>
+
+<pre><code>&lt;sjohnson&gt; rakudo: say &lt;1 2 3&gt;.class
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«Method 'class' not found for invocant of class 'List'␤»
+&lt;japhb&gt; rakudo: say &lt;1 2 3&gt;.WHAT
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«List()␤»
+&lt;skids&gt; Most of the "introspection" stuff is allcaps methods like WHAT HOW etc.
+&lt;sjohnson&gt; rakudo:  say 3.WHAT
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«Int()␤»
+&lt;sjohnson&gt; wow it's like ruby
+</code></pre>
+
+<h2>Community</h2>
+
+<pre><code>&lt;sjohnson&gt; all this stuff larry wall decided should go into Perl 6?
+&lt;japhb&gt; sjohnson: and more.  How about this one:
+&lt;japhb&gt; rakudo: (&lt;a b&gt; X &lt;1 2&gt;).say
+&lt;p6eval&gt; rakudo 5eac9b: OUTPUT«a1a2b1b2␤»
+&lt;[particle&gt;-&gt; sjohnson: it's a community rewrite of perl, not (just) larry's rewrite
+</code></pre>
+
+<h2><code>qx//</code> without variable interpolation</h2>
+
+<pre><code>&lt;sjohnson&gt; in Perl 6, can there be a qx/ / without $string interpolation?
+&lt;japhb&gt; sjohnson: yes, there are both interpolating and non-interpolating versions of qx.
+&lt;skids&gt; sjohnson: there's just about any quoting form you could desire, Q: takes many adverbs that can be mixed together.
+</code></pre>
+
+<h2>Learning Perl 6</h2>
+
+<pre><code>&lt;sjohnson&gt; how will one learn about all the tricks in Perl 6 that are new, if one has already purchased Programming Perl (v5)
+&lt;jnthn&gt; sjohnson: There are various places to follow Perl 6 news, and at least one documentation project.
+&lt;jnthn&gt; Plus this place is pretty good for questions. :-)
+</code></pre>
+
+<h2>Do we like Perl or Python?</h2>
+
+<pre><code>&lt;sjohnson&gt; do you guys in general, prefer Perl over Python?
+&lt;sjohnson&gt; reason i ask is because the Perl fans seem to live in caves / don't post their thoughts on the debate
+&lt;sjohnson&gt; it would be refreshing to hear some opinions that they like Perl better for once
+&lt;japhb&gt; sjohnson: It just doesn't seem a debate worth fighting.  Especially since Parrot allows both to run in the same process and commingle nicely.
+&lt;jnthn&gt; I can't speak for everyone, but on my part getting into "my language is better" debates always feels a tad pointless. For one because part of language preference is just what people personally like too.
+&lt;jnthn&gt; I'm happy to point out factual inaccuracies if I spot them and it looks like a genuine mis-understanding rather than a troll.
+&lt;wayland76&gt; sjohnson: Yes, I prefer Perl over Python.  But I mostly agree with jnthn about these debates being somewhat pointless.
+&lt;sjohnson&gt; not so much a debate i would like to see, but someone sincerely admit that they prefer Perl over Python ... with that person having worked with both
+&lt;wayland76&gt; Let me give an example of pointfulness, though
+&lt;wayland76&gt; There's a book by Raphael Finkel called "Advanced Programming Language Design", and it talks about the criteria that people may or may not use for judging a language
+&lt;wayland76&gt; Perl 5 happily violates almost all the principles mentioned in order to maximise one principle -- expressiveness
+&lt;JDlugosz&gt; I've read books like that from a more classic era.  Things were more interesting then, I think.  Now they just study Java and C.
+&lt;wayland76&gt; JDlugosz: Well, the Finkel one actually means "Advanced".  This is "What to do next after you've done a basic Compilers course"
+&lt;wayland76&gt; Oh, the opinion that Perl maximises expressiveness is mine, naturally, and didn't come from the book)
+&lt;wayland76&gt; Btw, the Finkel book is free online as a PDF, but I liked it so much that I bought it anyway
+&lt;JDlugosz&gt; Algol, PL/1, LISP, SnoBol, REXX, ...
+&lt;JDlugosz&gt; Got a link for the PDF?  Like catnip...
+&lt;wayland76&gt; JDlugosz: http://www.nondot.org/sabre/Mirrored/AdvProgLangDesign/
+</code></pre>
+
+<h2>Almost exactly like Ruby</h2>
+
+<pre><code>&lt;sjohnson&gt; rakudo:  say 1..10.WHAT
+&lt;p6eval&gt; rakudo 23718a: OUTPUT«Use of type object as value␤␤»
+&lt;sjohnson&gt; rakudo:  say (1..10).WHAT
+&lt;jnthn&gt; skids: S12.
+&lt;p6eval&gt; rakudo 23718a: OUTPUT«Range()␤»
+&lt;sjohnson&gt; fuck Perl 6 is almost exaclty like Ruby... am i right?  i am happy about it
+&lt;sjohnson&gt; oops gotta watch my mouth
+&lt;sjohnson&gt; just so excited!!!
+&lt;wayland76&gt; sjohnson: Almost!  But More Better :)
+&lt;jnthn&gt; sjohnson: Well, Ruby was a source of inspiration too.
+&lt;wayland76&gt; (Actually I haven't used enough Ruby to make a judgement call :) )
+&lt;jnthn&gt; Perl has always been a langauge that borrows from others though.
+&lt;sjohnson&gt; i am so excited i can hardly stand it
+&lt;sjohnson&gt; im not even joking
+&lt;wayland76&gt; sjohnson: Perl 6 has that effect on me too sometimes :)
+</code></pre>
+
+<h2>Official Larry Wall release?</h2>
+
+<pre><code>&lt;sjohnson&gt; any time frame for an official Larry Wall release? hopefully not super long
+&lt;wayland76&gt; sjohnson: Perl 6 is a specification, there are multiple implementations of that specification
+&lt;wayland76&gt; No one implementation is the "Official" one
+&lt;sjohnson&gt; is there one written in C tho / will Larry Wall pick one of them to be official?
+&lt;sjohnson&gt; or will he write one himself with his buddies?
+&lt;wayland76&gt; There's one called "Rakudo" that's built on the virtual machine called "Parrot"
+&lt;wayland76&gt; And there's one called SMOP that is, IIRC, written in C
+&lt;wayland76&gt; The big advantages of Rakudo are a) it seems the most complete at the moment, and b) it will be very interoperable with other Parrot-based languages
+&lt;wayland76&gt; The big advantage of SMOP is that it will integrate well with Perl 5
+&lt;japhb&gt; sjohnson: Larry is specializing in spec and canonical parser (STD).  (Most) implementation is left to others.
+&lt;japhb&gt; s/parser/grammar/
+&lt;wayland76&gt; Yes, i forgot to mention STD is an official Larry Wall grammar
+&lt;wayland76&gt; I'm expecting it will be used by both Rakudo and SMOP at some point
+&lt;wayland76&gt; (I'm not involved in either project, except on the periphery of Rakudo)
+&lt;skids&gt; std: my $a # STD doesn't run code it just says whether the syntax is valid
+&lt;p6eval&gt; std 26914: OUTPUT«ok 00:02 36m␤»
+&lt;skids&gt; pugs: "I'm cold, and I forgot where I put my teeth.".say
+&lt;p6eval&gt; pugs: OUTPUT«I'm cold, and I forgot where I put my teeth.␤»
+&lt;wayland76&gt; (pugs is an old implementation that doesn't seem to have anyone working on it any more)
+</code></pre>
+
+<h2>The state of things</h2>
+
+<pre><code>&lt;sjohnson_&gt; wayland76:  are there Perl 6 things out right now that are fully functional that i dont have to install 3 separate things to get it to inpret, so i can start scripting in it?
+&lt;sjohnson_&gt; and that aren't much slower than perl 5
+&lt;wayland76&gt; sjohnson: Not sure what you mean
+&lt;wayland76&gt; No.  Perl 6 is not complete, and Rakudo at least are not worried about speed very much until it's complete
+&lt;jnthn&gt; JDlugosz: I tend to see it more as, in C++ I see there's one syntax and it may do a cast and it may do a coercion.
+&lt;revdiablo&gt; sjohnson_: Do you mean is there a perl 6 implementation ready for production use? No. Not yet.
+&lt;skids&gt; First make it work"
+&lt;wayland76&gt; sjohnson1: Basically, there's nothing out there that's simple to install; i expect that to change within the next month or two, but feature complete and production ready are definitely further away
+&lt;sjohnson&gt; i used to think ruby would solve all the scripting problems in the universe, but now i think perl 6 will
+</code></pre>
+
+<h2>Is the spec done yet?</h2>
+
+<pre><code>&lt;sjohnson&gt; is the Perl 6 spec done, finished, over?  or is larry still cooking up some ideas of his
+&lt;wayland76&gt; The Perl 6 spec is still changing
+&lt;wayland76&gt; For example, Larry just recently added some more specific stuff about how to override sublanguages (eg. regex) in the grammar
+&lt;wayland76&gt; But some sections of the spec are moderately stable
+&lt;wayland76&gt; What tends to happen is the implementors get arguing about what *should* happen, and then Larry resolves everything with a brilliant new idea (That doesn't happen with all arguments, but it's what drives some of the spec changes)
+</code></pre>
+
+<h2>Community transparency redux (aka "Mr. Wall comes here!?")</h2>
+
+<pre><code>&lt;sjohnson&gt; does anyone know of the -devel mailing list for Perl 6, and if Larry himself ever reads it?
+&lt;wayland76&gt; sjohnson: There's a "Language" list and a "Compilers" list
+&lt;skids&gt; He reads perl6-language and also comes here.
+&lt;wayland76&gt; Language is for arguing about the Spec.  I'm on it, and so is Larry.
+&lt;wayland76&gt; (perl6-language is the "Language" list I mentioned)
+&lt;wayland76&gt; I'm not on Compilers, so I can't speak for it
+&lt;sjohnson&gt; skids, how often does he come here?  what's his nickname when he does?
+&lt;wayland76&gt; lambdabot: @seen TimToady
+&lt;lambdabot&gt; TimToady is in #perl6. I last heard TimToady speak 3h 9m 56s ago.
+&lt;skids&gt; sjohnson: you already talked to him, in fact, when you first logged in.
+&lt;sjohnson&gt; wow
+&lt;sjohnson&gt; i had no idea that was him!!!
+&lt;skids&gt; :-)
+</code></pre>
+
+</article>
+
+  </body>
+</html>

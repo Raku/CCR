@@ -1,0 +1,126 @@
+http://strangelyconsistent.org/blog/june-23-map-and-grep
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 23 2011: map and grep :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-30T23:37:40+02:00" pubdate="pubdate">30 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-23-map-and-grep">June 23 2011: map and grep</a></h1>
+  </header>
+
+  <p><code>for</code> loops are great, but sometimes they feel a bit heavy-handed. Here, let me give an example:</p>
+
+<pre><code>my @numbers = 1..10;
+my @squares;
+for @numbers {
+    push @squares, $_ * $_;
+}
+</code></pre>
+
+<p>You should be comfortable reading code such as the above by now: we populate the array <code>@squares</code> based on the contents of <code>@numbers</code>. The <code>for</code> loop is just to make sure we're visiting each element of <code>@numbers</code> once, and the <code>push</code> adds a new element to <code>@squares</code> as we do that.</p>
+
+<p>We need to do this kind of "array population" quite a bit, so there's a function to help us do that. It's called <code>map</code>:</p>
+
+<pre><code>my @numbers = 1..10;
+my @squares = map { $_ * $_ }, @numbers;
+</code></pre>
+
+<p>Ah, that's nicer.</p>
+
+<p>The two pieces of code do the same thing. But the block we pass to <code>map</code> need only contain the <em>transformation</em> we want to effect. In this case, we want to transform the numbers to their squares. Just as with <code>for</code>, the inside of the <code>map</code> block recognizes the topic variable <code>$_</code>.</p>
+
+<p>What we're passing in to <code>map</code> is, in fact, a little piece of code. We can highlight this fact by extracting the calculation into a subroutine, and pass in the subroutine to <code>map</code>:</p>
+
+<pre><code>sub square($n) {
+    return $n * $n;
+}
+
+my @numbers = 1..10;
+my @squares = map &amp;square, @numbers;
+</code></pre>
+
+<p>(Yes, that <code>&amp;</code> is a fourth sigil &mdash; one for referring to functions. Leaving out the <code>&amp;</code> would call the function before it got a chance to be passed in to <code>map</code>.)</p>
+
+<p>Functions that accept other functions as arguments (or that return functions) are called "higher-order functions". There's a whole programming paradigm built around them &mdash; functional programming. I am not kidding.</p>
+
+<p>There's nothing to prevent you from <code>map</code>ping from one element to several, by the way:</p>
+
+<pre><code>for map { $_, $_ }, 1..3 {
+    .say;    # "1 1 2 2 3 3"
+}
+</code></pre>
+
+<p>There's another higher-order function that we shall go through today: <code>grep</code>. Whereas <code>map</code> <em>translates</em> from one whole list to another, <code>grep</code> lets you <em>filter</em> elements from a list.</p>
+
+<p>We can start out the same way as with <code>map</code>, by doing it the long way, with a <code>for</code> loop:</p>
+
+<pre><code>my @primes;
+for 2..100 {
+    if is_prime($_) {
+        push @primes, $_;
+    }
+}
+say join " ", @primes;    # "2 3 5 7 11 13..."
+</code></pre>
+
+<p>So you see, it only includes a number in the <code>@primes</code> array <em>if</em> it <code>is_prime</code>.</p>
+
+<p>With <code>grep</code>, it's just this:</p>
+
+<pre><code>my @primes = grep { is_prime($_) }, 2..100;
+say join " ", @primes;    # "2 3 5 7 11 13..."
+</code></pre>
+
+<p>Or even just passing in the function directly:</p>
+
+<pre><code>my @primes = grep &amp;is_prime, 2..100;
+say join " ", @primes;    # "2 3 5 7 11 13..."
+</code></pre>
+
+<p>Oh, the <code>is_prime</code> function? No, it's not built in. I guess I should define it for you:</p>
+
+<pre><code>sub is_prime($n) {
+    return ?($n %% none 2 .. $n - 1);
+}
+</code></pre>
+
+<p>[Author's note: go back and add <code>%%</code> to the "Arithmetic" post, apparently we needed it. <code>:-)</code>]</p>
+
+<p>So there we have it. <code>map</code> and <code>grep</code> are higher order functions that help you write common <code>for</code> loops in a shorter way. They help you focus on the code that means things and avoid the code that is always the same every time. Which is nice.</p>
+
+</article>
+
+  </body>
+</html>

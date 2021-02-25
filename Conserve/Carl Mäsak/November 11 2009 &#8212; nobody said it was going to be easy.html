@@ -1,0 +1,71 @@
+http://strangelyconsistent.org/blog/november-11-2009-nobody-said-it-was-going-to-be-easy
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 11 2009 &#8212; nobody said it was going to be easy :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-12T00:34:00+01:00" pubdate="pubdate">12 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-11-2009-nobody-said-it-was-going-to-be-easy">November 11 2009 &#8212; nobody said it was going to be easy</a></h1>
+  </header>
+
+  <p>129 years ago today, an Australian outlaw, was <a href="http://en.wikipedia.org/wiki/Ned_Kelly">hanged for murder</a>.</p>
+
+<div class='quote'><p>Kelly was born in Victoria to an Irish convict father, and as a young man he clashed with the police. Following an incident at his home in 1878, police parties searched for him in the bush. After he murdered three policemen, the colony proclaimed Kelly and his gang wanted outlaws. A final violent confrontation with police took place at Glenrowan. Kelly, dressed in home-made plate metal armour and helmet, was captured and sent to jail. He was hanged for murder at Old Melbourne Gaol in 1880. His daring and notoriety made him an iconic figure in Australian history, folk lore, literature, art and film.</p></div>
+
+<p>He died aged 25 or 26 years old.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>I fixed a bug today. Without knowing what caused it.</p>
+
+<p>A week ago, I tried to fix the <a href="http://strangelyconsistent.org/blog/november-4-2009-no-log-in-for-you">login problem</a>, but I only ran into a gigantic question mark.</p>
+
+<p>Today I donned a lance, jumped on a horse and assaulted the question mark. It stood firm. In fact, it seemed to grow bigger and more scary.</p>
+
+<p>Finally, <a href="http://irclog.perlgeek.de/perl6/2009-11-11#i_1717952">an improbable suggestion</a> by jnthn <a href="http://irclog.perlgeek.de/perl6/2009-11-11#i_1717992">solved</a> the whole issue. But didn't quite explain it.</p>
+
+<pre><code>&lt;masak&gt; it seems the bug is only triggered by something occurring within November.
+&lt;masak&gt; the strings containing user name and password look as they should, but they produce the wrong digest.
+&lt;masak&gt; this could presumably be because they are in a strange encoding [on the Parrot level].
+&lt;masak&gt; I'm not sure of this. it could be some other non-obvious difference.
+&lt;masak&gt; anyway, re-building the strings with join '', split '', $string did the trick.
+</code></pre>
+
+<p><a href="http://gist.github.com/232360">Here's</a> the smallest version of the bug that I've managed to produce so far.</p>
+
+</article>
+
+  </body>
+</html>

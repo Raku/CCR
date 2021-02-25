@@ -1,0 +1,59 @@
+http://strangelyconsistent.org/blog/cheese-speleology
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Cheese speleology :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-09-05T16:14:00+02:00" pubdate="pubdate">5 Sep, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/cheese-speleology">Cheese speleology</a></h1>
+  </header>
+
+  <p>Here's an idea I had the other day.</p>
+
+<p>We're in the process of upgrading how proto installs Perl 6 projects. mberends++ has taken the initiative by creating <a href="http://github.com/masak/proto/tree/installed-modules">a branch</a> and <a href="http://github.com/masak/proto/blob/242497e1b767362be39bb80d0c20cc2bea485fed/proto#L510">a TODO</a>. Today, the same mberends++ also landed <a href="http://github.com/rakudo/rakudo/commit/e8b631cd86ffeaeae8cf930c72ffd4a449e5d521">a commit in Rakudo</a> such that all our PERL6LIB worries just vanish. It's looking good.</p>
+
+<p>One thing I would like to fall out from this refactor is <strong>a way to run all the tests in all Perl 6 projects</strong>. Think of it as a kind of community-level introspection — proto's <a href="http://github.com/masak/proto/blob/adc11251ae1923c996b8ae8ed5b20bad90c1f9b5/lib/Ecosystem.pm">Ecosystem.pm</a> was my early attempt at this. And we can easily set up cron jobs and HTML serializers for a nightly run of these things on <a href="http://feather.perl6.nl/">feather</a>. This would have two benefits, I think:</p>
+
+<ul>
+<li>We get an ecosystem equivalent of the <a href="http://svn.pugscode.org/pugs/t/spec/">spectest suite</a>, in the sense of "these things should all work, and if it doesn't, a human should check it out". Such testing helped us before — apps helping us <a href="http://www.perlworkshop.no/npw2009/talk/1734">find holes in the Rakudo cheese</a> — but by not running all the tests regularly, we're doing ourselves a disservice, because it might be days between the introduction and discovery of a Rakudobug. The sooner these things are flagged down, the better for everyone.</li>
+<li>We could make the community more positively aware of project tests, and make the community celebrate them. Which Perl 6 project out there has the most tests right now? I don't know. I have a guess, but I would like to know for sure. Which project passes the highest amount of tests? Which projects pass all of their tests (barring <code>:todo</code> and <code>:skip</code> tests)? Which project has had all its tests passing for the longest time? Which project has had all its tests passing for the longest time <em>while also adding more tests lately</em>? Which project has the best test coverage? And so on. It's not a contest, but if some authors choose to think of it that way, what we'll end up with is better-tested code.</li>
+</ul>
+
+<p>Testing all of the Perl 6 ecosystem sure is simpler than testing all of CPAN. But if it can help improve Rakudo and the Perl 6 community, I think it can be very worthwhile.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,87 @@
+http://strangelyconsistent.org/blog/gge-now-runs-fine-on-rakudo-master
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>GGE now runs fine on Rakudo master :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-05-31T17:44:00+02:00" pubdate="pubdate">31 May, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/gge-now-runs-fine-on-rakudo-master">GGE now runs fine on Rakudo master</a></h1>
+  </header>
+
+  <p>After <a href="http://strangelyconsistent.org/blog/step-1-on-the-road-to-recovery-admitting-you-have-a-problem">admitting that I had a problem</a>, I decided that perhaps it would be good to take one single application and just beat it into submission, making it run on Rakudo master.</p>
+
+<p>I chose <a href="http://github.com/masak/gge">GGE</a>. That was a mistake, but perhaps a positive one.</p>
+
+<p>GGE is <em>big</em>, and has many tests, 750 of them. Running through them all takes almost 40 minutes. (The first "G" in GGE stands for "Glacial".) I keep thinking of GGE is "the biggest Perl 6 application out there", even though it's probably not that big, just fairly complex and well-tested. The mistake was attacking GGE first, and not something smaller.</p>
+
+<p>The way the mistake might turn out to be a positive one is that I'll probably feel that converting other applications from alpha to master is relatively painless. 哈哈</p>
+
+<p>Here's a summary of things to think about, if you're planning to port your Perl 6 application from alpha to master:</p>
+
+<h2>Improvements</h2>
+
+<ul>
+<li>Rakudo master has better interpolation of things like <code>"@lol[]"</code>. I found a lot of cases where I "cheated" and used symbols which weren't magical in alpha, but which are now. Beware.</li>
+<li><code>is also</code> is now <code>augment</code>, and requires <code>use MONKEY_TYPING;</code>.</li>
+<li>If you had put <code>sub</code>s in your class, chances are you'll need to <code>our</code> them now.</li>
+<li>Rakudo master is stricter about not changing the <em>contents</em> of readonly containers, such as arrays and hashes. You'll get a slap on the fingers if you did this.</li>
+<li><code>undef</code> is gone. You probably meant <code>Nil</code> or <code>Any</code> or something.</li>
+<li>If you were using <code>postcircumfix:&lt;( )&gt;</code>, remember that Rakudo master now requires the parameter list to consist of just a single Capture parameter. In practice, that means another layer of parentheses compared to alpha.</li>
+<li><code>break</code> in <code>when</code> blocks is now called <code>succeed</code> (and <code>continue</code> is called <code>proceed</code>)</li>
+</ul>
+
+<h2>Regressions</h2>
+
+<ul>
+<li>Named enums work in master, but they're not really up to spec yet. If you used them as sets of constant, things might still work. If you used methods like <code>.name</code> and <code>.pick</code>, you'll need to <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=75296">work around</a> for the time being. (And re-read the spec.)</li>
+<li>The <code>&lt;-&gt;</code> syntax for pointy blocks <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=74182">is no longer implemented</a>.</li>
+<li>Backslash escapes <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=73698">don't work</a> in character classes.</li>
+<li><code>Str.trans</code> doesn't work.</li>
+<li><a href="http://rt.perl.org/rt3/Ticket/Display.html?id=75386"> <code>handles</code> </a> doesn't work.</li>
+<li>Using an optional hash parameter with <code>is copy</code> semantics? Well, <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=74454">it won't work</a>. Sorry.</li>
+<li><code>Str.subst</code> works, but using <code>$_</code> in a closure in its second argument doesn't.</li>
+<li>Sometimes you have to clone closures using <code>pir::clone</code>, or <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=73034">they won't close properly</a> around their surrounding environments.</li>
+<li><code>"\e"</code> <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=75244">doesn't work</a> at the moment. Use <code>"\c[27]"</code> or <code>"\x[1b]".</code></li>
+<li>If you were general before and wrote <code>List</code> rather than <code>Array</code> because, well, it's shorter and more inclusive... that won't work now. <code>Array</code> no longer subclasses <code>List</code>.</li>
+<li>There are some situations when you might wind up with <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=74336">double [] in arrays.</a></li>
+<li>There's something wrong with <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=74302">list assignment and hashes</a>.</li>
+</ul>
+
+<p>It took two months of leisurely refactoring and debugging to bring GGE through the needle's eye. But I must confess that it was pretty sweet to subsequently rid it of all of alpha's workarounds. Clearly a net win.</p>
+
+</article>
+
+  </body>
+</html>

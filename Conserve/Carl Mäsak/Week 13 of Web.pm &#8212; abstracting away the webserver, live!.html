@@ -1,0 +1,148 @@
+http://strangelyconsistent.org/blog/week-13-of-webpm-abstracting-away-the-webserver-live
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Week 13 of Web.pm &#8212; abstracting away the webserver, live! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-08-16T19:32:00+02:00" pubdate="pubdate">16 Aug, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/week-13-of-webpm-abstracting-away-the-webserver-live">Week 13 of Web.pm &#8212; abstracting away the webserver, live!</a></h1>
+  </header>
+
+  <dl>
+<dd> <i>Jebus gotted a baff wif evribodi els. Hovr Cat turnded into a pijn and landid on Jebus. And a voiss from the ceiling sed "U iz mai kittn. I lieks u an I iz happi wif u."</i> &#8212; Luke 3:21-22</dd>
+</dl>
+
+<p>When I feel there are too many steps to get to what I want to acheive — a feeling that occurs often enough within the Web.pm effort — I like to get down to basics. What's <a href="http://c2.com/xp/DoTheSimplestThingThatCouldPossiblyWork.html">the simplest thing that could possibly work</a>?</p>
+
+<p>Usually, there's a frustrating buildup until I hit that point, and click over to simplest-thing mode. Usually, once I do, I thank myself for it, and marvel at the time I spent trying to cautiously nose around the problem in other ways, as if looking for some weak point.</p>
+
+<h2>A live coding session from first principles</h2>
+
+<p>Like what I'm doing now, for example. (Today I'm writing the blog post and wrapping up this week of development at the same time.) I'm writing a <code>Handler</code> for mberends++' <code>HTTP::Daemon</code>. This is a step towards making Web.pm webserver-agnostic by putting all the webserver-specific code in <code>Handler</code> classes.</p>
+
+<p>So, in order to understand what makes the <code>HTTP::Daemon</code> module tick, I nosed around aimlessly, reading the module code over and over again. Then — click — I decided to do what <code>make run</code> does, since it obviously sets up a functioning local web server.</p>
+
+<p>Turns out <code>make run</code> simply calls a <code>bin/httpd</code> script. I scavenged that script, and ended up with a "server one-liner" for Perl 6:</p>
+
+<pre><code>$ perl6 -e 'use HTTP::Daemon; my HTTP::Daemon $d .= new; while my $c = $d.accept and my HTTP::Request $r = $c.get_request { say $r.method; $c.send_response("OH HAI") }'
+</code></pre>
+
+<p>After starting this script, I can hit <code>http://127.0.0.1:8888/</code> in my web browser, and the browser will say <a href="http://bjoink.com/ohhai.jpg">"OH HAI"</a>, and the one-liner will say "GET". It doesn't get much simpler than that.</p>
+
+<p>Next step: something like this (perhaps familiar for those who saw <a href="http://yapceurope2009.org/ye2009/talk/1954">my talk</a> at YAPC) should be made to work:</p>
+
+<pre><code>Web::Handler::HTTPDaemon.run( sub ($env) { [200, { 'Content-Type' =&gt; 'text/plain' }, ['Hello World!']] } )
+</code></pre>
+
+<p>Turns out this code (mostly a modularization of the one-liner above), did the trick:</p>
+
+<pre><code>use v6;
+
+use HTTP::Daemon;
+
+class Web::Handler::HTTPDaemon {
+    method run(Callable &amp;app, :$port = 8888) {
+        my HTTP::Daemon $d .= new(LocalPort =&gt; $port);
+        while my $c = $d.accept and my HTTP::Request $r = $c.get_request {
+            my %env = {};
+            $c.send_response(&amp;app(%env)[2].Str)
+        }
+    }
+}
+</code></pre>
+
+<p>(<strong>Update 2009-08-19:</strong> flip++ informs me on IRC that the <code>&amp;app(%env)[2].Str</code> would insert a space between each element. It should really be <code>[~] &amp;app(%env)[2].list</code> — thanks!) </p>
+
+<p>And it works! The browser says "Hello world!" when I hit <code>http://localhost:8888/</code>.</p>
+
+<p>Now, a toy example such as this is nice and all, but the <em>prototypical</em> toy example — the Nibbler — should be made to work, or it somehow doesn't count.</p>
+
+<p>So, I rewrite <code>bin/run-nibbler</code> to this:</p>
+
+<pre><code>#!/usr/local/bin/perl6
+use Web::Nibbler;
+use Web::Handler::HTTPDaemon;
+
+my $port = 8888;
+say "Try out the Nibbler on http://127.0.0.1:$port/";
+Web::Handler::HTTPDaemon.run( Web::Nibbler.new );
+</code></pre>
+
+<p>(That's much less code than <a href="http://github.com/masak/web/blob/36025de9bf9247c3b239c3e7594ea6dddf7390ef/bin/run-nibbler">before</a>, and webserver-independent at that. Yay orthogonality!)</p>
+
+<p>I'd like to be able to say that this worked on the first try, but actually I had to tweak two things in the <code>Web::Nibbler</code> module itself for it to be compatible with this new scheme. First, due to some excellent on-demand hacking by jnthn++ during YAPC::EU, we can now start renaming our <code>call</code> methods into <code>postcircumfix:&lt;( )&gt;</code> — and in this case, we kinda have to. Second, <code>run</code> expects a <code>Callable</code>, so we'll have to declare that <code>Web::Nibbler does Callable</code>.</p>
+
+<p>After that, it works! Except nothing happens when I click the "flip" link on the Nibbler, because I'm a cheating bastard who doesn't send it a proper <code>%env</code> argument. Time to fix that.</p>
+
+<p>...and it turns out that this little detail was easy too. I just salvage two lines from the old <code>bin/run-nibbler</code>, and it works:</p>
+
+<pre><code>my $qs = $r.url.path ~~ / '?' (.*) $/ ?? $0 !! '';
+my %env = { "QUERY_STRING" =&gt; $qs };
+</code></pre>
+
+<p>Only this time, these two lines end up in <code>Web::Handler::HTTPDaemon</code>, where they should be.</p>
+
+<p>Yay! That sure felt good.</p>
+
+<p>One thing I want to start habitually doing in the Web.pm posts is having a "Try it out yourself" section, where people can get interactive if they want. I've come to realize that this is something people want out of blog posts, and I certainly wouldn't mind having more hands and eyes on Web.pm. So here goes:</p>
+
+<h2>Try it out yourself!</h2>
+
+<p>See if <em>you</em> can get the latest Web.pm to run this piece of code:</p>
+
+<pre><code>Web::Handler::HTTPDaemon.run( sub ($env) { [200, { 'Content-Type' =&gt; 'text/plain' }, ['Hello World!']] } )
+</code></pre>
+
+<p>Then expand it into something cool, and go brag on #perl6 about it.</p>
+
+<p>(<strong>Update 2009-08-19:</strong> Recall that Web.pm nowadays has <code>HTTP::Daemon</code> as an external dependency, so make sure you <a href="http://gitorious.org/http-daemon">have it</a> and that it's in your <code>PERL6LIB</code> path, along with Web.pm. PerlJam++ for pointing out that this wasn't obvious.)</p>
+
+<h2>Other interesting goings-on</h2>
+
+<ul>
+<li>There was this YAPC::EU conference, and it was amazing. Mostly, it was amazing because Perl 6 and Rakudo stole the show, and pulled down the biggest ovation of the whole conference: Rakudo is entering a new phase in April, called <a href="http://use.perl.org/~pmichaud/journal/39411">Rakudo Star</a>, and it'll be awesome. My goal is to make Web.pm, if not awesome, then at least perfectly usable until then.</li>
+<li>Last month, I got an email from Arthur Wolf, a (by his own description) programmer "very impatient to write mvc apps". He wrote to say that he was slightly dismayed that he couldn't do this yet, and asked "Is there anything I can do to help ?". I emailed back a "yes!" and a few suggestions. Arthur decided to have a go at Astaire, our minimal dispatcher DSL-y thingy. He's made head-spinning progress since then. My role in this is mainly to stand back, amazed, as this man churns out code. I also sometimes throw him a workaround or two. arthur-_++</li>
+<li>I've gotten partway in writing a spec for Web.pm Core. Nothing commitworthy yet, but hopefully next week.</li>
+<li>I would still appreciate some help with the <a href="http://strangelyconsistent.org/blog/week-12-of-webpm-a-spec-and-smartlinks">problem from last week</a> of having our spectests (and their pass/fail status) being woven into the HTML generated from our Web.pm spec. I'll look at it a bit more myself, but I'm afraid my brain might be too small for the code that's been written to solve this for Pugs once upon a time.</li>
+<li>There are some serious encoding problems still lurking our there with Rakudo, which we'll <em>have</em> to solve before April. Right now, for example, the <code>HTTP::Daemon</code> stack crashes when the browser is trying to load the pre-packaged favicon. Why? Essentially because <code>&amp;slurp</code> doesn't have a <code>:bin</code> parameter yet, and it won't realistically have that until we have a more mature <code>Buf</code> type. I got some work done on <code>Buf</code> during the Rakudo post-YAPC::EU hackathon, but more such work is needed to get there.</li>
+<li>Taking stock of the current interest for Web.pm, it feels we're on track. People seem to generally know what it is, and seem to generally be thinking "hm, Perl 6 and web apps, then I should probably take a look at Web.pm". That's good, and that target group is probably the right one to keep in mind.</li>
+</ul>
+
+<p>I wish to thank The Perl Foundation for sponsoring the Web.pm effort.</p>
+
+</article>
+
+  </body>
+</html>

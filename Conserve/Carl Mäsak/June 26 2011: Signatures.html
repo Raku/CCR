@@ -1,0 +1,139 @@
+http://strangelyconsistent.org/blog/june-26-2011-signatures
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 26 2011: Signatures :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-04T00:02:00+02:00" pubdate="pubdate">4 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-26-2011-signatures">June 26 2011: Signatures</a></h1>
+  </header>
+
+  <p>We haven't implemented a <a href="http://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci</a> subroutine yet. Let's do that.</p>
+
+<pre><code>sub fib($n) {
+    return 0 if $n == 0;
+    return 1 if $n == 1;
+
+    return fib($n - 1) + fib($n - 2);
+}
+</code></pre>
+
+<p>Yes, it's <em>recursive</em>, meaning that it calls itself. That's perfectly fine; we just have to make sure that it bottoms out in some base case or other. That's why we have the first two lines in there, as our base cases.</p>
+
+<p>(It's not a very efficient implementation. It will get unbearably slow for larger values of <code>$n</code>. There are better ways to implement <code>fib</code>, but what this version has going for it is that it's short and clear.)</p>
+
+<p>But wait! There's a terrible thing that can happen to this subroutine. If we call <code>fib(2.5)</code> it will call <code>fib(1.5)</code>, which will call <code>fib(0.5)</code>, which will call <code>fib(-0.5)</code>, and so on down to minus infinity, which is very far down indeed.</p>
+
+<p>No problem, though. We just adorn <code>fib</code>'s parameter <code>$n</code> with a type:</p>
+
+<pre><code>sub fib(Int $n) {
+    ... # (same)
+}
+</code></pre>
+
+<p>The only thing that changed there is the <code>Int</code> in front of the <code>$n</code> on the first line. Now when we try to call <code>fib(2.5)</code>, we get</p>
+
+<pre><code>Nominal type check failed for parameter '$n'; expected Int but got Rat instead
+</code></pre>
+
+<p>Yep, 2.5 is a <code>Rat</code>. Short for "rational number". Now you know. Also, the thing that we just put the type in is called a <em>signature</em>. Hence the name of this post. Every subroutine has a signature, even if it's an empty one. The signature is like a guard that makes sure only values of the right type get through the door into the subroutine.</p>
+
+<p>So, that's that problem solved. But... oh no! There's another way <code>fib</code> could loop infinitely. (As if it wasn't already slow enough...) What would happen if we passed in a negative integer, like <code>fib(-1)</code>.</p>
+
+<p>Well, it wouldn't get stuck in any of the base cases; it's already below them. We realize that we never really meant for someone to call <code>fib</code> with a negative integer argument. Argh.</p>
+
+<p>What's worse, we can't just solve this by slapping a <code>NonNegativeInt</code> type on <code>$n</code> either, because there is no such type in Perl 6. Instead, we can do one of two things.</p>
+
+<p>The first thing we can do is to use a <code>where</code> clause:</p>
+
+<pre><code>sub fib(Int $n where { $n &gt;= 0 }) {
+    ...
+}
+</code></pre>
+
+<p>Now people will get this when they try to call <code>fib(-1)</code>:</p>
+
+<pre><code>Constraint type check failed for parameter '$n'
+</code></pre>
+
+<p>I guess you can see how <code>where</code> clauses complement named types quite nicely. We can check anything we want inside of those. And it's shorter than writing something like this:</p>
+
+<pre><code>sub fib(Int $n) {
+    die "fib can't handle negative numbers!"
+        unless $n &gt;= 0;
+
+    ...
+}
+</code></pre>
+
+<p>The second thing we can do is <em>define</em> a <code>NonNegativeInt</code>:</p>
+
+<pre><code>subset NonNegativeInt of Int where { $_ &gt;= 0 };
+
+sub fib(NonNegativeInt $n) {
+    ...
+}
+</code></pre>
+
+<p>So... <code>subset</code> gives us the ability to create new, narrower types. We'll see lots more about type creation in the next few days.</p>
+
+<p><code>subset</code>, as it happens, also uses a <code>where</code> clause. Of course that's because we're still doing essentially the same check, only we're declaring it outside of the signature. Note how we can't use <code>$n</code> inside the <code>where</code> clause, because <code>$n</code> only exists within the context of <code>fib</code>. But the topic variable <code>$_</code> within <code>where</code> clauses means "the value we're talking about", and that's what we need.</p>
+
+<p>When should you use <code>where</code> clauses directly in the signature, and when should you define subtypes? There's no right or wrong here, but it makes a lot of sense to declare a subtype if you plan to use that particular constraint in a lot of different situations.</p>
+
+<p>Let's end today's post with a nice feature that we're now prepared to fully appreciate: <em>multi subs</em>. They're simply subroutines with the same name but different signatures:</p>
+
+<pre><code>multi sub fib(Int $n where { $n == 0 }) { 0 }
+multi sub fib(Int $n where { $n == 1 }) { 1 }
+
+multi sub fib(Int $n where { $n  &gt; 1 }) { fib($n - 1) + fib($n - 2) }
+</code></pre>
+
+<p>Clearly, it gets rid of a bit of conditionals, by pushing things into signatures instead. In fact, we can write the first two multis even shorter:</p>
+
+<pre><code>multi sub fib(0) { 0 }
+multi sub fib(1) { 1 }
+
+multi sub fib(Int $n where { $n &gt; 1 }) { fib($n - 1) + fib($n - 2) }
+</code></pre>
+
+<p>Look <a href="http://en.wikipedia.org/wiki/Fibonacci_number">how close that is</a> to the definition at the top of the Wikipedia page.</p>
+
+<p>Multis are a great way to divide related but different behaviors into different subs. More about clever ways of subdividing things tomorrow, when we talk about classes.</p>
+
+</article>
+
+  </body>
+</html>

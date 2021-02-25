@@ -1,0 +1,98 @@
+http://strangelyconsistent.org/blog/yapsi-201101-released
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Yapsi 2011.01 Released! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-01-02T00:50:00+01:00" pubdate="pubdate">2 Jan, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/yapsi-201101-released">Yapsi 2011.01 Released!</a></h1>
+  </header>
+
+  <p>It is with inordinate pleasure that I announce on behalf of the Yapsi
+development team the January 2011 release of Yapsi, a Perl 6 compiler
+written in Perl 6. Ta-daa!</p>
+
+<p>You can download it <a href="http://github.com/downloads/masak/yapsi/yapsi-2011.01.tar.gz">from Github</a>.</p>
+
+<p>Yapsi is implemented in Perl 6. It thus requires a Perl 6 implementation to
+build and run. This release of Yapsi has been confirmed to work on all
+releases of Rakudo Star to date.</p>
+
+<p>Yapsi is an "official and complete" implementation of Perl 6. It is official
+by virtue of sheer chuztpah, and complete by virtue of utter disconnectedness
+from reality.</p>
+
+<p>This month's release adds a roadmap! You should <a href="http://github.com/masak/yapsi/blob/master/doc/ROADMAP">check it out</a>.</p>
+
+<p>The roadmap will be updated either (a) irregularly or (b) whenever reality
+imposes itself in such a way as to make updates a necessity or (c) both.</p>
+
+<p>For a complete list of changes, see <a href="http://github.com/masak/yapsi/blob/master/doc/ChangeLog">doc/ChangeLog</a>.</p>
+
+<p>Yapsi consists of a compiler and a runtime. The compiler and runtime are
+two separate components communicating through a protocol called SIC. Actually,
+it's more of a standard than a protocol. Hm, it's really more of a syntax.
+An instruction format, that's what it is. Anyway, the compiler sends a bit
+of SIC to the runtime, and the runtime follows the instructions therein.</p>
+
+<p>With each new release of Yapsi, the old SIC format is declared obsolete and
+completely unworkable. If you're wondering why you should upgrade your
+Yapsi implementation to this month's version, this is the reason: your old
+SIC files won't work with this month's release, due to this deprecation
+policy. That's right, you should upgrade because of our deprecation policy!
+We also suggest that you choose to upgrade because of fear, uncertainty, and
+doubt. (Our PR department suggested that we create advertisements with
+dinosaurs in an office setting, but they were overruled by our Sanity And
+Common Sense department, for better or worse.)</p>
+
+<p>An overarching goal for making a Perl 6 compiler-and-runtime is to use it as
+a server for various other projects, which hook in at different steps:</p>
+
+<ul>
+<li>A time-traveling debugger (tardis), which hooks into the runtime.
+Already underway, see <a href="http://github.com/masak/tardis">http://github.com/masak/tardis</a></li>
+<li>A coverage tool (lid), which will also hook into the runtime.</li>
+<li>A syntax checker (sigmund), which will use output from the parser.</li>
+</ul>
+
+<p>Another overarching goal is to optimize for fun while learning about parsers,
+compilers, and runtimes. \o/</p>
+
+<p>Have the appropriate amount of fun!</p>
+
+</article>
+
+  </body>
+</html>

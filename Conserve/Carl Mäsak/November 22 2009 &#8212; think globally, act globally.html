@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/november-22-2009-think-globally-act-globally
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 22 2009 &#8212; think globally, act globally :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-23T00:20:00+01:00" pubdate="pubdate">23 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-22-2009-think-globally-act-globally">November 22 2009 &#8212; think globally, act globally</a></h1>
+  </header>
+
+  <p>27 years ago today, a 10-year old girl read the news, asked a question, and <a href="http://en.wikipedia.org/wiki/Samantha_Smith">changed the course of the world</a>. The Wikipedia article has the story, which is in some sense larger than life, with a fairy tale beginning and a sad, blunt ending:</p>
+
+<div class='quote'><p>During this period, large anti-nuclear protests were taking place across Europe and North America, while the November 20, 1983, screening of ABC's post-nuclear war dramatization The Day After became one of the most anticipated media events of the decade.</p><p>In this atmosphere, on November 22, 1982, Time magazine published an issue with [then Soviet's General Secretary] Andropov on the cover. When [Samantha] Smith viewed the edition, she asked her mother, "If people are so afraid of him, why doesn't someone write a letter asking whether he wants to have a war or not?" Her mother replied, "Why don't you?"</p></div>
+
+<p>She wrote the letter, Andropov answered, and in the reply was an invitation to Russia. The correspondance is too long to reproduce here, but not too long to <a href="http://en.wikipedia.org/wiki/Samantha_Smith#Life">go and read on Wikipedia</a>. Bottom line, the General Secretary invited her to Soviet Russia, and she went there, as a sort of ambassador. She became a media phenomenon, both in the US and in Soviet Russia.</p>
+
+<p>She died three years later in a tragic plane crash. She <a href="http://en.wikipedia.org/wiki/File:USSR_stamp_S.Smith_1985_5k.jpg">has her own stamp</a>.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I asked jnthn++ what to do if I wanted to help with the <code>ng</code> branch. He suggested I put in <code>&amp;open</code>.</p>
+
+<p>I found that <code>t/spec/S16-filehandles/io.t</code> would probably be a good file to make pass, since it contained a lot of <code>&amp;open</code> tests. So I ran it.</p>
+
+<p>It didn't parse. <code>!~~</code> was missing. This is the only standard operator which <em>shouldn't</em> be added automatically by the <code>!</code> metaoperator, because it doesn't do the boolean negation of <code>~~</code>. Where the latter calls <code>ACCEPTS</code>, the former calls another method, <code>REJECTS</code>. I <a href="http://github.com/rakudo/rakudo/commit/218aee648a0742ba690ad6eabcad7dcc0cffafec">put in <code>!~~</code> </a> in <code>ng</code>.</p>
+
+<p>The test file, which had now started running, failed on not finding the <code>.pick</code> method on <code>Range</code>. I started to put it back in <code>Any-list.pm</code>, where it had been in <code>master</code>. It contained features which are not implemented in <code>ng</code> yet, such as binding and <code>gather</code>. I wrote limited workarounds.</p>
+
+<p>While I was in <code>Any-list.pm</code>, I noticed a misplaced <code>.perl</code> method, which should really be in <code>List.pm</code>. I <a href="http://github.com/rakudo/rakudo/commit/44092124a13e614f01fe4b5a22da411f44509a1c">moved it</a>.</p>
+
+<p>Before I committed my <code>.pick</code> implementation, I was foolish enough to run it. Doing that revealed that <code>Range</code> doesn't have a <code>.list</code> method implemented. Well, I can do that, I thought. So I did.</p>
+
+<p>But when I tried running <em>that</em>, it failed because it uses <code>&amp;push</code>, which isn't implemented either. The <code>.pick</code> implementation I had written also uses <code>&amp;push</code>, in the code which workarounds the lack of <code>gather</code>. I was informed that putting in <code>&amp;push</code> would be non-trivial in some ways.</p>
+
+<p>At this point, I <a href="http://en.wikipedia.org/wiki/Sleep">called it a night</a>. Now I better understand what jnthn++ means when he's saying that trying to put in one thing in <code>ng</code> usually leads to having to put in a bunch of things. It's very true. But it was also really fun to help, in a small way. I will likely do it again soon.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,70 @@
+http://strangelyconsistent.org/blog/november-8-2010-druid-is-back-in-town
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 8 2010 &#8212; Druid is back in town :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-09T00:28:00+01:00" pubdate="pubdate">9 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-8-2010-druid-is-back-in-town">November 8 2010 &#8212; Druid is back in town</a></h1>
+  </header>
+
+  <p>63 years ago today, a Nazi exhibition called "Der ewige Jude" ("The Eternal Jew") was opened. I can't find any information on Wikipedia about the exhibition, but there's a <a href="http://en.wikipedia.org/wiki/The_Eternal_Jew">"documentary" with the same name</a>.</p>
+
+<div class="quote">Throughout the film, these supposed traits are contrasted to the Nazi state ideal: while Aryan men are shown to find satisfaction in physical labor and the creation of value, Jews are depicted as finding pleasure in money and a hedonist lifestyle. While members of the Aryan race live healthily, rich Jews are shown as living in bug-infested and dirty homes, even though they could afford better. The footage to convey this was actually captured in ghettos, where living conditions were very poor and unsanitary surroundings were virtually inevitable. While Germanic/Nordic man has an appreciation for Northern culture and imagery, Jews are alleged only to find satisfaction in the grotesque and decadent. Many things that run contrary to Nazi doctrine are associated with Jewish influence, such as modern art, cultural relativism, anarchist and socialist movements, sexual liberation, and the "obscure pseudo-science" of Albert Einstein.</div>
+
+<p>The way I pick these subjects, by the way, is to wander Wikipedia semi-aimlessly until I find something that catches my eye. Today it was this; anti-Jewish propaganda from before WWII. I realize that's not a very cheerful subject, but it was what caught my eye (and I do think that it's an important piece of history to be aware of).</p>
+
+<p>If you are angered or offended by my choice of historical subject today, please let me know. I will also provide a full refund at the exit.</p>
+
+<p>For those of you who also think it's an important piece of history to be aware of, and who are interested in learning more: here's a set of <a href="http://www.holocaust-history.org/der-ewige-jude/stills.shtml">still images</a> from the movie, and here's <a href="http://nsl-archiv.org/Filme/heil.php?text=ewige+jude&amp;submit=+Suche+">the movie</a> itself.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I realized some long-standing plans to get Druid to work.</p>
+
+<p>It's been one of the victims of serious improvements to Rakudo (which, as you'll recall, got a new grammar engine going from <code>alpha</code> to <code>ng</code>). Druid was designed with an eye to OO class hierarchies, and even had a few regexes as public attributes. That trick no longer worked.</p>
+
+<p>Well, it did work, if one but added <code>our</code> scoping to those attributes. Except that the regexes insisted on calling each other, and <em>that</em> didn't work. Actually, never mind. The details are complicated and don't matter. I fixed it. <a href="https://github.com/masak/druid/commit/383fc260b063743022895d5595ed8afdad6c3eba">Here's the fix</a>.</p>
+
+<p>Current status: all the tests run again! There's one undefinedness warning in there somewhere waiting to be explored. Now that we have Working Code and Passing Tests, I'm sure there are a number of refactorings that could be made, including (but not limited to) <a href="http://irclog.perlgeek.de/perl6/2010-11-08#i_2977529">the tip Tene++ gave me</a>.</p>
+
+<p>As an extra bonus, the <code>druid</code> script runs! At least to the point where it draws the game board. And it does this with a slow kind of grace. I don't remember it being that slow before. Actually, it looks unacceptably slow.</p>
+
+<p>Tomorrow, I might get around to figuring out why.</p>
+
+</article>
+
+  </body>
+</html>

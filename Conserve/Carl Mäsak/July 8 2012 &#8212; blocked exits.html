@@ -1,0 +1,231 @@
+http://strangelyconsistent.org/blog/july-8-blocked-exits
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 8 2012 &#8212; blocked exits :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-08T23:55:24+02:00" pubdate="pubdate">8 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-8-blocked-exits">July 8 2012 &#8212; blocked exits</a></h1>
+  </header>
+
+  <p>I don't quite remember what I meant by "blocked exits" when I wrote the month
+plan... But let's improvise! Way I see it, it can mean two things. So we'll do
+them both today.</p>
+
+<p>We're in a position where the game looks like this:</p>
+
+<pre><code>$ bin/crypt 
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+
+&gt; quit
+</code></pre>
+
+<p>Oh, but first I just want to fix a thing that's starting to bother me.
+(Itch-based programming for the win!) I don't see the possible exits, and so I
+walk wrong and have to edit the game logs so you won't think my player is a
+drunken idiot. Let's <a href="https://github.com/masak/crypt/commit/c9841be088255a1177857b370645cf1e0562aded">add
+exits</a>.</p>
+
+<pre><code>$ bin/crypt 
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+You can go east.
+
+&gt; east
+Hill
+
+A flat, broad hill interrupts the dense-ish forest here. Only grass and
+small bushes grow on the hill.
+You can go west and south.
+
+&gt; south
+Chamber
+
+This is a cramped space just inside the hidden opening in the hill. The
+sun gets in enough to illuminate the place. There are some scribblings on
+the wall.
+You can go north and south.
+
+&gt; south
+Hall
+
+It's hard to believe that this kind of room can fit under a hill. It's tall,
+long, and quite spacious. Hieroglyphs adorn all four of the walls. The
+floor slants a bit.
+You can go north and down.
+
+&gt; down
+Cave
+
+This is a perfectly cylindrical chamber. An oversized fire-pit takes up most
+of the floor space in the middle of the room. Ancient runes run along the
+circumference of the wall. It's hot and stuffy.
+You can go up and northwest.
+
+&gt; northwest
+Crypt
+
+The air is stale and smells a bit metallic. Three impenetrable sarcophagi
+sit next to each other on the floor. On the walls are numerous finely
+inscribed ideograms.
+You can go southeast.
+
+&gt; quit
+</code></pre>
+
+<p>That's better.</p>
+
+<p>The first kind of "blocked exit" we have is that we're not supposed to be able
+to just walk into the crypt. In the last year's game, there was an
+<code>on_try_exit</code> hook method that got the last word on whether you could really
+take that exit, returning <code>True</code> or <code>False</code> as appropriate. (So the exit is
+<em>there</em>, and you can see it, but you may not be able to take it.)</p>
+
+<p>That still sounds like a rather good approach, so let's <a href="https://github.com/masak/crypt/commit/6759b92a4a9e0fb8a56a2821e9f663c007761e98">do it that
+way</a>.
+We haven't started talking about <em>things</em> at all yet, so let's just forbid that
+exit unconditionally for now. And come back and fix it later when we can have
+nice things.</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+You can go east.
+
+&gt; east
+Hill
+
+A flat, broad hill interrupts the dense-ish forest here. Only grass and
+small bushes grow on the hill.
+You can go west and south.
+
+&gt; in
+Chamber
+
+This is a cramped space just inside the hidden opening in the hill. The
+sun gets in enough to illuminate the place. There are some scribblings on
+the wall.
+You can go north and south.
+
+&gt; south
+Hall
+
+It's hard to believe that this kind of room can fit under a hill. It's tall,
+long, and quite spacious. Hieroglyphs adorn all four of the walls. The
+floor slants a bit.
+You can go north and down.
+
+&gt; down
+Cave
+
+This is a perfectly cylindrical chamber. An oversized fire-pit takes up most
+of the floor space in the middle of the room. Ancient runes run along the
+circumference of the wall. It's hot and stuffy.
+You can go up and northwest.
+
+&gt; northwest
+You try to walk past the fire, but it's too hot!
+
+&gt; quit
+</code></pre>
+
+<p>The second thing we'll be doing today is to <a href="https://github.com/masak/crypt/commit/776705280972db51c456bdaafa766295d9295090">block the entry to the
+chamber</a>.
+It's supposed to be triggered by a door being opened. Again, we don't have
+doors yet, because we don't have things yet. So we just remove that exit for
+now.</p>
+
+<pre><code>$ bin/crypt
+CRYPT
+=====
+
+You've heard there's supposed to be an ancient hidden crypt in these
+woods. One containing a priceless treasure. Well, there's only one way
+to find out...
+
+Clearing
+
+The forest road stops here, and the gaps between the trees widen into a
+patch of un-forest. The sky above is clear apart from a few harmless clouds.
+You can go east.
+
+&gt; east
+Hill
+
+A flat, broad hill interrupts the dense-ish forest here. Only grass and
+small bushes grow on the hill.
+You can go west.
+
+&gt; quit
+</code></pre>
+
+<p>The world just shrank quite a bit. Feels kinda weird.</p>
+
+<p>For the next <em>week</em> (wow!) we'll be implementing the foundations for things,
+and then we'll start putting them in the game itself. Apparently things will be
+on our mind.</p>
+
+</article>
+
+  </body>
+</html>

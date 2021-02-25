@@ -1,0 +1,99 @@
+http://strangelyconsistent.org/blog/dreaming-in-mixins
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Dreaming in mixins :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-07-04T03:28:00+02:00" pubdate="pubdate">4 Jul, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/dreaming-in-mixins">Dreaming in mixins</a></h1>
+  </header>
+
+  <p>Working with pls (a next-gen project installer for the Perl 6 ecosystem), I had a few classes with code like this:</p>
+
+<pre><code>class POC::Tester does App::Pls::Tester {
+    method test($project --&gt; Result) {
+        my $target-dir = "cache/$project&lt;name&gt;";
+        if "$target-dir/Makefile" !~~ :e {
+            return failure;
+        }
+        unless run-logged( relative-to($target-dir, "make test"),
+                           :step('test'), :$project ) {
+            return failure;
+        }
+
+        return success;
+    }
+}
+</code></pre>
+
+<p>(<code>success</code> and <code>failure</code> are <code>Result</code> enum values defined elsewhere. They felt like pleasant documentation, and when return type checking works, they'll even help catch errors!)</p>
+
+<p>Now, I wanted to add super-simple progress diagnostics to this method. I wanted an <code>announce-start-of('test', $project);</code> at the start of the module, and either an <code>announce-end-of('test', success);</code> or an <code>announce-end-of('test', failure);</code>, depending on the success or failure of the method.</p>
+
+<p>I have a low threshold for boilerplate. After realizing that I'd have to manually add those calls in the beginning of the method, and before each <code>return</code> — and not only in this method, but in several others — I thought "man, I shouldn't have to tolerate this. This is Perl 6, it should be able to do better!"</p>
+
+<p>So I thought about what I really wanted to do. I wanted some sort of... method wrapper. Didn't really want a subclass, and a regular role wouldn't cut it (because class methods override same-named role methods).</p>
+
+<p>Then it struck me: <em>mixins</em>. Did those already work in Rakudo? Oh well, try it and see. So I created this role:</p>
+
+<pre><code>role POC::TestAnnouncer {
+    method test($project --&gt; Result) {
+        announce-start-of('test', $project&amp;lt;name&amp;gt;);
+        my $result = callsame;
+        announce-end-of('test', $result);
+        return $result;
+    }
+}
+</code></pre>
+
+<p>And then, later:</p>
+
+<pre><code>POC::Tester.new() does POC::TestAnnouncer
+</code></pre>
+
+<p>And it worked! On the first attempt! jnthn++!</p>
+
+<p>(If you're wondering what in the above method that does the wrapping — it's the <code>callsame</code> call in the middle. It delegates back to the overridden method. Note that with this tactic, I get to write my <code>announce-start-of</code> and <code>announce-end-of</code> calls <em>exactly once</em>. I don't have to go hunting for all the various places in the original code where a <code>return</code> is made.)</p>
+
+<p>I guess this counts as using mixins to do Aspect-Oriented Programming. This way of working certainly makes the code less <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming#Motivation_and_basic_concepts">scattered and tangled</a>.</p>
+
+<p>So, in <a href="http://github.com/masak/proto/blob/4396d9b6c6eca4c9a0d1e9da7ac90903c4ea528c/proof-of-concept">this file</a>, I currently have a veritable curry of dependency injection, behavior-adding roles, lexical subs inside methods, AOP-esque mixins, and a <code>MAIN</code> sub. They mix together to create something really tasty. And it all runs, today, under Rakudo HEAD.</p>
+
+<p>As jnthn said earlier today, it's pretty cool that a script of 400 LoC, together with a 230-LoC module, make up a whole working installer. With so little code, it almost doesn't feel like coding.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,175 @@
+http://strangelyconsistent.org/blog/t3-addition-chains
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t3: Addition chains :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-03-14T22:24:00+01:00" pubdate="pubdate">14 Mar, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t3-addition-chains">t3: Addition chains</a></h1>
+  </header>
+
+  <div class="quote"><code>&lt;arnsholt&gt; Heh. NP-complete problems in a
+competition. That's just mean ^_^</code></div>
+
+<p>Ok, we're in the midst of reviewing <a href="http://strangelyconsistent.org/blog/the-2011-perl-6-coding-contest">Perl 6 Coding Contest
+2011</a>
+code submissions, and the turn has come to the third task: addition chains.</p>
+
+<pre><code>For a positive integer N, an addition chain for N is a sequence
+starting with 1, each subsequent element being the sum of two
+earlier elements (possibly the sum of the same element twice),
+and ending with N.
+
+For example for N = 9, this is a possible addition chain:
+
+    (1, 2, 4, 5, 8, 9)
+
+because 2 = 1 + 1, 4 = 2 + 2, 5 = 1 + 4, etc.
+
+But a minimal solution would be:
+
+    (1, 2, 3, 6, 9)
+
+Write a program that reads numbers N from standard input, one per line,
+and outputs a minimal addition chain like the one above.
+
+Sometimes there will be several possible solutions of minimal length.
+That's fine; just pick one of them.
+</code></pre>
+
+<p>Addition chains are interesting from a computing standpoint, because of a
+multiplication technique called <a href="http://en.wikipedia.org/wiki/Addition-chain_exponentiation">addition-chain
+exponentiation</a>,
+by which you can use an addition chain for a certain <code>N</code> to do a minimum
+number of multiplications; the addition chain implicitly encodes a sequence of
+multiplications to perform. So there's a genuine interest in finding shortest
+addition chains.</p>
+
+<p>This is a hard problem. Finding addition chains is easy, but finding a
+<em>minimal</em> addition chain is not. Depsite arnsholt's quote above, it hasn't
+been <em>proven</em> NP-complete. Slightly more general problems have, but not this
+exact one. We know it's tricky, though.</p>
+
+<p>Wikipedia has this to say about <a href="http://en.wikipedia.org/wiki/Addition_chain#Methods_for_computing_addition_chains">the
+problem</a>:
+"There is no known algorithm which can calculate a minimal addition chain for
+a given number with any guarantees of reasonable timing or small memory
+usage." That's what we're looking for in this contest: problems that are easy
+to state, and that look quite straightforward, but that have hidden depth.</p>
+
+<p>Someone may look at the problem and think "aha! dynamic programming!" &mdash;
+but, alas, as Wikipedia patiently explains:</p>
+
+<div class='quote'><p>Note that the problem of finding the shortest addition
+chain cannot be solved by <a href='http://en.wikipedia.org/wiki/Dynamic_programming'>dynamic
+programming</a>, because it
+does not satisfy the assumption of <a href='http://en.wikipedia.org/wiki/Optimal_substructure'>optimal
+substructure</a>. That is, it
+is not sufficient to decompose the power into smaller powers, each of which is
+computed minimally, since the addition chains for the smaller powers may be
+related (to share computations). For example, in the shortest addition chain
+for <i>a<sup>15</sup></i> [...] the subproblem for <i>a<sup>6</sup></i> must
+be computed as <i>(a<sup>3</sup>)<sup>2</sup></i> since <i>a<sup>3</sup></i>
+is re-used (as opposed to, say, <i>a<sup>6</sup> =
+a<sup>2</sup>(a<sup>2</sup>)<sup>2</sup></i>, which also requires three
+multiplies).</p></div>
+
+<p>This is probably why the problem looks approachable, because it sort of feels
+like a dynamic-programming problem. But it ain't.</p>
+
+<p>People sent in solutions. <a href="http://strangelyconsistent.org/p6cc2011/">Go check them
+out</a>.</p>
+
+<p>I was a bit concerned that people might find <a href="http://www-cs-faculty.stanford.edu/~uno/programs/achain0.w">Knuth's
+solution</a>
+and just transcribe it into Perl 6. (Which would've been OK, if a bit boring
+if everyone did it.) But no-one did that; instead, people started from
+well-known algorithms, either
+<a href="http://en.wikipedia.org/wiki/Breadth-first_search">breadth-first</a> or
+<a href="http://en.wikipedia.org/wiki/Depth-first_search">depth-first</a> search.</p>
+
+<p>Perhaps the most remarkable things that can be recounted about the solutions
+are the cases where they deviate from correctness in various ways. One solution
+produced the right results for the first 76 chain lengths, but with <code>N = 77</code>,
+it went awry due to internal optimizations which turned out to be less than
+innocent. (The first rule of optimization? "Make sure you don't get caught.")</p>
+
+<p>Then there were two submitted algorithms that generated Brauer chains. "What's
+a Brauer chain?", I hear you asking. Hold on tight and I'll tell you. A Brauer
+chain is an addition chain where each new element is formed as the sum of the
+<em>previous</em> element and some element (possibly the same). Thus, of the two
+examples from the description,</p>
+
+<pre><code>(1, 2, 4, 5, 8, 9)
+</code></pre>
+
+<p>and</p>
+
+<pre><code>(1, 2, 3, 6, 9)
+</code></pre>
+
+<p>The latter is a Brauer chain, but the former isn't, because you can't get 8 by
+summing 5 and some element in the chain.</p>
+
+<p>The task is to generate minimal addition chains. If some algorithm looks only
+among the Brauer chains, will it ever omit some shorter chain from its search?
+The answer, it turns out, highlights exactly why I like mathematics.</p>
+
+<p>A Brauer-based algorithm will fail the first time at <code>N = 12509</code>. (See <a href="http://books.google.se/books?id=1AP2CEGxTkgC&amp;pg=PA169&amp;lpg=PA169&amp;dq=brauer+chain+12509&amp;source=bl&amp;ots=TjkugXGNnE&amp;sig=wsVTOZ0OVyFruRFnpqgInngdUaw&amp;hl=en&amp;sa=X&amp;ei=XrhgT_HbBqjj4QSC0NXTDg&amp;ved=0CB4Q6AEwAA#v=onepage&amp;q=brauer%20chain%2012509&amp;f=false">this
+reference</a>,
+provided by hakank++).</p>
+
+<p>Now, you might of course argue that failing at <code>N = 77</code> is more wrong than
+failing at <code>N = 12509</code>.</p>
+
+<blockquote>
+  <p>Sheldon: <em>More</em> wrong? "Wrong" is an absolute state and not subject to gradation.</p>
+
+<p>Stuart: Of course it is! It's a little wrong to say a tomato is a vegetable. It's very wrong to say it's a suspension bridge.</p>
+</blockquote>
+
+<p>More precisely, there are infinitely many <code>N</code> for which no Brauer chain is
+minimal. 12509 just happens to be the smallest one.</p>
+
+<p>This task, understandably, is a tricky one to judge. We've tried to go easy on
+the contestants (and non-contestants) in the reviews. After all, the problem
+<em>is</em> hard.</p>
+
+<p>Now, who wants to translate Knuth's solution to Perl 6? 哈哈</p>
+
+</article>
+
+  </body>
+</html>

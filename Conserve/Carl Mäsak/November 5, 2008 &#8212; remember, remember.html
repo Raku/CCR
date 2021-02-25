@@ -1,0 +1,80 @@
+http://strangelyconsistent.org/blog/november-5-2008-remember-remember
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 5, 2008 &#8212; remember, remember :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-05T23:56:00+01:00" pubdate="pubdate">5 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-5-2008-remember-remember">November 5, 2008 &#8212; remember, remember</a></h1>
+  </header>
+
+  <blockquote><div><p> <i>Remember, remember the Fifth of November,<br></br>The Gunpowder Treason and Plot,<br></br>
+I can think of no reason<br></br>
+Why the Gunpowder Treason<br></br>
+Should ever be forgot.</i></p></div> </blockquote>
+
+<p>403 years ago today, Guido "Guy" Fawkes was arrested for attempting to blow up Parliament. The so-called <a href="http://en.wikipedia.org/wiki/Gunpowder_Plot">Gunpowder Plot</a> failed and Guy Fawkes was killed, but they are still celebrated in Britain and New Zealand.</p>
+
+<p>Wikipedia on the memetic heritage of <a href="http://en.wikipedia.org/wiki/Guy_Fawkes">Guy Fawkes</a>:</p>
+
+<blockquote><div><p>The Fawkes story continued to be celebrated in poetry. The Latin verse In Quintum Novembris was written c. 1626. John Milton&#8217;s Satan in book six of Paradise Lost was inspired by Fawkes &#8212; the Devil invents gunpowder to try to match God's thunderbolts. Post-Reformation and anti&#8211;Catholic literature often personified Fawkes as the Devil in this way. From Puritan polemics to popular literature, all sought to associate Fawkes with the demonic. However, his reputation has since undergone a rehabilitation, and today he is often toasted as, "The last man to enter Parliament with honourable intentions."</p></div></blockquote>
+
+<p class='separator'>&#10086;</p>
+
+<p>Instead of blowing things up today, I've been attempting to put them back together. Since (jonathan++)++ unlocked the bugs <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=59104">#59104</a> and <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=59928">#59928</a>, a few things could be un-uglified in November.</p>
+
+<p>Doing so resulted in <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=60356">two</a> <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=60358">new</a> tickets. Jonathan guesses that these two problems will be easy and a tad deeper, respectively. I can't stress enough how nice it is to have someone addressing the problems in the background as we uncover them in our shaky, real-world app.</p>
+
+<p>Anyway, the improvements mean that we're fast again! :)</p>
+
+<pre><code>$ time ./test_wiki.sh
+real    0m30.919s
+user    0m28.955s
+sys    0m0.759s
+$ make
+$ time ./test_wiki.sh
+real    0m8.811s
+user    0m8.025s
+sys    0m0.264s
+</code></pre>
+
+<p>Not as impressive as the 1.3 seconds we had in August, but we're more ambitious nowadays, and our <code>Main_Page</code> is much bigger. Still, a 70% speedup is not too bad.</p>
+
+<p>This also means that we'll soon be ready for a server upgrade, pushing out all the new stuff we've been working on for the last three months. It would be nice to have at least one decent skin ready before the server upgrade, though. So I guess that's what I'll be working on in the coming days.</p>
+
+</article>
+
+  </body>
+</html>

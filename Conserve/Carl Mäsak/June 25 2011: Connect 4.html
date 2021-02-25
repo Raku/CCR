@@ -1,0 +1,246 @@
+http://strangelyconsistent.org/blog/june-25-2011-connect-4
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 25 2011: Connect 4 :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-07-03T02:00:08+02:00" pubdate="pubdate">3 Jul, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-25-2011-connect-4">June 25 2011: Connect 4</a></h1>
+  </header>
+
+  <p>Today we'll implement <a href="http://en.wikipedia.org/wiki/Connect_4">Connect 4</a>. In our version, it's played between players <code>X</code> and <code>O</code> on a 7 ⨯ 6 grid.</p>
+
+<p>The game is a bit bigger than what we've seen so far, but all of the individual pieces are (mostly) straightforward. As usual, comments come at the end.</p>
+
+<p>First, here's how the end of a game might look:</p>
+
+<pre><code>|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|   |   | X | O |   |   |   |
+|   | O | X | X | X |   |   |
+| O | X | O | X | O |   |   |
+|---------------------------|
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+
+Player O, your move: 6
+
+|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|   |   | X | O |   |   |   |
+|   | O | X | X | X |   |   |
+| O | X | O | X | O | O |   |
+|---------------------------|
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+
+Player X, your move: 6
+
+|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|   |   | X | O |   |   |   |
+|   | O | X | X | X | X |   |
+| O | X | O | X | O | O |   |
+|---------------------------|
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+
+Player X won.
+Thanks for playing!
+</code></pre>
+
+<p>And here's the source code:</p>
+
+<pre><code>my $HEIGHT = 6;
+my $WIDTH = 7;
+my $N = 4;
+
+my @board = map { [map { " " }, 1..$WIDTH] }, 1..$HEIGHT;
+
+sub show_board {
+    say "";
+    for @board.reverse -&gt; @row {
+        say "| ", @row.fmt("%s", " | "), " |";
+    }
+    say "|", "-" x ($WIDTH * 4 - 1), "|";
+    say "| ", (1..$WIDTH).fmt("%d", " | "), " |";
+    say "";
+}
+
+sub pile_height($column) {
+    die "Index $column out of range"
+        unless 0 &lt;= $column &lt; $WIDTH;
+
+    for 0 .. $HEIGHT - 1 -&gt; $height {
+        return $height if @board[$height][$column] eq " ";
+    }
+    return $HEIGHT;
+}
+
+sub pile_is_full($column) {
+    pile_height($column) == $HEIGHT;
+}
+
+sub board_is_full {
+    pile_is_full(all(0 .. $WIDTH - 1));
+}
+
+sub input_move {
+    my $move = prompt "Player $current_player, your move: ";
+
+    unless $move ~~ /^\d+$/ {
+        say "The move must be a number.";
+        return;
+    }
+
+    unless 1 &lt;= $move &lt;= $WIDTH {
+        say "The move must be between 1 and $WIDTH.";
+        return;
+    }
+
+    if pile_is_full($move - 1) {
+        say "That pile is full. Try another one.";
+        return;
+    }
+
+    return $move;
+}
+
+sub place_piece($column, $disk) {
+    my $row = pile_height($column);
+    @board[$row][$column] = $disk;
+    return;
+}
+
+sub was_win($row, $column) {
+    sub uniform(@values) { all(@values».defined) &amp;&amp; [eq] @values }
+
+    sub was_vertical_win {
+        for 0..$N-1 -&gt; $offset {
+            return True
+                if uniform map {
+                    @board[$row - $offset + $_][$column]
+                }, 0..$N-1;
+        }
+        return False;
+    }
+
+    sub was_horizontal_win {
+        for 0..$N-1 -&gt; $offset {
+            return True
+                if uniform map {
+                    @board[$row][$column - $offset + $_]
+                }, 0..$N-1;
+        }
+        return False;
+    }
+
+    sub was_diagonal_win {
+        for 0..$N-1 -&gt; $offset {
+            return True
+                if uniform map {
+                    @board[$row - $offset + $_][$column - $offset + $_]
+                }, 0..$N-1;
+
+            return True
+                if uniform map {
+                    @board[$row - $offset + $_][$column + $offset - $_]
+                }, 0..$N-1;
+        }
+        return False;
+    }
+
+    return was_vertical_win() || was_horizontal_win() || was_diagonal_win();
+}
+
+my $current_player = "X";
+loop {
+    show_board();
+
+    repeat until defined my $move {
+        $move = input_move();
+    }
+
+    my $column = $move - 1;
+    my $row = pile_height($column);
+    place_piece($column, $current_player);
+
+    if was_win($row, $column) {
+        show_board();
+        say "Player $current_player won.";
+        last;
+    }
+
+    if board_is_full() {
+        show_board();
+        say "The game is tied.";
+        last;
+    }
+
+    if $current_player eq "X" {
+        $current_player = "O";
+    }
+    else {
+        $current_player = "X";
+    }
+}
+
+say "Thanks for playing!";
+</code></pre>
+
+<p>Ok, lots to comment on here:</p>
+
+<ul>
+<li><p>Note how we create <code>@board</code>. It's an array of arrays (since the board is two-dimensional), so we construct it with a <code>map</code> of <code>map</code>s.</p></li>
+<li><p><code>show_board</code> is straightforward. We're using our new friend <code>.fmt</code> to avoid a few <code>for</code> loops when representing each row.</p></li>
+<li><p>We haven't seen <em>chained comparisons</em> before, as in <code>pile_height</code>, but they're easy: <code>0 &lt;= $column &lt; $WIDTH</code> simply means <code>0 &lt;= $column &amp;&amp; $column &lt; $WIDTH</code>. We're used to seeing this notation from maths.</p></li>
+<li><p><code>unless</code> shows up a lot in this code, both in its block form and as a statement modifier. The cousin of <code>if</code>, it is most often used when we want to bail out of something because of broken preconditions. Thus we <code>die</code> in <code>pile_height</code> if an out-of-range <code>$column</code> was passed in, and we <code>return</code> early from <code>input_move</code> if the move entered isn't quite right.</p></li>
+<li><p>Why do we <code>die</code> in one subroutine and <code>return</code> from another? Well, we want the game to keep running even if one of the players slips on the keyboard, so it makes sense to be a bit nicer in <code>input_move</code>. But <code>pile_height</code> is more of an "internal" routine, and a faulty parameter there usually means the whole program is wrong somehow. (This actually happened as I was writing the program.) So it makes sense to be more strict in <code>pile_height</code>.</p></li>
+<li><p>The subs <code>pile_is_full</code> and <code>board_is_full</code> are "unnecessary" in that we might as well have inlined the expressions they contained right in the code. But look what difference it makes to actually <em>define</em> those terms. Never underestimate the power of a good name for a concept.</p></li>
+<li><p>Note how <code>$move - 1</code> happens here and there. This is the usual translation between player-facing coordinates (1-based) and array indices (0-based). It only happens for columns and not for rows, since those are not exposed to the player.</p></li>
+<li><p>The <code>was_win</code> subroutine checks all the possible straights that the move <em>could</em> have made. It doesn't check the whole board. For straights of length 4, it checks up to 16 possible straights. (4 vertical, 4 horizontal, and 8 diagonal.)</p></li>
+<li><p>Notice that <code>was_win</code> defines four subroutines <em>inside</em> of itself. Those subroutines are purely for internal use by <code>was_win</code> &mdash; they're not even visible from the outside. They also cunningly use variables from outside of themselves; <code>$row</code> and <code>$column</code> are parameters to <code>was_win</code>, but are used within <code>was_vertical_win</code>, for example.</p></li>
+<li><p>In fact, another variable that's used inside the subroutines but defined outside, is <code>@board</code>. It should figure as a parameter to <em>all</em> the subroutines in the program if we wanted to make them independent of their environment. It's slightly bad practice not to make it a parameter, because that code is now <em>coupled</em> to <code>@board</code>... but it was felt that it would hurt exposition too much to be 100% kosher in this case. Programming is full of trade-offs.</p></li>
+<li><p>The <code>uniform</code> subroutine inside of <code>was_win</code> contains two things that we haven't seen yet. <code>@values».defined</code> means the same as <code>map { .defined }, @values</code>; it's just a shorter way of writing it. <code>[eq] @values</code> tests all values in <code>@values</code> with the <code>eq</code> operator. In summary, the <code>uniform</code> function checks that all values in <code>@values</code> are defined (which happens when none of the coordinates was outside of the board), and that they're all string-equal (which happens when someone made a winning straight).</p></li>
+<li><p>Notice how we use <code>map</code> in the <code>was_*_win</code> functions to translate from the "coordinates" 0..3 to actual positions along a line in <code>@board</code>. That should give a taste of how versatile <code>map</code> can actually be: we want to talk about the contents of the things on a line on the board, so we just transform 0..3 to that line.</p></li>
+<li><p>Because we have put all of the nitty-gritty details in subroutines, the actual game loop is fairly short. Show the board, input a move, place a piece, check the two possible ending conditions, and switch player. And it reads well, too: <code>if board_is_full</code> &mdash; isn't that nice?</p></li>
+</ul>
+
+<p>Phew! That's it for today. Now we're heading straight for our final goal: the text adventure game.</p>
+
+</article>
+
+  </body>
+</html>

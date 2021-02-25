@@ -1,0 +1,122 @@
+http://strangelyconsistent.org/blog/revenge-of-the-oslo-hackathon
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Revenge of the Oslo hackathon :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-04-22T23:05:00+02:00" pubdate="pubdate">22 Apr, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/revenge-of-the-oslo-hackathon">Revenge of the Oslo hackathon</a></h1>
+  </header>
+
+  <p>A month of blog silence. Ouch. Looking back, the three reasons I can see for my
+absence from blogging are work, work, and work.</p>
+
+<p>So I saw
+<a href="http://perlgeek.de/blog-en/perl-6/2012-oslo-hackathon-report.html">moritz</a>,
+<a href="https://6guts.wordpress.com/2012/04/21/hackathoning-in-oslo/">jnthn</a>, and
+<a href="http://pmthium.com/2012/04/22/oslo-perl-6-patterns-hackathon-days-1-2/">pmichaud</a>
+blog about the weekend, and I must've been too shell-shocked to think to do the
+same. sjn++ woke me up from my reverie by asking me outright.</p>
+
+<p>So, here goes.</p>
+
+<p>Oslo. We had a hackathon there.</p>
+
+<p>This is the second time. The first time was in 2009, and was quite possible the
+best hackathon <em>ever</em>, in the history of Perl 6 hackathons. (Or, let's say,
+certainly among the top 5.)</p>
+
+<p>I haven't fully processed this one, but it's not too early to say this: this
+one beat the last one.</p>
+
+<p>My weekend, in brief:</p>
+
+<ul>
+<li><p>jnthn and I arrived Oslo on the Thursday, and watched Damian Conway giving
+an awesome presentation in a bar. No-one combines geek jokes, almost-accurate
+physics, and Perl programming like Damian.</p></li>
+<li><p>On the Saturday, I spent about an hour introducing a group of newcomers to
+Perl 6, language and culture. Fun!</p></li>
+<li><p>infosophy++ (Geir Amdal) liked my
+<a href="http://strangelyconsistent.org/blog/helpfully-addictive-tdd-on-crack">tote</a>
+script so much that he did something I never got around to doing: he
+<a href="https://github.com/gam/test-junkie/">published it as a module</a>. As part of
+this, he <a href="https://github.com/rakudo/rakudo/commit/edf2e0d5d7e9ea7c3417717f163698113692e165">added back a bunch of IO
+methods</a>
+that got lost in the ng→nom transition, and also <a href="https://github.com/perl6/roast/commit/a45e1b21d8529fe2a3dd3d3940a2941fa5869d43">added spectests for
+them</a>.
+As part of this, he became the 100th developer in the perl6 organization.</p></li>
+<li><p>sergot++ (Filip Sergot) and I built a presentation framework. It's called
+<a href="https://github.com/masak/sambal">Sambal</a>, and it <a href="https://gist.github.com/2173720">turns a DSL into a
+PDF</a>. I'm happy and proud of how far we
+managed to get with only two days of work.</p></li>
+<li><p>sergot++ and I also spit out a
+<a href="https://github.com/masak/markdown"><code>Text::Markdown</code></a> module. It's in early
+stages yet, but it already services Sambal in its slide generation. It's an
+easy addition to have its objects model serialize to HTML, too.</p></li>
+<li><p>I asked whether <code>BEGIN</code> should trigger immediately inside a <code>quasi</code>, or
+whether it should trigger only after macro application. People around the
+hackathon table suggested that we should have a <code>QBEGIN</code> that did the latter.
+I felt it was a singularly bad idea, so I asked TimToady. He suggested the
+same. <a href="http://irclog.perlgeek.de/perl6/2012-04-21#i_5474527">I exploded</a>.
+Then I decided not to listen to anyone, and just implement it in the way that
+turned out to be natural and convenient. pmichaud joked that he should have
+adopted that approach long ago with respect to implementing Perl 6.</p></li>
+<li><p>(But seriously. If you want to execute a BEGIN block at macro-parse time,
+put it outside of the quasi. If you want to execute it at macro-apply time,
+put it inside of it. We don't need a <a href="http://en.wikipedia.org/wiki/Q*bert">Q*bert
+<code>BEGIN</code></a>.)</p></li>
+<li><p>We discussed what <code>s///</code> should evaluate to. No real consensus. <code>:-(</code></p></li>
+<li><p>On the Sunday, we tried a coding dojo (hosted by infosophy++),
+implementing a roman numerals <code>Int -&gt; Str</code> converter in Perl 6. It led to
+interesting discussions, and many of us had useful insights in collaborative
+coding and small-step iterative development.</p></li>
+<li><p>frettled++ <a href="http://howcaniexplainthis.blogspot.se/2012/04/oslopm-patterns-hackathon-pictures.html">took some nice
+pictures</a>.</p></li>
+<li><p>jnthn++ and pmichaud++ evolved a plan for the new QAST redesign, which will
+enable <a href="http://strangelyconsistent.org/blog/macros-progress-report-d1-merged">the next
+step</a>
+in the macros grant. jnthn++ invited me to write some tests on this for great
+success. It looks doable; I'll dig into this during the next week. As I do
+this, I can also write tests for my new <code>QAST::Unquasi</code> node type.</p></li>
+</ul>
+
+<p>If Oslo.pm ever hosts a third hackathon, my expectations will found be in
+geostationary orbit. No chance in the world I'd miss it.</p>
+
+</article>
+
+  </body>
+</html>

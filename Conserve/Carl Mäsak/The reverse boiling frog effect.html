@@ -1,0 +1,58 @@
+http://strangelyconsistent.org/blog/the-reverse-boiling-frog-effect
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>The reverse boiling frog effect :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-07-20T14:29:00+02:00" pubdate="pubdate">20 Jul, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/the-reverse-boiling-frog-effect">The reverse boiling frog effect</a></h1>
+  </header>
+
+  <p>We don't always notice improvements when they happen individually over a long time. It's sort of a reverse <a href="http://en.wikipedia.org/wiki/Boiling_frog">boiling frog</a> effect.</p>
+
+<p>Seven months ago, around New Year, I tried out an idea of mine in Rakudo. The exercise dug up a lot of bugs, and I <a href="http://strangelyconsistent.org/blog/scripters-now-is-the-time">blogged about it</a>. A few days ago, I tried the same thing again. The code is not yet ready to be pushed, so I can't show you (sorry), but I wanted to share how different it is to write in Perl 6 on top of Rakudo now, as compared to half a year ago. I hadn't realized how much had happened.</p>
+
+<p>You see, I took a look at my 100 lines of code from December/January, and immediately thought <em>this calls for a rewrite</em>.</p>
+
+<p>My new solution was based around classes. It was much neater. The old code contained some pretty hefty workarounds related to array indexing. Nowadays, classes work much better, and the array indexing bug is long gone. The encapsulation into classes also made for a cleaner design, standing on the shoulders of which I could solve my problem a little further than last time.</p>
+
+<p>The blog post I wrote in December was called "Scripters, now is the time!" because Rakudo was 20% an interesting development platform and 80% in need of eyeballs to dig up shallow bugs. Now, half a year and <a href="http://github.com/rakudo/rakudo/commits/">1264 Rakudo-commits</a> later, I feel the figures have been reversed. What's nice is that I can still call out "Scripters, now is the time!" and mean it just as much. Rakudo rocks a little more each day.</p>
+
+<p>Come <a href="http://rakudo.org/">join the party</a>.</p>
+
+</article>
+
+  </body>
+</html>

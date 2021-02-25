@@ -1,0 +1,75 @@
+http://strangelyconsistent.org/blog/ovid-is-right-roles-are-awesome
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Ovid is right: roles are awesome :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-01-16T19:38:00+01:00" pubdate="pubdate">16 Jan, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/ovid-is-right-roles-are-awesome">Ovid is right: roles are awesome</a></h1>
+  </header>
+
+  <p>A class hierarchy of expression nodes: it's so much the prototypical use case for run-time method polymorphism that it's almost a cliché. One can close one's eyes and picture the way parts of the expression tree interact in rich, complex ways, shaped by the very types of the nodes themselves, in a dynamic dance of late bindings and virtual methods. Switch statmement, get thee behind me. Et cetera.</p>
+
+<p>I'm <a href="http://github.com/masak/gge">building one</a>. And I'm having almost too much fun doing it. In between trying to use the strengths of Perl 6 and keeping true to the <a href="http://github.com/leto/parrot/tree/master/compilers/pge/">original program</a> I'm porting, I've discovered an important thing: Ovid is right about roles.</p>
+
+<p>Specifically, I'm having trouble picturing how I would cram all the type information into my expression node class hierarchy, were I not using roles. The roles definitely help manage complexity in my case.</p>
+
+<p><a href="http://masak.org/carl/exp-class-hierarchy.png">Here's a pretty diagram</a> of my class hierarchy.</p>
+
+<p>It's a flat beast. Apart from everything deriving from <code>Exp</code>, I have only one case of old-skool inheritance in the diagram. And even that one is more making a point than actually shortening the code.</p>
+
+<p>Then there's all the colorful dots, representing the roles I'm mixing into my types. Some are for convenience (like the blue ones), others are vital for my program (like the green ones), and the rest are somewhere in between on the convenient/vital scale.</p>
+
+<p>I even have a case of inheritance between two of the roles! Which means, in practice, that those classes with an orange dot also act as if they had a red dot. Very handy.</p>
+
+<p>During the infancy of Rakudo, I've gotten used to learning to live without various features. Were I to do what I'm doing here without using roles, I could use two other mechanisms. The first is regular inheritance. The very thought gives me a bit of vertigo; I don't think I'd be able to turn the colored dots into base classes. Definitely not all of them at once; I'd have to choose. And that choice would affect the entire design of the program, probably resulting in loss of clarity.</p>
+
+<p>The second way I could compensate for not having roles would be by using <code>.can</code> a lot. The presence of a given role in a class is isomorphic to the presence of a given method in a class. So that would definitely work, but I don't think I would like it as much. There's something to be said for declaring <code>is</code> and <code>does</code> relationships at the very top of the class declaration.</p>
+
+<p>All in all, I'm very happy about the way things work. I'm wondering whether, had I not read all of Ovid's posts <a href="http://use.perl.org/~Ovid/journal/38373">on</a> <a href="http://use.perl.org/~Ovid/journal/38586">managing</a> <a href="http://use.perl.org/~Ovid/journal/38649">the</a> <a href="http://use.perl.org/~Ovid/journal/38662">complexity</a> <a href="http://use.perl.org/~Ovid/journal/38761">of</a> <a href="http://use.perl.org/~Ovid/journal/38862">class</a> <a href="http://use.perl.org/~Ovid/journal/38885">hierarchies</a> <a href="http://use.perl.org/~Ovid/journal/39039">with</a> <a href="http://use.perl.org/~Ovid/journal/39977">roles</a>, I would have come up with this design myself. Maybe, maybe not. But anyway: thanks, Ovid! This rocks!</p>
+
+<p>A still-open question for me is whether the topmost type, <code>Exp</code>, should be a class or a role. <a href="http://feather.perl6.nl/syn/S12.html#Classes">Synopsis 12</a> has this to say about when to use roles:</p>
+
+<div class='quote'><p>Classes are primarily for instance management, not code reuse. Consider using <code>roles</code> when you simply want to factor out
+common code.</p></div>
+
+<p>I <em>am</em> using <code>Exp</code> for code reuse, and for giving all of the other classes in the hierarchy a common base type. So I guess I could indeed turn it into a role. But it's just that... I don't see a <em>reason</em> to do so, and I still feel instinctively reluctant about it. Maybe I'm a bit hung up about it being a <em>class</em> hierarchy.</p>
+
+<p>This point has <a href="http://irclog.perlgeek.de/perl6book/2009-11-11#i_1717258">come up before</a> on IRC, and I've yet to hear a satisfactory way to resolve it: when faced with making a base type a class or a role, which way should one go?</p>
+
+</article>
+
+  </body>
+</html>

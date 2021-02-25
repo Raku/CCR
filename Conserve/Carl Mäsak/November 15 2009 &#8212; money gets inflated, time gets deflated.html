@@ -1,0 +1,64 @@
+http://strangelyconsistent.org/blog/november-15-2009-money-gets-inflated-time-gets-deflated
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 15 2009 &#8212; money gets inflated, time gets deflated :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-16T00:40:00+01:00" pubdate="pubdate">16 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-15-2009-money-gets-inflated-time-gets-deflated">November 15 2009 &#8212; money gets inflated, time gets deflated</a></h1>
+  </header>
+
+  <p>86 years ago today, <a href="http://en.wikipedia.org/wiki/German_Rentenmark">the Rentenmark was introduced</a> in Germany to replace the old, worthless currency:</p>
+
+<div class='quote'><p>The Rentenmark replaced the Papiermark. Due to the economic crises in Germany after the Great War there was no gold available to back the currency. Therefore the Rentenbank, which issued the Rentenmark, mortgaged land and industrial goods worth 3.2 billion Rentenmark to back the new currency. The Rentenmark was introduced at a rate 1 Rentenmark = 1:10^12 Papiermark, establishing an exchange rate of 1 United States dollar = 4.2 RM.</p></div>
+
+<p>Now, that's an impressive exchange rate. Hm, <a href="http://en.wikipedia.org/wiki/Hyperinflation">hyperinflation</a>. Now, that sounds like a possibly interesting Wikipedia article:</p>
+
+<div class='quote'><ul><li>By late 1923, the Weimar Republic of Germany was issuing two-trillion Mark banknotes and postage stamps with a face value of fifty billion Mark. The highest value banknote issued by the Weimar government's Reichsbank had a face value of 100 trillion Mark (100,000,000,000,000; 100 billion on the long scale). One of the firms printing these notes submitted an invoice for the work to the Reichsbank for 32,776,899,763,734,490,417.05 (3.28&#215;10^19, or 33 quintillion) Marks.</li><li>The largest denomination banknote ever officially issued for circulation was in 1946 by the Hungarian National Bank for the amount of 100 quintillion peng&#337; (100,000,000,000,000,000,000, or 10^20; 100 trillion on the long scale). image (There was even a banknote worth 10 times more, i.e. 10^21 peng&#337;, printed, but not issued image.) The banknotes however didn't depict the numbers, "hundred million p.-peng&#337;" ("hundred million billion peng&#337;") and "one milliard p.-peng&#337;" were spelled out instead. This makes the 100,000,000,000,000 Zimbabwean dollar banknotes the notes with the greatest number of zeros shown.</li><li>The Post-WWII hyperinflation of Hungary held the record for the most extreme monthly inflation rate ever &#8212; 41,900,000,000,000,000% (4.19 &#215; 10^16%) for July, 1946, amounting to prices doubling every thirteen and half hours. By comparison, recent figures (as of 14 November 2008) estimate Zimbabwe's annual inflation rate at 89.7 sextillion (10^21) percent. which corresponds to a monthly rate of 5473%, and a half-life of about five days.</li></ul></div>
+
+<p>Yikes. About the only time you do not want to see lots of zeros on your banknotes is when everyone else has them, too.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I'm well-rested, but I wasted much of my allotted time writing other stuff. Since I don't have time to do anything big, I'll fix a small thing that has annoyed me in the last couple of days: after I <a href="http://strangelyconsistent.org/blog/november-9-2009-stuff-comes-tumbling-down-yay">went and deleted the <code>Makefile.PL</code> from November</a>, the nightly smokes have been coming out wrong. So I went looking for the error.</p>
+
+<p>It wasn't a big error. The build script needed to stop try and run that <code>Makefile.PL</code>, and there was a local change in the <code>Makefile.PL</code> itself, which prevented git from automatically removing it. After fixing these two things, I again have <a href="http://feather.perl6.nl/~masak/november-smoke.html">green-and-clean</a> test reports.</p>
+
+<p>Now if I could only find the time to dig into lichtkind++'s bugs. That last one, <a href="http://strangelyconsistent.org/blog/november-11-2009-nobody-said-it-was-going-to-be-easy">with the login problem</a>, was kinda fun in retrospect.</p>
+
+</article>
+
+  </body>
+</html>

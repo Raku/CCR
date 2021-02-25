@@ -1,0 +1,111 @@
+http://strangelyconsistent.org/blog/july-15-2012-things-which-can-be-carried-around
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>July 15 2012 &#8212; things which can be carried around :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-07-16T10:16:33+02:00" pubdate="pubdate">16 Jul, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/july-15-2012-things-which-can-be-carried-around">July 15 2012 &#8212; things which can be carried around</a></h1>
+  </header>
+
+  <p>I thought these days of game engine implementation would be tedious, but it
+turns out there are lots of interesting design questions lurking in here.
+That's extra true for today's material, which is a bit late, but hopefully only
+fashionably so.</p>
+
+<p>We'll be occupying ourselves with the actions <code>take</code> and <code>drop</code> today. For this
+purpose, we'll be introducing a new category of things: <em>carryable</em> things.
+Only these can be picked up. (Oh, and "pick up" will end up being a synonym for
+"take" in the game.)</p>
+
+<p>Internally, taking something will amount to moving it to a special room called
+"player inventory". Someone could theoretically add such a room to their
+adventure game, and objects would magically appear there as they were taken by
+the player. This is considered a feature, not a bug.</p>
+
+<p>Let's see what the commits look like today.</p>
+
+<ul>
+<li><p>We start out as usual. A player <a href="https://github.com/masak/crypt/commit/819d4aaadccced9f75dad59f9edbcd952eeabf02">can take
+things</a>.</p></li>
+<li><p>But <a href="https://github.com/masak/crypt/commit/9a88a7ff57537a5cd1fa89c3ba26e9ed67af1611">only if the things are
+carryable</a>.
+Right?</p></li>
+<li><p>I then back-port this carryability restriction to <a href="https://github.com/masak/crypt/commit/a09a7a141729b575044ee296b93f2aa7b5b5135d">putting
+things</a>,
+as I realize that putting something is tantamount to taking it and dropping it in or
+on some container or platform.</p></li>
+<li><p>What's the easiest way in a BDD setting to check that something was
+successfully picked up? Well, you <a href="https://github.com/masak/crypt/commit/08ad1f3e30fe3e11d02dbf7e6ec818f27721fffc">can't take something
+twice</a>,
+so that's an excellent test.</p></li>
+<li><p>Realized that I hadn't required the player to be located somewhere before
+starting to take stuff, so I <a href="https://github.com/masak/crypt/commit/f03f3ca205c09c563573d78bb469012f9d93cf17">added
+that</a>.</p></li>
+<li><p>Implemented <a href="https://github.com/masak/crypt/commit/a0b45bb49c6dab13cbe1302c021950ba92f88277">dropping
+things</a>.
+Notice that, as usual, the game engine doesn't care about actually carrying out
+the event until that's necessary for validation. This keeps us more honest with tests.</p></li>
+<li><p>Oh, and of course you can't drop something <a href="https://github.com/masak/crypt/commit/bfdb3509216407c9dfbd1a338815a0ba621efcdf">that you're not
+holding</a>.
+That's just common sense.</p></li>
+<li><p>Here's the check that dropping actually works. We know that taking works, because we
+have a test against taking stuff twice. So we can make sure that dropping works
+properly by <a href="https://github.com/masak/crypt/commit/e831985429b53dfff1a8b100f892b5b2d1422b94">taking, dropping, and
+taking</a>
+something. This is quite possibly the most fun test I've ever written.</p></li>
+</ul>
+
+<p>Taking and dropping form some kind of "complementary actions". They cancel each
+other out in some way. This leads to fun interactions between their behaviors.
+Maybe that's why there were a few more commits today than usual. Anyway, a nice
+surprise that their behavior was so rich. I don't recall thinking as deeply
+about this last year. Events seem to really bring out thinking about the
+semantics of actions.</p>
+
+<p>There are many ways to factor the internals, but in this case creating a
+"player inventory" room and just shoving things there seemed like the simplest
+thing that could possibly work. And, since they're <em>internals</em>, in some sense
+it really doesn't matter if we cheat ourselves blue in there. We can always
+change the internals, as long as the tests still work.</p>
+
+<p>Tomorrow &mdash; really today because I'm late &mdash; is the last day of game
+engine hacking. After that we'll start putting together the actual crypt game
+in earnest.</p>
+
+</article>
+
+  </body>
+</html>

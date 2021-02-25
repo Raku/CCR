@@ -1,0 +1,100 @@
+http://strangelyconsistent.org/blog/november-6-2010-ideals-separation-and-pragmatism
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 6 2010 &#8212; ideals, separation, and pragmatism :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2010-11-06T20:34:00+01:00" pubdate="pubdate">6 Nov, 2010</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-6-2010-ideals-separation-and-pragmatism">November 6 2010 &#8212; ideals, separation, and pragmatism</a></h1>
+  </header>
+
+  <p>38 years ago today, the UN passed <a href="http://en.wikipedia.org/wiki/United_Nations_General_Assembly_Resolution_1761">a resolution</a> to condemn apartheid and to call for a break-off of trade and diplomatic relations in South Africa.</p>
+
+<p>The Wikipedia article about <a href="http://en.wikipedia.org/wiki/South_Africa_under_apartheid">South Africa apartheid</a> is hard to summarize. I chose this paragraph as an example:</p>
+
+<div class="quote">Under the <a href='http://en.wikipedia.org/wiki/Reservation_of_Separate_Amenities_Act'>Reservation of Separate Amenities Act</a> of 1953, municipal grounds could be reserved for a particular race, creating, among other things, separate beaches, buses, hospitals, schools and universities. Signboards such as "whites only" applied to public areas, even including park benches. Black people were provided with services greatly inferior to those of whites, and, to a lesser extent, to those of Indian and coloured people. An act of 1956 formalised racial discrimination in employment.</div>
+
+<p>The full text of the resolution is available <a href="http://en.wikisource.org/wiki/UN_General_Assembly_Resolution_1761">on Wikisource</a>. Its language is formal and dry, but seeing the italicized action words (first participles, then present-tense verbs) at least gives a sense that somewhere in an unjust world, there's a dedicated group of people proposing ways to attenuate the injustice.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>So. With the build time down to about 4 minutes &mdash; 4m16s when I ran it a while ago &mdash; I already felt a lot better than when it was about 8 minutes. But there was still a lingering, nagging suspicion. It shouldn't take that long; not even for Rakudo. Something was taking a whole lot of time.</p>
+
+<p>Yesterday's post was about pleasing the eye with your code. Today's post is about abandoning your high ideals if it turns out they weigh you down.</p>
+
+<p>Here's today's offending piece of code:</p>
+
+<pre><code>sub html_escape {
+    # RAKUDO: Need this unnecessary prefix:&lt;~&gt; to make it work
+    return (~$^original).trans:
+           ['&amp;',     '&lt;',    '&gt;'   ]
+        =&gt; ['&amp;amp;', '&amp;lt;', '&amp;gt;']
+    ;
+}
+</code></pre>
+
+<p>I say "offending", although there is really nothing wrong with the code as such. In fact, it's brilliant as far as fitness-for-purpose is concerned. If you've ever tried to do the above as a series of regex substitutions, or even (<em>shudder</em>) as a loop doing <code>.substr</code> twiddling, you know what I'm talking about. It's easy to get wrong, especially since the character <code>&amp;</code> sits on both sides of the conversion arrow, so it's possible to accidentally replace already-replaced parts of a string. (An excellent argument <em>against</em> doing such things in-place.) <code>.trans</code> just sweeps these difficulties under the (right sort of) carpet, and gets the job done.</p>
+
+<p>I'm also not referring to the <code># RAKUDO:</code> comment there, although that one is annoying, in much the same way as flies are annoying. (I just realized I hadn't filed a rakudobug for that one, <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=78874">so I did</a>.)</p>
+
+<p>No, the problem with this subroutine is, unfortunately, that it's written in Perl 6. ☹ At least, that's a problem with current Rakudo. At least, that's what I suspected.</p>
+
+<p>To test this hypothesis, I replaced the <code>html_escape</code> subroutine with a simple shell-out to <code>sed</code>:</p>
+
+<pre><code>sed 's!&amp;!\&amp;amp;!g;
+     s!&lt;!\&amp;lt;!g;
+     s!&gt;!\&amp;gt;!g'
+</code></pre>
+
+<p>Note that this is an exact translation of <code>html_escape</code>, but now we're using regexes. It's important to do the <code>&amp;amp;</code> translation first, for the reason stated above.</p>
+
+<p>Ran it again. 1m22s.</p>
+
+<p><code>o.O</code></p>
+
+<p>Wh... I mean. Wha...</p>
+
+<p>I went to look at the source code for <code>Str.trans</code>. It is <a href="https://github.com/rakudo/rakudo/blob/142d22098d51583985476981c9d6f23055d2e510/src/core/Cool-str.pm">here</a>. Now I understand a little better why it is so slow. I think making it faster would be an interesting small task for someone, and making it <em>really</em> efficient would make for an interesting medium-sized task.</p>
+
+<p>I love Perl 6. I want to see it succeed. But I've gotten used to pacing myself in various ways. This whole new blog is the result of a paring-down of expectations: it's too early to build ambitious servware applications on top of Rakudo, but it's just the right time to start building static web sites. It's easier to achieve your goals if you make the goals realistic in the first place.</p>
+
+<p>Same thing with <code>html_escape</code>. One day, I'll be able to write the clear, short Perl 6 version and have it run reasonably fast. But that day is not today. Today I'm shelling out to <code>sed</code>, and I'm not too bothered by that. It saves me three minutes with every build run.</p>
+
+<p>Pragmatism trumps purity.</p>
+
+</article>
+
+  </body>
+</html>

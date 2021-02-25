@@ -1,0 +1,83 @@
+http://strangelyconsistent.org/blog/november-7-2009-hasten-the-process-of-debranchification
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 7 2009 &#8212; hasten the process of de-branchification :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-07T21:45:00+01:00" pubdate="pubdate">7 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-7-2009-hasten-the-process-of-debranchification">November 7 2009 &#8212; hasten the process of de-branchification</a></h1>
+  </header>
+
+  <p>53 years ago today, the United Nations General Assembly adopted a resolution calling for the United Kingdom, France and Israel to immediately withdraw their troops from Egypt during the <a href="http://en.wikipedia.org/wiki/Suez_Crisis">Suez Crisis</a>. The Wikipedia article is so interesting that I have a hard time limiting the amount of quotes today:</p>
+
+<div class='quote'><p>The events that brought the crisis to a head occurred in the spring and summer of 1956. On 16 May, Nasser officially recognized the People's Republic of China, a move that angered the U.S. and its secretary of state, John Foster Dulles, a keen sponsor of Taiwan. This move, coupled with the impression that the project was beyond Egypt's economic capabilities, caused Eisenhower to withdraw all American financial aid for the Aswan Dam project on 19 July. Nasser's response was the nationalization of the Suez Canal. [...]</p><p>British government concluded a secret military pact with France and Israel that was aimed at regaining control over the Suez Canal. [...]</p><p>Canadian Lester B. Pearson, who would later become the Prime Minister of Canada, went to the United Nations and suggested creating a United Nations Emergency Force (UNEF) in the Suez to "keep the borders at peace while a political settlement is being worked out." Both Britain and France rejected the idea, so Canada turned to the United States. [...] Pearson was awarded the Nobel Peace Prize in 1957 for his efforts. The United Nations Peacekeeping Force was Pearson's creation and he is considered the father of the modern concept of "peacekeeping". [...]</p><p>The imposed end to the crisis signalled the definitive weakening of the United Kingdom and France as global powers. Nasser's standing in the Arab world was greatly improved, with his stance helping to promote pan-Arabism. The crisis also arguably hastened the process of decolonization, as the remaining colonies of both Britain and France gained independence over the next several years.</p></div>
+
+<p class='separator'>&#10086;</p>
+
+<p>Hokay. The weekend distracts me to no end, but let's try and install November on the <code>installed-modules</code> proto branch; that would be quite fitting, no?</p>
+
+<pre><code>$ ./proto showstate november
+november: legacy
+</code></pre>
+
+<p>Right. "legacy" here means "proto knows you used to have this installed, so you might want to do something, such as install it again". (If this seems harsh, be aware that my proposed line <a href="http://irclog.perlgeek.de/perl6/2009-11-06#i_1696878">was even harsher</a>, but mberends++ has this weird idea about caring about and assisting the userbase in the migration.)</p>
+
+<p>Here goes.</p>
+
+<pre><code>$ ./proto install november
+Downloading november...downloaded
+Downloading html-template...downloaded
+Building html-template...configure failed, see /Users/masak/gwork/proto/cache/html-template/make.log
+Building november...configure failed, see /Users/masak/gwork/proto/cache/november/make.log
+Installing html-template...Method 'protected-files' not found for invocant of class 'Ecosystem'
+in Main (file src/gen_setting.pm, line 324)
+</code></pre>
+
+<p>Heh. "<a href="http://en.wiktionary.org/wiki/mal-#Esperanto">Malsukceso</a>", as we say in Esperanto.</p>
+
+<p>I won't fix it today, but I'll just note that I see three errors in that output.</p>
+
+<ul>
+<li>Firstly, both html-template and november fail in the configure step. That's possibly a proto issue, but it could as well be issues with the projects. Both november and html-template have really old build systems, because they are among the oldest projects we have.</li>
+<li>Secondly, what's it doing trying to install html-template when the build obviously failed?</li>
+<li>Thirdly, there seems to be a method missing.</li>
+</ul>
+
+<p>Right. We're definitely not ready for prime time. But that's all right; everything in life is provisional. 哈哈</p>
+
+</article>
+
+  </body>
+</html>

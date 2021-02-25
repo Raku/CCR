@@ -1,0 +1,197 @@
+http://strangelyconsistent.org/blog/t3-wire-crossings
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t3: Wire crossings :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2013-08-29T22:22:34+02:00" pubdate="pubdate">29 Aug, 2013</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t3-wire-crossings">t3: Wire crossings</a></h1>
+  </header>
+
+  <p>Apparently I solemnly swore in <a href="http://strangelyconsistent.org/blog/t2-rectangle-haikus">the last p6cc blog
+post</a> that this blog
+post would appear sooner than after a two-month break. Apparently I suck at
+living up to what I solemnly swear. Anyway, kudos to <code>$dayjob</code> for keeping me
+healthily occupied with things, and a big thanks to all people related to Perl
+6 who gently reminded me to keep up with the reviewing.</p>
+
+<p>(Or maybe I didn't specifically mean "the next
+<em><a href="http://github.com/masak/p6cc2012#readme">p6cc</a></em> blog post", but just "the
+next blog post"? I wish I could make myself believe that. No, the real answer
+is that reviewing stuff takes time and effort, and my time and effort have been
+elsewhere lately.)</p>
+
+<p>Let's talk about crossing wires in elegant ways! Here, I'll let the description
+refresh your mind:</p>
+
+<pre><code>## Arrange wire crossings to rearrange wires
+
+Ten wires are come in from the left. Ten wires leave to the right. Write a
+program that, given a permutation of the digits 0..9, arranges crossings on a
+grid that places the wires in the order designated by the permutation.
+
+The output consists of a grid whose elements connect the left and right sides.
+Each cell of the grid is either *empty* (in that it just lets the wires
+through), or a *crossing* (in that it lets the wires trade places). Two
+crossings can never be placed vertically adjacent to each other. (This is
+equivalent to saying that the wires never split or merge, they only permute.)
+
+Often, solutions require crossings to be spread out not just vertically but
+also horizontally. It is considered elegant not to make the grid wider than it
+has to be.
+
+Examples:
+
+    Input: 1032547698
+
+    Output:
+
+    0 _  _ 1
+       \/
+    1 _/\_ 0
+
+    2 _  _ 3
+       \/
+    3 _/\_ 2
+
+    4 _  _ 5
+       \/
+    5 _/\_ 4
+
+    6 _  _ 7
+       \/
+    7 _/\_ 6
+
+    8 _  _ 9
+       \/
+    9 _/\_ 8
+
+(This permutation is simply flipping wires pairwise.)
+
+    Input: 1234567890
+
+    Output:
+
+    0 _  _________________ 1
+       \/
+    1 _/\  _______________ 2
+         \/
+    2 ___/\  _____________ 3
+           \/
+    3 _____/\  ___________ 4
+             \/
+    4 _______/\  _________ 5
+               \/
+    5 _________/\  _______ 6
+                 \/
+    6 ___________/\  _____ 7
+                   \/
+    7 _____________/\  ___ 8
+                     \/
+    8 _______________/\  _ 9
+                       \/
+    9 _________________/\_ 0
+
+(The simplest way to bubble 0 to the bottom.)
+
+    Input: 5012367894
+
+    0 _________  _ 5
+               \/
+    1 _______  /\_ 0
+             \/
+    2 _____  /\___ 1
+           \/
+    3 ___  /\_____ 2
+         \/
+    4 _  /\_______ 3
+       \/
+    5 _/\  _______ 6
+         \/
+    6 ___/\  _____ 7
+           \/
+    7 _____/\  ___ 8
+             \/
+    8 _______/\  _ 9
+               \/
+    9 _________/\_ 4
+
+(The simplest way to bubble 4 and 5 simultaneously.)
+</code></pre>
+
+<p>The reviews are in. To get the full enjoyment out of this blog post, I highly
+recommend that you <a href="https://github.com/masak/p6cc2012/tree/master/t3/review">read the
+reviews</a> as well as
+this post. The solutions are a varied bunch, and there's lots of nice code in
+there.</p>
+
+<p>How would a program find a nice, short solution to the write-crossing problem?
+Wait, can we even be sure there always <em>is</em> a solution? If the fundamental
+operation is crossing two adjacent wires, can we really generate the full space
+of permutations? (As opposed to, say, only half the space, like in the <a href="https://en.wikipedia.org/wiki/15_puzzle">15
+puzzle</a>.)</p>
+
+<p>We can generate the full space of permutations. The quickest way to convince
+ourselves of that is to think of sorting algorithms, many of which use "flip
+two adjacent values" as its fundamental operation. Sorting algorithms can sort
+anything, hence the wire-crossing problem always has a solution.</p>
+
+<p>(Wouldn't it be weird to live in a world where sometimes you'd pass in a list
+to be sorted, and the computer would come back and say "sorry, this is one of
+those unsortable lists of values". What a bummer!)</p>
+
+<p>In fact, many of the solutions took the sorting analogy to heart, producing
+something like a <a href="https://en.wikipedia.org/wiki/Bubble_sort">bubble sort</a> with
+slightly modified rules. In bubble sort, the same value can be transposed
+several times during one run, something that isn't possible in the wire
+universe: you flip two writes, and you then have to wait until the next column
+to flip either of those wires again. But with that little restriction added,
+bubble sort seems to solve this problem just fine.</p>
+
+<p>As always, it's nice to see how people's styles differ broadly. I never see two
+identical solutions, but this time around, it felt especially varied. Maybe
+because the problem is relatively small, and one wouldn't think there were that
+much to vary. But just watch as people apply dynamic variables, feed operators,
+enums, junctions, sequence operators, metaoperators, and many other things to
+solve the same problem. There Is <em>indeed</em> More Than One Way To Do It.</p>
+
+<p>As of last review post, we were down to five finalists. Now we're down to four.</p>
+
+<p>Next post: pouring water on a block world!</p>
+
+</article>
+
+  </body>
+</html>

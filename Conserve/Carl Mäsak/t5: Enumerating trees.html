@@ -1,0 +1,195 @@
+http://strangelyconsistent.org/blog/t5-enumerating-trees
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t5: Enumerating trees :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-06-30T23:06:01+02:00" pubdate="pubdate">30 Jun, 2012</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t5-enumerating-trees">t5: Enumerating trees</a></h1>
+  </header>
+
+  <div class="quote"><code>Thanks again for holding this contest.  Exercises like
+this give folks like me a fun chance to exercise skills and learn new ones that
+may not otherwise come up in a day job. It's reminded me specifically despite
+how far I've come, I still have much to learn.  Good thing I enjoy learning.
+:-) And, since you publish the code with great commentary, we all get to learn
+from each other, which is awesome. &mdash; zbiciak</code></div>
+
+<p>Let's tackle the final task of the <a href="http://strangelyconsistent.org/blog/the-2011-perl-6-coding-contest">Perl 6 Coding Contest
+2011</a>.</p>
+
+<p>I doodle on meetings. I make actual meeting notes too, but sometimes they are
+decorated with curious geometrical patterns or shapes. The t5 problem
+was born from such a doodle session. I started drawing little circles and
+connecting them up in all possible ways, and then...</p>
+
+<pre><code>== Enumerating trees
+
+We're used to thinking about rooted trees in computer science, but now
+for a while we'll be talking about *un*rooted trees.
+
+An unrooted tree is simply a graph with N nodes and N-1 edges,
+without cycles. Each node is reachable from any other node through
+exactly one simple path.
+
+Here's an example tree with three nodes.
+
+    1--2--3         a tree with a line shape
+
+In order to talk about different trees, we employ a traversal representation
+that looks like this:
+
+    1-2-3-2         traversal representation
+
+This can be thought of as the sequence of nodes encountered when tracing
+around the tree (say) clockwise. In the above case, we start at node
+1, continue to node 2, turn at node 3, find node 2 again, and then
+we're back at node 1 (which we don't include at the end).
+
+The traversal representation is simply a way to identify each graph by its
+structure.
+
+For simplicity's sake, let the traversal representation be "canonical", in the
+sense that it always introduces previously unseen nodes with the numbers
+1..*, in order. This reflects the fact that we're really dealing with
+unlabeled trees, and don't consider nodes to be distinct.
+
+Note that starting from a different node, or mirroring the tree in the
+plane that embeds it, may yield a different canonical traversal
+representation. (So it's not quite canonical.) You're free to pick any
+one of these if there are several.
+
+There's only one tree each with 1, 2, or 3 nodes. 4 is the first
+interesting case, and has two unique trees
+
+    1--2--3--4      another line        1-2-3-4-3-2
+
+    1--2--3
+       |            a T-shape           1-2-3-2-4-2
+       4
+
+Similarly, there are three unique trees with 5 nodes.
+
+Write a program that accepts a positive integer N on the command line,
+and outputs all unique unrooted unlabeled trees with N nodes, using
+canonical traversal representation.
+
+For example, for N = 4, the program should output the above two trees:
+
+    1-2-3-4-3-2
+    1-2-3-2-4-2
+</code></pre>
+
+<p>Now I <em>am</em> trying to trick you all in the above description. (What, you thought
+we just put together the task descriptions to be as clear as possible?
+Mwhahaha!) The traversal representation is all fine and good for representing
+trees embedded in the plane, but some graphs can be embedded in the plane in
+many differnt ways. So the programmer has to be careful.</p>
+
+<p>This was perhaps the most deceitful of the tasks, if not the hardest. When I
+solved it myself back in November, the mistake I did was thinking that the
+(canonicalized) traversal representation was unique enough, and so I ended up
+counting some trees twice.</p>
+
+<p>The first thing one does with this kind of problem is to solve it for the first
+few <code>N</code>, and then <a href="https://oeis.org/A000055">go check at oeis.org</a> for the
+actual sequence:</p>
+
+<pre><code>1, 1, 1, 1, 2, 3, 6, 11, 23, 47, 106...
+</code></pre>
+
+<p>I remember getting 12 trees for the case <code>N = 7</code>. Twelve, not elevent as I
+should get. I had to actually draw them and see what was wrong. Turns out two
+of my graphs were really the same graph but had been embedded in the plane in
+two different ways.  Not a simple case of mirroring (like the task description
+warns about), but more subtle than that: the traversal simply chose different
+visiting orders, resulting in the same tree represented in two different ways.</p>
+
+<p>I wanted to bury this interesting trap in a seemingly-innocuous problem, so
+that I could observe people fall into it.</p>
+
+<p>I think one contestant fell into this particular trap. Hehehehe. Other
+contestants fall into different traps that I didn't set up.</p>
+
+<p>The general problem can be solved quite nicely by induction. That is, we can
+trivially generate a graph with just one node. Then we generate all the
+<code>N</code>-graphs by starting from all the <code>N-1</code>-graphs, and "extending" all of them
+in all possible ways. That is, for the new generation we try to put an edge and
+a node in all possible places in all of the graphs in the old generation. After
+that, it's just a matter of weeding out duplicates.</p>
+
+<p>This isn't the only way to solve it; some of the solutions are actually quite
+clever and base their solutions on, you know, integer partitions and stuff.</p>
+
+<p>Still, they all fail. No, hold on, all except one.</p>
+
+<p>edgar's solution, by getting the right number of graphs as far as I have the
+patience to test it (N = 19, 317955 graphs), while all the other solutions sent
+in get N = 5 or N = 8 wrong, is like a runner who while all his competitors
+trip and fall after a few meters, runs all the way to the moon and back. Way to
+go, edgar!</p>
+
+<p>Have a look at <a href="http://strangelyconsistent.org/p6cc2011/">everyone's solutions</a>.</p>
+
+<p>There are two more interesting things worth mentioning that aren't in the
+reviews. One is that I got sent a paper &mdash; from I don't remember who,
+sorry! &mdash; from 1981, called <a href="http://www.cs.wright.edu/~tkprasad/courses/cs776/paraffins-turner.pdf">"The Semantic Elegance of Applicative
+Languages"</a>.
+The FP language used in the paper looks a bit like Haskell, and arnsholt
+<a href="http://irclog.perlgeek.de/perl6/2012-06-25#i_5757115">informs me</a> that it is
+indeed a direct ancestor. Now, what tickles my imagination about this paper is
+how it's clearly set out to show how completely <em>nice</em> and feasible it is to
+implement something in an applicative language like this. And even though it
+does a good job of it in 1981, I bet the same approach would look even nicer in
+2012 Haskell. Heck, I bet the same approach would look quite elegant in 2012
+Perl 6.</p>
+
+<p>The other thing is that one of our non-contestants (he simply applied too late)
+not only used an algorithm out of the fourth "The Art of Computer Programming"
+book, but found what he perceived to be a bug in same algorithm, and wrote an
+email to Donald Knuth about it! Well, it turned out that professor Knuth's
+algorithm was indeed correct and zbiciak's algorithm was wrong. This story
+would have been much cooler if zbiciak was right, but I think it's still pretty
+cool. The people involved in this contest are really motivated. And seeing
+Donald Knuth's handwriting on a scanned printout of zbiciak's email &mdash;
+professor Knuth doesn't do email &mdash; probably shouldn't be a big thing, but
+it is.</p>
+
+<p>Running this contest is so worth it.</p>
+
+</article>
+
+  </body>
+</html>

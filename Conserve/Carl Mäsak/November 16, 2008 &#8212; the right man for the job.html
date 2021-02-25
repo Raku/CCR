@@ -1,0 +1,78 @@
+http://strangelyconsistent.org/blog/november-16-2008-the-right-man-for-the-job
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 16, 2008 &#8212; the right man for the job :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-17T00:51:00+01:00" pubdate="pubdate">17 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-16-2008-the-right-man-for-the-job">November 16, 2008 &#8212; the right man for the job</a></h1>
+  </header>
+
+  <p>624 years ago today, <a href="http://en.wikipedia.org/wiki/Jadwiga_of_Poland">Jadwiga</a>, a 10-year old girl, after two years of negotiations between her mother and the ruling lords, was crowned King of Poland.</p>
+
+<p>Not that there's anything wrong with that. She appears to have been a just and respected monarch. <a href="http://en.wikipedia.org/wiki/Jadwiga_of_Poland">Wikipedia</a>:</p>
+
+<blockquote><div><p>As a monarch, young Jadwiga probably had little actual power. Nevertheless, she was actively engaged in her kingdom's political, diplomatic and cultural life and acted as the guarantor of W&#322;adys&#322;aw's promises to reclaim Poland's lost territories. In 1387, Jadwiga led two successful military expeditions to reclaim the province of Halych in Red Ruthenia, which had been retained by Hungary in a dynastic dispute at her accession.</p></div></blockquote>
+
+<p>She died at the age of 25 from birth complications. Nowadays, she is venerated by the Roman Catholic Church as Saint Hedwig, and by others as the patron saint of queens, and of United Europe.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Been hacking on the MediaWiki parser today. Specifically, the code that finds <code>== headings ==</code> and makes <code>&lt;h2&gt;headings&lt;/h2&gt;</code> out of them. I've now implemented the easy test case, where the heading is to be found on its own, and not intermixed with ordinary paragraph text. <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w/t/markup/mediawiki/05-headings.t">Three tests</a> remain to be satisfied in which it is.</p>
+
+<p>Also spoke to Shlomi Fish (rindolf) today, who apparently <a href="http://news.perlfoundation.org/2007/09/perlbased_mediawiki_syntax_par.html">got a grant</a> for doing a MediaWiki parser, but <a href="http://use.perl.org/~Shlomi+Fish/journal/34570">got stuck</a>. I asked him why he found the task hard, and he gave as an example the text <code>a''b'''c''d'''e</code> (or something equivalent), i.e. improperly nested style tokens.</p>
+
+<p>I know about that problem. I have <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w/t/markup/mediawiki/07-italic-and-bold.t">tests for it</a> already.</p>
+
+<p>In fact, a few years ago, I implemented an extremely reliable parser for a <a href="http://www.ibg.uu.se:8080/tkdocs/Textformatering">large subset of the MediaWiki syntax</a>, but that time in Java. It had a very peculiar design goal, in that I never wanted it to fail with an error message, or with some other type of lack of output. Additionally, it sent the resulting HTML on to a set of XML transformers, so the resulting output had to be <em>impeccable</em> XHTML.</p>
+
+<p>Think about it. The user can type any old broken, mis-nested, intentionally sadistic markup into the text box, and it <em>still</em> always comes out as freshly pressed valid XHTML. That's <a href="http://en.wikipedia.org/wiki/DWIM">DWIM</a> on steroids, some sort of "the user is right even when she's wrong" mentality. That module is still being used by dozens of people every day at my former employer. Of all the software I've written in my life, that one is perhaps the one I'm still the most proud of.</p>
+
+<p>I'm not trying to brag, just showing that I have some sense of what I'm up against. The objective for this module is somewhat different: right now, I aim for <a href="http://www.catb.org/jargon/html/B/bug-for-bug-compatible.html">bug-for-bug compatibility</a>. If MediaWiki parses something in an incredibly stupid way, I want to do it too. I know it would be much easier, and probably more sane, to 'tidy up' the grammar while implementing it. But I don't want that; then it wouldn't be MediaWiki markup. One should be able to copy a text from a MediaWiki instance, and paste it in a November instance.</p>
+
+<p>Come to think of it, I might have to make some small concessions if MediaWiki generates invalid XHTML in some case. In that case, valid XHTML takes priority. But hopefully, I'll still be able to emulate the way the page looks.</p>
+
+<p>I look forwards to the thorny bits of the markup parser. I think PGE and me will have a great time vanquishing those windmills. ☺</p>
+
+<p>I already have <a href="http://github.com/viklund/november/tree/mediawiki-markup/p6w/t/markup/mediawiki">quite a few tests</a>; but some still remain to be written. A few tests will surely be added when I find more corner cases. But all in all, I'm making good progress. Too bad <em>I'm</em> not getting a grant. ☺</p>
+
+<p>First up is satisfying those mixed-heading-and-paragraph tests. That code will have to be sufficiently general, or at least generalized later, because lists, definition lists and possibly other things will behave the same way, i.e. line-orientedly. Then comes that issue with correctly handling mis-nested bold/italic. (And mis-nested bold/italic/links.) That will most likely require its very own blog post.</p>
+
+<p>P.S. I'm not usually this cocky in my blog posts, but I wrote this immediately after watching a <a href="http://www.vimeo.com/1494795">video podcast with Randal Schwartz</a>. In it, he said that people don't know what you're good at until you tell them. I think he's right.</p>
+
+</article>
+
+  </body>
+</html>

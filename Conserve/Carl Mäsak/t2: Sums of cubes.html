@@ -1,0 +1,140 @@
+http://strangelyconsistent.org/blog/t2-sums-of-cubes
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>t2: Sums of cubes :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2012-02-12T17:35:49+01:00" pubdate="pubdate">12 Feb, 2012</time></div>
+      <div>by Moritz Lenz</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/t2-sums-of-cubes">t2: Sums of cubes</a></h1>
+  </header>
+
+  <p><em>(Guest post by Moritz Lenz.)</em></p>
+
+<p>The second task from <a href="http://strangelyconsistent.org/blog/the-2011-perl-6-coding-contest">the Perl 6 Coding Contest
+2011</a>
+needs data structures not available in core Perl 6 to be solved efficiently.</p>
+
+<p>But I'm getting ahead of myself here. First, let's recall the task description:</p>
+
+<pre><code>Some natural numbers can be as the sum of two positive cubes of natural
+numbers. For example, 1729 is 12 cubed plus 1 cubed. Some natural numbers
+can even be expressed as more than one such sum. For example, 1729 can
+also be expressed as 10 cubed plus 9 cubed.
+
+Just for clarity's sake, the sum with the two terms reversed is the
+same sum, not a new one. Thus, 91 is 3 cubed plus 4 cubed, but
+finding "4 cubed plus 3 cubed" does not count as a distinct sum.
+
+Write a program that accepts an integer N on the command line, and
+prints out the first N of these numbers in increasing order. For each
+number found, print it out, as well as the sums of cubes that yield that
+number.
+
+For example:
+
+    1729 = 12 ** 3 + 1 ** 3 = 10 ** 3 + 9 ** 3
+</code></pre>
+
+<p>As always, the devil is in the details. Let me add some emphasis:</p>
+
+<p>"For each number found, print it out, as well as <strong>the</strong> sums of cubes that
+yield that number." The sums, not both sums.</p>
+
+<p>The 455th of such sums of cubes can be written in three different ways, not
+just two:</p>
+
+<pre><code>87539319 = 423 ** 3 + 228 ** 3 = 414 ** 3 + 255 ** 3 = 436 ** 3 + 167 ** 3
+</code></pre>
+
+<p>If advanced number theory offers a direct way to come up with such numbers, we
+are not aware of it. That leaves the search through the pairs of positive
+integers as a viable solution.</p>
+
+<p>Now there are basically two approaches to searching that vast space of number
+pairs. The first is to queue up all such pairs in the order that they produce
+the cubes, and then iterate them all, looking for double (or triple)
+consecutive elements.</p>
+
+<p>The second is to iterate the pairs in some simpler way,
+and keep all sums of cubes in a hash, looking for solutions. Since this can
+produce the searched numbers out of order, a queue is needed here as well, but
+on the output end this time. It also helps to have some condition for when one
+is sure that no numbers smaller than some limit will be found, so that one can
+safely print out the values already found.</p>
+
+<p>The first one sounds more elegant <em>a priori</em>, and implictly avoids having
+non-collected garbage in the data structures, but in practice the second one is
+much faster, because it keeps orders of magnitudes less data in its queue.</p>
+
+<p>All solutions we have seen or written so far check or enqueue the numbers by
+grazing half of a quadrant of the number plane in a triangular fashion,
+that is they have a slowly growing first index <code>x</code>, and a fast second index
+<code>y</code> that runs from 1 to <code>x</code> for each value of <code>x</code>.</p>
+
+<p><a href="http://strangelyconsistent.org/p6cc2011/">Here you'll find people's solutions</a>.</p>
+
+<p>The following chart illustrates the run time of the solutions
+we have received, as a function of how many target numbers they
+should find. A drop to zero indicates that the solution threw an
+error before printing out all requested numbers (limited to 1
+GB virtual memory)</p>
+
+<p><a href="/blog/images/timings-t2-2011.png"><img
+src="/blog/images/timings-t2-2011-small.png" width="550" height="425" alt=""
+title="Click the image to see a larger version" /></a></p>
+
+<p>One can see that the solutions all scale roughly exponentially
+(that is, a straight line in the logarithmic plot), and that there
+are two clusterings: one with steep slopes of slow solutions that
+enqueue all sums of cubes, and one of milder slopes of fast solutions
+that filter by hash first.</p>
+
+<p>It might be possible to come up with a cleverer strategy for producing
+these index pairs, one that is more closely aligned to the <a href="http://www.wolframalpha.com/input/?i=ContourPlot%5Bx%5E3+%2B+y%5E3%2C+%7Bx%2C+0%2C+20%7D%2C+%7By%2C+0%2C+20%7D%5D">contour lines of
+x <em>* 3 + y *</em> 3</a>.
+Such a scheme would reduce memory usage, and maybe even run time.
+If you have a nice idea for such an algorithm, please contact us. <code>:-)</code></p>
+
+<p>It is possible to walk each possible integer contour line <code>l</code>, and for each
+smaller integer cube <code>i = x ** 3</code> check if the third root of <code>l - i</code> is
+integral. Such an algorithm has the advantage of using up nearly no memory,
+but it is ridiculously slow in comparison to the other approaches we have
+discussed so far. But maybe there is a way to combine the advantages of all
+these approaches?</p>
+
+</article>
+
+  </body>
+</html>

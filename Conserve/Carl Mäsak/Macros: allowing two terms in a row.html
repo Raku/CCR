@@ -1,0 +1,197 @@
+http://strangelyconsistent.org/blog/macros-allowing-two-terms-in-a-row
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: allowing two terms in a row :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-10-18T23:15:32+02:00" pubdate="pubdate">18 Oct, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-allowing-two-terms-in-a-row">Macros: allowing two terms in a row</a></h1>
+  </header>
+
+  <p>Perl 6 syntactic constructs are privileged in that they can break the TTIAR rule in Perl 6.</p>
+
+<pre><code>if 2 + 2 == 4 {
+    say "math!";
+}
+</code></pre>
+
+<p>What's "TTIAR"? The acronym stands for "Two Terms In A Row", and the parsing tradition behind it all actually goes back all the way to Perl 5. When the Perl 5 parser sees a <code>/</code>, how does it know whether it's a division operator, or the start of a regex literal?</p>
+
+<p>The first part of that answer is that the parser constantly keeps track of whether it's expecting a term or an operator. And so it can tell those two things apart just fine. The second part of the answer involves all the things that participate in that dance between expect-term and expect-op: everything from prefix and postfix ops to so-called listops. A few examples help show the complexity of this dance:</p>
+
+<pre><code>2 + 3 * 4;               Ⓣ2 Ⓞ+ Ⓣ3 Ⓞ* Ⓣ4 Ⓞ;
+$x++ + ++$y;             Ⓣ$x Ⓞ++ Ⓞ+ Ⓣ++ Ⓣ$y Ⓞ;
+say "OH HAI";            Ⓣsay Ⓣ"OH HAI" Ⓞ;
+</code></pre>
+
+<p>The concept of "TTIAR" says that there is a rule the code author cannot break: it's not allowed to put a term where the parser expected an operator.</p>
+
+<pre><code>"will " "concatenate?";  Ⓣ"will " Ⓞ&lt;&lt;&lt;PARSE ERROR&gt;&gt;&gt;
+</code></pre>
+
+<p>This is all good and well, and works to our advantage. TimToady has described it on several occasions as Perl 6's "self-clocking" mechanism: if a term shows up where an operator was expected, we give a parse error. Often we're able to give a more specific parse error than just "Confused" &mdash; in fact, many of the excellent errors we give are improved versions of the TTIAR error.</p>
+
+<pre><code># excerpt from inside of the `panic` method in STD.pm6
+if self.lineof($startpos) != self.lineof($endpos) {
+    $m ~~ s|Confused|Two terms in a row (previous line missing its semicolon?)|;
+}
+elsif @*MEMOS[$startpos]&lt;listop&gt; {
+    $m ~~ s|Confused|Two terms in a row (listop with args requires whitespace or parens)|;
+}
+elsif @*MEMOS[$startpos]&lt;baremeth&gt; {
+    $here = $here.cursor($startpos);
+    $m ~~ s|Confused|Two terms in a row (method call with args requires colon or parens without whitespace)|;
+}
+elsif @*MEMOS[$startpos]&lt;arraycomp&gt; {
+    $m ~~ s|Confused|Two terms in a row (preceding is not a valid reduce operator)|;
+}
+else {
+    $m ~~ s|Confused|Two terms in a row|;
+}
+</code></pre>
+
+<p>Ok, great. So, back to the <code>if</code> statement from the top. It breaks TTIAR.</p>
+
+<pre><code>if 2 + 2 == 4 {          Ⓣif Ⓣ2 Ⓞ+ Ⓣ2 Ⓞ== Ⓣ4 Ⓞ{
+</code></pre>
+
+<p>That last brace there introduces a block, which is a term. (A big one.) But as you see, the parser is in op-expecting mode. Boom... no, not boom! Just a regular day at the <code>if</code> statement parsing assembly line. The parser, instead of throwing a hissy fit about a term that's out of line, just turns around real quick and goes "oh, right! this is an <code>if</code> statement, so it's <em>fine</em>". (In fact, this little hiccup is the secret sauce that allows Perl 6 to drop the parentheses in <code>if</code> statements.)</p>
+
+<p>The same goes for all the big-shot block-accepting control statements out there: <code>unless</code>, <code>while</code>, <code>until</code>, <code>repeat</code>, <code>for</code>, <code>given</code>, and <code>when</code>. They <em>flaunt</em> the rule, practically laughing in the face of the 99%, the less fortunate grammatical constructs who have to get all their terms and operators in the accepted order. <a href="https://www.youtube.com/watch?v=rX7wtNOkuHo">Ha ha!</a></p>
+
+<p>I don't know about you, reader, but I think this tyranny should end. We should put the power of TTIAR breakage into the hands of the author, where it belongs. They clearly belong in macros. In fact, they shouldn't be allowed to <em>call</em> themselves macros if they couldn't do this, and emulate an <code>if</code> statement. In my opinion.</p>
+
+<p>People have a standard response to this, and I think it's problematic as it stands. They say "well, that's OK; for such macros we just have to use the <code>is parsed</code> trait. That way, the macro can take over for a while from the compiler's parser, and supply its own, up to and including breaking TTIAR to its heart's content."</p>
+
+<p>And yes, maybe that is the solution. I hope it can be. But not as it stands today. Let's look at the <em>only</em> example in S06 that declares a macro with <code>is parsed</code>:</p>
+
+<pre><code>macro circumfix:«&lt;!-- --&gt;» ($text) is parsed / .*? / { "" }
+</code></pre>
+
+<p>I personally hope that this particular declaration will never work in Perl 6. If I squint, I can... sort of... see how it would work out. Ok, so the parser comes and finds a circumfix in an expression, yes. Maybe the expression is this:</p>
+
+<pre><code>2 + &lt;!-- lol an SGML comment --&gt; 2
+</code></pre>
+
+<p><em>Somehow</em> that regex <code>/ .*? /</code> gets tried again and again until it matches the whole comment, right? (Bear with me here.) The macro, full of mirth, returns the empty string for the parser to re-integrate into the source code. The parser is then apparently supposed to go "oops! what a great macro that was! but even though I am now after a <code>circumfix</code> call, which would normally have me hungry for an operator, it left me with nothing, which must <em>obviously</em> mean I'm now <em>back</em> to expecting a <em>term</em>! Yeah, that's a healthy way to modify code, oh boy!"</p>
+
+<p>In other words, the one spec'd example we have of the <code>is parsed</code> trait runs on 80% magic and 20% wishful thinking. (And apparently as implementor, my way to cope is to get really sarcastic. I leave the mocking of the <code>is parsed</code> macro in <a href="http://www.perl6.org/archive/doc/design/exe/E06.html">E06</a> as an exercise to the reader.)</p>
+
+<p>Here's what I think is going on. In the latter half of the naughties, we got amazing STD parser technology. We basically figured out how Perl 6 is parsed. The macro spec (and the <code>is parsed</code> trait) largely comes before that. The Perl 6 chorus today sings about <em>grammars</em>, and sometimes action methods. But the <code>is parsed</code> trait still mumbles about its regexes, making itself a bit of an embarrassment, to be honest. It hasn't gotten the memo that all the rest of us are doing structured language parsing, not just text munging.</p>
+
+<p>What if when I declared a macro, I got the option to play the same game as <code>if</code> and <code>for</code> and the other big cats? What if I got to effectively extend the current Perl 6 grammar being parsed? (This is also the goal of slangs.) I think a lot of the problems would be solved simply with this addition.</p>
+
+<h2>Implementation</h2>
+
+<p>At the point the macro is parsed, but before parsing its arguments, we need to give the macro a chance to do its own parsing. This parsing should be able to call into methods declared in the Perl 6 parser/grammar.</p>
+
+<p>Let's look at some of the statement control rules in STD.pm6 to get a feel for whether this is realistic. Here's <code>if</code>, for example:</p>
+
+<pre><code>rule statement_control:if {
+    &lt;sym&gt;
+    &lt;xblock&gt;
+    [
+        [
+        | 'else'\h*'if' &lt;.sorry: "Please use 'elsif'"&gt;
+        | 'elsif'&lt;?keyspace&gt; &lt;elsif=.xblock&gt;
+        ]
+    ]*
+    [
+        'else'&lt;?keyspace&gt; &lt;else=.pblock&gt;
+    ]?
+}
+</code></pre>
+
+<p>(Here, <code>&lt;xblock&gt;</code> expects an expression and a block (that's the TTIAR breakage right there), and <code>&lt;pblock&gt;</code> expects a block with a possible "pointy" <code>-&gt;</code> parameter declaration on it.)</p>
+
+<p>I don't know about you, but this way of specifying how Perl 6 code should be parsed feels at the same time very uncluttered, natural, and overall a good fit. There's no waste here. Some error handling, but that's all. In terms of bang-for-the-buck, we're doing very well.</p>
+
+<p><code>while</code> statement?</p>
+
+<pre><code>rule statement_control:while {
+    &lt;sym&gt;
+    [ &lt;?before '(' ['my'? '$'\w+ '=']? '&lt;' '$'?\w+ '&gt;' ')'&gt;   #'
+        &lt;.panic: "This appears to be Perl 5 code"&gt; ]?
+    &lt;xblock&gt;
+}
+</code></pre>
+
+<p>Again, yes. Couldn't be much simpler. <code>given</code>?</p>
+
+<pre><code>rule statement_control:given {
+    &lt;sym&gt;
+    &lt;xblock&gt;
+}
+</code></pre>
+
+<p>The paragon of simplicity. It's a symbol, and then an expression-block. What about <code>when</code>?</p>
+
+<pre><code>rule statement_control:when {
+    &lt;sym&gt;
+    &lt;?dumbsmart&gt;
+    &lt;xblock&gt;
+}
+</code></pre>
+
+<p>Again, that's exac... hey! Who are you calling dumbsmart? What did I ever do to you, <code>when</code>?</p>
+
+<p>An <code>is parsed</code> macro could perhaps look something like this (running with the example from <a href="http://strangelyconsistent.org/blog/macros-nesting-macros">the last post</a>):</p>
+
+<pre><code>macro transact is parsed / &lt;sym&gt; &lt;xblock&gt; / {
+    # mumble handwave need to extract $conn and &amp;block from &lt;xblock&gt;
+}
+</code></pre>
+
+<p>Inside the macro, we'd have access to the parse tree thus generated. Probably also the regular action methods of all the rules that fired should also run as they usually do during a parse. Which means that we'll have a full AST built too, QAST and all. Here my crystal ball grows blurry, because we already said we don't want to be interacting with the QAST.</p>
+
+<p>We'll have to attack this in a later post. But we're already in a better position here than when we started; we can now harness the power of the Perl 6 grammar from our macro.</p>
+
+<p>If after that, it turns out that it's <em>still</em> unnecessarily cumbersome to specify something as simple as the <code>transact</code> macro above &mdash; if it feels like writing boilerplate every time we do that &mdash; then clearly we should find some sugared way to write it so as to simply express "keyword, expression, block &mdash; you know what to do". It goes without saying that, for dogfooding reasons, that type of sugar should be provided through macros, maybe in module-space.</p>
+
+<h2>Not addressed by this proposal</h2>
+
+<p>Identified in <a href="http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break">a previous post</a>.</p>
+
+<ul>
+<li>The <code>{{{ }}}</code> syntax being universally hated</li>
+<li>Quasi slices only being usable in term position</li>
+<li>Macro parameters/operands being restricted to expressions</li>
+<li>Manipulexity of program elements</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

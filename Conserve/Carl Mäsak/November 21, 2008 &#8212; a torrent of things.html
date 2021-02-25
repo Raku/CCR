@@ -1,0 +1,72 @@
+http://strangelyconsistent.org/blog/november-21-2008-a-torrent-of-things
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 21, 2008 &#8212; a torrent of things :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2008-11-22T00:44:00+01:00" pubdate="pubdate">22 Nov, 2008</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-21-2008-a-torrent-of-things">November 21, 2008 &#8212; a torrent of things</a></h1>
+  </header>
+
+  <p>28 years ago today, the plug was pulled on <a href="http://en.wikipedia.org/wiki/Lake_Peigneur">Lake Peigneur</a> when Texaco drilled a hole in the roof of a mine by mistake. There's a bit of confusion as to whether this happened on November 20 or November 21, but I wouldn't want you to miss this, so I'm reproducing it today. <a href="http://en.wikipedia.org/wiki/Lake_Peigneur#Disaster">Wikipedia</a>:</p>
+
+<blockquote><div><p>It is difficult to determine exactly what occurred, as all of the evidence was destroyed or washed away in the ensuing maelstrom. The now generally accepted explanation is that a miscalculation by Texaco regarding their location resulted in the drill puncturing the roof of the third level of the mine. This created an opening in the bottom of the lake, similar to removing the drain plug from a bathtub. The lake then drained into the hole, expanding the size of that hole as the soil and salt were washed into the mine by the rushing water, filling the enormous caverns left by the removal of salt over the years. The resultant whirlpool sucked in the drilling platform, eleven barges, many trees and 65 acres (260,000 m&#178;) of the surrounding terrain. Leonce Viator, Jr., a local fisherman, was able to drive his small boat to the shore and tie it up to a tree, and get out, to later watch it and the tree get sucked down. So much water drained into those caverns that the flow of the Delcambre Canal that usually empties the lake into Vermilion Bay was reversed, making the canal a temporary inlet. This backflow created, for a few days, the tallest waterfall ever in the state of Louisiana, at 164 feet (50 m), as the lake refilled with salt water from the Delcambre Canal and Vermilion Bay. The water downflowing into the mine caverns displaced air which erupted as compressed air and then later as 400-foot (120 m) geysers up through the mineshafts.</p></div></blockquote>
+
+<p>Oops.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Time has caught up with me today, so I'll cop out and do the descriptive post I thought I'd be doing yesterday before I got pulled into a renegade hacking spree. (I'm not a native English speaker, so I don't know if the phrase "renegade hacking spree" makes sense, even metaphorically. For some reason, the more obstacles I run into with Rakudo and Parrot, the more I feel like a guerilla leader fighting with the weather, the terrain, the weapons and the mission objectives. It's fun.)</p>
+
+<p>When I <a href="http://strangelyconsistent.org/blog/lovely-patchers">last spoke about branches</a>, we had two. Now we have two handfuls. Since each of them has a story, they're a decent topic for a blog post. Here goes.</p>
+
+<ul>
+<li><strong>master</strong>. git gives you this branch for free. For all intents and purposes, this is the November wiki engine at any given moment. All the other branches are experiments of different sorts. In other words, it's like svn's "trunk", except that the name "master" sounds cooler.</li>
+<li><strong>new-html-template</strong>. An old branch which blocks on the infamous <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=58392">#58392</a>. Since there are insistent rumors that this bug will get fixed Real Soon Now, I'm re-familiarizing myself with it a bit as we speak. As the name implies, it contains a shiny new HTML::Template module, which uses grammars in an admirable way, instead of regexes in a sloppy way as we currently do it.</li>
+<li><strong>tests</strong> was part of a drive to add tests to some parts of November. As far as I know, this branch has filled its purpose and been merged back into master, but it still hangs around on github.</li>
+<li><strong>markup</strong> contains a few improvements on our current minimal markup engine (called <code>Text::Markup::Wiki::Minimal</code>) made by ihrd++. It adds links parsing, something we've been wanting to make work on the server for a while.</li>
+<li><strong>mediawiki-markup</strong> is where I hammer on the new markup engine <code>Text::Markup::Wiki::MediaWiki</code>, which will replace <code>Minimal</code> as soon as it surpasses it in functionality, which is soon.</li>
+<li><strong>janitor-work</strong> was a branch I started in order to convert items in the <a href="http://github.com/viklund/november/tree/master/docs%2FJANITORS">docs/JANITORS</a> file into actual p5w features. This is actually pretty pleasant work, which can be done with Perl 5 and Perl 6 programmers alike. Patches welcome.</li>
+<li><strong>dispatch</strong>. Created by ihrd++ who wanted November to be able to dispatch on nice-looking URLs. He declared success on the mailing list the other day, and I look forward to reviewing what he's done.</li>
+<li><strong>asterisk</strong> was also created by ihrd++, experimenting with making (the new) <code>HTML::Template</code> use action methods, which pmichaud told us worked in Rakudo. It has currently stalled on something, mainly the total lack of idioms for this kind of code. We all agree it's a cool way of working, but we're not sure how to make it work yet.</li>
+<li><strong>plugin</strong> is a new branch by viklund++ in which he beats <code>Minimal</code> into recognizing <code>&lt;plugin&gt;</code> tags (à la MediaWiki) which will then delegate the parsing to the respective plugin. Seems like interesting work.</li>
+</ul>
+
+<p>It's exciting to realize that five months ago, November was just an idea tossed around in a couple of emails. Three months ago, it was viklund and I demoing a shaky prototype at YAPC::EU. Today, we're working on eight branches in parallel, with four regulars (not counting the three non-human participants) on the IRC channel, 14 people watching us on github, and 19 members on the mailing list, averaging 2.5 emails a day. We're growing.</p>
+
+</article>
+
+  </body>
+</html>

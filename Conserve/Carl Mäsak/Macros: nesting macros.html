@@ -1,0 +1,167 @@
+http://strangelyconsistent.org/blog/macros-nesting-macros
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Macros: nesting macros :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-10-14T17:26:44+02:00" pubdate="pubdate">14 Oct, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/macros-nesting-macros">Macros: nesting macros</a></h1>
+  </header>
+
+  <p>Some features that the program author wants to implement need to straddle more than one macro. A common relationship between macros seems to be the outside-inside relationship.</p>
+
+<p>AngularJS has this feature. When you declare directives (which can then act as elements or attributes in your application HTML), one directive can declare that it needs another one around it to function using the <code>require</code> option. See <a href="https://github.com/angular-ui/bootstrap/blob/master/src/tabs/tabs.js#L184">this example</a> from UI Bootstrap, with <code>&lt;tabset&gt;</code> being the outer directive, and <code>&lt;tab&gt;</code> the inner.</p>
+
+<p>There are two important parts of this feature:</p>
+
+<ul>
+<li><strong>Validation</strong>. It doesn't make sense to have a tab outside of a tabset, and the framework makes sure that doesn't happen.</li>
+<li><strong>Sharing</strong>. In the <code>compile</code> function later, each tab has access to their parent tabset controller and call methods on it (<code>.select</code> and <code>.removeTab</code>). The HTML structure of directives maps into an object graph where the children have access to their parent.</li>
+</ul>
+
+<p>(Further down in that example, there's even a <code>tabHeadingTransclude</code> directive which nests inside <code>tab</code>. That is, a directive can be both a child and a parent. Though the <code>tabHeadingTransclude</code> is so simple that it only requires the inclusion for the "validity" reason above, not for "sharing".)</p>
+
+<h2>Meanwhile, in Perl 6 macros</h2>
+
+<p>I believe this feature is something that macro authors will want, and find useful. I think macros will end up working in groups like this sometimes, and by far the most common way to group things will be the parent/child relation. (Or ancestor/descendant, to be exact. Hm. Some things will want to be tightly nested with no stuff in between parent and child; other things will be more lenient.)</p>
+
+<p>One example that's already in Perl 6: <code>given</code> and <code>when</code>.</p>
+
+<pre><code>given $food {
+    when /pie/ { say "mm, pie" }
+    default { say "waiter, could you send in some pie?" }
+}
+</code></pre>
+
+<p>Actually, what Perl 6 requires in this case is that the <code>when</code> (and <code>default</code>) find itself lexically inside a <em>topicalizer block</em>, not necessarily a <code>given</code>. So this is fine:</p>
+
+<pre><code>for @foods {
+    when /pie/ { say "mm, pie" }
+    default { say "waiter, could you send in some pie?" }
+}
+
+sub review-food($_) {
+    when /pie/ { say "mm, pie" }
+    default { say "waiter, could you send in some pie?" }
+}
+</code></pre>
+
+<p>Which indicates that in some cases, the child macro might want to specify that it wants to be the child of (semantically) an <code>any</code> junction of parent macros.</p>
+
+<p>Note that this example does not extend to the following likely parent/child constructs, which are too dynamic in nature and therefore the domain of the runtime rather than the compiler.</p>
+
+<ul>
+<li><code>gather</code> and <code>take</code></li>
+<li>loops and <code>next</code>/<code>last</code>/<code>redo</code></li>
+<li>routines and <code>return</code></li>
+</ul>
+
+<h2>How about a more DSL-y example?</h2>
+
+<p>I went hunting for a good example of this, preferably one that exists already. I guess <a href="http://perl6advent.wordpress.com/2012/12/20/day-20-dynamic-variables-and-dsl-y-things/">my DSL advent post</a> is one. It does illustrate both the "validity" and "sharing" benefits. But I feel I need another example.</p>
+
+<p>Let's imagine a DSL for making database transactions.</p>
+
+<pre><code>transact $conn {
+    # do some queries
+    # change stuff around in several steps
+    rollback
+        unless $success1;
+    # more changes
+    rollback
+        unless $success2;
+    commit;  # this would probably be optional at the end, though
+}
+</code></pre>
+
+<p>I like this example more than the one in the advent post, because the parent macro <code>transact</code> and the child macros <code>rollback</code> and <code>commit</code> are collaborating on a type of data very central to the language itself: control flow. In the sense that we want a <code>commit</code> or <code>rollback</code> to also exit the <code>transact</code> block.</p>
+
+<p>That makes the example feel <em>real</em> to me. Likely the mechanism for this would be <code>transact</code> setting up a custom handler, and <code>commit</code> and <code>rollback</code> throwing (control) exceptions with different cargo.</p>
+
+<p>This type of examples inhabits a Goldilocks zone where the macros have to be not-too-simple (because then a frothy mix of subs, dynamic variables, and exception handling would work), but also not too much like a proper language (because then slangs would rush in and soak up the use cases). I think any more complicated than this and it'd be a slang. In fact, I don't mind if there's a nice, sliding scale, so that you can essentially evolve a cluster of macros of this type into a slang if you want.</p>
+
+<h2>Grammars do it bottom-up</h2>
+
+<p>I don't know what to make of the fact that in our Perl 6 grammars we've ended up with a solution where</p>
+
+<ul>
+<li>Most of the time we rely on rules firing in tree traversal post-order (with inner rules firing before outer ones, and the action methods firing at the same time). Which means that a parent or ancestor will have all the information of its children or descendants.</li>
+<li>In the cases where we <em>do</em> want to carry information downwards, we tend to declare a dynamic variable on parent rule entry, and then access that dynamical from the child rules.</li>
+</ul>
+
+<p>Parsing is different from macros, so maybe it's fine. But by current design, macros can <em>neither</em> reach downwards to their macro children or upwards to their macro parents. And I just find it a bit odd that the design I find natural with macros (children declaring their need for/communication with parents) runs counter to the design we find useful in grammars (parents grabbing information from children by default).</p>
+
+<p>I notice that I am confused. ☺</p>
+
+<h2>Implementation</h2>
+
+<p>Remember, <a href="http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break">"generate, analyze, and typecheck"</a>. The thing I'm suggesting here falls under "analyze", because we mainly want to introspect/read the program structure, and communicate things across it. Maybe the "validation" requirement falls under "typecheck".</p>
+
+<p>Anyway, I fully expect there to be a general framework through which macros could do this the "hard way":</p>
+
+<ul>
+<li>Walk up the Q-tree to make sure that their parent macro is there, in place.</li>
+<li>When it finds it, ask the Q-tree node for the parent macro's home address, so that they two can interact.</li>
+</ul>
+
+<p>(Hm. Will parent macros therefore leave a detectable trace of themselves in the Q-tree? Probably. I half-expected macros to desugar into more primitive types of nodes. But maybe parent macros are an exception, since they want to be found. Or they desugar to something primitive, like a block, but it's marked up in a standard way, with a <code>once I was a macro</code> symbol.)</p>
+
+<p>What I'm proposing here is basically just sugar, for people writing the macros, to set up this relationship between parent and child the "easy way":</p>
+
+<pre><code>macro transact($conn, $block) { # TTIAR, but see separate post
+    # ...
+}
+
+macro commit() is inside(&amp;transact) { #`[...] }
+macro rollback() is inside(&amp;transact) { #`[...] }
+</code></pre>
+
+<p>This is enough to declare the relation between the macros. There also needs to be a mechanism to get the object representing the actual callsite of the macro call. That's the one in our example that would hold <code>$conn</code>. In the worst case, we could fall back on asking about this through a namespace or global object somehow. There may be a cuter/saner way that I'm missing right now. Either way, it's possible.</p>
+
+<h2>Not addressed by this proposal</h2>
+
+<p>Identified in a <a href="http://strangelyconsistent.org/blog/macros-progress-report-after-a-long-break">previous post</a>.</p>
+
+<ul>
+<li>The <code>{{{ }}}</code> syntax being universally hated</li>
+<li>Quasi slices only being usable in term position</li>
+<li>Macro parameters/operands being restricted to expressions</li>
+<li>Manipulexity of program elements</li>
+</ul>
+
+</article>
+
+  </body>
+</html>

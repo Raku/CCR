@@ -1,0 +1,70 @@
+http://strangelyconsistent.org/blog/november-29-2009-drowning-in-workarounds
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 29 2009 &#8212; drowning in workarounds :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-30T00:59:00+01:00" pubdate="pubdate">30 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-29-2009-drowning-in-workarounds">November 29 2009 &#8212; drowning in workarounds</a></h1>
+  </header>
+
+  <p>228 years ago today, the crew on board the slave ship Zong <a href="http://en.wikipedia.org/wiki/Zong_Massacre">murdered 133 Africans</a> by dumping them into the sea, in order to claim insurance.</p>
+
+<div class='quote'><p>The resulting court case, brought not by the authorities as a mass-murder charge against the ship-owners, but as a civil action by the ship-owners seeking compensation from the insurers for the slave-traders' lost "cargo", was a landmark in the battle against the African slave trade of the eighteenth century.</p><p>The term "Zong Massacre" was not universally used at the time. It was usually called "The Zong Affair," the term "massacre" being used mainly by those considered to be "dangerous radicals," as late eighteenth-century politics stood. At the time, the killing of slaves&#8212;individually or en masse&#8212;was not considered to be murder, at least legally. In English law, the act was completely legal and could be freely admitted to the highest court in the land, without danger of prosecution. The publicity over this case was, however, one of the factors that led to the legal situation being completely changed within a few decades.</p></div>
+
+<p>Despite the long way we've come since then, I hear slavery is bigger than ever, in absolute numbers, in our day.</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Today I decided to find out why <code>GGE::OPTable</code> was emitting warnings. When writing that class and inadvertently introducing those warnings, I had the intuitive feeling that they were not my fault, so to speak, but the result of a yet-undiscovered rakudobug.</p>
+
+<p>I was right. It was a spooky-action-at-a-distance bug where a declaration of a postcircumfix <code>.{}</code> operator in one file caused Rakudo to report a completely innocent variable declaration nested deeply inside another file as being <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=70922">a redeclaration</a>, when in fact it wasn't.</p>
+
+<p>Postcircumfix <code>.{}</code> is notoriously difficult to get right. It already had <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=69438">two</a> <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=69612">bugs</a> to its name before today. It clashes syntactically with not only blocks, but sometimes even with itself! 哈哈</p>
+
+<p>I wouldn't care about a warning which I didn't cause and which would go away as soon as the rakudobug in question is fixed, if it weren't for the fact that when Rakudo emits warnings during precompilation, it <a href="http://rt.perl.org/rt3/Ticket/Display.html?id=70826">generates broken PIR files</a>. So, by working around the false warning bug, I could precompile my module files, which would help make the Glacial Grammar Engine slightly less glacial at startup.</p>
+
+<p>But... uh. Uhn. GGE is big. Because it's the declaration of the postcircumfix <code>.{}</code> operator that's triggering the bug, I needed to remove that declaration <em>and all its usages</em>. How does a use of that method look? Well, like a normal hash access. That's the point of declaring it in the first place!</p>
+
+<p>Hash accesses aren't really searchable. They can look like <code>.{}</code> or like <code>.&lt;&gt;</code> (most often without the dot, of course), but even worse, they are hidden behind many hash accesses on other objects (mostly hashes), which also look like that. This is one of the times where non-strict typing does not really help. So there was a lot of manual inspection involved, to separate the goat hash accesses from the sheep hash accesses.</p>
+
+<p>In the end, all you can really do is replace all the occurrences you find by eye, run the tests and see where things fail, insert loads and loads of debug statements to find out how far into the code the execution reaches before things blow up, finally finding the offending hash access. It is the pure masochism in this kind of work, along with the fact that I haven't heard others complain a lot, which makes me think that I am indeed writing some of the most complex stuff out there in Rakudo right now. Either that, or I'm simply doing it wrong. 哈哈</p>
+
+<p>I got partially there. In order to be able commit and push something today, I shunted my work off in a branch. <a href="http://github.com/masak/gge/commit/9256ca6e8193ac51979cd5e844637fbb4a12b291">Here it is</a>. Will merge as soon as all the old tests pass again.</p>
+
+</article>
+
+  </body>
+</html>

@@ -1,0 +1,129 @@
+http://strangelyconsistent.org/blog/et-tu-bruteforce
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>'Et tu, bruteforce?' :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-05-05T00:25:00+02:00" pubdate="pubdate">5 May, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/et-tu-bruteforce">'Et tu, bruteforce?'</a></h1>
+  </header>
+
+  <p><em>(Alternative title: "My undying love for <code>.kv</code> on lists")</em></p>
+
+<p>Knuth's <a href="http://www-cs-faculty.stanford.edu/~knuth/taocp.html">'Facsicle 0a'</a> starts with a kind of programmer's cliffhanger:</p>
+
+<dl><dd>
+Combinatorics is the study of the ways in which discrete objects can be arranged into various kinds of patterns. For example the objects might be <i>2n</i> numbers {1,1,2,2, ..., <i>n</i>, <i>n</i>}, and we might want to place them in a row so that exactly <i>k</i> numbers occur between the two appearances of each digit <i>k</i>. When <i>n</i> = 3 there is essentially only one way to arrange such "Langford pairs," namely 231213 (and its left-right reversal); similarly there's also a unique solution when <i>n</i> = 4.
+</dd>
+</dl>
+
+<p>He moves on to other things without divulging what the unique solution for <em>n</em> = 4 might be. Reading this (on a bus carrying me between cities in Sweden), I flung open a terminal window to write a one-liner to solve the problem. Don't know if Knuth intended to have that effect on the reader, but that's what happened when I read it.</p>
+
+<p>My one-liners are infamously long. Here's what I arrived at:</p>
+
+<pre><code># Generate all possible permutations of the list @a. The list @prefix
+# assists in the recursion, adding its elements before the reordered
+# elements of @a.
+sub all-possible-orderings(@a, @prefix=[]) {
+    return [@prefix] unless @a.elems;
+    return gather for @a.kv -&gt; $k, $v {
+        my @others = @a[0..^$k, $k^..^*];
+        take all-possible-orderings(@others, [@prefix, $v]);
+    }
+}
+
+# Returns True if and only if the list @a satisfies the
+# Langford property, i.e. each pair of numbers $n has
+# exactly $n other numbers between them.
+sub langford(@a) {
+    for 1..@a/2 -&gt; $n {
+        for @a.kv -&gt; $k1, $v1 {
+            if $v1 == $n {
+                for @a[$k1^..^*].kv -&gt; $k2, $v2 {
+                    return False if $v2 == $n != $k2;
+                }
+            }
+        }
+    }
+    return True;
+}
+
+.join.say for all-possible-orderings([1,1,2,2,3,3]).grep({ langford($_) }).uniq;
+</code></pre>
+
+<p>This code worked well for <em>n</em> = 3, but for <em>n</em> = 4 it just sat there. Kind of fitting, since the remainder of the Facsicle was about the futility of brute force, more or less. Kind of drove the point home, my PDF reader in the foreground saying things like "A single good idea can reduce the amount of computation by many orders of magnitude", while the <code>perl6</code> process in a window behind it chewed up all my cycles and all my memory.</p>
+
+<p>So I gave it another go.</p>
+
+<pre><code># Generates a list of all permutations of the list @candidates
+# satisfying the Langford property.
+sub langford(@candidates, @slots = [0 xx 2*@candidates]) {
+
+    return [@slots] if all @slots;
+
+    my @found;
+
+    for @candidates -&gt; $c {
+        for @slots[0..@slots-$c-2].kv -&gt; $k, $v {
+            if !$v {
+                if !@slots[$k+$c+1] {
+                    my @new-slots = @slots;
+                    @new-slots[$k, $k+$c+1] = $c, $c;
+                    push @found, langford( (grep { $_ != $c }, @candidates),
+                                           @new-slots );
+                }
+                last;
+            }
+        }
+    }
+
+    return @found;
+}
+
+.join.say for langford 1..4;
+</code></pre>
+
+<p>(moritz++ for the nice line <code>return [@slots] if all @slots;</code> where I had previously used a <code>grep</code>.)</p>
+
+<p>Notice how this solution, besides being faster, is also shorter, simpler, and more fun at parties. It does the <em>n</em> = 4 case in a jiffy, and the <em>n</em> = 7 and <em>n</em> = 8 cases with some hesitation. It could probably easily go higher than that without blowing the stack, but time starts to become the limiting factor at this point.</p>
+
+<p>Anyway, a fun afternoon experiment. It's 2009, and I'm solving combinatorics puzzles in Perl 6. Cool!</p>
+
+<p>(Oh, and it's 23421314, in case you were wondering too.)</p>
+
+</article>
+
+  </body>
+</html>

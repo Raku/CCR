@@ -1,0 +1,513 @@
+http://strangelyconsistent.org/blog/boxes-and-pebbles
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Boxes and pebbles :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2014-06-16T23:49:10+02:00" pubdate="pubdate">16 Jun, 2014</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/boxes-and-pebbles">Boxes and pebbles</a></h1>
+  </header>
+
+  <p>As I was riding to the airport the other day to pick up a friend, I stumbled
+across <a href="https://twitter.com/maanow/status/477207014909562880">this math problem
+tweet</a>:</p>
+
+<p><img src="http://strangelyconsistent.org/blog/images/math-problem.jpg" alt="Let <em>n</em> be a positive integer. We have <em>n</em> boxes where each box contains a
+nonnegative number of pebbles. In each move we are allowed to take two pebbles
+from a box we choose, throw away one of the pebbles, and put the other pebble
+in another box we choose. An initial configuration of pebbles is called
+solvable if it is possible to reach a configuration with no empty box, in a
+finite (possibly zero) number of moves. Determine all initial configurations of
+pebbles which are not solvable, but become solvable when an additional pebble
+is added to a box, no matter which box is
+chosen." title=""></p>
+
+<p>I started out drawing stuff in my notebook to solve it, but at some point I
+decided to bring in Perl 6. The solution turned out to be quite illustrative,
+so I decided to share it.</p>
+
+<p>Below, I reproduce the problem specification, piece by piece, and interleave it
+with REPL interaction.</p>
+
+<h2>The problem</h2>
+
+<blockquote>
+  <p>Let <em>n</em> be a positive integer. We have <em>n</em> boxes where each box contains a
+nonnegative number of pebbles.</p>
+</blockquote>
+
+<pre><code>$ perl6
+&gt; class Conf { has @.boxes where *.all &gt;= 0; method gist { "[$.boxes]" } }
+&gt; sub conf(@boxes) { Conf.new(:@boxes) }; Nil
+&gt; sub n(Conf $c) { $c.boxes.elems }; Nil
+</code></pre>
+
+<p>I was a bit saddened to learn that the <code>where</code> clause on the attribute isn't
+enforced in Rakudo. There's now <a href="https://rt.perl.org/Ticket/Display.html?id=122109">an RT
+ticket</a> about that.</p>
+
+<p>The <code>Nil</code> at the end of some lines is to quiet inconsequential or repetitive
+output from the REPL.</p>
+
+<p>Let's take as our running concrete example the starting configuration <code>[2, 0]</code>.
+That is, two boxes, one with two pebbles and one empty. As we will see, this is
+one of the smallest answers to the problem.</p>
+
+<pre><code>&gt; n(conf [2, 0])
+2
+</code></pre>
+
+<blockquote>
+  <p>In each move we are allowed to take two pebbles from a box we choose, throw
+away one of the pebbles, and put the other pebble in another box we choose.</p>
+</blockquote>
+
+<pre><code>&gt; sub but(@list, &amp;act) { my @new = @list; &amp;act(@new); @new }; Nil
+&gt; sub add($c, $to, $count) { conf $c.boxes.&amp;but(*.[$to] += $count) }; Nil
+&gt; sub remove($c, $from, $count) { conf $c.boxes.&amp;but(*.[$from] -= $count) }; Nil
+&gt;
+&gt; sub move($c, $from, $to) { $c.&amp;remove($from, 2).&amp;add($to, 1) }; Nil
+&gt; sub moves-from($c, $from) { (move($c, $from, $_) for ^n($c)) }; Nil
+&gt; sub moves($c) { (moves-from($c, $_) if $c.boxes[$_] &gt;= 2 for ^n($c)) }; Nil
+&gt; 
+&gt; moves(conf [2, 0])
+[1 0] [0 1]
+</code></pre>
+
+<p>The condition <code>if $c.boxes[$_] &gt;= 2</code> ensures that we don't make a move when
+there aren't enough pebbles in a box.</p>
+
+<blockquote>
+  <p>An initial configuration of pebbles is called solvable if it is possible to
+reach a configuration with no empty box, in a finite (possibly zero) number
+of moves.</p>
+</blockquote>
+
+<pre><code>&gt; sub has-empty-box($c) { so any($c.boxes) == 0 }; Nil
+&gt;
+&gt; has-empty-box(conf [2, 2, 2, 0])
+True
+&gt; has-empty-box(conf [2, 2, 2, 1])
+False
+
+&gt; sub is-solvable($c) { !has-empty-box($c) || so is-solvable any moves $c }; Nil
+&gt;
+&gt; is-solvable(conf [2, 0])
+False
+&gt; is-solvable(conf [3, 0])
+True
+</code></pre>
+
+<p>The definition of <code>is-solvable</code> is the first case where I feel that Perl 6
+shines in this problem. That one-liner lets us perform a search using all
+possible moves for any configuration that has no empty boxes.</p>
+
+<p>For example, if we did this:</p>
+
+<pre><code>&gt; is-solvable(conf [4, 0, 0])
+</code></pre>
+
+<p>Then the tree search that happens in the background is this:</p>
+
+<pre><code>[4 0 0]
+    [3 0 0]
+        [2 0 0]
+            [1 0 0]
+            [0 1 0]
+            [0 0 1]
+        [1 1 0]
+        [1 0 1]
+    [2 1 0]
+        [1 1 0]
+        [0 2 0]
+            [1 0 0]
+            [0 1 0]
+            [0 0 1]
+        [0 1 1]
+    [2 0 1]
+        [1 0 1]
+        [0 1 1]
+        [0 0 2]
+            [1 0 0]
+            [0 1 0]
+            [0 0 1]
+</code></pre>
+
+<p>...and <code>is-solvable</code> concludes that no matter how it moves the pebbles, it
+always ends up with a zero <em>somewhere</em>, so this configuration isn't solvable,
+and so the result is <code>False</code>.</p>
+
+<p>By the way, we know that any search like this is finite, because every move
+reduces the net amount of pebbles.</p>
+
+<blockquote>
+  <p>Determine all initial configurations of pebbles which are not solvable, but
+become solvable when an additional pebble is added to a box, no matter which
+box is chosen.</p>
+</blockquote>
+
+<pre><code>&gt; sub add-pebble($c, $to) { conf $c.boxes.&amp;but(*.[$to] += 1) }; Nil
+&gt; sub add-pebble-anywhere($c) { (add-pebble($c, $_) for ^n($c)) }; Nil
+&gt; 
+&gt; add-pebble-anywhere(conf [2, 0])
+[3 0] [2 1]
+
+&gt; sub is-answer($c) { !is-solvable($c) &amp;&amp; so is-solvable all add-pebble-anywhere($c) }; Nil
+&gt; is-answer(conf [2, 0])
+True
+&gt; is-answer(conf [4, 0, 0])
+True
+</code></pre>
+
+<p>So as we see, our example configuration <code>[2, 0]</code> is a possible answer, because
+it is not in itself solvable, but adding a pebble in any of the two boxes makes
+it solvable. Similarly, the <code>[4, 0, 0]</code> that we tree-searched above isn't
+solvable, but becomes solvable with a pebble added anywhere.</p>
+
+<h2>Hostages, heroes and civilians</h2>
+
+<p>Having specified the problem thus far, I started to use to make it clearer in
+my mind by introducing idiosyncratic terminology. I started thinking of the
+empty boxes as <strong>hostages</strong>, because they need saving before the end of the
+day.</p>
+
+<pre><code>&gt; sub hostages($c) { +$c.boxes.grep(0) }; Nil
+&gt; hostages(conf [2, 0])
+1
+&gt; hostages(conf [3, 0, 0])
+2
+</code></pre>
+
+<p>Likewise, some pairs of pebbles are <strong>heroes</strong>... but not all of them. First
+off, the two pebbles have to be in the same box to make up a hero.</p>
+
+<p>Secondly, the bottom pebble is effectively fixed and cannot contribute to a
+hero. (Because if we removed it, there would be no pebbles left, and we'd have
+created another hostage.)</p>
+
+<p>In other words, if we take the pebbles in a box,
+subtract one, divide by two, and round down, we get the number of heroes in
+that box.</p>
+
+<pre><code>&gt; sub heroes($c) { [+] ($c.boxes »-» 1) »div» 2 »max» 0 }; Nil
+&gt; heroes(conf [2, 0])
+0
+&gt; heroes(conf [3, 3, 0])
+2
+</code></pre>
+
+<p>Heroes live to save hostages. In fact, any move which <em>doesn't</em> use a hero to
+save a hostage will just end up wasting a pebble. We can use this knowledge to
+define a better <code>moves-from</code> sub, restricting it to moves that save hostages:</p>
+
+<pre><code>&gt; sub moves-from($c, $from) { (move($c, $from, $_) if $c.boxes[$_] == 0 for ^n($c)) }; Nil
+</code></pre>
+
+<p>The search moves faster with this condition. For example, the search tree from
+above gets trimmed to this:</p>
+
+<pre><code>[4, 0, 0]
+    [2, 1, 0]
+        [0, 1, 1]
+    [2, 0, 1]
+        [0, 1, 1]
+</code></pre>
+
+<p>Changing the literal <code>2</code> to <code>3</code> in the function <code>moves</code> (in recognition of the
+fact that the bottom pebble never figures in a viable move) cuts the tree down
+even further:</p>
+
+<pre><code>[4, 0, 0]
+    [2, 1, 0]
+    [2, 0, 1]
+</code></pre>
+
+<p>I noticed the pattern that any possible answer configuration I could come up
+with had the property that there was exactly one more hostage than there were
+heroes.</p>
+
+<pre><code>&gt; sub one-more-hostage-than-heroes($c) { hostages($c) == heroes($c) + 1 }; Nil
+&gt; one-more-hostage-than-heroes(conf [2, 0])
+True
+&gt; one-more-hostage-than-heroes(conf [3, 1, 0])
+False
+</code></pre>
+
+<p>This makes intuitive sense: a configuration that is an answer needs to be not
+solvable (less than one hero per hostage), but it also needs to be <em>just
+barely</em> not solvable. That is, there has to be just one hostage too many.</p>
+
+<p>Does this fully describe a solution, though? It turns out it doesn't, but in
+order to see it, let's bring in a testing tool.</p>
+
+<h2>Proving stuff with QuickCheck</h2>
+
+<p>We'll want to generate thousands of random configurations for this, so I
+defined the following two routines. The configuration space is infinite, and it
+was hard to know how to choose configurations randomly. In the end I favored
+an approach with small finite configurations with relatively few pebbles,
+hoping it would catch all relevant cases.</p>
+
+<pre><code>sub random-box { Bool.pick ?? 0 !! (1..5).pick }
+
+sub random-conf {
+    my $n = (0..5).pick;
+    conf [random-box() xx $n];
+}
+</code></pre>
+
+<p>Next up, a function that tests a certain property on a lot of random
+configurations. It's not a total guarantee of correctness, but once you've
+tested something against 1000 random inputs, you can have a fairly high
+confidence that no exception has slipped through. Think of it as a kind of
+probabilistic proof.</p>
+
+<pre><code>sub quickcheck(&amp;prop, $N = 1000) {
+    for ^$N {
+        print "." if $_ %% 20;
+        my $c = random-conf;
+        return "Counterexample: $c.gist()" unless &amp;prop($c);
+    }
+    return "All $N cases passed.";
+}
+</code></pre>
+
+<p>First up, let's test the statement that if some configuration is a solution,
+then it has one more hostage than it has heroes.</p>
+
+<p>Because these properties end up talking a lot in terms of if-then
+relationships, let's create a operator for logical implication.</p>
+
+<pre><code>sub infix:«⇒»($premise, $conclusion) { !$premise || $conclusion }
+
+sub if-answer-then-one-more-hostage($c) {
+    is-answer($c) ⇒ one-more-hostage-than-heroes($c);
+}
+
+&gt; quickcheck &amp;if-answer-then-one-more-hostage
+..................................................All 1000 cases passed.
+</code></pre>
+
+<p>Ok, that turns out to be true. How about in the other direction?</p>
+
+<pre><code>sub if-one-more-hostage-then-answer($c) {
+    one-more-hostage-than-heroes($c) ⇒ is-answer($c);
+}
+
+&gt; quickcheck &amp;if-one-more-hostage-then-answer
+.Counterexample: [0 1]
+</code></pre>
+
+<p>This is why QuickCheck-based testing is great; it not just tells us that
+something fails, it also gives us a <em>counterexample</em> by which we can see
+clearly <em>how</em> and <em>why</em> it fails. In this case, that 1 in there is not enough
+to save the hostage. Nor is it enough if that box gets another pebble.</p>
+
+<p>Clearly there is some factor at work here besides hostages and heroes.</p>
+
+<p>We've accounted for that bottom pebble, the useless one that we can never do
+anything with. On top of it are zero or more pairs of pebbles; our heroes. But
+on top of <em>that</em> can be yet another pebble; let's define a lone pebble like
+that to be an <strong>everyday hero</strong>, because all it takes is a small push (one more
+pebble) to create a hero out of an everyday hero.</p>
+
+<p>The bottom pebble + pairs of pebbles for heroes + everyday hero pebble = a
+positive even number of pebbles. So the easiest way to state "this box is
+either a hostage or an everyday hero" is to say "there's an even number of
+pebbles in this box".</p>
+
+<p>Let's see if adding that condition is enough to predict answers.</p>
+
+<pre><code>sub all-hostages-or-everyday-heroes($c) { so $c.boxes.all %% 2 }
+sub if-one-more-hostage-and-all-hostages-or-everyday-heroes-then-answer($c) {
+    (one-more-hostage-than-heroes($c)
+        &amp;&amp; all-hostages-or-everyday-heroes($c))
+        ⇒ is-answer($c)
+}
+
+&gt; quickcheck &amp;if-one-more-hostage-and-all-hostages-or-everyday-heroes-then-answer
+..................................................All 1000 cases passed.
+</code></pre>
+
+<p>It is enough! Now that we know if it's a sufficient condition, let's find out
+if it's also a necessary one.</p>
+
+<pre><code>sub one-more-hostage-and-all-hostages-or-everyday-heroes-means-answer($c) {
+    (one-more-hostage-than-heroes($c)
+        &amp;&amp; all-hostages-or-everyday-heroes($c))
+        == is-answer($c)
+}
+
+&gt; quickcheck &amp;one-more-hostage-and-all-hostages-or-everyday-heroes-means-answer
+..................................................All 1000 cases passed.
+</code></pre>
+
+<p>Ooh, and it <em>is</em>! Lovely.</p>
+
+<p>Notice how much of a simplification this brings about. The two conditions we
+just defined (<code>one-more-hostage-than-heroes</code> and
+<code>all-hostages-or-everyday-heroes</code>) just check surface properties of a
+configuration, whereas <code>is-answer</code> has to perform a possibly large tree search.
+But <code>quickcheck</code> tells us that the combination of the two conditions is
+completely equivalent to the whole tree search.</p>
+
+<p>Awesome.</p>
+
+<p>Just to bring that point home, let's drop all the cute terminology, and just
+write it in terms of the mathematical properties we need to check:</p>
+
+<pre><code>sub pebbles-are-twice-boxes-minus-two-and-all-boxes-even-means-answer($c) {
+    ([+]($c.boxes) == 2 * n($c) - 2 &amp;&amp; so($c.boxes.all %% 2))
+        == is-answer($c)
+}
+
+&gt; quickcheck &amp;pebbles-are-twice-boxes-minus-two-and-all-boxes-even-means-answer
+..................................................All 1000 cases passed.
+</code></pre>
+
+<p>And that's the answer.</p>
+
+<p>(You can also read the solution
+<a href="http://egmo2014.tubitak.gov.tr/sites/default/files/solutions-day2.pdf">here</a>,
+problem 5.)</p>
+
+<h2>Enumerating all answers</h2>
+
+<p>We might consider ourselves having solved the problem completely, but it feels
+a bit weird to leave it at that. Can't we get a list of all the answers too?</p>
+
+<p>I started writing a custom recursive solution, but ended up recognizing what I
+was doing from the output I was getting. (And from the fact that the number of
+answers of each size led me to <a href="http://oeis.org/A000041">this OEIS
+sequence</a>.)</p>
+
+<p>What we're looking for is really a kind of integer partitions. That makes
+sense; we have a fixed number of pebbles, and we want to distribute them among
+the boxes in all possible ways.</p>
+
+<p>As one does nowadays, I went out on Stack Overflow to look for a suitable
+algorithm to compute integer partitions. Found <a href="http://stackoverflow.com/a/10036764">this elegant Python
+solution</a>. This is my Perl 6 rendering of
+it:</p>
+
+<pre><code>sub partitions($n) {
+    uniq :as(*.Str), gather {
+        take [$n];
+        for 1..^$n -&gt; $x {
+            take ([($x, .list).sort] for partitions($n - $x));
+        }
+    }
+}
+</code></pre>
+
+<p>Of course, once we have the partitions, we need to massage them a little bit.
+To be exact, we reverse the partition (because I like reading them in
+descending order), double the numbers (to get only even numbers), and we pad
+with zeroes at the end.</p>
+
+<pre><code>sub double(@list) { @list »*» 2 }
+sub pad(@list, $size) { [@list, 0 xx ($size - @list.elems)] }
+sub all-answers($n) { (.reverse.&amp;double.&amp;pad($n) for partitions($n - 1)) }
+</code></pre>
+
+<p>Note by the way that these answers are "symmetry broken". For each solution,
+the order of the boxes is immaterial to the problem, so all permutations of
+boxes are also viable answers. So picking a canonical order and sticking with
+it makes the output a lot smaller without missing anything essential.</p>
+
+<p>Finally, we print the answers. Sorting is not necessary, just esthetic.</p>
+
+<pre><code>sub array-cmp(@xs, @ys) { [||] @xs Z&lt;=&gt; @ys }
+
+for 1..* -&gt; $n {
+    my @answers = all-answers($n).sort(&amp;array-cmp);
+    say "{@answers.elems} answers of size $n:";
+    say "  ", .&amp;conf for @answers;
+}
+</code></pre>
+
+<p>This is how they look. These are just the first seven iterations; it goes on
+for a while.</p>
+
+<pre><code>1 answers of size 1:
+  [0]
+1 answers of size 2:
+  [2 0]
+2 answers of size 3:
+  [2 2 0]
+  [4 0 0]
+3 answers of size 4:
+  [2 2 2 0]
+  [4 2 0 0]
+  [6 0 0 0]
+5 answers of size 5:
+  [2 2 2 2 0]
+  [4 2 2 0 0]
+  [4 4 0 0 0]
+  [6 2 0 0 0]
+  [8 0 0 0 0]
+7 answers of size 6:
+  [2 2 2 2 2 0]
+  [4 2 2 2 0 0]
+  [4 4 2 0 0 0]
+  [6 2 2 0 0 0]
+  [6 4 0 0 0 0]
+  [8 2 0 0 0 0]
+  [10 0 0 0 0 0]
+</code></pre>
+
+<h2>So, it has come to this</h2>
+
+<p>I put all the code from this blog post <a href="https://gist.github.com/masak/f865b7d9dd33e535b501">in a
+gist</a> if anyone wants to
+play with it.</p>
+
+<p>This problem is now officially flushed out of my system. I like how Perl 6 rose
+to the challenge of helping me solve it. I'm also positively surprised by the
+"feel" of doing QuickCheck testing. Gotta do more of that.</p>
+
+<p>I worked under a self-imposed restriction that things written in the REPL ought
+to fit on one line. It made me reach for ways to chunk ideas into functions,
+which I think ended up bringing out the intent of each step a bit better.</p>
+
+<p>Finally, although I knew it from before, junctions and hyperops and ranges and
+list comprehensions and functions and metaoperators and custom operators and
+lazy lists... they all conspire to make problem solving and exploratory
+programming like this a really pleasant experience.</p>
+
+</article>
+
+  </body>
+</html>

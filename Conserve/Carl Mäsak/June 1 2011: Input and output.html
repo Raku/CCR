@@ -1,0 +1,74 @@
+http://strangelyconsistent.org/blog/june-1-2011-input-and-output
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>June 1 2011: Input and output :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2011-06-01T23:10:36+02:00" pubdate="pubdate">1 Jun, 2011</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/june-1-2011-input-and-output">June 1 2011: Input and output</a></h1>
+  </header>
+
+  <p>Hi.</p>
+
+<p>Let's start from the basics on how to program. (If you want to follow along at home, you'll need to <a href="http://rakudo.org/how-to-get-rakudo/">download Rakudo</a>.)</p>
+
+<p>We'll start by writing a short program that prints something:</p>
+
+<pre><code>say "Hello World!";
+</code></pre>
+
+<p>The <code>say</code> here is the command to print something.</p>
+
+<p>What we print is the string <code>Hello World</code>, all on its own line. We've put double quotes around the string value, because that's how we mark string values as being different from other things, like commands. (There are other ways to create string values, too.)</p>
+
+<p>There's a semicolon at the end of the line. For our very short program, it doesn't matter if we put it there or leave it out, but for larger programs it matters. Semicolons separate individual statements from each other — individual things we want the program to do. They're like the full stops in a written sentence.</p>
+
+<p>Let's write another program.</p>
+
+<pre><code>say "Hello.";
+prompt "What is your name? ";
+say "Nice to meet you.";
+</code></pre>
+
+<p>The prompt command does two things: it prints a prompt — in this case <code>What is your name?</code> — and then it waits for the user to type something on the keyboard and press Return.</p>
+
+<p>So, in essence, this program carries on a little dialogue with the computer user. It says hello, asks for the user's name, and says nice to meet you.</p>
+
+<p>Of course, the program is slightly inconsiderate because it doesn't repeat the name it just had the user tell it. Seems we need to teach it some manners. That is the topic for tomorrow.</p>
+
+</article>
+
+  </body>
+</html>

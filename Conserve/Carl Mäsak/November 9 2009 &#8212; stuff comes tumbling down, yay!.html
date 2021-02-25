@@ -1,0 +1,73 @@
+http://strangelyconsistent.org/blog/november-9-2009-stuff-comes-tumbling-down-yay
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>November 9 2009 &#8212; stuff comes tumbling down, yay! :: Strangely Consistent</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="alternate" title="Strangely Consistent atom feed" href="http://strangelyconsistent.org/blog/feed.atom" type="application/atom+xml">
+    <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT:italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Molengo' rel='stylesheet' type='text/css'>
+    <style type="text/css" media="all"> 
+      @import "http://strangelyconsistent.org/blog/css/main.css";
+    </style>
+  </head>
+  <body>
+    <header>
+      <hgroup>
+        <h1><a href="/">Strangely Consistent</a></h1>
+        <h2>Theory, practice, and languages, braided together</h2>
+      </hgroup>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="http://strangelyconsistent.org/blog/list-of-posts">Archive</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <article>
+  <header>
+    <div class="postinfo">
+      <div><time datetime="2009-11-09T19:13:00+01:00" pubdate="pubdate">9 Nov, 2009</time></div>
+      <div>by Carl Mäsak</div>
+      <div><a href="/no-comments">no notes</a></div>
+    </div>
+    <h1><a href="http://strangelyconsistent.org/blog/november-9-2009-stuff-comes-tumbling-down-yay">November 9 2009 &#8212; stuff comes tumbling down, yay!</a></h1>
+  </header>
+
+  <p>20 years ago today, the wall dividing Berlin (and by metaphoric extension, Europe), <a href="http://en.wikipedia.org/wiki/Berlin_Wall">fell</a>. I wrote about this last year on this day, and I had planned not to repeat myself... but there's just no way I could refer to something else today, on the 20th anniversary and all.</p>
+
+<div class='quote'><p>During a revolutionary wave sweeping across the Eastern Bloc, the East German government announced on November 9, 1989, after several weeks of civil unrest, that all GDR citizens could visit West Germany and West Berlin. Crowds of East Germans climbed onto and crossed the wall, joined by West Germans on the other side in a celebratory atmosphere. Over the next few weeks, parts of the wall were chipped away by a euphoric public and by souvenir hunters; industrial equipment was later used to remove almost all of the rest. The fall of the Berlin Wall paved the way for German reunification, which was formally concluded on October 3, 1990.</p></div>
+
+<p>Also, the cold war ended, and the world community eventually moved on to tackling more interesting political problems, such as the oppressive reign of the media industry, their vain efforts to prevent the arrival of an inevitable future, and the cowardly governments who heed their beckons rather than those of their citizens. (Just an example.)</p>
+
+<p class='separator'>&#10086;</p>
+
+<p>Woodi++ <a href="http://irclog.perlgeek.de/perl6/2009-11-08#i_1703676">explained</a> where the error of yesterday was coming from: it comes from <code>Makefile.PL</code> itself. Looking at that file, I see that it is obviously made with great care, taking into account all manner of eventualities. It is, however, inevitably old, and it simply doesn't work anymore.</p>
+
+<p>My immediate feeling is that since that <code>Makefile.PL</code> isn't filling any useful function, it'll have to be taken out. Just like that wall. So I remove it. I also remove the file <code>Makefile.in</code>, and the same two files in the November project.</p>
+
+<p>We might have to put something else in their place, of course. It's nice to have a <code>make test</code> target, for one thing. And I kinda prefer projects not to lean on proto for functionality. But (especially in the case of November and HTML::Template) these things need to be seriously re-thought anyway. So for now, I'll just remove them.</p>
+
+<p>Let's see how the installation goes now:</p>
+
+<pre><code>$ ./proto install november
+Refreshing november...refreshed
+Refreshing html-template...refreshed
+Building html-template...built
+Building november...built
+Installing html-template...Method 'protected-files' not found for invocant of class 'Ecosystem'
+in Main (file src/gen_setting.pm, line 324)
+</code></pre>
+
+<p>That's much better. Now only the mystery of the missing method <code>protected-files</code> remains. Will investigate that some other day.</p>
+
+</article>
+
+  </body>
+</html>

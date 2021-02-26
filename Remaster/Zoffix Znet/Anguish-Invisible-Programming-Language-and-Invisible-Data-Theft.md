@@ -14,23 +14,19 @@ I named it *Anguish* and, based on my quick googling, I may be a lone wolf at th
 
 Here's an Anguish program that prints `Hello World`:
 
-```` raku
-<code>‌﻿⁣‌⁣‍﻿⁣⁣﻿﻿﻿⁡﻿⁢﻿​⁠﻿‌‍⁣⁣‍⁡⁡⁡⁡⁡⁡⁡⁡‌⁠⁡⁡⁡⁡‌⁠⁡⁡⁠⁡⁡⁡⁠⁡⁡⁡⁠⁡​​​​⁢‍⁠⁡⁠⁡⁠⁢⁠⁠⁡‌​‍​⁢‍⁠⁠⁣⁠⁢⁢⁢⁣⁡⁡⁡⁡⁡⁡⁡⁣⁣⁡⁡⁡⁣⁠⁠⁣​⁢⁣​⁣⁡⁡⁡⁣⁢⁢⁢⁢⁢⁢⁣⁢⁢⁢⁢⁢⁢⁢⁢⁣⁠⁠⁡⁣⁠⁡⁡⁣
-`
+````
+‌﻿⁣‌⁣‍﻿⁣⁣﻿﻿﻿⁡﻿⁢﻿​⁠﻿‌‍⁣⁣‍⁡⁡⁡⁡⁡⁡⁡⁡‌⁠⁡⁡⁡⁡‌⁠⁡⁡⁠⁡⁡⁡⁠⁡⁡⁡⁠⁡​​​​⁢‍⁠⁡⁠⁡⁠⁢⁠⁠⁡‌​‍​⁢‍⁠⁠⁣⁠⁢⁢⁢⁣⁡⁡⁡⁡⁡⁡⁡⁣⁣⁡⁡⁡⁣⁠⁠⁣​⁢⁣​⁣⁡⁡⁡⁣⁢⁢⁢⁢⁢⁢⁣⁢⁢⁢⁢⁢⁢⁢⁢⁣⁠⁠⁡⁣⁠⁡⁡⁣
 ````
 
 Here's another one that reads in a 4-character string and prints it back out:
 
-```` raku
-`⁠﻿⁠﻿⁠﻿​​​⁣⁠⁣⁠⁣⁠⁣
-`
+````
+⁠﻿⁠﻿⁠﻿​​​⁣⁠⁣⁠⁣⁠⁣
 ````
 
 Here's code for a full-featured web browser:
 
 ```` raku
-`⁠
-`
 ````
 
 OK, the last one I lied about, but the first two *are* real programs and, if your Unicode support is decent, completely invisible to the human eye (as opposed to, say, spaces and tabs, which are "transparent").
@@ -39,13 +35,10 @@ OK, the last one I lied about, but the first two *are* real programs and, if you
 this simple one-liner:
 
 ```` perl
-`perl -C -pi -e 'tr/><+.,[]-/\x{2060}\x{200B}\x{2061}\x{2063}\x{FEFF}\x{200C}\x{200D}\x{2062}/'
-`
+perl -C -pi -e 'tr/><+.,[]-/\x{2060}\x{200B}\x{2061}\x{2063}\x{FEFF}\x{200C}\x{200D}\x{2062}/'
 ````
 
-Here's the character mapping I chose with BF operators on the left
-and Anguish versions of them on the right:
-
+Here's the character mapping I chose with BF operators on the left and Anguish versions of them on the right:
 
 ````
 >   [⁠] U+2060 WORD JOINER [Cf]
@@ -58,9 +51,7 @@ and Anguish versions of them on the right:
 ]   [‍] U+200D ZERO WIDTH JOINER [Cf]
 ````
 
-These are—by far—not the only invisible Unicode characters and my choice was
-more or less arbitrary. However, most of the ones I chose can actually be
-abused into Raku terms and operators, which I'll show in Part II.
+These are—by far—not the only invisible Unicode characters and my choice was more or less arbitrary. However, most of the ones I chose can actually be abused into Raku terms and operators, which I'll show in Part II.
 
 ### The Interpreter
 

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image"
+        content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <meta name="twitter:image" content="https://rakudo.party/assets/pics/perl6.party.gif">
+    <title>.rotor: The King of List Manipulation - Perl 6 Party</title>
+
+    <link href="/asset/7b8e23928d/app.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item " href="/">Home</a>
+          <a class="blog-nav-item " href="/about">About</a>
+          <a class="blog-nav-item feed-nav" href="/feed/">Feed</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="bg">
+        <div class="container">
+
+          <div class="blog-header">
+            <h1 class="blog-title">.rotor: The King of List Manipulation</h1>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 blog-main">
+              
+<article>
+  <p class="article-description">
+    2016-01-29 <span class="words-count">| 1391 words |</span> All about .rotor method for making sublists out of lists.</p>
+  <p>Rotor. The word makes a mechanic think about brakes, an electrical engineer about motors, and a fan of <a href="https://www.youtube.com/watch?v=s76vZATqLrE">Red Letter Media YouTube channel</a> about poorly executed films. But to a Perl 6 programmer, <a href="http://docs.perl6.org/routine/rotor"><code>.rotor</code></a> is a powerful tool for list operations.</p>
+
+<h2 id="breakupintochunks">Break up into chunks</h2>
+
+<p>At its simplest, <code>.rotor</code> takes an integer and breaks up a list into sublists with that many elements:</p>
+
+<pre><code>say &lt;a b c  d e f  g h&gt;.rotor: 3;
+# OUTPUT: ((a b c) (d e f))
+</code></pre>
+
+<p>We have a list of 8 elements, we called <code>.rotor</code> on it with argument <code>3</code> and we received two <a href="http://docs.perl6.org/type/List">Lists</a>, with 3 elements each. The last two elements of the original list we
+not included, because they don't make up a complete, 3-element list. That can be rectified, however, using
+the <code>:partial</code> named argument set to <code>True</code>:</p>
+
+<pre><code>say &lt;a b c  d e f  g h&gt;.rotor: 3, :partial;
+# OUTPUT: ((a b c) (d e f) (g h))
+say &lt;a b c  d e f  g h&gt;.rotor: 3, :partial(True);
+# OUTPUT: ((a b c) (d e f) (g h))
+say &lt;a b c  d e f  g h&gt;.rotor: 3, :partial(False);
+# OUTPUT: ((a b c) (d e f))
+</code></pre>
+
+<p>Here's what we've learned so far, used as a crude means to fit a chunk of text into 10-column width:</p>
+
+<pre><code>"foobarberboorboozebazmeow".comb.rotor(10, :partial)».join».say
+# OUTPUT:
+#    foobarberb
+#    oorboozeba
+#    zmeow
+</code></pre>
+
+<p>We broke up the string into individual letters with <code>.comb</code> method, then we <code>.rotor</code> them into 10-element lists,
+specifying that <code>:partial</code> lists are fine too, and lastly we use a pair of hyper method calls to <code>.join</code> and <code>.say</code> each of those sublists.</p>
+
+<h2 id="mindthegap">Mind The Gap</h2>
+
+<p>Say, you're receiving input: you get a word, its French translation, and its Spanish translation, and so on for a whole bunch of words. You want to output only a particular language, so we need to somehow skip over some items in our list. <code>.rotor</code> to the rescue!</p>
+
+<p>Specifying a <a href="http://docs.perl6.org/type/Pair">Pair</a> of integers as the argument makes <code>.rotor</code> break up the list into <code>$key</code> elements, with <code>$value</code> gap in between. Easier to see in the example:</p>
+
+<pre><code>say ^10 .rotor: 3 =&gt; 1, :partial;
+# OUTPUT: ((0 1 2) (4 5 6) (8 9))
+say ^10 .rotor: 2 =&gt; 2, :partial;
+# OUTPUT: ((0 1) (4 5) (8 9))
+</code></pre>
+
+<p>On the first line, we have a range of integers from <code>0</code> to <code>9</code>, we're asking <code>.rotor</code> to break that up into lists
+of 3 elements (including partial lists) and use a gap of <code>1</code>. And indeed, you can see the output is missing number
+<code>3</code> as well as <code>7</code>. Those are the gaps we skipped. In the second example, we've increased the gap to <code>2</code>, and broke
+up the list into 2-element sublists: the <code>2</code>, <code>3</code>, <code>6</code>, and <code>7</code> are the numbers that fell into gaps and were not included. Back to our exquisitely convoluted translations program:</p>
+
+<pre><code>enum &lt;English French Spanish&gt;;
+say join " ", &lt;Good Bon Buenos morning matin días&gt;[French..*].rotor: 1 =&gt; 2;
+# OUTPUT: Bon matin
+</code></pre>
+
+<p>We cheatsy-doodle with an <code>enum</code> and then use the <code>[LANG..*]</code> to toss the head of the list. The <code>French</code> in our
+example is <code>enum</code>erated into integer <code>1</code>, which means <code>[1..*]</code> gets rid of the first element. Then, we use <code>.rotor</code> to make
+1-element lists with a 2-element gap. This makes it skip over the words for languages we're not interested in.</p>
+
+<p>Now, I'm sure some in the audence are currently throwing tomatoes at me and saying I'm going mental with my examples here... Let's look at something more real-worldly.</p>
+
+<h2 id="overlaps">Overlaps</h2>
+
+<p>You have a list and you want to Do Things™ based on whether the next item is the same as the current one. Typically,
+this would involve a loop and a variable holding the index. You check the <code>index+1</code>, while also checking you've
+not reached the upper boundary of the list. Sounds tedious. Let's use <code>.rotor</code> instead!</p>
+
+<p>We've already learned above that using a Pair we can introduce gaps, but what if we make the gap negative? It actually works!</p>
+
+<pre><code>say &lt;a a b c c c d&gt;.rotor: 2 =&gt; -1;
+# OUTPUT: ((a a) (a b) (b c) (c c) (c c) (c d))
+say &lt;a a b c c c d&gt;.rotor(2 =&gt; -1).map: {$_[0] eq $_[1] ?? "same" !! "different"};
+# OUTPUT: (same different different same same different)
+</code></pre>
+
+<p>On the first line, we're just printing the results from <code>.rotor</code> to see what they look like and on the second line,
+we're performing the actual comparison and acting accordingly. Looking at the first result: we get 2-element lists,
+where the first element is the element from the original list and the second element is the one that follows it. That
+is, were we to print just the first elements of our sublists, we'd receive our original list back, minus the last element. The second elements are all just a bonus!</p>
+
+<h2 id="allout">All Out</h2>
+
+<p>A single <code>Int</code> or a <code>Pair</code> are not the only thing <code>.rotor</code> can accept. You can specify additional positional parameters that are <code>Int</code>s or <code>Pair</code>s to break up lists into sublists of different sizes, with different gaps between
+them.</p>
+
+<p>Say, I have a custom daemon that creates logs about users that access it. The log is in plain text, each record
+follows the other. Records are multi-line and always look something like this (two records + separator shown):</p>
+
+<pre><code>IP: 198.0.1.22
+Login: suser
+Time: 1454017107
+Resource: /report/accounting/x23gs
+Input: x=42,y=32
+Output: success
+===================================================
+IP: 198.0.1.23
+Login: nanom
+Time: 1454027106
+Resource: /report/systems/boot
+Input: mode=standard
+Output: success
+</code></pre>
+
+<p>Each item contains a "header" with user information and resource they tried to access, as well as the "operation"
+they wanted to execute. In addition, each item is separated by a double-line. I would like to print the header and
+the executed operation, and I want <code>Resource:</code> to be present in both.</p>
+
+<p>To parse this, we could use <a href="http://docs.perl6.org/language/grammars">Grammars</a>, but <code>.rotor</code> can do the trick too:</p>
+
+<pre><code>for 'report.txt'.IO.lines».indent(4).rotor( 4 =&gt; -1, 3 =&gt; 1 ) -&gt; $head, $op {
+    .say for "Header:",    |$head,
+             "Operation:", |$op, '';
+}
+
+# OUTPUT:
+#    Header:
+#        IP: 198.0.1.22
+#        Login: suser
+#        Time: 1454017107
+#        Resource: /report/accounting/x23gs
+#    Operation:
+#        Resource: /report/accounting/x23gs
+#        Input: x=42,y=32
+#        Output: success
+#
+#    Header:
+#        IP: 198.0.1.23
+#        Login: nanom
+#        Time: 1454027106
+#        Resource: /report/systems/boot
+#    Operation:
+#        Resource: /report/systems/boot
+#        Input: mode=standard
+#        Output: success
+</code></pre>
+
+<p>We fetch lines from file <code>report.txt</code> with <code>'report.txt'.IO.lines</code>. To make output prettier, we indent each line
+with 4 spaces by calling <code>.indent(4)</code> on each item using the hyper operator (<code>»</code>). Now comes <code>.rotor</code>!
+We use it to break up lines into repeating chunks of 4 and 3 items: that's items for our header
+and our operation. After grabbing the 4-element chunk, we use a negative gap to backtrack and include <code>Resource:</code>
+line in our operation chunk as well. In the 3-element chunk, we use a positive gap, to skip over the separator line.</p>
+
+<p>Afterwards, we use a <code>for</code> loop and give it two variables with <code>-&gt; $head, $op</code>, so it loops over two items at a time.
+Inside the loop, we merely print each log item onto the screen. Since <code>$head</code> and <code>$op</code> are Lists, we use the pipe
+(<code>|</code>) character to <a href="http://docs.perl6.org/type/Slip">slip</a> them in.</p>
+
+<p>Keep in mind, the pattern you supply to <code>.rotor</code> can be dynamically generated! Here we use a sine to generate it:</p>
+
+<pre><code>say ^92 .rotor(
+    (0.2, 0.4 ... 3).map: (10 * *.sin).Int # pattern we supply to .rotor
+).join: "\n"
+
+# OUTPUT:
+#    0
+#    1 2 3
+#    4 5 6 7 8
+#    9 10 11 12 13 14 15
+#    16 17 18 19 20 21 22 23
+#    24 25 26 27 28 29 30 31 32
+#    33 34 35 36 37 38 39 40 41
+#    42 43 44 45 46 47 48 49 50
+#    51 52 53 54 55 56 57 58 59
+#    60 61 62 63 64 65 66 67 68
+#    69 70 71 72 73 74 75 76
+#    77 78 79 80 81 82
+#    83 84 85 86 87
+#    88 89 90
+#    91
+</code></pre>
+
+<p>So whether you're an electrician, mechanic, or anyone else, I hope you'll find <code>.rotor</code> a useful multipurpose tool.</p>
+
+<h2 id="update1:">Update 1:</h2>
+
+<p>It's been pointed out to me that</p>
+
+<pre><code>"foobarberboorboozebazmeow".comb.rotor(10, :partial)».join».say
+</code></pre>
+
+<p>Is better written as</p>
+
+<pre><code>"foobarberboorboozebazmeow".comb(10)».say
+</code></pre>
+
+</article>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <footer class="blog-footer">
+      Follow <a href="https://twitter.com/zoffix">@zoffix</a> on Twitter.
+      <p class="icons">
+        <a href="https://perl6.org" class="powered-by"
+          title="Use Perl 6">Use Perl 6.</a>
+        <a href="https://github.com/zoffixznet/perl6.party" class="fork-it"
+          title="Fork this blog">Fork this blog.</a>
+      </p>
+    </footer>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js"
+    integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+    crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="/asset/5de5502e58/app.js"></script>
+  </body>
+</html>

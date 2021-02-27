@@ -1,4 +1,4 @@
-This directory contains remastered versions of 18 blog posts by Zoffix Znet.
+This directory contains remastered versions of 19 blog posts by Zoffix Znet.
 
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
 - 2016-01-29 [.rotor: The King of List Manipulation](rotor-The-King-of-List-Manipulation.md)
@@ -8,6 +8,7 @@ This directory contains remastered versions of 18 blog posts by Zoffix Znet.
 - 2016-05-16 ['Anguish': Invisible Programming Language and Invisible Data Theft](Anguish-Invisible-Programming-Language-and-Invisible-Data-Theft.md)
 - 2016-06-27 [Exploiting Raku Code From Down The Dependency Chain](Exploiting-Raku-Code-From-Down-The-Dependency-Chain.md)
 - 2016-07-10 [A Date With The Bug Queue or Let Me Help You Help Me Help You](A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md)
+- 2016-07-29 [IRC::Client: Raku Multi-Server IRC (or Awesome Async Interfaces with Raku)](IRC-Client-Raku-Multi-Server-IRC-or-Awesome-Async-Interfaces-with-Raku.md)
 - 2016-08-01 [Hacking on The Rakudo Raku Compiler: Mix Your Fix](Hacking-on-The-Rakudo-Raku-Compiler-Mix-Your-Fix.md)
 - 2016-08-20 [I Botched a Raku Release And Now a Robot Is Taking My Job](I-Botched-a-Raku-Release-And-Now-a-Robot-Is-Taking-My-Job.md)
 - 2016-09-29 ['Raku: What Programming In The Future Is Like?' (Lightning Talk Slides and Video)](Raku-What-Programming-In-The-Future-Is-Like-Lightning-Talk-Slides-and-Video.md)

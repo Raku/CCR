@@ -1,4 +1,4 @@
-This directory contains remastered versions of 23 blog posts by Zoffix Znet.
+This directory contains remastered versions of 24 blog posts by Zoffix Znet.
 
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
 - 2016-01-29 [.rotor: The King of List Manipulation](rotor-The-King-of-List-Manipulation.md)
@@ -13,6 +13,7 @@ This directory contains remastered versions of 23 blog posts by Zoffix Znet.
 - 2016-08-20 [I Botched a Raku Release And Now a Robot Is Taking My Job](I-Botched-a-Raku-Release-And-Now-a-Robot-Is-Taking-My-Job.md)
 - 2016-09-29 ['Raku: What Programming In The Future Is Like?' (Lightning Talk Slides and Video)](Raku-What-Programming-In-The-Future-Is-Like-Lightning-Talk-Slides-and-Video.md)
 - 2017-03-28 [But Here's My Dispatch, So callwith Maybe](But-Heres-My-Dispatch-So-callwith-Maybe.md)
+- 2017-08-31 [On Troll Hugging, Hole Digging, and Improving Open Source Communities](On-Troll-Hugging-Hole-Digging-and-Improving-Open-Source-Communities.md)
 - 2017-09-28 [6lang: The Naming Discussion Update](6lang-The-Naming-Discussion-Update.md)
 - 2017-10-06 [CPAN6 Is Here](CPAN6-Is-Here.md)
 - 2017-12-29 [Announcing P6lert: Raku Alerts Directly From Core Developers](Announcing-P6lert-Raku-Alerts-Directly-From-Core-Developers.md)

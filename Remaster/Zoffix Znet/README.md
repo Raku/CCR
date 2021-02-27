@@ -1,4 +1,4 @@
-This directory contains remastered versions of 27 blog posts by Zoffix Znet.
+This directory contains remastered versions of 28 blog posts by Zoffix Znet.
 
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
 - 2016-01-29 [.rotor: The King of List Manipulation](rotor-The-King-of-List-Manipulation.md)
@@ -22,6 +22,7 @@ This directory contains remastered versions of 27 blog posts by Zoffix Znet.
 - 2018-01-19 [Long Live Perl!](Long-Live-Perl.md)
 - 2018-06-06 [How To Make Old #raku IRC Log Links Work](How-To-Make-Old-#raku-IRC-Log-Links-Work.md)
 - 2018-06-13 [A Call to Action: Polish Raku First Steps Experience](A-Call-to-Action-Polish-Raku-First-Steps-Experience.md)
+- 2018-06-18 [Raku Colonpairoscopy](Raku-Colonpairoscopy.md)
 - 2018-08-02 [Introducing: Newcomer Guide to Contributing to Core Raku](Introducing-Newcomer-Guide-to-Contributing-to-Core-Raku.md)
 - 2018-08-02 [Newcomer Guide to Contributing to Core Raku](Newcomer-Guide-to-Contributing-to-Core-Raku.md)
 - 2018-08-05 [Introducing: Raku Marketing Assets Web App](Introducing-Raku-Marketing-Assets-Web-App.md)

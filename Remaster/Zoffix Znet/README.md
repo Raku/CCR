@@ -12,7 +12,7 @@ This directory contains remastered versions of 16 blog posts by Zoffix Znet.
 - 2017-03-28 [But Here's My Dispatch, So callwith Maybe](But-Heres-My-Dispatch-So-callwith-Maybe.md)
 - 2017-09-28 [6lang: The Naming Discussion Update](6lang-The-Naming-Discussion-Update.md)
 - 2017-10-06 [CPAN6 Is Here](CPAN6-Is-Here.md)
-- 2017-12-29 [Announcing Rakulert: Raku Alerts Directly From Core Developers](Announcing-Rakulert-Raku-Alerts-Directly-From-Core-Developers.md)
+- 2017-12-29 [Announcing P6lert: Raku Alerts Directly From Core Developers](Announcing-P6lert-Raku-Alerts-Directly-From-Core-Developers.md)
 - 2018-06-06 [How To Make Old #raku IRC Log Links Work](How-To-Make-Old-#raku-IRC-Log-Links-Work.md)
 - 2018-06-13 [A Call to Action: Polish Raku First Steps Experience](A-Call-to-Action-Polish-Raku-First-Steps-Experience.md)
 - 2018-10-07 [A Request to Larry Wall to Create a Language Name Alias for Raku](A-Request-to-Larry-Wall-to-Create-a-Language-Name-Alias-for-Raku.md)

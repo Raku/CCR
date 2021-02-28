@@ -1,5 +1,6 @@
-This directory contains remastered versions of 63 blog posts by Zoffix Znet.
+This directory contains remastered versions of 64 blog posts by Zoffix Znet.
 
+- 2016-01-12 [Why in The World Would Anyone Use Raku?](Why-in-The-World-Would-Anyone-Use-Raku.md)
 - 2016-01-14 [The Raku User Experience](The-Raku-User-Experience.md)
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)

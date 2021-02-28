@@ -1,4 +1,4 @@
-This directory contains remastered versions of 46 blog posts by Zoffix Znet.
+This directory contains remastered versions of 47 blog posts by Zoffix Znet.
 
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
@@ -25,6 +25,7 @@ This directory contains remastered versions of 46 blog posts by Zoffix Znet.
 - 2016-09-05 [Raku's Schrödinger-Certified Junctions](Rakus-Schrödinger-Certified-Junctions.md)
 - 2016-09-12 [Raku Core Hacking: Grammatical Babble](Raku-Core-Hacking-Grammatical-Babble.md)
 - 2016-09-14 [Raku Core Hacking: Wrong Address; Return To Sender](Raku-Core-Hacking-Wrong-Address-Return-To-Sender.md)
+- 2016-09-17 [Raku.Fail, Release Robots, and Other Goodies](RakuFail-Release-Robots-and-Other-Goodies.md)
 - 2016-09-22 [Raku Core Hacking: Can Has Moar Cover?](Raku-Core-Hacking-Can-Has-Moar-Cover.md)
 - 2016-09-29 ['Raku: What Programming In The Future Is Like?' (Lightning Talk Slides and Video)](Raku-What-Programming-In-The-Future-Is-Like-Lightning-Talk-Slides-and-Video.md)
 - 2017-03-28 [But Here's My Dispatch, So callwith Maybe](But-Heres-My-Dispatch-So-callwith-Maybe.md)

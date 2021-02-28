@@ -1,4 +1,4 @@
-This directory contains remastered versions of 49 blog posts by Zoffix Znet.
+This directory contains remastered versions of 50 blog posts by Zoffix Znet.
 
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
@@ -29,6 +29,7 @@ This directory contains remastered versions of 49 blog posts by Zoffix Znet.
 - 2016-09-17 [Raku.Fail, Release Robots, and Other Goodies](RakuFail-Release-Robots-and-Other-Goodies.md)
 - 2016-09-22 [Raku Core Hacking: Can Has Moar Cover?](Raku-Core-Hacking-Can-Has-Moar-Cover.md)
 - 2016-09-29 ['Raku: What Programming In The Future Is Like?' (Lightning Talk Slides and Video)](Raku-What-Programming-In-The-Future-Is-Like-Lightning-Talk-Slides-and-Video.md)
+- 2017-03-10 [Tag Your Dists](Tag-Your-Dists.md)
 - 2017-03-28 [But Here's My Dispatch, So callwith Maybe](But-Heres-My-Dispatch-So-callwith-Maybe.md)
 - 2017-06-14 [Raku Release Quality Assurance: Full Ecosystem Toaster](Raku-Release-Quality-Assurance-Full-Ecosystem-Toaster.md)
 - 2017-06-20 [Raku: Seqs, Drugs, And Rock'n'Roll](Raku-Seqs-Drugs-And-RocknRoll.md)

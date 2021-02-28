@@ -1,4 +1,4 @@
-This directory contains remastered versions of 60 blog posts by Zoffix Znet.
+This directory contains remastered versions of 61 blog posts by Zoffix Znet.
 
 - 2016-01-14 [The Raku User Experience](The-Raku-User-Experience.md)
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
@@ -12,6 +12,7 @@ This directory contains remastered versions of 60 blog posts by Zoffix Znet.
 - 2016-04-07 [Raku Is Slower Than My Fat Momma!](Raku-Is-Slower-Than-My-Fat-Momma.md)
 - 2016-04-27 [Extra-Typical Raku](Extra-Typical-Raku.md)
 - 2016-04-28 [The S/// Operator](The-S-Operator.md)
+- 2016-05-02 [There Are Traitors In Our Midst!](There-Are-Traitors-In-Our-Midst.md)
 - 2016-05-12 [Raku NativeCall: Look, Ma! I'm a C Programmer!](Raku-NativeCall-Look-Ma-Im-a-C-Programmer.md)
 - 2016-05-16 ['Anguish': Invisible Programming Language and Invisible Data Theft](Anguish-Invisible-Programming-Language-and-Invisible-Data-Theft.md)
 - 2016-05-18 [Raku .polymod: Break Up a Number Into Denominations](Raku-polymod-Break-Up-a-Number-Into-Denominations.md)

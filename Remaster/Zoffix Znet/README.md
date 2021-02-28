@@ -1,4 +1,4 @@
-This directory contains remastered versions of 61 blog posts by Zoffix Znet.
+This directory contains remastered versions of 62 blog posts by Zoffix Znet.
 
 - 2016-01-14 [The Raku User Experience](The-Raku-User-Experience.md)
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
@@ -9,6 +9,7 @@ This directory contains remastered versions of 61 blog posts by Zoffix Znet.
 - 2016-02-04 [How to Make a Raku Module (Bit Rot Thursday)](How-to-Make-a-Raku-Module-Bit-Rot-Thursday.md)
 - 2016-03-23 [Raku: The Next Node.js, Done Right](Raku-The-Next-Nodejs-Done-Right.md)
 - 2016-03-31 ['Wow, Raku!' Talk: Slides, Recording, and Answers to Questions](Wow-Raku-Talk-Slides-Recording-and-Answers-to-Questions.md)
+- 2016-04-04 [Types: Made for Humans](Types-Made-for-Humans.md)
 - 2016-04-07 [Raku Is Slower Than My Fat Momma!](Raku-Is-Slower-Than-My-Fat-Momma.md)
 - 2016-04-27 [Extra-Typical Raku](Extra-Typical-Raku.md)
 - 2016-04-28 [The S/// Operator](The-S-Operator.md)

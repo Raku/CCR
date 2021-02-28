@@ -1,4 +1,4 @@
-This directory contains remastered versions of 43 blog posts by Zoffix Znet.
+This directory contains remastered versions of 44 blog posts by Zoffix Znet.
 
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
@@ -28,6 +28,7 @@ This directory contains remastered versions of 43 blog posts by Zoffix Znet.
 - 2017-03-28 [But Here's My Dispatch, So callwith Maybe](But-Heres-My-Dispatch-So-callwith-Maybe.md)
 - 2017-06-14 [Raku Release Quality Assurance: Full Ecosystem Toaster](Raku-Release-Quality-Assurance-Full-Ecosystem-Toaster.md)
 - 2017-06-20 [Raku: Seqs, Drugs, And Rock'n'Roll](Raku-Seqs-Drugs-And-RocknRoll.md)
+- 2017-06-27 [Raku: Seqs, Drugs, And Rock'n'Roll (Part 2)](Raku-Seqs-Drugs-And-RocknRoll-Part-2.md)
 - 2017-08-31 [On Troll Hugging, Hole Digging, and Improving Open Source Communities](On-Troll-Hugging-Hole-Digging-and-Improving-Open-Source-Communities.md)
 - 2017-09-28 [6lang: The Naming Discussion Update](6lang-The-Naming-Discussion-Update.md)
 - 2017-10-06 [CPAN6 Is Here](CPAN6-Is-Here.md)

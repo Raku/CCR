@@ -1,5 +1,6 @@
-This directory contains remastered versions of 47 blog posts by Zoffix Znet.
+This directory contains remastered versions of 48 blog posts by Zoffix Znet.
 
+- 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
 - 2016-01-29 [.rotor: The King of List Manipulation](rotor-The-King-of-List-Manipulation.md)

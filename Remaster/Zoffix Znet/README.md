@@ -1,5 +1,6 @@
-This directory contains remastered versions of 57 blog posts by Zoffix Znet.
+This directory contains remastered versions of 58 blog posts by Zoffix Znet.
 
+- 2016-01-14 [The Raku User Experience](The-Raku-User-Experience.md)
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)

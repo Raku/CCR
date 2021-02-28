@@ -1,0 +1,21 @@
+# Raku: The Next Node.js, Done Right
+    
+*Originally published on [23 March 2016](https://perl6.party//post/The-Next-Node.js-Done-Right) by Zoffix Znet.*
+
+If you've been a programmer for more than a couple of years, then you remember when Node.js first appeared. Some folks were raging about how insanely fast their ecosystem was growing, while others confusedly shrugged, wondering why anyone would want to use a language made for scripting browsers for server side work.
+
+I can easily dismiss Node's large ecosystem of [reinvented wheels](https://www.npmjs.com/search?q=alert), but the underlying point of why it got popular is valid: the fewer languages you need for an app, the fewer (or less experienced) programmers you have to hire, the cheaper it is to make your app. The self-proclaimed "HTML programmer" who was copy-pasting JS snippets from blogs and forums, now of all a sudden became a full-stack Web developer. But is using a made-for-browsers language for all-purpose work the right approach?
+
+If you follow news or social media, today you definitely saw [an article that invariably had a stock photo of someone playing Jenga](http://www.theregister.co.uk/2016/03/23/npm_left_pad_chaos/?mt=1458771801504). To sum up: lawyers pressured a developer to rename an NPM package. Developer refused. Lawyers came to NPM admins, who obliged to do so. The enraged developer then unpublished all of their NPM packages and the huge swath of the Interweb that depended on those packages chaotically crumbled and sufficient mocking of the whole system ensued.
+
+The whole ordeal made me think of how such a situation might have played out in the Perl community. Would PAUSE admins remove an indexed module due to a request from lawyers, even when the author is responsive? Knowing personalities of a few of them, I doubt so. A communication channel among the involved parties would've been established instead.
+
+And were a critical package actually deleted by someone, we have [BackPAN](http://backpan.cpantesters.org/authors/id/), [GitPAN](https://github.com/gitpan), and dozens of slow-refreshing mirrors. We wouldn't need to take NPM's "an unprecedented step" to restore order to chaos. The system would've worked fine for awhile, and the breakage would be restricted to telling people to specify an actual package URL to the `cpanm` client. Not to mention, the NPM package that caused most of the breakage was tiny and [some question](https://twitter.com/jnthnwrthngtn/status/712781354652581888) why that little bit of code was even a dependency in the first place.
+
+Going back to ecosystems. Browsing NPM, I can barely find packages with documentation, let alone tests for them; and [I'm not the only one questioning quality](https://twitter.com/danlyke/status/712777222701117440). The Perl community, on the other hand, is a community of comprehensive tests. The quality of packages without tests is viewed with inherent suspicion and I've participated in many group mockings of packages that had no tests. Not to mention things like [CPANTS Kwalitee Game](http://cpants.cpanauthors.org/ranking) that has "has tests" metric.
+
+So what does my rambling have to do with Raku? The answer is the [Raku JavaScript Backend](https://p6weekly.wordpress.com/2016/03/14/2016-11-js-fueling-up/). Lead by Paweł Murias, the project was recently accepted for a grant and is well on its way to being usable.
+
+You write Raku code for both your backend and your frontend. The Raku meant for the frontend gets compiled to JavaScript, so it can run in any browser that hasn't yet implemented native Raku scripting in its core (c'mon, I can dream!). This is a complete inversion of the Node's paradigm: instead of a limited browser language made all-purpose, an all-purpose language's subset is made available in browsers. Throw into the mix the maturity and test-oriented culture of Perl, and I think you've got Node.js, Done Right.
+
+So is the Jenga of Node starting to tumble down? Are we starting to realize the fad popularity of a language isn't the sole reason why your company should use it? Is there a successor ready to replace Node? Right now, I can only speculate, but in a couple of years, I'm sure Raku will be the shiny new tool of a full-stack Web developer.

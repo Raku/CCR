@@ -1,10 +1,11 @@
-This directory contains remastered versions of 45 blog posts by Zoffix Znet.
+This directory contains remastered versions of 46 blog posts by Zoffix Znet.
 
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
 - 2016-01-29 [.rotor: The King of List Manipulation](rotor-The-King-of-List-Manipulation.md)
 - 2016-02-01 [Raku: Shortcuts (Part 1)](Raku-Shortcuts-Part-1.md)
 - 2016-02-04 [How to Make a Raku Module (Bit Rot Thursday)](How-to-Make-a-Raku-Module-Bit-Rot-Thursday.md)
+- 2016-03-23 [Raku: The Next Node.js, Done Right](Raku-The-Next-Nodejs-Done-Right.md)
 - 2016-03-31 ['Wow, Raku!' Talk: Slides, Recording, and Answers to Questions](Wow-Raku-Talk-Slides-Recording-and-Answers-to-Questions.md)
 - 2016-04-07 [Raku Is Slower Than My Fat Momma!](Raku-Is-Slower-Than-My-Fat-Momma.md)
 - 2016-04-27 [Extra-Typical Raku](Extra-Typical-Raku.md)

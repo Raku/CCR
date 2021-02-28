@@ -1,4 +1,4 @@
-This directory contains remastered versions of 56 blog posts by Zoffix Znet.
+This directory contains remastered versions of 57 blog posts by Zoffix Znet.
 
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
@@ -48,6 +48,7 @@ This directory contains remastered versions of 56 blog posts by Zoffix Znet.
 - 2018-06-06 [How To Make Old #raku IRC Log Links Work](How-To-Make-Old-#raku-IRC-Log-Links-Work.md)
 - 2018-06-13 [A Call to Action: Polish Raku First Steps Experience](A-Call-to-Action-Polish-Raku-First-Steps-Experience.md)
 - 2018-06-18 [Raku Colonpairoscopy](Raku-Colonpairoscopy.md)
+- 2018-07-04 [The Missing Contributors of Raku](The-Missing-Contributors-of-Raku.md)
 - 2018-07-29 [Talk Slides and Recording: 'Faster Raku Programs'](Talk-Slides-and-Recording-Faster-Raku-Programs.md)
 - 2018-07-29 [Talk Slides and Recording: 'Intro Into Raku Regexes and Grammars'](Talk-Slides-and-Recording-Intro-Into-Raku-Regexes-and-Grammars.md)
 - 2018-08-02 [Introducing: Newcomer Guide to Contributing to Core Raku](Introducing-Newcomer-Guide-to-Contributing-to-Core-Raku.md)

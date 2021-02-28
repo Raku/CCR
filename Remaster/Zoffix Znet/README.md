@@ -1,4 +1,4 @@
-This directory contains remastered versions of 40 blog posts by Zoffix Znet.
+This directory contains remastered versions of 41 blog posts by Zoffix Znet.
 
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
@@ -20,6 +20,7 @@ This directory contains remastered versions of 40 blog posts by Zoffix Znet.
 - 2016-08-04 [Raku Core Hacking: Where's Da Sauce, Boss?](Raku-Core-Hacking-Wheres-Da-Sauce-Boss.md)
 - 2016-08-20 [I Botched a Raku Release And Now a Robot Is Taking My Job](I-Botched-a-Raku-Release-And-Now-a-Robot-Is-Taking-My-Job.md)
 - 2016-08-28 [Open Source Projects: When Ideas Meet Reality](Open-Source-Projects-When-Ideas-Meet-Reality.md)
+- 2016-09-05 [Raku's Schrödinger-Certified Junctions](Rakus-Schrödinger-Certified-Junctions.md)
 - 2016-09-12 [Raku Core Hacking: Grammatical Babble](Raku-Core-Hacking-Grammatical-Babble.md)
 - 2016-09-14 [Raku Core Hacking: Wrong Address; Return To Sender](Raku-Core-Hacking-Wrong-Address-Return-To-Sender.md)
 - 2016-09-22 [Raku Core Hacking: Can Has Moar Cover?](Raku-Core-Hacking-Can-Has-Moar-Cover.md)

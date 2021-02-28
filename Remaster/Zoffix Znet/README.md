@@ -1,4 +1,4 @@
-This directory contains remastered versions of 53 blog posts by Zoffix Znet.
+This directory contains remastered versions of 54 blog posts by Zoffix Znet.
 
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
@@ -21,6 +21,7 @@ This directory contains remastered versions of 53 blog posts by Zoffix Znet.
 - 2016-07-29 [IRC::Client: Raku Multi-Server IRC (or Awesome Async Interfaces with Raku)](IRC-Client-Raku-Multi-Server-IRC-or-Awesome-Async-Interfaces-with-Raku.md)
 - 2016-08-01 [Hacking on The Rakudo Raku Compiler: Mix Your Fix](Hacking-on-The-Rakudo-Raku-Compiler-Mix-Your-Fix.md)
 - 2016-08-04 [Raku Core Hacking: Where's Da Sauce, Boss?](Raku-Core-Hacking-Wheres-Da-Sauce-Boss.md)
+- 2016-08-15 [The Awesome Errors of Raku](The-Awesome-Errors-of-Raku.md)
 - 2016-08-20 [I Botched a Raku Release And Now a Robot Is Taking My Job](I-Botched-a-Raku-Release-And-Now-a-Robot-Is-Taking-My-Job.md)
 - 2016-08-28 [Open Source Projects: When Ideas Meet Reality](Open-Source-Projects-When-Ideas-Meet-Reality.md)
 - 2016-09-05 [Raku's Schrödinger-Certified Junctions](Rakus-Schrödinger-Certified-Junctions.md)

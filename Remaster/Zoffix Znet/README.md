@@ -1,4 +1,4 @@
-This directory contains remastered versions of 52 blog posts by Zoffix Znet.
+This directory contains remastered versions of 53 blog posts by Zoffix Znet.
 
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
@@ -50,5 +50,6 @@ This directory contains remastered versions of 52 blog posts by Zoffix Znet.
 - 2018-08-02 [Introducing: Newcomer Guide to Contributing to Core Raku](Introducing-Newcomer-Guide-to-Contributing-to-Core-Raku.md)
 - 2018-08-02 [Newcomer Guide to Contributing to Core Raku](Newcomer-Guide-to-Contributing-to-Core-Raku.md)
 - 2018-08-05 [Introducing: Raku Marketing Assets Web App](Introducing-Raku-Marketing-Assets-Web-App.md)
+- 2018-08-09 [The 100 Day Plan: The Update on Raku.d Preparations](The-100-Day-Plan-The-Update-on-Rakud-Preparations.md)
 - 2018-10-07 [A Request to Larry Wall to Create a Language Name Alias for Raku](A-Request-to-Larry-Wall-to-Create-a-Language-Name-Alias-for-Raku.md)
 - 2018-10-31 [Raku Advent Calendar 2018 Call for Authors](Raku-Advent-Calendar-2018-Call-for-Authors.md)

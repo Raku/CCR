@@ -1,4 +1,4 @@
-This directory contains remastered versions of 41 blog posts by Zoffix Znet.
+This directory contains remastered versions of 42 blog posts by Zoffix Znet.
 
 - 2016-01-22 [Raku is written in... Raku](Raku-is-written-in-Raku.md)
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
@@ -33,6 +33,7 @@ This directory contains remastered versions of 41 blog posts by Zoffix Znet.
 - 2017-12-29 [Announcing P6lert: Raku Alerts Directly From Core Developers](Announcing-P6lert-Raku-Alerts-Directly-From-Core-Developers.md)
 - 2018-01-19 [Long Live Perl!](Long-Live-Perl.md)
 - 2018-01-26 [Raku Core Hacking: QASTalicious](Raku-Core-Hacking-QASTalicious.md)
+- 2018-02-20 [Raku: On Specs, Versioning, Changes, and… Breakage](Raku-On-Specs-Versioning-Changes-and-Breakage.md)
 - 2018-06-06 [How To Make Old #raku IRC Log Links Work](How-To-Make-Old-#raku-IRC-Log-Links-Work.md)
 - 2018-06-13 [A Call to Action: Polish Raku First Steps Experience](A-Call-to-Action-Polish-Raku-First-Steps-Experience.md)
 - 2018-06-18 [Raku Colonpairoscopy](Raku-Colonpairoscopy.md)

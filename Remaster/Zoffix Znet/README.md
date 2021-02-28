@@ -1,4 +1,4 @@
-This directory contains remastered versions of 58 blog posts by Zoffix Znet.
+This directory contains remastered versions of 59 blog posts by Zoffix Znet.
 
 - 2016-01-14 [The Raku User Experience](The-Raku-User-Experience.md)
 - 2016-01-20 [Python is The New 'Write-Only, Linenoise' Language](Python-is-The-New-Write-Only-Linenoise-Language.md)
@@ -39,6 +39,7 @@ This directory contains remastered versions of 58 blog posts by Zoffix Znet.
 - 2017-06-27 [Raku: Seqs, Drugs, And Rock'n'Roll (Part 2)](Raku-Seqs-Drugs-And-RocknRoll-Part-2.md)
 - 2017-07-07 [The Hot New Language Named Rakudo](The-Hot-New-Language-Named-Rakudo.md)
 - 2017-08-31 [On Troll Hugging, Hole Digging, and Improving Open Source Communities](On-Troll-Hugging-Hole-Digging-and-Improving-Open-Source-Communities.md)
+- 2017-09-17 [The Rakudo Book Project](The-Rakudo-Book-Project.md)
 - 2017-09-28 [6lang: The Naming Discussion Update](6lang-The-Naming-Discussion-Update.md)
 - 2017-10-06 [CPAN6 Is Here](CPAN6-Is-Here.md)
 - 2017-10-24 [Rakudo Raku Advent Calendar 2017 Call for Authors](Rakudo-Raku-Advent-Calendar-2017-Call-for-Authors.md)

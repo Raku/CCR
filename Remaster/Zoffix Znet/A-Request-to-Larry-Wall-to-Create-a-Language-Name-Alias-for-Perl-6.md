@@ -1,4 +1,4 @@
-# A Request to Larry Wall to Create a Language Name Alias for Raku
+# A Request to Larry Wall to Create a Language Name Alias for Perl 6
     
 *Originally published on [7 October 2018](https://perl6.party//post/A-Request-to-Larry-Wall-to-Create-a-Language-Name-Alias-for-Perl-6) by Zoffix Znet.*
 

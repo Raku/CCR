@@ -1,4 +1,4 @@
-This directory contains remastered versions of 64 blog posts by Zoffix Znet.
+This directory contains remastered versions of 65 blog posts by Zoffix Znet.
 
 - 2016-01-12 [Why in The World Would Anyone Use Raku?](Why-in-The-World-Would-Anyone-Use-Raku.md)
 - 2016-01-14 [The Raku User Experience](The-Raku-User-Experience.md)
@@ -23,6 +23,7 @@ This directory contains remastered versions of 64 blog posts by Zoffix Znet.
 - 2016-05-29 [Raku Hands-On Workshop: Weatherapp (Part 3)](Raku-Hands-On-Workshop-Weatherapp-Part-3.md)
 - 2016-06-27 [Exploiting Raku Code From Down The Dependency Chain](Exploiting-Raku-Code-From-Down-The-Dependency-Chain.md)
 - 2016-07-10 [A Date With The Bug Queue or Let Me Help You Help Me Help You](A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md)
+- 2016-07-15 [[Part 2] A Date With The Bug Queue or Let Me Help You Help Me Help You]([Part-2]-A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md)
 - 2016-07-29 [IRC::Client: Raku Multi-Server IRC (or Awesome Async Interfaces with Raku)](IRC-Client-Raku-Multi-Server-IRC-or-Awesome-Async-Interfaces-with-Raku.md)
 - 2016-08-01 [Hacking on The Rakudo Raku Compiler: Mix Your Fix](Hacking-on-The-Rakudo-Raku-Compiler-Mix-Your-Fix.md)
 - 2016-08-04 [Raku Core Hacking: Where's Da Sauce, Boss?](Raku-Core-Hacking-Wheres-Da-Sauce-Boss.md)

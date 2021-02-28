@@ -1,4 +1,4 @@
-This directory contains remastered versions of 33 blog posts by Zoffix Znet.
+This directory contains remastered versions of 34 blog posts by Zoffix Znet.
 
 - 2016-01-27 [Bit Rot Thursday](Bit-Rot-Thursday.md)
 - 2016-01-29 [.rotor: The King of List Manipulation](rotor-The-King-of-List-Manipulation.md)
@@ -7,6 +7,7 @@ This directory contains remastered versions of 33 blog posts by Zoffix Znet.
 - 2016-04-27 [Extra-Typical Raku](Extra-Typical-Raku.md)
 - 2016-05-16 ['Anguish': Invisible Programming Language and Invisible Data Theft](Anguish-Invisible-Programming-Language-and-Invisible-Data-Theft.md)
 - 2016-05-18 [Raku .polymod: Break Up a Number Into Denominations](Raku-polymod-Break-Up-a-Number-Into-Denominations.md)
+- 2016-05-20 [Raku Hands-On Workshop: Weatherapp (Part 1)](Raku-Hands-On-Workshop-Weatherapp-Part-1.md)
 - 2016-06-27 [Exploiting Raku Code From Down The Dependency Chain](Exploiting-Raku-Code-From-Down-The-Dependency-Chain.md)
 - 2016-07-10 [A Date With The Bug Queue or Let Me Help You Help Me Help You](A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md)
 - 2016-07-29 [IRC::Client: Raku Multi-Server IRC (or Awesome Async Interfaces with Raku)](IRC-Client-Raku-Multi-Server-IRC-or-Awesome-Async-Interfaces-with-Raku.md)

@@ -21,7 +21,7 @@ The online [Raku Introduction](https://raku.guide) document has been translated
 Using Perl features in Raku
 ---------------------------
 
-Perl code can be seamlessly integrated with Raku by installing the `[Inline::Perl5](http://modules.raku.org/dist/Inline::Perl5)` module, making *all* of [CPAN](https://metacpan.org) available to any Raku program. This could be considered cheating, as it will embed a Perl interpreter and therefore continues to have a dependency on the `perl` (5) runtime. But it *does* make it easy to get your Raku code running (if you need access to modules that have not yet been ported) simply by adding `:from<Perl5>` to your `use` statement, like `use DBI:from<Perl5>;`.
+Perl code can be seamlessly integrated with Raku by installing the [`Inline::Perl5`](http://modules.raku.org/dist/Inline::Perl5) module, making *all* of [CPAN](https://metacpan.org) available to any Raku program. This could be considered cheating, as it will embed a Perl interpreter and therefore continues to have a dependency on the `perl` (5) runtime. But it *does* make it easy to get your Raku code running (if you need access to modules that have not yet been ported) simply by adding `:from<Perl5>` to your `use` statement, like `use DBI:from<Perl5>;`.
 
 In January 2018, I proposed a [CPAN Butterfly Plan](https://www.perl.com/article/an-open-letter-to-the-perl-community/) to convert Perl functionality to Raku as closely as possible to the original API.  I stated this as a goal because Perl (as a programming language) is so much more than syntax alone.  Ask anyone what Perl's unique selling point is, and they will most likely tell you it is CPAN.  Therefore, I think it's time to move from this view of the Perl universe:
 

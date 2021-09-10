@@ -25,7 +25,7 @@ here), but the following graph shows the same behaviour from a Monte-Carlo
 simulation built to experiment with this behaviour:
 
 
-![weirdness1](weirdness1.svg)
+![weirdness1](weirdness.svg)
 
 The simulation takes a simple LRU cache with a maximum size of 1000 entries.
 Access is following a Poisson distribution with 50% of all hits going into the

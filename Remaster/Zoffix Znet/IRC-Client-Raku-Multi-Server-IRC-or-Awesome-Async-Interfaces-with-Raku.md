@@ -16,7 +16,7 @@ Here's a simple IRC bot that responds to being addressed in-channel, notices, an
 use IRC::Client;
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#raku>
     :debug
     :plugins(class { method irc-to-me ($_) { .text.uc } })

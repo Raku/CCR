@@ -64,7 +64,7 @@ class Trickster {
 }
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#raku>
     :debug
     :plugins(Trickster)
@@ -118,7 +118,7 @@ class BFF does IRC::Client::Plugin {
 }
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#raku>
     :debug
     :plugins(Trickster.new, BFF.new)
@@ -162,7 +162,7 @@ class Trickster {
 class BFF { method irc-to-me ($ where /'♥'/) { 'I ♥ YOU!' } }
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#raku>
     :debug
     :plugins(Trickster, BFF)
@@ -232,7 +232,7 @@ class GitHub::Notifications does IRC::Client::Plugin {
 }
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#raku>
     :debug
     :plugins(GitHub::Notifications.new)
@@ -279,7 +279,7 @@ class Bash {
 }
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#raku>
     :debug
     :plugins(Bash.new)
@@ -321,7 +321,7 @@ class Bash {
 }
 .run with IRC::Client.new:
     :nick<MahBot>
-    :host<irc.freenode.net>
+    :host<libera.chat>
     :channels<#zofbot>
     :debug
     :plugins(Bash.new)
@@ -359,8 +359,8 @@ class BFF {
     :nick<MahBot>
     :channels<#zofbot>
     :servers(
-        freenode => %(
-            :host<irc.freenode.net>,
+        libera => %(
+            :host<libera.chat>,
         ),
         local => %(
             :nick<RakuBot>,
@@ -370,7 +370,7 @@ class BFF {
     )
 ````
   
-> \[on Freenode server]
+> \[on Libera server]
 
 > **<ZoffixW>** MahBot, I ♥ you
 
@@ -384,7 +384,7 @@ class BFF {
 
 First, our plugin remains oblivious that it's being run on multiple servers.  Its replies get redirected to the correct server and `IRC::Client` still executes its method handler in a thread-safe way.
 
-In the `IRC::Client`'s constructor we added `:servers` attribute that takes a `Hash`. The keys of this `Hash` are servers' labels and values are server-specific configurations that override global settings. So `freenode` server gets its `:nick` and `:channels` from the `:nick` and `:channels` attributes we give to `IRC::Client`, while the `local` server overrides those with its own values.
+In the `IRC::Client`'s constructor we added `:servers` attribute that takes a `Hash`. The keys of this `Hash` are servers' labels and values are server-specific configurations that override global settings. So `libera` server gets its `:nick` and `:channels` from the `:nick` and `:channels` attributes we give to `IRC::Client`, while the `local` server overrides those with its own values.
 
 The debug output now has server labels printed, to indicate to which server the event applies:
 
@@ -421,8 +421,8 @@ class Messenger does IRC::Client::Plugin {
     :nick<MahBot>
     :channels<#zofbot>
     :servers{
-        freenode => %(
-            :host<irc.freenode.net>,
+        libera => %(
+            :host<libera.chat>,
         ),
         local => %(
             :nick<RakuBot>,
@@ -432,17 +432,17 @@ class Messenger does IRC::Client::Plugin {
     }
 ````
 
-> \[on Freenode server/#zofbot]
+> \[on libera server/#zofbot]
 
 > **<ZoffixW>** Yey!
 
 > \[on local server/#zofbot]
 
-> **<RakuBot>** ZoffixW over at irc.freenode.net/#zofbot says Yey!
+> **<RakuBot>** ZoffixW over at libera.chat/#zofbot says Yey!
 
 > \[on local server/#raku]
 
-> **<RakuBot>** ZoffixW over at irc.freenode.net/#zofbot says Yey!
+> **<RakuBot>** ZoffixW over at libera.chat/#zofbot says Yey!
 
 > \[on local server/ZoffixW private message queue]
 

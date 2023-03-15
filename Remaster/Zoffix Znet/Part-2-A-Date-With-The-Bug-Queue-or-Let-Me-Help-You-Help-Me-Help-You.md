@@ -2,7 +2,7 @@
     
 *Originally published on [15 July 2016](https://perl6.party//post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You--Part-2) by Zoffix Znet.*
 
-*Be sure to read [Part I](/https://github.com/Raku/CCR/blob/main/Remaster/Zoffix%20Znet/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md#a-date-with-the-bug-queue-or-let-me-help-you-help-me-help-you) of this series.*
+*Be sure to read [Part I](https://github.com/Raku/CCR/blob/main/Remaster/Zoffix%20Znet/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md#a-date-with-the-bug-queue-or-let-me-help-you-help-me-help-you) of this series.*
 
 As I was tagging tickets in my [bug ticket helper app](https://github.com/zoffixznet/rakuicket-Trakr), I was surprised by how often I was tagging tickets with this particular tag:
 

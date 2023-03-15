@@ -192,4 +192,4 @@ That's not the only thing the bug queue has on the menu. In the next post, we'll
 
 ## Part 2
 
-[Part 2](http://raku.party/post/A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You--Part-2) is now available!
+[Part 2](https://github.com/Raku/CCR/blob/main/Remaster/Zoffix%20Znet/Part-2-A-Date-With-The-Bug-Queue-or-Let-Me-Help-You-Help-Me-Help-You.md#part-2-a-date-with-the-bug-queue-or-let-me-help-you-help-me-help-you) is now available!

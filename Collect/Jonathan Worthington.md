@@ -247,3 +247,6 @@
 - [Testing in virtual time](https://perl6advent.wordpress.com/2016/12/17/testing-in-virtual-time/)
 - [HTTP and Web Sockets with Cro](https://perl6advent.wordpress.com/2017/12/09/http-and-web-sockets-with-cro/)
 - [Testing Cro HTTP APIs](https://perl6advent.wordpress.com/2018/12/22/day-22-testing-cro-http-apis/)
+
+# Videos by Jonathan Worthington
+- [Perl 6: For the little tools and the large applications](https://www.nuug.no/aktiviteter/20100914-little-tools-large-apps/)

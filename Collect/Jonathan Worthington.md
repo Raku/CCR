@@ -228,6 +228,10 @@
 - [Eliminating unrequired guards](https://6guts.wordpress.com/2018/09/29/eliminating-unrequired-guards/)
 - [My Perl 6 wishes for&nbsp;2019](https://6guts.wordpress.com/2019/01/02/my-perl-6-wishes-for-2019/)
 - [Taking a break from Raku core&nbsp;development](https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/)
+- [Towards a new general dispatch mechanism in MoarVM](https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/)
+- [Raku multiple dispatch with the new MoarVM dispatcher](https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/)
+- [The new MoarVM dispatch mechanism is here!](https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/)
+- [Recollections from the Raku Core Summit](https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/)
 
 ## Advent Calendars
 - [Classes, attributes, methods and more](https://perl6advent.wordpress.com/2009/12/11/day-11-classes-attributes-methods-and-more/)

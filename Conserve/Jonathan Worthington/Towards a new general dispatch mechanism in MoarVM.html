@@ -1,0 +1,1957 @@
+https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+Towards a new general dispatch mechanism in MoarVM | 6guts</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s0.wp.com/wp-content/themes/pub/twentyten/style.css?m=1659017451i&amp;ver=20190507" />
+<link rel="pingback" href="https://6guts.wordpress.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel='dns-prefetch' href='//widgets.wp.com' />
+<link rel='dns-prefetch' href='//af.pubmine.com' />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Feed" href="https://6guts.wordpress.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Comments Feed" href="https://6guts.wordpress.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Towards a new general dispatch mechanism in&nbsp;MoarVM Comments Feed" href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/feed/" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='/_static/??-eJxtjNsKwjAQRH/IuBYl4oP4LWm6hDSbbMhu8Pe1pSheXgbOcGbgXo3nolgUcjeVeohFYEatzqeNITMvMXVCgYbkFCdTWfSL9l5kB/8vKSZ8H6/0o4/E4TXIriXUWIIZXYOn+tks41u+Dmc72NPhYo/zAy/zS9w=&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/style.css?m=1764855221i&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+
+/*# sourceURL=wp-block-library-inline-css */
+</style><style id='wp-block-paragraph-inline-css'>
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/paragraph/style.css */
+</style>
+<style id='wp-block-heading-inline-css'>
+h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-background,h3:where(.wp-block-heading).has-background,h4:where(.wp-block-heading).has-background,h5:where(.wp-block-heading).has-background,h6:where(.wp-block-heading).has-background{padding:1.25em 2.375em}h1.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h1.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h2.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h2.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h3.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h3.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h4.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h4.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h5.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h5.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h6.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h6.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]){rotate:180deg}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/heading/style.css */
+</style>
+<style id='wp-block-list-inline-css'>
+ol,ul{box-sizing:border-box}:root :where(.wp-block-list.has-background){padding:1.25em 2.375em}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/list/style.css */
+</style>
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='/_static/??-eJx9jl0KAjEMhC9kNrsi6ot4FGm7QatNW5p0xdvbRfxBwZdAZuabBK8ZXIpKUTGHevRR0CUbkrsILrth2w0gnnMgKDR1Kxy96CsBordAnRNZ4EcRV3h3FWo6Z6Nzgmn0hgJxi/3DrrkxYG0uJAJtsq8Memqg/OPOpNm4CzTpUfEwkFOKT/MwURxTQVM1sVH17gdDKQ5t9WHEiYptp5s4/yzf+/zMnnfDZt33y83Qb893kB9+HA==&cssminify=yes' type='text/css' media='all' />
+<link rel='stylesheet' id='verbum-gutenberg-css-css' href='https://widgets.wp.com/verbum-block-editor/block-editor.css?ver=1738686361' media='all' />
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-6-1' href='/_static/??-eJyFjsEOwjAMQ3+IECaxiR0Q37JVoRTaplpSVfv7hRsTEtxsy88ytgKOs1JW1AclEix1Rm0WrJbiHNm95OhEDvivK7pGglYcpy8gVSix+pAFF7JRb9KjtT7sL8gTg12ZNHDeGbjHKSxv9Jau3dCdzv3YX8bnBqh7UWU=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+/*# sourceURL=jetpack-global-styles-frontend-style-inline-css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='/_static/??-eJyNjcEKwjAQRH/IuFRT6kX8FNkmS5K6yQY3Qfx7bfEiXrwM82B4A49qnJRGpUHupnIPqSgs1Cq624chi6zhO5OCRryTR++fW00l7J3qDv43XVNxoOISsmEJol/wY2uR8vs3WggsM/I6uOTzMI3Hw8lOg11eUT1JKA==&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack_related-posts-js-extra">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+//# sourceURL=jetpack_related-posts-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14597269","postID":"583","siteURL":"https://6guts.wordpress.com","xhrURL":"https://6guts.wordpress.com/wp-admin/admin-ajax.php","nonce":"6cb66fdce5","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https://s0.wp.com/wp-content/js/wpcom-proxy-request.js?m=1513050504i&amp;ver=20211021","shortlink":"https://wp.me/pZfpP-9p","i18n":{"followedText":"New posts from this site will now appear in your \u003Ca href=\"https://wordpress.com/reader\"\u003EReader\u003C/a\u003E","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","shortLinkCopied":"Shortlink copied to clipboard."}};
+//# sourceURL=wpcom-actionbar-placeholder-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https://s0.wp.com/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/"};
+//# sourceURL=jetpack-mu-wpcom-settings-js-before
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJxdjVsKwjAQRTdkOrUQ/RKXInlREieZkJm0untbEFG/Lof7grUqR0VCEchdVexzLAwpSDXu/mbIRAVusTiwPaKHFtBI8KoSC//SkGMZEh/gazhtGRRVGz2e/55Fmj+3KzVvPCuHhjnwXnS5wjLtoli63erXfDmetR7H0zTp9AKmAkbK'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+//# sourceURL=rlt-proxy-js-after
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://6guts.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" />
+<link rel='shortlink' href='https://wp.me/pZfpP-9p' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2F6guts.wordpress.com%2F2021%2F03%2F15%2Ftowards-a-new-general-dispatch-mechanism-in-moarvm%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2F6guts.wordpress.com%2F2021%2F03%2F15%2Ftowards-a-new-general-dispatch-mechanism-in-moarvm%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Towards a new general dispatch mechanism in MoarVM" />
+<meta property="og:url" content="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" />
+<meta property="og:description" content="My goodness, it appears I&#8217;m writing my first Raku internals blog post in over two years. Of course, two years ago it wasn&#8217;t even called Raku. Anyway, without further ado, let&#8217;s ge…" />
+<meta property="article:published_time" content="2021-03-15T02:08:42+00:00" />
+<meta property="article:modified_time" content="2021-03-15T10:26:16+00:00" />
+<meta property="og:site_name" content="6guts" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg?m=1383295312i" />
+<meta property="og:image:width" content="200" />
+<meta property="og:image:height" content="200" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta property="fb:app_id" content="249643311490" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+<meta name="twitter:text:title" content="Towards a new general dispatch mechanism in&nbsp;MoarVM" />
+<meta name="twitter:card" content="summary" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico?m=1713425267i" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico?m=1713425267i" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s0.wp.com/i/webclip.png?m=1713868326i" />
+<link rel='openid.server' href='https://6guts.wordpress.com/?openidserver=1' />
+<link rel='openid.delegate' href='https://6guts.wordpress.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="https://6guts.wordpress.com/osd.xml" title="6guts" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="description" content="My goodness, it appears I&#039;m writing my first Raku internals blog post in over two years. Of course, two years ago it wasn&#039;t even called Raku. Anyway, without further ado, let&#039;s get on with this shared brainache. What is dispatch? I use &quot;dispatch&quot; to mean a process by which we take a set of arguments&hellip;" />
+<script type="text/javascript">
+/* <![CDATA[ */
+var wa_client = {}; wa_client.cmd = []; wa_client.config = { 'blog_id': 14597269, 'blog_language': 'en', 'is_wordads': false, 'hosting_type': 0, 'afp_account_id': null, 'afp_host_id': 5038568878849053, 'theme': 'pub/twentyten', '_': { 'title': 'Advertisement', 'privacy_settings': 'Privacy Settings' }, 'formats': [ 'inline', 'belowpost', 'bottom_sticky', 'sidebar_sticky_right', 'sidebar', 'gutenberg_rectangle', 'gutenberg_leaderboard', 'gutenberg_mobile_leaderboard', 'gutenberg_skyscraper' ] };
+/* ]]> */
+</script>
+		<script type="text/javascript">
+
+			window.doNotSellCallback = function() {
+
+				var linkElements = [
+					'a[href="https://wordpress.com/?ref=footer_blog"]',
+					'a[href="https://wordpress.com/?ref=footer_website"]',
+					'a[href="https://wordpress.com/?ref=vertical_footer"]',
+					'a[href^="https://wordpress.com/?ref=footer_segment_"]',
+				].join(',');
+
+				var dnsLink = document.createElement( 'a' );
+				dnsLink.href = 'https://wordpress.com/advertising-program-optout/';
+				dnsLink.classList.add( 'do-not-sell-link' );
+				dnsLink.rel = 'nofollow';
+				dnsLink.style.marginLeft = '0.5em';
+				dnsLink.textContent = 'Do Not Sell or Share My Personal Information';
+
+				var creditLinks = document.querySelectorAll( linkElements );
+
+				if ( 0 === creditLinks.length ) {
+					return false;
+				}
+
+				Array.prototype.forEach.call( creditLinks, function( el ) {
+					el.insertAdjacentElement( 'afterend', dnsLink );
+				});
+
+				return true;
+			};
+
+		</script>
+		<script id="cmp-configuration" type="application/configuration">{"gvlVersion":"136","consentLanguage":"EN","locale":"en","vendorsAll":"BSUAOIRKgQQoJAQI4BAAhAEBiAYACECAAABAACAAAAAAABEAEAAAAAAAAAQAAAAAAAAABAAAAAAAAAAAABAAAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAiAAIAAAgAAgAAAAAABAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA","vendorsLegInterest":"BSUAEAQKgAAoAAAIAAAAgAAACAIACAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAIAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA","ajaxUrl":"\/wp-admin\/admin-ajax.php","ajaxNonce":"1f5d65be8f","modulePath":"https:\/\/s0.wp.com\/wp-content\/blog-plugins\/wordads-classes\/js\/cmp\/v2\/","gvlPath":"https:\/\/public-api.wordpress.com\/wpcom\/v2\/sites\/14597269\/cmp\/v3\/vendors\/en\/","_":{"title":"Privacy & Cookies","intro":"We, WordPress.com, and our advertising partners store and\/or access information on your device and also process personal data, like unique identifiers, browsing activity, and other standard information sent by your device including your IP address. This information is collected over time and used for personalised advertising, advertising measurement, audience research and services development specific to our ads program. If this sounds good to you, select \"I Agree!\" below. Otherwise, you can get more information, customize your consent preferences for over 50 different ad vendors, or decline consent by selecting \"Learn More\". Note that your preferences apply to all websites in the <a href=\"https:\/\/automattic.com\/cookies\/#user-ads-consent\" target=\"_blank\">WordPress.com network<\/a>, and if you change your mind in the future you can update your preferences anytime by visiting the Privacy link displayed under each ad or by using the \"Privacy\" option in the Action Bar located at the bottom-right corner of the screen. One last thing, our partners may process some of your data based on legitimate interests instead of consent but you can object to that by choosing \"Learn More\" and then disabling the Legitimate Interests toggle under any listed Purpose or Partner.","config":"Learn More","accept":"I Agree!","viewPartners":"View Partners","error":"We're sorry but an unexpected error occurred. Please try again later."}}</script><script type="text/javascript">
+	window.google_analytics_uacct = "UA-52447-2";
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_gat._anonymizeIp']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script>
+</head>
+
+<body class="wp-singular post-template-default single single-post postid-583 single-format-standard wp-theme-pubtwentyten customizer-styles-applied single-author jetpack-reblog-enabled has-marketing-bar has-marketing-bar-theme-twenty-ten">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="https://6guts.wordpress.com/" title="6guts" rel="home">6guts</a>
+					</span>
+				</div>
+				<div id="site-description">Tales of Raku guts hacking</div>
+
+									<a class="home-link" href="https://6guts.wordpress.com/" title="6guts" rel="home">
+						<img src="https://6guts.wordpress.com/wp-content/uploads/2010/07/cropped-30141.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="https://6guts.wordpress.com/">Home</a></li><li class="page_item page-item-2"><a href="https://6guts.wordpress.com/about/">About</a></li>
+<li class="page_item page-item-24"><a href="https://6guts.wordpress.com/interesting-papers/">Interesting Papers</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/" rel="prev"><span class="meta-nav">&larr;</span> Taking a break from Raku core&nbsp;development</a></div>
+					<div class="nav-next"><a href="https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/" rel="next">Raku multiple dispatch with the new MoarVM&nbsp;dispatcher <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-583" class="post-583 post type-post status-publish format-standard hentry category-uncategorized">
+											<h2 class="entry-title"><a href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" rel="bookmark">Towards a new general dispatch mechanism in&nbsp;MoarVM</a></h2>					
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" title="3:08 AM" rel="bookmark"><span class="entry-date">March 15, 2021</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="https://6guts.wordpress.com/author/jnthnwrthngtn/" title="View all posts by jnthnwrthngtn">jnthnwrthngtn</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						
+<p>My goodness, it appears I&#8217;m writing my first Raku internals blog post in over two years. Of course, two years ago it wasn&#8217;t even called Raku. Anyway, without further ado, let&#8217;s get on with this shared brainache.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#what-is-dispatch"></a>What is dispatch?</h3>
+
+
+
+<p>I use &#8220;dispatch&#8221; to mean a process by which we take a set of arguments and end up with some action being taken based upon them. Some familiar examples include:</p>
+
+
+
+<ul class="wp-block-list"><li>Making a method call, such as&nbsp;<code>$basket.add($product, $quantity)</code>. We might traditionally call just&nbsp;<code>$product</code>&nbsp;and&nbsp;<code>$qauntity</code>&nbsp;the arguments, but for my purposes, all of&nbsp;<code>$basket</code>, the method name&nbsp;<code>'add'</code>,&nbsp;<code>$product</code>, and&nbsp;$quantity` are arguments to the dispatch: they are the things we need in order to make a decision about what we&#8217;re going to do.</li><li>Making a subroutine call, such as&nbsp;<code>uc($youtube-comment)</code>. Since Raku sub calls are lexically resolved, in this case the arguments to the dispatch are&nbsp;<code>&amp;uc</code>&nbsp;(the result of looking up the subroutine) and&nbsp;<code>$youtube-comment</code>.</li><li>Calling a multiple dispatch subroutine or method, where the number and types of the arguments are used in order to decide which of a set of candidates is to be invoked. This process could be seen as taking place &#8220;inside&#8221; of one of the above two dispatches, given we have both multiple dispatch subroutines and methods in Raku.</li></ul>
+
+
+
+<p>At first glance, perhaps the first two seem fairly easy and the third a bit more of a handful &#8211; which is sort of true. However, Raku has a number of other features that make dispatch rather more, well, interesting. For example:</p>
+
+
+
+<ul class="wp-block-list"><li><code>wrap</code>&nbsp;allows us to wrap any&nbsp;<code>Routine</code>&nbsp;(sub or method); the wrapper can then choose to defer to the original routine, either with the original arguments or with new arguments</li><li>When doing multiple dispatch, we may write a&nbsp;<code>proto</code>&nbsp;routine that gets to choose when &#8211; or even if &#8211; the call to the appropriate candidate is made</li><li>We can use routines like&nbsp;<code>callsame</code>&nbsp;in order to defer to the next candidate in the dispatch. But what does that mean? If we&#8217;re in a multiple dispatch, it would mean the next most applicable candidate, if any. If we&#8217;re in a method dispatch then it means a method from a base class. (The same thing is used to implement going to the next wrapper or, eventually, to the originally wrapped routine too). And these can be combined: we can wrap a multi method, meaning we can have 3 levels of things that all potentially contribute the next thing to call!</li></ul>
+
+
+
+<p>Thanks to this, dispatch &#8211; at least in Raku &#8211; is not always something we do and produce an outcome, but rather a process that we may be asked to continue with multiple times!</p>
+
+
+
+<p>Finally, while the examples I&#8217;ve written above can all quite clearly be seen as examples of dispatch, a number of other common constructs in Raku can be expressed as a kind of dispatch too. Assignment is one example: the semantics of it depend on the target of the assignment and the value being assigned, and thus we need to pick the correct semantics. Coercion is another example, and return value type-checking yet another.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#why-does-dispatch-matter"></a>Why does dispatch matter?</h3>
+
+
+
+<p>Dispatch is everywhere in our programs, quietly tieing together the code that wants stuff done with the code that does stuff. Its ubiquity means it plays a significant role in program performance. In the best case, we can reduce the cost to zero. In the worst case, the cost of the dispatch is high enough to exceed that of the work done as a result of the dispatch.</p>
+
+
+
+<p>To a first approximation, when the runtime &#8220;understands&#8221; the dispatch the performance tends to be at least somewhat decent, but when it doesn&#8217;t there&#8217;s a high chance of it being awful. Dispatches tend to involve an amount of work that can be cached, often with some cheap guards to verify the validity of the cached outcome. For example, in a method dispatch, naively we need to walk a linearization of the inheritance graph and ask each class we encounter along the way if it has a method of the specified name. Clearly, this is not going to be terribly fast if we do it on every method call. However, a particular method name on a particular type (identified precisely, without regard to subclassing) will resolve to the same method each time. Thus, we can cache the outcome of the lookup, and use it whenever the type of the invocant matches that used to produce the cached result.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#specialized-vs-generalized-mechanisms-in-language-runtimes"></a>Specialized vs. generalized mechanisms in language runtimes</h3>
+
+
+
+<p>When one starts building a runtime aimed at a particular language, and has to do it on a pretty tight budget, the most obvious way to get somewhat tolerable performance is to bake various hot-path language semantics into the runtime. This is exactly how MoarVM started out. Thus, if we look at MoarVM as it stood several years ago, we find things like:</p>
+
+
+
+<ul class="wp-block-list"><li>Some support for method caching</li><li>A multi-dispatch cache highly tied to Raku&#8217;s multi-dispatch semantics, and only really able to help when the dispatch is all about nominal types (so using&nbsp;<code>where</code>&nbsp;comes at a very high cost)</li><li>A mechanism for specifying how to find the actual code handle inside of a wrapping code object (for example, a&nbsp;<code>Sub</code>&nbsp;object has a private attribute in it that holds the low-level code handle identifying the bytecode to run)</li><li>Some limited attempts to allow us to optimize correctly in the case we know that a dispatch will not be continued &#8211; which requires careful cooperation between compiler and runtime (or less diplomatically, it&#8217;s all a big hack)</li></ul>
+
+
+
+<p>These are all still there today, however are also all on the way out. What&#8217;s most telling about this list is what&nbsp;<em>isn&#8217;t</em>&nbsp;included. Things like:</p>
+
+
+
+<ul class="wp-block-list"><li>Private method calls, which would need a different cache &#8211; but the initial VM design limited us to one per type</li><li>Qualified method calls (<code>$obj.SomeType::method-name()</code>)</li><li>Ways to decently optimize dispatch resumption</li></ul>
+
+
+
+<p>A few years back I started to partially address this, with the introduction of a mechanism I called &#8220;specializer plugins&#8221;. But first, what is the specializer?</p>
+
+
+
+<p>When MoarVM started out, it was a relatively straightforward interpreter of bytecode. It only had to be fast enough to beat the Parrot VM in order to get a decent amount of usage, which I saw as important to have before going on to implement some more interesting optimizations (back then we didn&#8217;t have the kind of pre-release automated testing infrastructure we have today, and so depended much more on feedback from early adopters). Anyway, soon after being able to run pretty much as much of the Raku language as any other backend, I started on the dynamic optimizer. It gathered type statistics as the program was interpreted, identified hot code, put it into <a href="https://en.wikipedia.org/wiki/Static_single_assignment_form">SSA form</a>, used the type statistics to insert guards, used those together with static properties of the bytecode to analyze and optimize, and produced <em>specialized bytecode</em> for the function in question. This bytecode could elide type checks and various lookups, as well as using a range of internal ops that make all kinds of assumptions, which were safe because of the program properties that were proved by the optimizer. This is called specialized bytecode because it has had a lot of its genericity &#8211; which would allow it to work correctly on all types of value that we might encounter &#8211; removed, in favor of working in a particular special case that actually occurs at runtime. (Code, especially in more dynamic languages, is generally far more generic in theory than it ever turns out to be in practice.)</p>
+
+
+
+<p>This component &#8211; the specializer, known internally as &#8220;spesh&#8221; &#8211; delivered a significant further improvement in the performance of Raku programs, and with time its sophistication has grown, taking in optimizations such as&nbsp;<a href="https://en.wikipedia.org/wiki/Inline_expansion">inlining</a>&nbsp;and&nbsp;<a href="https://en.wikipedia.org/wiki/Escape_analysis">escape analysis with scalar replacement</a>. These aren&#8217;t easy things to build &#8211; but once a runtime has them, they create design possibilities that didn&#8217;t previously exist, and make decisions made in their absence look sub-optimal.</p>
+
+
+
+<p>Of note, those special-cased language-specific mechanisms, baked into the runtime to get some speed in the early days, instead become something of a liability and a bottleneck. They have complex semantics, which means they are either opaque to the optimizer (so it can&#8217;t reason about them, meaning optimization is inhibited) or they need special casing in the optimizer (a liability).</p>
+
+
+
+<p>So, back to specializer plugins. I reached a point where I wanted to take on the performance of things like&nbsp;<code>$obj.?meth</code>&nbsp;(the &#8220;call me maybe&#8221; dispatch),&nbsp;<code>$obj.SomeType::meth()</code>&nbsp;(dispatch qualified with a class to start looking in), and private method calls in roles (which can&#8217;t be resolved statically). At the same time, I was getting ready to implement some amount of escape analysis, but realized that it was going to be of very limited utility because assignment had also been special-cased in the VM, with a chunk of opaque C code doing the hot path stuff.</p>
+
+
+
+<p>But why did we have the C code doing that hot-path stuff? Well, because it&#8217;d be too espensive to have every assignment call a VM-level function that does a bunch of checks and logic. Why is that costly? Because of function call overhead and the costs of interpretation. This was all true once upon a time. But, some years of development later:</p>
+
+
+
+<ul class="wp-block-list"><li>Inlining was implemented, and could eliminate the overhead of doing a function call</li><li>We could compile to machine code, eliminating interpretation overhead</li><li>We were in a position where we had type information to hand in the specializer that would let us eliminate branches in the C code, but since it was just an opaque function we called, there was no way to take this opportunity</li></ul>
+
+
+
+<p>I solved the assignment problem and the dispatch problems mentioned above with the introduction of a single new mechanism: specializer plugins. They work as follows:</p>
+
+
+
+<ul class="wp-block-list"><li>The first time we reach a given callsite in the bytecode, we run the plugin. It produces a code object to invoke, along with a set of guards (conditions that have to be met in order to use that code object result)</li><li>The next time we reach it, we check if the guards are met, and if so, just use the result</li><li>If not, we run the plugin again, and stack up a guard set at the callsite</li><li>We keep statistics on how often a given guard set succeeds, and then use that in the specializer</li></ul>
+
+
+
+<p>The vast majority of cases are monomorphic, meaning that only one set of guards are produced and they always succeed thereafter. The specializer can thus compile those guards into the specialized bytecode and then assume the given target invocant is what will be invoked. (Further, duplicate guards can be eliminated, so the guards a particular plugin introduces may reduce to zero.)</p>
+
+
+
+<p>Specializer plugins felt pretty great. One new mechanism solved multiple optimization headaches.</p>
+
+
+
+<p>The new MoarVM dispatch mechanism is the answer to a fairly simple question: what if we get rid of&nbsp;<em>all</em>&nbsp;the dispatch-related special-case mechanisms in favor of something a bit like specializer plugins? The resulting mechanism would need to be a more powerful than specializer plugins. Further, I could learn from some of the shortcomings of specializer plugins. Thus, while they will go away after a relatively short lifetime, I think it&#8217;s fair to say that I would not have been in a place to design the new MoarVM dispatch mechanism without that experience.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#the-dispatch-op-and-the-bootstrap-dispatchers"></a>The dispatch op and the bootstrap dispatchers</h3>
+
+
+
+<p>All the method caching. All the multi dispatch caching. All the specializer plugins. All the invocation protocol stuff for unwrapping the bytecode handle in a code object. It&#8217;s all going away, in favor of a single new dispatch instruction. Its name is, boringly enough,&nbsp;<code>dispatch</code>. It looks like this:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+dispatch_o result, 'dispatcher-name', callsite, arg0, arg1, ..., argN
+
+</pre></div>
+
+
+<p>Which means:</p>
+
+
+
+<ul class="wp-block-list"><li>Use the dispatcher called&nbsp;<code>dispatcher-name</code></li><li>Give it the argument registers specified (the callsite referenced indicates the number of arguments)</li><li>Put the object result of the dispatch into the register&nbsp;<code>result</code></li></ul>
+
+
+
+<p>(Aside: this implies a new calling convention, whereby we no longer copy the arguments into an argument buffer, but instead pass the base of the register set and a pointer into the bytecode where the register argument map is found, and then do a lookup&nbsp;<code>registers[map[argument_index]]</code>&nbsp;to get the value for an argument. That alone is a saving when we interpret, because we no longer need a loop around the interpreter per argument.)</p>
+
+
+
+<p>Some of the arguments might be things we&#8217;d traditionally call arguments. Some are aimed at the dispatch process itself. It doesn&#8217;t really matter &#8211; but it&nbsp;<em>is</em>&nbsp;more optimal if we arrange to put arguments that are only for the dispatch first (for example, the method name), and those for the target of the dispatch afterwards (for example, the method parameters).</p>
+
+
+
+<p>The new bootstrap mechanism provides a small number of built-in dispatchers, whose names start with &#8220;boot-&#8220;. They are:</p>
+
+
+
+<ul class="wp-block-list"><li><code>boot-value</code>&#8211; take the first argument and use it as the result (the identity function, except discarding any further arguments)</li><li><code>boot-constant</code>&nbsp;&#8211; take the first argument and produce it as the result, but also treat it as a constant value that will always be produced (thus meaning the optimizer could consider any pure code used to calculate the value as dead)</li><li><code>boot-code</code>&nbsp;&#8211; take the first argument, which must be a VM bytecode handle, and run that bytecode, passing the rest of the arguments as its parameters; evaluate to the return value of the bytecode</li><li><code>boot-syscall</code>&nbsp;&#8211; treat the first argument as the name of a VM-provided built-in operation, and call it, providing the remaining arguments as its parameters</li><li><code>boot-resume</code>&nbsp;&#8211; resume the topmost ongoing dispatch</li></ul>
+
+
+
+<p>That&#8217;s pretty much it. Every dispatcher we build, to teach the runtime about some other kind of dispatch behavior, eventually terminates in one of these.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#building-on-the-bootstrap"></a>Building on the bootstrap</h3>
+
+
+
+<p>Teaching MoarVM about different kinds of dispatch is done using nothing less than the dispatch mechanism itself! For the most part,&nbsp;<code>boot-syscall</code>&nbsp;is used in order to register a dispatcher, set up the guards, and provide the result that goes with them.</p>
+
+
+
+<p>Here is a minimal example, taken from the dispatcher test suite, showing how a dispatcher that provides the identity function would look:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'identity', -&gt; $capture {
+    nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'boot-value', $capture);
+});
+sub identity($x) {
+    nqp::dispatch('identity', $x)
+}
+ok(identity(42) == 42, 'Can define identity dispatch (1)');
+ok(identity('foo') eq 'foo', 'Can define identity dispatch (2)');
+
+</pre></div>
+
+
+<p>In the first statement, we call the&nbsp;<code>dispatcher-register</code>&nbsp;MoarVM system call, passing a name for the dispatcher along with a closure, which will be called each time we need to handle the dispatch (which I tend to refer to as the &#8220;dispatch callback&#8221;). It receives a single argument, which is a capture of arguments (not actually a Raku-level&nbsp;<code>Capture</code>, but the idea &#8211; an object containing a set of call arguments &#8211; is the same).</p>
+
+
+
+<p>Every user-defined dispatcher should eventually use&nbsp;<code>dispatcher-delegate</code>&nbsp;in order to identify another dispatcher to pass control along to. In this case, it delegates immediately to&nbsp;<code>boot-value</code>&nbsp;&#8211; meaning it really is nothing except a wrapper around the&nbsp;<code>boot-value</code>&nbsp;built-in dispatcher.</p>
+
+
+
+<p>The sub&nbsp;<code>identity</code>&nbsp;contains a single static occurrence of the&nbsp;<code>dispatch</code>&nbsp;op. Given we call the sub twice, we will encounter this op twice at runtime, but the two times are very different.</p>
+
+
+
+<p>The first time is the &#8220;record&#8221; phase. The arguments are formed into a capture and the callback runs, which in turn passes it along to the&nbsp;<code>boot-value</code>&nbsp;dispatcher, which produces the result. This results in an extremely simple dispatch program, which says that the result should be the first argument in the capture. Since there&#8217;s no guards, this will always be a valid result.</p>
+
+
+
+<p>The second time we encounter the&nbsp;<code>dispatch</code>&nbsp;op, it already has a dispatch program recorded there, so we are in run mode. Turning on a debugging mode in the MoarVM source, we can see the dispatch program that results looks like this:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+Dispatch program (1 temporaries)
+  Ops:
+    Load argument 0 into temporary 0
+    Set result object value from temporary 0
+
+</pre></div>
+
+
+<p>That is, it reads argument 0 into a temporary location and then sets that as the result of the dispatch. Notice how there is no mention of the fact that we went through an extra layer of dispatch; those have zero cost in the resulting dispatch program.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#capture-manipulation"></a>Capture manipulation</h3>
+
+
+
+<p>Argument captures are immutable. Various VM syscalls exist to transform them into new argument captures with some tweak, for example dropping or inserting arguments. Here&#8217;s a further example from the test suite:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'drop-first', -&gt; $capture {
+    my $capture-derived := nqp::dispatch('boot-syscall', 'dispatcher-drop-arg', $capture, 0);
+    nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'boot-value', $capture-derived);
+});
+ok(nqp::dispatch('drop-first', 'first', 'second') eq 'second',
+    'dispatcher-drop-arg works');
+
+</pre></div>
+
+
+<p>This drops the first argument before passing the capture on to the&nbsp;<code>boot-value</code>&nbsp;dispatcher &#8211; meaning that it will return the second argument. Glance back at the previous dispatch program for the identity function. Can you guess how this one will look?</p>
+
+
+
+<p>Well, here it is:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+Dispatch program (1 temporaries)
+  Ops:
+    Load argument 1 into temporary 0
+    Set result string value from temporary 0
+
+</pre></div>
+
+
+<p>Again, while in the record phase of such a dispatcher we really do create capture objects and make a dispatcher delegation, the resulting dispatch program is far simpler.</p>
+
+
+
+<p>Here&#8217;s a slightly more involved example:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+my $target := -&gt; $x { $x + 1 }
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'call-on-target', -&gt; $capture {
+    my $capture-derived := nqp::dispatch('boot-syscall',
+            'dispatcher-insert-arg-literal-obj', $capture, 0, $target);
+    nqp::dispatch('boot-syscall', 'dispatcher-delegate',
+            'boot-code-constant', $capture-derived);
+});
+sub cot() { nqp::dispatch('call-on-target', 49) }
+ok(cot() == 50,
+    'dispatcher-insert-arg-literal-obj works at start of capture');
+ok(cot() == 50,
+    'dispatcher-insert-arg-literal-obj works at start of capture after link too');
+
+</pre></div>
+
+
+<p>Here, we have a closure stored in a variable&nbsp;<code>$target</code>. We insert it as the first argument of the capture, and then delegate to&nbsp;<code>boot-code-constant</code>, which will invoke that code object and pass the other dispatch arguments to it. Once again, at the record phase, we really do something like:</p>
+
+
+
+<ul class="wp-block-list"><li>Create a new capture with a code object inserted at the start</li><li>Delegate to the boot code constant dispatcher, which&#8230;</li><li>&#8230;creates a new capture without the original argument and runs bytecode with those arguments</li></ul>
+
+
+
+<p>And the resulting dispatch program? It&#8217;s this:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+Dispatch program (1 temporaries)
+  Ops:
+    Load collectable constant at index 0 into temporary 0
+    Skip first 0 args of incoming capture; callsite from 0
+    Invoke MVMCode in temporary 0
+
+</pre></div>
+
+
+<p>That is, load the constant bytecode handle that we&#8217;re going to invoke, set up the args (which are in this case equal to those of the incoming capture), and then invoke the bytecode with those arguments. The argument shuffling is, once again, gone. In general, whenever the arguments we do an eventual bytecode invocation with are a tail of the initial dispatch arguments, the arguments transform becomes no more than a pointer addition.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#guards"></a>Guards</h3>
+
+
+
+<p>All of the dispatch programs seen so far have been unconditional: once recorded at a given callsite, they shall always be used. The big missing piece to make such a mechanism have practical utility is guards. Guards assert properties such as the type of an argument or if the argument is definite (<code>Int:D</code>) or not (<code>Int:U</code>).</p>
+
+
+
+<p>Here&#8217;s a somewhat longer test case, with some explanations placed throughout it.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+# A couple of classes for test purposes
+my class C1 { }
+my class C2 { }
+
+# A counter used to make sure we're only invokving the dispatch callback as
+# many times as we expect.
+my $count := 0;
+
+# A type-name dispatcher that maps a type into a constant string value that
+# is its name. This isn't terribly useful, but it is a decent small example.
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'type-name', -&gt; $capture {
+    # Bump the counter, just for testing purposes.
+    $count++;
+
+    # Obtain the value of the argument from the capture (using an existing
+    # MoarVM op, though in the future this may go away in place of a syscall)
+    # and then obtain the string typename also.
+    my $arg-val := nqp::captureposarg($capture, 0);
+    my str $name := $arg-val.HOW.name($arg-val);
+
+    # This outcome is only going to be valid for a particular type. We track
+    # the argument (which gives us an object back that we can use to guard
+    # it) and then add the type guard.
+    my $arg := nqp::dispatch('boot-syscall', 'dispatcher-track-arg', $capture, 0);
+    nqp::dispatch('boot-syscall', 'dispatcher-guard-type', $arg);
+
+    # Finally, insert the type name at the start of the capture and then
+    # delegate to the boot-constant dispatcher.
+    nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'boot-constant',
+        nqp::dispatch('boot-syscall', 'dispatcher-insert-arg-literal-str',
+            $capture, 0, $name));
+});
+
+# A use of the dispatch for the tests. Put into a sub so there's a single
+# static dispatch op, which all dispatch programs will hang off.
+sub type-name($obj) {
+    nqp::dispatch('type-name', $obj)
+}
+
+# Check with the first type, making sure the guard matches when it should
+# (although this test would pass if the guard were ignored too).
+ok(type-name(C1) eq 'C1', 'Dispatcher setting guard works');
+ok($count == 1, 'Dispatch callback ran once');
+ok(type-name(C1) eq 'C1', 'Can use it another time with the same type');
+ok($count == 1, 'Dispatch callback was not run again');
+
+# Test it with a second type, both record and run modes. This ensures the
+# guard really is being checked.
+ok(type-name(C2) eq 'C2', 'Can handle polymorphic sites when guard fails');
+ok($count == 2, 'Dispatch callback ran a second time for new type');
+ok(type-name(C2) eq 'C2', 'Second call with new type works');
+
+# Check that we can use it with the original type too, and it has stacked
+# the dispatch programs up at the same callsite.
+ok(type-name(C1) eq 'C1', 'Call with original type still works');
+ok($count == 2, 'Dispatch callback only ran a total of 2 times');
+
+</pre></div>
+
+
+<p>This time two dispatch programs get produced, one for&nbsp;<code>C1</code>:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+Dispatch program (1 temporaries)
+  Ops:
+    Guard arg 0 (type=C1)
+    Load collectable constant at index 1 into temporary 0
+    Set result string value from temporary 0
+
+</pre></div>
+
+
+<p>And another for C2:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+Dispatch program (1 temporaries)
+  Ops:
+    Guard arg 0 (type=C2)
+    Load collectable constant at index 1 into temporary 0
+    Set result string value from temporary 0
+
+</pre></div>
+
+
+<p>Once again, no leftovers from capture manipulation, tracking, or dispatcher delegation; the dispatch program does a type guard against an argument, then produces the result string. The whole call to&nbsp;<code>$arg-val.HOW.name($arg-val)</code>&nbsp;is elided, the dispatcher we wrote encoding the knowledge &#8211; in a way that the VM can understand &#8211; that a type&#8217;s name can be considered immutable.</p>
+
+
+
+<p>This example is a bit contrived, but now consider that we instead look up a method and guard on the invocant type: that&#8217;s a method cache! Guard the types of more of the arguments, and we have a multi cache! Do both, and we have a multi-method cache.</p>
+
+
+
+<p>The latter is interesting in so far as both the method dispatch&nbsp;<em>and</em>&nbsp;the multi dispatch want to guard on the invocant. In fact, in MoarVM today there will be two such type tests until we get to the point where the specializer does its work and eliminates these duplicated guards. However, the new dispatcher does not treat the&nbsp;<code>dispatcher-guard-type</code>&nbsp;as a kind of imperative operation that writes a guard into the resultant dispatch program. Instead, it declares that the argument in question must be guarded. If some other dispatcher already did that, it&#8217;s idempotent. The guards are emitted once all dispatch programs we delegate through, on the path to a final outcome, have had their say.</p>
+
+
+
+<p><em>Fun aside:</em>&nbsp;those being especially attentive will have noticed that the dispatch mechanism is used as part of implementing new dispatchers too, and indeed, this ultimately will mean that the specializer can specialize the dispatchers and have them JIT-compiled into something more efficient too. After all, from the perspective of MoarVM, it&#8217;s all just bytecode to run; it&#8217;s just that some of it is bytecode that tells the VM how to execute Raku programs more efficiently!</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#dispatch-resumption"></a>Dispatch resumption</h3>
+
+
+
+<p>A resumable dispatcher needs to do two things:</p>
+
+
+
+<ol class="wp-block-list"><li>Provide a resume callback as well as a dispatch one when registering the dispatcher</li><li>In the dispatch callback, specify a capture, which will form the resume initialization state</li></ol>
+
+
+
+<p>When a resumption happens, the resume callback will be called, with any arguments for the resumption. It can also obtain the resume initialization state that was set in the dispatch callback. The resume initialization state contains the things needed in order to continue with the dispatch <em>the first time it is resumed</em>. We&#8217;ll take a look at how this works for method dispatch to see a concrete example. I&#8217;ll also, at this point, switch to looking at the real Rakudo dispatchers, rather than simplified test cases.</p>
+
+
+
+<p>The Rakudo dispatchers take advantage of delegation, duplicate guards, and capture manipulations all having no runtime cost in the resulting dispatch program to, in my mind at least, quite nicely factor what is a somewhat involved dispatch process. There are multiple entry points to method dispatch: the normal boring&nbsp;<code>$obj.meth()</code>, the qualified&nbsp;<code>$obj.Type::meth()</code>, and the call me maybe&nbsp;<code>$obj.?meth()</code>. These have common resumption semantics &#8211; or at least, they can be made to provided we always carry a starting type in the resume initialization state, which is the type of the object that we do the method dispatch on.</p>
+
+
+
+<p>Here is the entry point to dispatch for a normal method dispatch, with the boring details of reporting missing method errors stripped out.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+# A standard method call of the form $obj.meth($arg); also used for the
+# indirect form $obj."$name"($arg). It receives the decontainerized invocant,
+# the method name, and the the args (starting with the invocant including any
+# container).
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'raku-meth-call', -&gt; $capture {
+    # Try to resolve the method call using the MOP.
+    my $obj := nqp::captureposarg($capture, 0);
+    my str $name := nqp::captureposarg_s($capture, 1);
+    my $meth := $obj.HOW.find_method($obj, $name);
+
+    # Report an error if there is no such method.
+    unless nqp::isconcrete($meth) {
+        !!! 'Error reporting logic elided for brevity';
+    }
+
+    # Establish a guard on the invocant type and method name (however the name
+    # may well be a literal, in which case this is free).
+    nqp::dispatch('boot-syscall', 'dispatcher-guard-type',
+        nqp::dispatch('boot-syscall', 'dispatcher-track-arg', $capture, 0));
+    nqp::dispatch('boot-syscall', 'dispatcher-guard-literal',
+        nqp::dispatch('boot-syscall', 'dispatcher-track-arg', $capture, 1));
+
+    # Add the resolved method and delegate to the resolved method dispatcher.
+    my $capture-delegate := nqp::dispatch('boot-syscall',
+        'dispatcher-insert-arg-literal-obj', $capture, 0, $meth);
+    nqp::dispatch('boot-syscall', 'dispatcher-delegate',
+        'raku-meth-call-resolved', $capture-delegate);
+});
+
+</pre></div>
+
+
+<p>Now for the resolved method dispatcher, which is where the resumption is handled. First, let&#8217;s look at the normal dispatch callback (the resumption callback is included but empty; I&#8217;ll show it a little later).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+# Resolved method call dispatcher. This is used to call a method, once we have
+# already resolved it to a callee. Its first arg is the callee, the second and
+# third are the type and name (used in deferral), and the rest are the args to
+# the method.
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'raku-meth-call-resolved',
+    # Initial dispatch
+    -&gt; $capture {
+        # Save dispatch state for resumption. We don't need the method that will
+        # be called now, so drop it.
+        my $resume-capture := nqp::dispatch('boot-syscall', 'dispatcher-drop-arg',
+            $capture, 0);
+        nqp::dispatch('boot-syscall', 'dispatcher-set-resume-init-args', $resume-capture);
+
+        # Drop the dispatch start type and name, and delegate to multi-dispatch or
+        # just invoke if it's single dispatch.
+        my $delegate_capture := nqp::dispatch('boot-syscall', 'dispatcher-drop-arg',
+            nqp::dispatch('boot-syscall', 'dispatcher-drop-arg', $capture, 1), 1);
+        my $method := nqp::captureposarg($delegate_capture, 0);
+        if nqp::istype($method, Routine) &amp;&amp; $method.is_dispatcher {
+            nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'raku-multi', $delegate_capture);
+        }
+        else {
+            nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'raku-invoke', $delegate_capture);
+        }
+    },
+    # Resumption
+    -&gt; $capture {
+        ... 'Will be shown later';
+    });
+
+</pre></div>
+
+
+<p>There&#8217;s an arguable cheat in&nbsp;<code>raku-meth-call</code>: it doesn&#8217;t actually insert the type object of the invocant in place of the invocant. It turns out that it doesn&#8217;t really matter. Otherwise, I think the comments (which are to be found in the real implementation also) tell the story pretty well.</p>
+
+
+
+<p>One important point that may not be clear &#8211; but follows a repeating theme &#8211; is that the setting of the resume initialization state is also more of a declarative rather than an imperative thing: there isn&#8217;t a runtime cost at the time of the dispatch, but rather we keep enough information around in order to be able to reconstruct the resume initialization state at the point we need it. (In fact, when we are in the run phase of a resume, we don&#8217;t even have to reconstruct it in the sense of creating a capture object.)</p>
+
+
+
+<p>Now for the resumption. I&#8217;m going to present a heavily stripped down version that only deals with the&nbsp;<code>callsame</code>&nbsp;semantics (the full thing has to deal with such delights as&nbsp;<code>lastcall</code>&nbsp;and&nbsp;<code>nextcallee</code>&nbsp;too). The resume initialization state exists to seed the resumption process. Once we know we actually do have to deal with resumption, we can do things like calculating the full list of methods in the inheritance graph that we want to walk through. Each resumable dispatcher gets a single storage slot on the call stack that it can use for its state. It can initialize this in the first step of resumption, and then update it as we go. Or more precisely, it can set up a dispatch program that will do this when run.</p>
+
+
+
+<p>A linked list turns out to be a very convenient data structure for the chain of candidates we will walk through. We can work our way through a linked list by keeping track of the current node, meaning that there need only be a single thing that mutates, which is the current state of the dispatch. The dispatch program mechanism also provides a way to read an attribute from an object, and that is enough to express traversing a linked list into the dispatch program. This also means zero allocations.</p>
+
+
+
+<p>So, without further ado, here is the linked list (rather less pretty in NQP, the restricted Raku subset, than it would be in full Raku):</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+# A linked list is used to model the state of a dispatch that is deferring
+# through a set of methods, multi candidates, or wrappers. The Exhausted class
+# is used as a sentinel for the end of the chain. The current state of the
+# dispatch points into the linked list at the appropriate point; the chain
+# itself is immutable, and shared over (runtime) dispatches.
+my class DeferralChain {
+    has $!code;
+    has $!next;
+    method new($code, $next) {
+        my $obj := nqp::create(self);
+        nqp::bindattr($obj, DeferralChain, '$!code', $code);
+        nqp::bindattr($obj, DeferralChain, '$!next', $next);
+        $obj
+    }
+    method code() { $!code }
+    method next() { $!next }
+};
+my class Exhausted {};
+
+</pre></div>
+
+
+<p>And finally, the resumption handling.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+nqp::dispatch('boot-syscall', 'dispatcher-register', 'raku-meth-call-resolved',
+    # Initial dispatch
+    -&gt; $capture {
+        ... 'Presented earlier;
+    },
+    # Resumption. The resume init capture's first two arguments are the type
+    # that we initially did a method dispatch against and the method name
+    # respectively.
+    -&gt; $capture {
+        # Work out the next method to call, if any. This depends on if we have
+        # an existing dispatch state (that is, a method deferral is already in
+        # progress).
+        my $init := nqp::dispatch('boot-syscall', 'dispatcher-get-resume-init-args');
+        my $state := nqp::dispatch('boot-syscall', 'dispatcher-get-resume-state');
+        my $next_method;
+        if nqp::isnull($state) {
+            # No state, so just starting the resumption. Guard on the
+            # invocant type and name.
+            my $track_start_type := nqp::dispatch('boot-syscall', 'dispatcher-track-arg', $init, 0);
+            nqp::dispatch('boot-syscall', 'dispatcher-guard-type', $track_start_type);
+            my $track_name := nqp::dispatch('boot-syscall', 'dispatcher-track-arg', $init, 1);
+            nqp::dispatch('boot-syscall', 'dispatcher-guard-literal', $track_name);
+
+            # Also guard on there being no dispatch state.
+            my $track_state := nqp::dispatch('boot-syscall', 'dispatcher-track-resume-state');
+            nqp::dispatch('boot-syscall', 'dispatcher-guard-literal', $track_state);
+
+            # Build up the list of methods to defer through.
+            my $start_type := nqp::captureposarg($init, 0);
+            my str $name := nqp::captureposarg_s($init, 1);
+            my @mro := nqp::can($start_type.HOW, 'mro_unhidden')
+                ?? $start_type.HOW.mro_unhidden($start_type)
+                !! $start_type.HOW.mro($start_type);
+            my @methods;
+            for @mro {
+                my %mt := nqp::hllize($_.HOW.method_table($_));
+                if nqp::existskey(%mt, $name) {
+                    @methods.push(%mt{$name});
+                }
+            }
+
+            # If there's nothing to defer to, we'll evaluate to Nil (just don't set
+            # the next method, and it happens below).
+            if nqp::elems(@methods) &gt;= 2 {
+                # We can defer. Populate next method.
+                @methods.shift; # Discard the first one, which we initially called
+                $next_method := @methods.shift; # The immediate next one
+
+                # Build chain of further methods and set it as the state.
+                my $chain := Exhausted;
+                while @methods {
+                    $chain := DeferralChain.new(@methods.pop, $chain);
+                }
+                nqp::dispatch('boot-syscall', 'dispatcher-set-resume-state-literal', $chain);
+            }
+        }
+        elsif !nqp::istype($state, Exhausted) {
+            # Already working through a chain of method deferrals. Obtain
+            # the tracking object for the dispatch state, and guard against
+            # the next code object to run.
+            my $track_state := nqp::dispatch('boot-syscall', 'dispatcher-track-resume-state');
+            my $track_method := nqp::dispatch('boot-syscall', 'dispatcher-track-attr',
+                $track_state, DeferralChain, '$!code');
+            nqp::dispatch('boot-syscall', 'dispatcher-guard-literal', $track_method);
+
+            # Update dispatch state to point to next method.
+            my $track_next := nqp::dispatch('boot-syscall', 'dispatcher-track-attr',
+                $track_state, DeferralChain, '$!next');
+            nqp::dispatch('boot-syscall', 'dispatcher-set-resume-state', $track_next);
+
+            # Set next method, which we shall defer to.
+            $next_method := $state.code;
+        }
+        else {
+            # Dispatch already exhausted; guard on that and fall through to returning
+            # Nil.
+            my $track_state := nqp::dispatch('boot-syscall', 'dispatcher-track-resume-state');
+            nqp::dispatch('boot-syscall', 'dispatcher-guard-literal', $track_state);
+        }
+
+        # If we found a next method...
+        if nqp::isconcrete($next_method) {
+            # Call with same (that is, original) arguments. Invoke with those.
+            # We drop the first two arguments (which are only there for the
+            # resumption), add the code object to invoke, and then leave it
+            # to the invoke or multi dispatcher.
+            my $just_args := nqp::dispatch('boot-syscall', 'dispatcher-drop-arg',
+                nqp::dispatch('boot-syscall', 'dispatcher-drop-arg', $init, 0),
+                0);
+            my $delegate_capture := nqp::dispatch('boot-syscall',
+                'dispatcher-insert-arg-literal-obj', $just_args, 0, $next_method);
+            if nqp::istype($next_method, Routine) &amp;&amp; $next_method.is_dispatcher {
+                nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'raku-multi',
+                        $delegate_capture);
+            }
+            else {
+                nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'raku-invoke',
+                        $delegate_capture);
+            }
+        }
+        else {
+            # No method, so evaluate to Nil (boot-constant disregards all but
+            # the first argument).
+            nqp::dispatch('boot-syscall', 'dispatcher-delegate', 'boot-constant',
+                nqp::dispatch('boot-syscall', 'dispatcher-insert-arg-literal-obj',
+                    $capture, 0, Nil));
+        }
+    });
+
+</pre></div>
+
+
+<p>That&#8217;s quite a bit to take in, and quite a bit of code. Remember, however, that this is only run for the record phase of a dispatch resumption. It also produces a dispatch program at the callsite of the&nbsp;<code>callsame</code>, with the usual guards and outcome. Implicit guards are created for the dispatcher that we are resuming at that point. In the most common case this will end up monomorphic or bimorphic, although situations involving nestings of multiple dispatch or method dispatch could produce a more morphic callsite.</p>
+
+
+
+<p>The design I&#8217;ve picked forces resume callbacks to deal with two situations: the first resumption and the latter resumptions. This is not ideal in a couple of ways:</p>
+
+
+
+<ol class="wp-block-list"><li>It&#8217;s a bit inconvenient for those writing dispatch resume callbacks. However, it&#8217;s not like this is a particularly common activity!</li><li>The difference results in two dispatch programs being stacked up at a callsite that might otherwise get just one</li></ol>
+
+
+
+<p>Only the second of these really matters. The reason for the non-uniformity is to make sure that the overwhelming majority of calls, which never lead to a dispatch resumption, incur no per-dispatch cost for a feature that they never end up using. If the result is a little more cost for those using the feature, so be it. In fact, early benchmarking shows&nbsp;<code>callsame</code>&nbsp;with&nbsp;<code>wrap</code>&nbsp;and method calls seems to be up to 10 times faster using the new dispatcher than in current Rakudo, and that&#8217;s&nbsp;<em>before</em>&nbsp;the specializer understands enough about it to improve things further!</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#whats-done-so-far"></a>What&#8217;s done so far</h3>
+
+
+
+<p>Everything I&#8217;ve discussed above is implemented, except that I may have given the impression somewhere that multiple dispatch is fully implemented using the new dispatcher, and that is not the case yet (no handling of&nbsp;<code>where</code>&nbsp;clauses and no dispatch resumption support).</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#next-steps"></a>Next steps</h3>
+
+
+
+<p>Getting the missing bits of multiple dispatch fully implemented is the obvious next step. The other missing semantic piece is support for&nbsp;<code>callwith</code>&nbsp;and&nbsp;<code>nextwith</code>, where we wish to change the arguments that are being used when moving to the next candidate. A few other minor bits aside, that in theory will get all of the Raku dispatch semantics at least supported.</p>
+
+
+
+<p>Currently, all standard method calls (<code>$obj.meth()</code>) and other calls (<code>foo()</code>&nbsp;and&nbsp;<code>$foo()</code>) go via the existing dispatch mechanism, not the new dispatcher. Those will need to be migrated to use the new dispatcher also, and any bugs that are uncovered will need fixing. That will get things to the point where the new dispatcher is&nbsp;<em>semantically ready</em>.</p>
+
+
+
+<p>After that comes performance work: making sure that the specializer is able to deal with dispatch program guards and outcomes. The goal, initially, is to get steady state performance of common calling forms to perform at least as well as in the current&nbsp;<code>master</code>&nbsp;branch of Rakudo. It&#8217;s already clear enough there will be some big wins for some things that to date have been glacial, but it should not come at the cost of regression on the most common kinds of dispatch, which have received plenty of optimization effort before now.</p>
+
+
+
+<p>Furthermore, NQP &#8211; the restricted form of Raku that the Rakudo compiler and other bits of the runtime guts are written in &#8211; also needs to be migrated to use the new dispatcher. Only when that is done will it be possible to rip out the current method cache, multiple dispatch cache, and so forth from MoarVM.</p>
+
+
+
+<p>An open question is how to deal with backends other than MoarVM. Ideally, the new dispatch mechanism will be ported to those. A decent amount of it should be possible to express in terms of the JVM&#8217;s <code>invokedynamic</code> (and this would all probably play quite well with a Truffle-based Raku implementation, although I&#8217;m not sure there is a current active effort in that area).</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#future-opportunities"></a>Future opportunities</h3>
+
+
+
+<p>While my current focus is to ship a Rakudo and MoarVM release that uses the new dispatcher mechanism, that won&#8217;t be the end of the journey. Some immediate ideas:</p>
+
+
+
+<ul class="wp-block-list"><li>Method calls on roles need to pun the role into a class, and so method lookup returns a closure that does that and replaces the invocant. That&#8217;s a lot of indirection; the new dispatcher could obtain the pun and produce a dispatch program that replaces the role type object with the punned class type object, which would make the per-call cost far lower.</li><li>I expect both the&nbsp;<code>handles</code>&nbsp;(delegation) and&nbsp;<code>FALLBACK</code>&nbsp;(handling missing method call) mechanisms can be made to perform better using the new dispatcher</li><li>The current implementation of&nbsp;<code>assuming</code>&nbsp;&#8211; used to curry or otherwise prime arguments for a routine &#8211; is not ideal, and an implementation that takes advantage of the argument rewriting capabilities of the new dispatcher would likely perform a great deal better</li></ul>
+
+
+
+<p>Some new language features may also be possible to provide in an efficient way with the help of the new dispatch mechanism. For example, there&#8217;s currently not a reliable way to try to invoke a piece of code, just run it if the signature binds, or to do something else if it doesn&#8217;t. Instead, things like the Cro router have to first do a trial bind of the signature, and then do the invoke, which makes routing rather more costly. There&#8217;s also the long suggested idea of providing pattern matching via signatures with the&nbsp;<code>when</code>&nbsp;construct (for example,&nbsp;<code>when * -&gt; ($x) {}; when * -&gt; ($x, *@tail) { }</code>), which is pretty much the same need, just in a less dynamic setting.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/157fd5bd91a45cf6e62ecf0b9099bfba#in-closing"></a>In closing&#8230;</h3>
+
+
+
+<p>Working on the new dispatch mechanism has been a longer journey than I first expected. The resumption part of the design was especially challenging, and there&#8217;s still a few important details to attend to there. Something like four potential approaches were discarded along the way (although elements of all of them influenced what I&#8217;ve described in this post). Abstractions that hold up are really, really, hard.</p>
+
+
+
+<p>I also ended up having to take a couple of months away from doing Raku work at all, felt a bit crushed during some others, and have been juggling this with the equally important RakuAST project (which will be simplified by being able to assume the presence of the new dispatcher, and also offers me a range of softer Raku hacking tasks, whereas the dispatcher work offers few easy pickings).</p>
+
+
+
+<p>Given all that, I&#8217;m glad to finally be seeing the light at the end of the tunnel. The work that remains is enumerable, and the day we ship a Rakudo and MoarVM release using the new dispatcher feels a small number of months away (and I hope writing that is not tempting fate!)</p>
+
+
+
+<p>The new dispatcher is probably the most significant change to MoarVM since I founded it, in so far as it sees us removing a bunch of things that have been there pretty much since the start. RakuAST will also deliver the greatest architectural change to the Rakudo compiler in a decade. Both are an opportunity to fold years of learning things the hard way into the runtime and compiler. I hope when I look back at it all in another decade&#8217;s time, I&#8217;ll at least feel I made more interesting mistakes this time around.</p>
+<div id="atatags-370373-693abb6bc9a75">
+		<script type="text/javascript">
+			__ATA = window.__ATA || {};
+			__ATA.cmd = window.__ATA.cmd || [];
+			__ATA.cmd.push(function() {
+				__ATA.initVideoSlot('atatags-370373-693abb6bc9a75', {
+					sectionId: '370373',
+					format: 'inread'
+				});
+			});
+		</script>
+	</div><span id="wordads-inline-marker" style="display: none;"></span><div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-facebook"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-facebook-583"
+				class="share-facebook sd-button share-icon"
+				href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/?share=facebook"
+				target="_blank"
+				aria-labelledby="sharing-facebook-583"
+				>
+				<span id="sharing-facebook-583" hidden>Click to share on Facebook (Opens in new window)</span>
+				<span>Facebook</span>
+			</a></li><li class="share-x"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-x-583"
+				class="share-x sd-button share-icon"
+				href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/?share=x"
+				target="_blank"
+				aria-labelledby="sharing-x-583"
+				>
+				<span id="sharing-x-583" hidden>Click to share on X (Opens in new window)</span>
+				<span>X</span>
+			</a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-14597269-583-693abb6bca235' data-src='//widgets.wp.com/likes/index.html?ver=20251211#blog_id=14597269&amp;post_id=583&amp;origin=6guts.wordpress.com&amp;obj_id=14597269-583-693abb6bca235' data-name='like-post-frame-14597269-583-693abb6bca235' data-title='Like or Reblog'><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class='loading'>Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>											</div><!-- .entry-content -->
+
+		
+						<div class="entry-utility">
+							This entry was posted in <a href="https://6guts.wordpress.com/category/uncategorized/" rel="category tag">Uncategorized</a>. Bookmark the <a href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" title="Permalink to Towards a new general dispatch mechanism in&nbsp;MoarVM" rel="bookmark">permalink</a>.													</div><!-- .entry-utility -->
+					</div><!-- #post-583 -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/" rel="prev"><span class="meta-nav">&larr;</span> Taking a break from Raku core&nbsp;development</a></div>
+					<div class="nav-next"><a href="https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/" rel="next">Raku multiple dispatch with the new MoarVM&nbsp;dispatcher <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">
+			3 Responses to <em>Towards a new general dispatch mechanism in&nbsp;MoarVM</em>			</h3>
+
+
+			<ol class="commentlist">
+						<li class="comment even thread-even depth-1" id="li-comment-7470">
+		<div id="comment-7470">
+			<div class="comment-author vcard">
+				<img referrerpolicy="no-referrer" alt='Garrett Goebel&#039;s avatar' src='https://0.gravatar.com/avatar/0cf437e8cd46fab01aaa2a338aa4b1f25ae7e99da073d3e47626483bc6446860?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/0cf437e8cd46fab01aaa2a338aa4b1f25ae7e99da073d3e47626483bc6446860?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/0cf437e8cd46fab01aaa2a338aa4b1f25ae7e99da073d3e47626483bc6446860?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/0cf437e8cd46fab01aaa2a338aa4b1f25ae7e99da073d3e47626483bc6446860?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/0cf437e8cd46fab01aaa2a338aa4b1f25ae7e99da073d3e47626483bc6446860?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/0cf437e8cd46fab01aaa2a338aa4b1f25ae7e99da073d3e47626483bc6446860?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Garrett Goebel</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/#comment-7470">
+				March 15, 2021 at 3:10 PM</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Thank you for your time and efforts in design, implementation, and communication. Looking forward to the changes and what they will bring.</p>
+</div>
+
+			<div class="reply">
+				<a rel="nofollow" class="comment-reply-link" href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/?replytocom=7470#respond" data-commentid="7470" data-postid="583" data-belowelement="comment-7470" data-respondelement="respond" data-replyto="Reply to Garrett Goebel" aria-label="Reply to Garrett Goebel">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="https://placeholderapi.wordpress.com/2021/03/15/6guts-towards-a-new-general-dispatch-mechanism-in-moarvm-https/" class="url" rel="ugc external nofollow">6guts: Towards a new general dispatch mechanism in #MoarVM https://&#8230; | Dr. Roy Schestowitz (罗伊)</a></p>
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://rakudoweekly.blog/2021/03/15/2021-11-two-year-itch/" class="url" rel="ugc external nofollow">2021.11 Two Year Itch &#8211; Rakudo Weekly News</a></p>
+				</li><!-- #comment-## -->
+			</ol>
+
+
+	
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a comment <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://6guts.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+
+
+<div class="comment-form__verbum transparent"></div><div class="verbum-form-meta"><input type='hidden' name='comment_post_ID' value='583' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+
+			<input type="hidden" name="highlander_comment_nonce" id="highlander_comment_nonce" value="15a8489234" />
+			<input type="hidden" name="verbum_show_subscription_modal" value="" /></div><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="2444c81fdd" /></p><p style="display: none !important;" class="akismet-fields-container" data-prefix="ak_"><label>&#916;<textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100"></textarea></label><input type="hidden" id="ak_js_1" name="ak_js" value="72"/><script type="text/javascript">
+/* <![CDATA[ */
+document.getElementById( "ak_js_1" ).setAttribute( "value", ( new Date() ).getTime() );
+/* ]]> */
+</script>
+</p></form>	</div><!-- #respond -->
+	<p class="akismet_comment_form_privacy_notice">This site uses Akismet to reduce spam. <a href="https://akismet.com/privacy/" target="_blank" rel="nofollow noopener">Learn how your comment data is processed.</a></p>
+</div><!-- #comments -->
+
+	
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="https://6guts.wordpress.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>
+		<li id="recent-posts-2" class="widget-container widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/">Recollections from the Raku Core&nbsp;Summit</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/">The new MoarVM dispatch mechanism is&nbsp;here!</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/">Raku multiple dispatch with the new MoarVM&nbsp;dispatcher</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" aria-current="page">Towards a new general dispatch mechanism in&nbsp;MoarVM</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/">Taking a break from Raku core&nbsp;development</a>
+									</li>
+					</ul>
+
+		</li><li id="recent-comments-2" class="widget-container widget_recent_comments"><h3 class="widget-title">Recent Comments</h3>				<table class="recentcommentsavatar" cellspacing="0" cellpadding="0" border="0">
+					<tr><td title="wendyga" class="recentcommentsavatartop" style="height:48px; width:48px;"><a href="http://wendyga.wordpress.com" rel="nofollow"><img referrerpolicy="no-referrer" alt='wendyga&#039;s avatar' src='https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=48&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=48&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=72&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=96&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=144&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=192&#038;d=identicon&#038;r=G 4x' class='avatar avatar-48' height='48' width='48' loading='lazy' decoding='async' /></a></td><td class="recentcommentstexttop" style=""><a href="http://wendyga.wordpress.com" rel="nofollow">wendyga</a> on <a href="https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/#comment-24457">Recollections from the Raku Co&hellip;</a></td></tr><tr><td title="Релиз компилятора Rakudo 2021.10 для языка программирования Raku (бывший Perl 6) &#8212; AllUNIX.ru &#8212; Всероссийский портал о UNIX-системах" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="https://allunix.ru/2021/10/24/%d1%80%d0%b5%d0%bb%d0%b8%d0%b7-%d0%ba%d0%be%d0%bc%d0%bf%d0%b8%d0%bb%d1%8f%d1%82%d0%be%d1%80%d0%b0-rakudo-2021-10-%d0%b4%d0%bb%d1%8f-%d1%8f%d0%b7%d1%8b%d0%ba%d0%b0-%d0%bf%" rel="nofollow"></a></td><td class="recentcommentstextend" style=""><a href="https://allunix.ru/2021/10/24/%d1%80%d0%b5%d0%bb%d0%b8%d0%b7-%d0%ba%d0%be%d0%bc%d0%bf%d0%b8%d0%bb%d1%8f%d1%82%d0%be%d1%80%d0%b0-rakudo-2021-10-%d0%b4%d0%bb%d1%8f-%d1%8f%d0%b7%d1%8b%d0%ba%d0%b0-%d0%bf%" rel="nofollow">Релиз компилятора Ra&hellip;</a> on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8379">The new MoarVM dispatch mechan&hellip;</a></td></tr><tr><td title="Peter Lund" class="recentcommentsavatarend" style="height:48px; width:48px;"><img referrerpolicy="no-referrer" alt='Peter Lund&#039;s avatar' src='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=72&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=96&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=144&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=192&#038;d=identicon&#038;r=G 4x' class='avatar avatar-48' height='48' width='48' loading='lazy' decoding='async' /></td><td class="recentcommentstextend" style="">Peter Lund on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8363">The new MoarVM dispatch mechan&hellip;</a></td></tr><tr><td title="Peter Lund" class="recentcommentsavatarend" style="height:48px; width:48px;"><img referrerpolicy="no-referrer" alt='Peter Lund&#039;s avatar' src='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=72&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=96&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=144&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=192&#038;d=identicon&#038;r=G 4x' class='avatar avatar-48' height='48' width='48' loading='lazy' decoding='async' /></td><td class="recentcommentstextend" style="">Peter Lund on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8361">The new MoarVM dispatch mechan&hellip;</a></td></tr><tr><td title="2021.40 It&#8217;s here! &#8211; Rakudo Weekly News" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="http://rakudoweekly.blog/2021/10/06/2021-40-its-here/" rel="nofollow"></a></td><td class="recentcommentstextend" style=""><a href="http://rakudoweekly.blog/2021/10/06/2021-40-its-here/" rel="nofollow">2021.40 It&#8217;s h&hellip;</a> on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8260">The new MoarVM dispatch mechan&hellip;</a></td></tr>				</table>
+				</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">Archives</h3>
+			<ul>
+					<li><a href='https://6guts.wordpress.com/2023/06/'>June 2023</a></li>
+	<li><a href='https://6guts.wordpress.com/2021/09/'>September 2021</a></li>
+	<li><a href='https://6guts.wordpress.com/2021/04/'>April 2021</a></li>
+	<li><a href='https://6guts.wordpress.com/2021/03/'>March 2021</a></li>
+	<li><a href='https://6guts.wordpress.com/2020/10/'>October 2020</a></li>
+	<li><a href='https://6guts.wordpress.com/2019/01/'>January 2019</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/10/'>October 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/09/'>September 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/07/'>July 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/06/'>June 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/03/'>March 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/01/'>January 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/11/'>November 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/09/'>September 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/08/'>August 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/07/'>July 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/06/'>June 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/05/'>May 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/04/'>April 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/03/'>March 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/12/'>December 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/11/'>November 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/08/'>August 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/07/'>July 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/06/'>June 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/04/'>April 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/03/'>March 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/02/'>February 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/01/'>January 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/12/'>December 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/11/'>November 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/10/'>October 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/09/'>September 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/08/'>August 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/07/'>July 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/06/'>June 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/05/'>May 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/04/'>April 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/06/'>June 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/04/'>April 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/01/'>January 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/12/'>December 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/10/'>October 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/09/'>September 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/08/'>August 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/07/'>July 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/05/'>May 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/04/'>April 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/02/'>February 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/01/'>January 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/11/'>November 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/10/'>October 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/09/'>September 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/08/'>August 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/07/'>July 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/06/'>June 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/05/'>May 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/04/'>April 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/03/'>March 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/02/'>February 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/01/'>January 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/11/'>November 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/10/'>October 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/09/'>September 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/08/'>August 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/07/'>July 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/06/'>June 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/05/'>May 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/04/'>April 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/02/'>February 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/01/'>January 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/11/'>November 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/10/'>October 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/09/'>September 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/08/'>August 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/07/'>July 2010</a></li>
+			</ul>
+
+			</li><li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">Categories</h3>
+			<ul>
+					<li class="cat-item cat-item-1"><a href="https://6guts.wordpress.com/category/uncategorized/">Uncategorized</a>
+</li>
+			</ul>
+
+			</li><li id="meta-2" class="widget-container widget_meta"><h3 class="widget-title">Meta</h3>
+		<ul>
+			<li><a class="click-register" href="https://wordpress.com/start?ref=wplogin">Create account</a></li>			<li><a href="https://6guts.wordpress.com/wp-login.php">Log in</a></li>
+			<li><a href="https://6guts.wordpress.com/feed/">Entries feed</a></li>
+			<li><a href="https://6guts.wordpress.com/comments/feed/">Comments feed</a></li>
+
+			<li><a href="https://wordpress.com/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.com</a></li>
+		</ul>
+
+		</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="https://6guts.wordpress.com/" title="6guts" rel="home">
+					6guts				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_website" rel="nofollow">Create a free website or blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/files/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/pub/twentyten/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<script type="text/javascript" src="//0.gravatar.com/js/hovercards/hovercards.min.js?ver=202550924dcd77a86c6f1d3698ec27fc5da92b28585ddad3ee636c0397cf312193b2a1" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+//# sourceURL=wpgroho-js-extra
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Gravatar not found.': 'Gravatar not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+							'Is this you?': 'Is this you?',
+							'Claim your free profile.': 'Claim your free profile.',
+							'Email': 'Email',
+							'Home Phone': 'Home Phone',
+							'Work Phone': 'Work Phone',
+							'Cell Phone': 'Cell Phone',
+							'Contact Form': 'Contact Form',
+							'Calendar': 'Calendar',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-74a6f03c314b5dc7023e0c6d2686e790">
+	</div>
+	<div class="grofile-hash-map-3a2b4609787771a2ea3bd9bd97d0592a">
+	</div>
+	<div class="grofile-hash-map-ff0ea14405074744b0a11b983a6d0f61">
+	</div>
+	</div>
+		<!-- CCPA [start] -->
+		<script type="text/javascript">
+			( function () {
+
+				var setupPrivacy = function() {
+
+					// Minimal Mozilla Cookie library
+					// https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie/Simple_document.cookie_framework
+					var cookieLib = window.cookieLib = {getItem:function(e){return e&&decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*"+encodeURIComponent(e).replace(/[\-\.\+\*]/g,"\\$&")+"\\s*\\=\\s*([^;]*).*$)|^.*$"),"$1"))||null},setItem:function(e,o,n,t,r,i){if(!e||/^(?:expires|max\-age|path|domain|secure)$/i.test(e))return!1;var c="";if(n)switch(n.constructor){case Number:c=n===1/0?"; expires=Fri, 31 Dec 9999 23:59:59 GMT":"; max-age="+n;break;case String:c="; expires="+n;break;case Date:c="; expires="+n.toUTCString()}return"rootDomain"!==r&&".rootDomain"!==r||(r=(".rootDomain"===r?".":"")+document.location.hostname.split(".").slice(-2).join(".")),document.cookie=encodeURIComponent(e)+"="+encodeURIComponent(o)+c+(r?"; domain="+r:"")+(t?"; path="+t:"")+(i?"; secure":""),!0}};
+
+					// Implement IAB USP API.
+					window.__uspapi = function( command, version, callback ) {
+
+						// Validate callback.
+						if ( typeof callback !== 'function' ) {
+							return;
+						}
+
+						// Validate the given command.
+						if ( command !== 'getUSPData' || version !== 1 ) {
+							callback( null, false );
+							return;
+						}
+
+						// Check for GPC. If set, override any stored cookie.
+						if ( navigator.globalPrivacyControl ) {
+							callback( { version: 1, uspString: '1YYN' }, true );
+							return;
+						}
+
+						// Check for cookie.
+						var consent = cookieLib.getItem( 'usprivacy' );
+
+						// Invalid cookie.
+						if ( null === consent ) {
+							callback( null, false );
+							return;
+						}
+
+						// Everything checks out. Fire the provided callback with the consent data.
+						callback( { version: 1, uspString: consent }, true );
+					};
+
+					// Initialization.
+					document.addEventListener( 'DOMContentLoaded', function() {
+
+						// Internal functions.
+						var setDefaultOptInCookie = function() {
+							var value = '1YNN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 365 * 24 * 60 * 60, '/', domain );
+						};
+
+						var setDefaultOptOutCookie = function() {
+							var value = '1YYN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 24 * 60 * 60, '/', domain );
+						};
+
+						var setDefaultNotApplicableCookie = function() {
+							var value = '1---';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 24 * 60 * 60, '/', domain );
+						};
+
+						var setCcpaAppliesCookie = function( applies ) {
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'ccpa_applies', applies, 24 * 60 * 60, '/', domain );
+						}
+
+						var maybeCallDoNotSellCallback = function() {
+							if ( 'function' === typeof window.doNotSellCallback ) {
+								return window.doNotSellCallback();
+							}
+
+							return false;
+						}
+
+						// Look for usprivacy cookie first.
+						var usprivacyCookie = cookieLib.getItem( 'usprivacy' );
+
+						// Found a usprivacy cookie.
+						if ( null !== usprivacyCookie ) {
+
+							// If the cookie indicates that CCPA does not apply, then bail.
+							if ( '1---' === usprivacyCookie ) {
+								return;
+							}
+
+							// CCPA applies, so call our callback to add Do Not Sell link to the page.
+							maybeCallDoNotSellCallback();
+
+							// We're all done, no more processing needed.
+							return;
+						}
+
+						// We don't have a usprivacy cookie, so check to see if we have a CCPA applies cookie.
+						var ccpaCookie = cookieLib.getItem( 'ccpa_applies' );
+
+						// No CCPA applies cookie found, so we'll need to geolocate if this visitor is from California.
+						// This needs to happen client side because we do not have region geo data in our $SERVER headers,
+						// only country data -- therefore we can't vary cache on the region.
+						if ( null === ccpaCookie ) {
+
+							var request = new XMLHttpRequest();
+							request.open( 'GET', 'https://public-api.wordpress.com/geo/', true );
+
+							request.onreadystatechange = function () {
+								if ( 4 === this.readyState ) {
+									if ( 200 === this.status ) {
+
+										// Got a geo response. Parse out the region data.
+										var data = JSON.parse( this.response );
+										var region      = data.region ? data.region.toLowerCase() : '';
+										var ccpa_applies = ['california', 'colorado', 'connecticut', 'delaware', 'indiana', 'iowa', 'montana', 'new jersey', 'oregon', 'tennessee', 'texas', 'utah', 'virginia'].indexOf( region ) > -1;
+										// Set CCPA applies cookie. This keeps us from having to make a geo request too frequently.
+										setCcpaAppliesCookie( ccpa_applies );
+
+										// Check if CCPA applies to set the proper usprivacy cookie.
+										if ( ccpa_applies ) {
+											if ( maybeCallDoNotSellCallback() ) {
+												// Do Not Sell link added, so set default opt-in.
+												setDefaultOptInCookie();
+											} else {
+												// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+												setDefaultOptOutCookie();
+											}
+										} else {
+											// CCPA does not apply.
+											setDefaultNotApplicableCookie();
+										}
+									} else {
+										// Could not geo, so let's assume for now that CCPA applies to be safe.
+										setCcpaAppliesCookie( true );
+										if ( maybeCallDoNotSellCallback() ) {
+											// Do Not Sell link added, so set default opt-in.
+											setDefaultOptInCookie();
+										} else {
+											// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+											setDefaultOptOutCookie();
+										}
+									}
+								}
+							};
+
+							// Send the geo request.
+							request.send();
+						} else {
+							// We found a CCPA applies cookie.
+							if ( ccpaCookie === 'true' ) {
+								if ( maybeCallDoNotSellCallback() ) {
+									// Do Not Sell link added, so set default opt-in.
+									setDefaultOptInCookie();
+								} else {
+									// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+									setDefaultOptOutCookie();
+								}
+							} else {
+								// CCPA does not apply.
+								setDefaultNotApplicableCookie();
+							}
+						}
+					} );
+				};
+
+				// Kickoff initialization.
+				if ( window.defQueue && defQueue.isLOHP && defQueue.isLOHP === 2020 ) {
+					defQueue.items.push( setupPrivacy );
+				} else {
+					setupPrivacy();
+				}
+
+			} )();
+		</script>
+
+		<!-- CCPA [end] -->
+				<div id="actionbar" dir="ltr" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow actnbr-has-actions">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-comment" href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/#comments">
+							<svg class="gridicon gridicons-comment" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M12 16l-5 5v-5H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2h-7z"/></g></svg>							<span>Comment						</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-reblog" href="">
+							<svg class="gridicon gridicons-reblog" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M22.086 9.914L20 7.828V18c0 1.105-.895 2-2 2h-7v-2h7V7.828l-2.086 2.086L14.5 8.5 19 4l4.5 4.5-1.414 1.414zM6 16.172V6h7V4H6c-1.105 0-2 .895-2 2v10.172l-2.086-2.086L.5 15.5 5 20l4.5-4.5-1.414-1.414L6 16.172z"/></g></svg><span>Reblog</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="https://6guts.wordpress.com">
+				<img loading='lazy' alt='' src='https://s0.wp.com/i/logo/wpcom-gray-white.png?m=1479929237i' srcset='https://s0.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				6guts			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																						<div class="actnbr-follow-count">Join 61 other subscribers</div>
+																					<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14597269" />
+										<input type="hidden" name="source" value="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="be1d507898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2021%2F03%2F15%2Ftowards-a-new-general-dispatch-mechanism-in-moarvm%2F&#038;signup_flow=account">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+									<li class="actnbr-btn actnbr-hidden no-display" onclick="javascript:__tcfapi( 'showUi' );">
+						<a class="actnbr-action actnbr-actn-privacy" href="#">
+							<svg class="gridicon gridicons-info-outline" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M13 9h-2V7h2v2zm0 2h-2v6h2v-6zm-1-7c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8m0-2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/></g></svg>							<span>Privacy						</span>
+						</a>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+								<li class="actnbr-sitename">
+			<a href="https://6guts.wordpress.com">
+				<img loading='lazy' alt='' src='https://s0.wp.com/i/logo/wpcom-gray-white.png?m=1479929237i' srcset='https://s0.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				6guts			</a>
+		</li>
+								<li class="actnbr-folded-follow">
+										<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+								</li>
+														<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+							<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2021%2F03%2F15%2Ftowards-a-new-general-dispatch-mechanism-in-moarvm%2F&#038;signup_flow=account">Log in</a></li>
+																<li class="actnbr-shortlink">
+										<a href="https://wp.me/pZfpP-9p">
+											<span class="actnbr-shortlink__text">Copy shortlink</span>
+											<span class="actnbr-shortlink__icon"><svg class="gridicon gridicons-checkmark" height="16" width="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M9 19.414l-6.707-6.707 1.414-1.414L9 16.586 20.293 5.293l1.414 1.414"/></g></svg></span>
+										</a>
+									</li>
+																<li class="flb-report">
+									<a href="https://wordpress.com/abuse/?report_url=https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/" target="_blank" rel="noopener noreferrer">
+										Report this content									</a>
+								</li>
+															<li class="actnbr-reader">
+									<a href="https://wordpress.com/reader/blogs/14597269/posts/583">
+										View post in Reader									</a>
+								</li>
+															<li class="actnbr-subs">
+									<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+								</li>
+																<li class="actnbr-fold"><a href="">Collapse this bar</a></li>
+														</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "DOMContentLoaded", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "/wp-content/mu-plugins/actionbar/actionbar.css?v=20250116";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "/wp-content/mu-plugins/actionbar/actionbar.js?v=20250204";
+	document.body.appendChild( script );
+} );
+</script>
+
+	
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/":583};
+	</script>
+				<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJzTLy/QTc7PK0nNK9EvyClNz8wr1i+uzCtJrMjITM/IAeKS1CJMEWP94uSizIISoOIM5/yiVL2sYh19yo1yKiotzgjISczMAxpon2traGpuYGRgYmlhmgUAFLxAeg=='></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?m=1363304414i&amp;ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	document.addEventListener( 'is.post-load', function () {
+		SyntaxHighlighter.highlight();
+	} );
+</script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??/wp-content/blog-plugins/wordads-classes/js/watl-v2.js,/wp-content/mu-plugins/likes/queuehandler.js,/wp-includes/js/comment-reply.min.js?m=1760446017j'></script>
+<script type="text/javascript" src="/wp-content/plugins/gutenberg-core/v22.2.0/build/scripts/hooks/index.min.js?m=1764855221i&amp;ver=1764773745495" id="wp-hooks-js"></script>
+<script type="text/javascript" src="/wp-content/plugins/gutenberg-core/v22.2.0/build/scripts/i18n/index.min.js?m=1764855221i&amp;ver=1764773747362" id="wp-i18n-js"></script>
+<script type="text/javascript" id="wp-i18n-js-after">
+/* <![CDATA[ */
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+/* ]]> */
+</script>
+<script type="text/javascript" id="verbum-settings-js-before">
+/* <![CDATA[ */
+window.VerbumComments = {"Log in or provide your name and email to leave a reply.":"Log in or provide your name and email to leave a reply.","Log in or provide your name and email to leave a comment.":"Log in or provide your name and email to leave a comment.","Receive web and mobile notifications for posts on this site.":"Receive web and mobile notifications for posts on this site.","Name":"Name","Email (address never made public)":"Email (address never made public)","Website (optional)":"Website (optional)","Leave a reply. (log in optional)":"Leave a reply. (log in optional)","Leave a comment. (log in optional)":"Leave a comment. (log in optional)","Log in to leave a reply.":"Log in to leave a reply.","Log in to leave a comment.":"Log in to leave a comment.","Logged in via %s":"Logged in via %s","Log out":"Log out","Email":"Email","(Address never made public)":"(Address never made public)","Instantly":"Instantly","Daily":"Daily","Reply":"Reply","Comment":"Comment","WordPress":"WordPress","Weekly":"Weekly","Notify me of new posts":"Notify me of new posts","Email me new posts":"Email me new posts","Email me new comments":"Email me new comments","Cancel":"Cancel","Write a comment...":"Write a comment...","Write a reply...":"Write a reply...","Website":"Website","Optional":"Optional","We'll keep you in the loop!":"We'll keep you in the loop!","Loading your comment...":"Loading your comment...","Discover more from":"Discover more from 6guts","Subscribe now to keep reading and get access to the full archive.":"Subscribe now to keep reading and get access to the full archive.","Continue reading":"Continue reading","Never miss a beat!":"Never miss a beat!","Interested in getting blog post updates? Simply click the button below to stay in the loop!":"Interested in getting blog post updates? Simply click the button below to stay in the loop!","Enter your email address":"Enter your email address","Subscribe":"Subscribe","Comment sent successfully":"Comment sent successfully","Save my name, email, and website in this browser for the next time I comment.":"Save my name, email, and website in this browser for the next time I comment.","hovercardi18n":{"Edit your profile \u2192":"Edit your profile \u2192","View profile \u2192":"View profile \u2192","Contact":"Contact","Send money":"Send money","Profile not found.":"Profile not found.","Too Many Requests.":"Too Many Requests.","Internal Server Error.":"Internal Server Error.","Sorry, we are unable to load this Gravatar profile.":"Sorry, we are unable to load this Gravatar profile."},"siteId":14597269,"postId":583,"mustLogIn":false,"requireNameEmail":true,"commentRegistration":false,"connectURL":"https://6guts.wordpress.com/public.api/connect/?action=request\u0026from_comments=yes","logoutURL":"https://6guts.wordpress.com/wp-login.php?action=logout\u0026_wpnonce=19ecbc94f5","homeURL":"https://6guts.wordpress.com/","subscribeToBlog":true,"subscribeToComment":true,"isJetpackCommentsLoggedIn":false,"jetpackUsername":"","jetpackUserId":0,"jetpackSignature":"","jetpackAvatar":"https://0.gravatar.com/avatar/?s=96\u0026amp;d=identicon\u0026amp;r=G","enableBlocks":true,"enableSubscriptionModal":true,"currentLocale":"en","isJetpackComments":false,"allowedBlocks":["core/paragraph","core/list","core/code","core/list-item","core/quote","core/image","core/embed","core/quote","core/code"],"embedNonce":"f194a974de","verbumBundleUrl":"/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/features/verbum-comments/dist/index.js","isRTL":false,"vbeCacheBuster":1738686361,"iframeUniqueId":0,"colorScheme":false}
+//# sourceURL=verbum-settings-js-before
+/* ]]> */
+</script>
+<script type="text/javascript" src="/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/assets/dynamic-loader.js?m=1755005491i&amp;minify=false&amp;ver=adc3e7b923a66edb437b" id="verbum-dynamic-loader-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="sharing-js-js-extra">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+//# sourceURL=sharing-js-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-script-data-js-before">
+/* <![CDATA[ */
+window.JetpackScriptData = {"site":{"host":"wpcom","is_wpcom_platform":true}};
+//# sourceURL=jetpack-script-data-js-before
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJyNUNsOgjAM/SFHURPxxfgppmwTB1u3rJ3EvxdRCU/Gpzbn9FxSGJPSkcSSQOtjp5IvnSOGMWaDhpX2yGwZegYdEtx3r1G1hYy3Vc8bWBmEssh7Kwn1oCZoTDqGDwEhRvqSl7slEzNgkRhQxOlF9soUhrY4bxaQdXZJlEHBH8k4OA5W1L6q4eJIL8A1z8fmj9brsrPHuwjfMNvpK+Yxr466Kjia/M7htG0OdVPXx2bbPwF5z35x'></script>
+<script type="text/javascript" id="sharing-js-js-after">
+/* <![CDATA[ */
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-x' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-x' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomx', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+//# sourceURL=sharing-js-js-after
+/* ]]> */
+</script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/72x72/","ext":".png","svgUrl":"https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/","svgExt":".svg","source":{"concatemoji":"/wp-includes/js/wp-emoji-release.min.js?m=1764078722i&ver=6.9-RC2-61304"}}
+</script>
+<script type="module">
+/* <![CDATA[ */
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=/wp-includes/js/wp-emoji-loader.min.js
+/* ]]> */
+</script>
+	<iframe src='https://widgets.wp.com/likes/master.html?ver=20251211#ver=20251211' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+	<div id='likes-other-gravatars' role="dialog" aria-hidden="true" tabindex="-1"><div class="likes-text"><span>%d</span></div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+	<script src="//stats.wp.com/w.js?68" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14597269','blog_tz':'1','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+		// Prevent sending pageview tracking from WP-Admin pages.
+		_stq.push(['view', {'blog':'14597269','v':'wpcom','tz':'1','user_id':'0','post':'583','subd':'6guts'}]);
+		_stq.push(['extra', {'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWFnNncxc1tjZG9XVXhRY2gzcWgrSVBOLUJFJlA3bENkM2tneDdlTis4Y1RBVkpKZFJMRTRVOC5WSVl8Uj9kN3NIT1I3Y0prfndtdE9ORjZVLF8ySnJlK2x2bWxIZTdNbVQybXM0UTdZcj9zTWF+ZDdJUnl3UWZMbz9ub3Z3MXxrLnZpLGZUcVZ2ZCtvOTNyWDU3K01iTVpQRTFWTkhiPXIwLCYvTmtbQ2Rsdj1tXV1kb3EzbX4vRjF1azNFYUU/ZnlIL10wSG1pZzYuYXEmUVdXUjBtQjhnWkFjZjZpRU8uYXlpfk5adElTLW9XcE1hWmNERF1yJmFSR05Ibys5dVEwLG9fSjMxbnpwRmlMZFNQLGdKdU1nVmRELVNzd0VQYVUvVmVUdmklcjlrOGpqVXI3U1hRQ0M2N041UjBHdHwrMXNIbXBdZXl2MExISA=='}]);
+_stq.push([ 'clickTrackerInit', '14597269', '583' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<meta id="bilmur" property="bilmur:data" content="" data-provider="wordpress.com" data-service="simple" data-site-tz="Etc/GMT-1" data-custom-props="{&quot;logged_in&quot;:&quot;0&quot;,&quot;wptheme&quot;:&quot;pub\/twentyten&quot;,&quot;wptheme_is_block&quot;:&quot;0&quot;}"  >
+		<script defer src="/wp-content/js/bilmur.min.js?i=17&amp;m=202550"></script> 	<div id="marketingbar" class="marketing-bar noskim  "><div class="marketing-bar-text">Design a site like this with WordPress.com</div><a class="marketing-bar-button" href="https://wordpress.com/start/?ref=marketing_bar">Get started</a><a class="marketing-bar-link" tabindex="-1" aria-label="Create your website at WordPress.com" href="https://wordpress.com/start/?ref=marketing_bar"></a></div>		<script type="text/javascript">
+			window._tkq = window._tkq || [];
+
+			window._tkq.push( [ 'recordEvent', 'wpcom_marketing_bar_impression', {"is_current_user_blog_owner":false} ] );
+
+			document.querySelectorAll( '#marketingbar > a' ).forEach( link => {
+				link.addEventListener( 'click', ( e ) => {
+					window._tkq.push( [ 'recordEvent', 'wpcom_marketing_bar_cta_click', {"is_current_user_blog_owner":false} ] );
+				} );
+			});
+		</script>
+<script>
+(function() {
+	'use strict';
+
+	const fetches = {};
+	const promises = {};
+	const urls = {
+		'wp-polyfill': '/wp-includes/js/dist/vendor/wp-polyfill.min.js?m=1764669441i&ver=3.15.0',
+		'verbum': '/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/verbum-comments.js?m=1765405478i&minify=false&ver=87a45c8962a448c74c1e'
+	};
+	const loaders = {
+		'verbum': () => {
+			fetchExternalScript('wp-polyfill');
+			fetchExternalScript('verbum');
+			promises['wp-polyfill'] = promises['wp-polyfill'] || loadWPScript('wp-polyfill');
+			promises['verbum'] = promises['verbum'] || promises['wp-polyfill'].then( () => loadWPScript('verbum') );
+			return promises['verbum'];
+		},
+		
+	};
+	const scriptExtras = {
+		
+	};
+
+	window.WP_Enqueue_Dynamic_Script = {
+		loadScript: (handle) => {
+			if (!loaders[handle]) {
+				console.error('WP_Enqueue_Dynamic_Script: unregistered script `' + handle + '`.');
+			}
+			return loaders[handle]();
+		}
+	};
+
+	function fetchExternalScript(handle) {
+		if (!urls[handle]) {
+			return Promise.resolve();
+		}
+
+		fetches[handle] = fetches[handle] || fetch(urls[handle], { mode: 'no-cors' });
+		return fetches[handle];
+	}
+
+	function runExtraScript(handle, type, index) {
+		const id = 'wp-enqueue-dynamic-script:' + handle + ':' + type + ':' + (index + 1);
+		const template = document.getElementById(id);
+		if (!template) {
+			return Promise.reject();
+		}
+
+		const script = document.createElement( 'script' );
+		script.innerHTML = template.innerHTML;
+		document.body.appendChild( script );
+		return Promise.resolve();
+	}
+
+	function loadExternalScript(handle) {
+		if (!urls[handle]) {
+			return Promise.resolve();
+		}
+
+		return fetches[handle].then(() => {
+			return new Promise((resolve, reject) => {
+				const script = document.createElement('script');
+				script.onload = () => resolve();
+				script.onerror = (e) => reject(e);
+				script.src = urls[handle];
+				document.body.appendChild(script);
+			});
+		});
+	}
+
+	function loadExtra(handle, pos) {
+		const count = (scriptExtras[handle] && scriptExtras[handle][pos]) || 0;
+		let promise = Promise.resolve();
+
+		for (let i = 0; i < count; i++) {
+			promise = promise.then(() => runExtraScript(handle, pos, i));
+		}
+
+		return promise;
+	}
+
+	function loadWPScript(handle) {
+		// Core loads scripts in this order. See: https://github.com/WordPress/WordPress/blob/a59eb9d39c4fcba834b70c9e8dfd64feeec10ba6/wp-includes/class-wp-scripts.php#L428.
+		return loadExtra(handle, 'translations')
+			.then(() => loadExtra(handle, 'before'))
+			.then(() => loadExternalScript(handle))
+			.then(() => loadExtra(handle, 'after'));
+	}
+} )();
+</script>
+</body>
+</html>

@@ -1,0 +1,1803 @@
+https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+The new MoarVM dispatch mechanism is here! | 6guts</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s0.wp.com/wp-content/themes/pub/twentyten/style.css?m=1659017451i&amp;ver=20190507" />
+<link rel="pingback" href="https://6guts.wordpress.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel='dns-prefetch' href='//widgets.wp.com' />
+<link rel='dns-prefetch' href='//af.pubmine.com' />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Feed" href="https://6guts.wordpress.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; Comments Feed" href="https://6guts.wordpress.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="6guts &raquo; The new MoarVM dispatch mechanism is&nbsp;here! Comments Feed" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/feed/" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='/_static/??-eJxtjNsKwjAQRH/IuBYl4oP4LWm6hDSbbMhu8Pe1pSheXgbOcGbgXo3nolgUcjeVeohFYEatzqeNITMvMXVCgYbkFCdTWfSL9l5kB/8vKSZ8H6/0o4/E4TXIriXUWIIZXYOn+tks41u+Dmc72NPhYo/zAy/zS9w=&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/style.css?m=1764855221i&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+
+/*# sourceURL=wp-block-library-inline-css */
+</style><style id='wp-block-paragraph-inline-css'>
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/paragraph/style.css */
+</style>
+<style id='wp-block-heading-inline-css'>
+h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-background,h3:where(.wp-block-heading).has-background,h4:where(.wp-block-heading).has-background,h5:where(.wp-block-heading).has-background,h6:where(.wp-block-heading).has-background{padding:1.25em 2.375em}h1.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h1.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h2.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h2.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h3.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h3.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h4.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h4.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h5.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h5.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h6.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h6.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]){rotate:180deg}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/heading/style.css */
+</style>
+<style id='wp-block-image-inline-css'>
+.wp-block-image>a,.wp-block-image>figure>a{display:inline-block}.wp-block-image img{box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom}@media not (prefers-reduced-motion){.wp-block-image img.hide{visibility:hidden}.wp-block-image img.show{animation:show-content-image .4s}}.wp-block-image[style*=border-radius] img,.wp-block-image[style*=border-radius]>a{border-radius:inherit}.wp-block-image.has-custom-border img{box-sizing:border-box}.wp-block-image.aligncenter{text-align:center}.wp-block-image.alignfull>a,.wp-block-image.alignwide>a{width:100%}.wp-block-image.alignfull img,.wp-block-image.alignwide img{height:auto;width:100%}.wp-block-image .aligncenter,.wp-block-image .alignleft,.wp-block-image .alignright,.wp-block-image.aligncenter,.wp-block-image.alignleft,.wp-block-image.alignright{display:table}.wp-block-image .aligncenter>figcaption,.wp-block-image .alignleft>figcaption,.wp-block-image .alignright>figcaption,.wp-block-image.aligncenter>figcaption,.wp-block-image.alignleft>figcaption,.wp-block-image.alignright>figcaption{caption-side:bottom;display:table-caption}.wp-block-image .alignleft{float:left;margin:.5em 1em .5em 0}.wp-block-image .alignright{float:right;margin:.5em 0 .5em 1em}.wp-block-image .aligncenter{margin-left:auto;margin-right:auto}.wp-block-image :where(figcaption){margin-bottom:1em;margin-top:.5em}.wp-block-image.is-style-circle-mask img{border-radius:9999px}@supports ((-webkit-mask-image:none) or (mask-image:none)) or (-webkit-mask-image:none){.wp-block-image.is-style-circle-mask img{border-radius:0;-webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-mode:alpha;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:contain;mask-size:contain}}:root :where(.wp-block-image.is-style-rounded img,.wp-block-image .is-style-rounded img){border-radius:9999px}.wp-block-image figure{margin:0}.wp-lightbox-container{display:flex;flex-direction:column;position:relative}.wp-lightbox-container img{cursor:zoom-in}.wp-lightbox-container img:hover+button{opacity:1}.wp-lightbox-container button{align-items:center;backdrop-filter:blur(16px) saturate(180%);background-color:#5a5a5a40;border:none;border-radius:4px;cursor:zoom-in;display:flex;height:20px;justify-content:center;opacity:0;padding:0;position:absolute;right:16px;text-align:center;top:16px;width:20px;z-index:100}@media not (prefers-reduced-motion){.wp-lightbox-container button{transition:opacity .2s ease}}.wp-lightbox-container button:focus-visible{outline:3px auto #5a5a5a40;outline:3px auto -webkit-focus-ring-color;outline-offset:3px}.wp-lightbox-container button:hover{cursor:pointer;opacity:1}.wp-lightbox-container button:focus{opacity:1}.wp-lightbox-container button:focus,.wp-lightbox-container button:hover,.wp-lightbox-container button:not(:hover):not(:active):not(.has-background){background-color:#5a5a5a40;border:none}.wp-lightbox-overlay{box-sizing:border-box;cursor:zoom-out;height:100vh;left:0;overflow:hidden;position:fixed;top:0;visibility:hidden;width:100%;z-index:100000}.wp-lightbox-overlay .close-button{align-items:center;cursor:pointer;display:flex;justify-content:center;min-height:40px;min-width:40px;padding:0;position:absolute;right:calc(env(safe-area-inset-right) + 16px);top:calc(env(safe-area-inset-top) + 16px);z-index:5000000}.wp-lightbox-overlay .close-button:focus,.wp-lightbox-overlay .close-button:hover,.wp-lightbox-overlay .close-button:not(:hover):not(:active):not(.has-background){background:none;border:none}.wp-lightbox-overlay .lightbox-image-container{height:var(--wp--lightbox-container-height);left:50%;overflow:hidden;position:absolute;top:50%;transform:translate(-50%,-50%);transform-origin:top left;width:var(--wp--lightbox-container-width);z-index:9999999999}.wp-lightbox-overlay .wp-block-image{align-items:center;box-sizing:border-box;display:flex;height:100%;justify-content:center;margin:0;position:relative;transform-origin:0 0;width:100%;z-index:3000000}.wp-lightbox-overlay .wp-block-image img{height:var(--wp--lightbox-image-height);min-height:var(--wp--lightbox-image-height);min-width:var(--wp--lightbox-image-width);width:var(--wp--lightbox-image-width)}.wp-lightbox-overlay .wp-block-image figcaption{display:none}.wp-lightbox-overlay button{background:none;border:none}.wp-lightbox-overlay .scrim{background-color:#fff;height:100%;opacity:.9;position:absolute;width:100%;z-index:2000000}.wp-lightbox-overlay.active{visibility:visible}@media not (prefers-reduced-motion){.wp-lightbox-overlay.active{animation:turn-on-visibility .25s both}.wp-lightbox-overlay.active img{animation:turn-on-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active){animation:turn-off-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active) img{animation:turn-off-visibility .25s both}.wp-lightbox-overlay.zoom.active{animation:none;opacity:1;visibility:visible}.wp-lightbox-overlay.zoom.active .lightbox-image-container{animation:lightbox-zoom-in .4s}.wp-lightbox-overlay.zoom.active .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.active .scrim{animation:turn-on-visibility .4s forwards}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active){animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container{animation:lightbox-zoom-out .4s}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .scrim{animation:turn-off-visibility .4s forwards}}@keyframes show-content-image{0%{visibility:hidden}99%{visibility:hidden}to{visibility:visible}}@keyframes turn-on-visibility{0%{opacity:0}to{opacity:1}}@keyframes turn-off-visibility{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}to{opacity:0;visibility:hidden}}@keyframes lightbox-zoom-in{0%{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale))}to{transform:translate(-50%,-50%) scale(1)}}@keyframes lightbox-zoom-out{0%{transform:translate(-50%,-50%) scale(1);visibility:visible}99%{visibility:visible}to{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale));visibility:hidden}}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/image/style.css */
+</style>
+<style id='wp-block-image-theme-inline-css'>
+:root :where(.wp-block-image figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme :root :where(.wp-block-image figcaption){color:#ffffffa6}.wp-block-image{margin:0 0 1em}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/image/theme.css */
+</style>
+<style id='wp-block-list-inline-css'>
+ol,ul{box-sizing:border-box}:root :where(.wp-block-list.has-background){padding:1.25em 2.375em}
+/*# sourceURL=/wp-content/plugins/gutenberg-core/v22.2.0/build/styles/block-library/list/style.css */
+</style>
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+/*# sourceURL=/wp-includes/css/classic-themes.min.css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='/_static/??-eJx9jl0KAjEMhC9kNrsi6ot4FGm7QatNW5p0xdvbRfxBwZdAZuabBK8ZXIpKUTGHevRR0CUbkrsILrth2w0gnnMgKDR1Kxy96CsBordAnRNZ4EcRV3h3FWo6Z6Nzgmn0hgJxi/3DrrkxYG0uJAJtsq8Memqg/OPOpNm4CzTpUfEwkFOKT/MwURxTQVM1sVH17gdDKQ5t9WHEiYptp5s4/yzf+/zMnnfDZt33y83Qb893kB9+HA==&cssminify=yes' type='text/css' media='all' />
+<link rel='stylesheet' id='verbum-gutenberg-css-css' href='https://widgets.wp.com/verbum-block-editor/block-editor.css?ver=1738686361' media='all' />
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-6-1' href='/_static/??-eJyFjsEOwjAMQ3+IECaxiR0Q37JVoRTaplpSVfv7hRsTEtxsy88ytgKOs1JW1AclEix1Rm0WrJbiHNm95OhEDvivK7pGglYcpy8gVSix+pAFF7JRb9KjtT7sL8gTg12ZNHDeGbjHKSxv9Jau3dCdzv3YX8bnBqh7UWU=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+/*# sourceURL=jetpack-global-styles-frontend-style-inline-css */
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='/_static/??-eJyNjcEKwjAQRH/IuFRT6kX8FNkmS5K6yQY3Qfx7bfEiXrwM82B4A49qnJRGpUHupnIPqSgs1Cq624chi6zhO5OCRryTR++fW00l7J3qDv43XVNxoOISsmEJol/wY2uR8vs3WggsM/I6uOTzMI3Hw8lOg11eUT1JKA==&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack_related-posts-js-extra">
+/* <![CDATA[ */
+var related_posts_js_options = {"post_heading":"h4"};
+//# sourceURL=jetpack_related-posts-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14597269","postID":"596","siteURL":"https://6guts.wordpress.com","xhrURL":"https://6guts.wordpress.com/wp-admin/admin-ajax.php","nonce":"6cb66fdce5","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https://s0.wp.com/wp-content/js/wpcom-proxy-request.js?m=1513050504i&amp;ver=20211021","shortlink":"https://wp.me/pZfpP-9C","i18n":{"followedText":"New posts from this site will now appear in your \u003Ca href=\"https://wordpress.com/reader\"\u003EReader\u003C/a\u003E","foldBar":"Collapse this bar","unfoldBar":"Expand this bar","shortLinkCopied":"Shortlink copied to clipboard."}};
+//# sourceURL=wpcom-actionbar-placeholder-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https://s0.wp.com/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/"};
+//# sourceURL=jetpack-mu-wpcom-settings-js-before
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJxdjVsKwjAQRTdkOrUQ/RKXInlREieZkJm0untbEFG/Lof7grUqR0VCEchdVexzLAwpSDXu/mbIRAVusTiwPaKHFtBI8KoSC//SkGMZEh/gazhtGRRVGz2e/55Fmj+3KzVvPCuHhjnwXnS5wjLtoli63erXfDmetR7H0zTp9AKmAkbK'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+//# sourceURL=rlt-proxy-js-after
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://6guts.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel="canonical" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" />
+<link rel='shortlink' href='https://wp.me/pZfpP-9C' />
+<link rel="alternate" type="application/json+oembed" href="https://public-api.wordpress.com/oembed/?format=json&amp;url=https%3A%2F%2F6guts.wordpress.com%2F2021%2F09%2F29%2Fthe-new-moarvm-dispatch-mechanism-is-here%2F&amp;for=wpcom-auto-discovery" /><link rel="alternate" type="application/xml+oembed" href="https://public-api.wordpress.com/oembed/?format=xml&amp;url=https%3A%2F%2F6guts.wordpress.com%2F2021%2F09%2F29%2Fthe-new-moarvm-dispatch-mechanism-is-here%2F&amp;for=wpcom-auto-discovery" />
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="The new MoarVM dispatch mechanism is here!" />
+<meta property="og:url" content="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" />
+<meta property="og:description" content="Around 18 months ago, I set about working on the largest set of architectural changes that Raku runtime MoarVM has seen since its inception. The work was most directly triggered by the realization …" />
+<meta property="article:published_time" content="2021-09-29T16:16:31+00:00" />
+<meta property="article:modified_time" content="2021-09-29T16:16:31+00:00" />
+<meta property="og:site_name" content="6guts" />
+<meta property="og:image" content="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png" />
+<meta property="og:image:width" content="601" />
+<meta property="og:image:height" content="318" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+<meta property="fb:app_id" content="249643311490" />
+<meta property="article:publisher" content="https://www.facebook.com/WordPresscom" />
+<meta name="twitter:text:title" content="The new MoarVM dispatch mechanism is&nbsp;here!" />
+<meta name="twitter:image" content="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png?w=640" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico?m=1713425267i" sizes="16x16 24x24 32x32 48x48" />
+<link rel="icon" type="image/x-icon" href="https://s0.wp.com/i/favicon.ico?m=1713425267i" sizes="16x16 24x24 32x32 48x48" />
+<link rel="apple-touch-icon" href="https://s0.wp.com/i/webclip.png?m=1713868326i" />
+<link rel='openid.server' href='https://6guts.wordpress.com/?openidserver=1' />
+<link rel='openid.delegate' href='https://6guts.wordpress.com/' />
+<link rel="search" type="application/opensearchdescription+xml" href="https://6guts.wordpress.com/osd.xml" title="6guts" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="description" content="Around 18 months ago, I set about working on the largest set of architectural changes that Raku runtime MoarVM has seen since its inception. The work was most directly triggered by the realization that we had no good way to fix a certain semantic bug in dispatch without either causing huge performance impacts across the&hellip;" />
+<script type="text/javascript">
+/* <![CDATA[ */
+var wa_client = {}; wa_client.cmd = []; wa_client.config = { 'blog_id': 14597269, 'blog_language': 'en', 'is_wordads': false, 'hosting_type': 0, 'afp_account_id': null, 'afp_host_id': 5038568878849053, 'theme': 'pub/twentyten', '_': { 'title': 'Advertisement', 'privacy_settings': 'Privacy Settings' }, 'formats': [ 'inline', 'belowpost', 'bottom_sticky', 'sidebar_sticky_right', 'sidebar', 'gutenberg_rectangle', 'gutenberg_leaderboard', 'gutenberg_mobile_leaderboard', 'gutenberg_skyscraper' ] };
+/* ]]> */
+</script>
+		<script type="text/javascript">
+
+			window.doNotSellCallback = function() {
+
+				var linkElements = [
+					'a[href="https://wordpress.com/?ref=footer_blog"]',
+					'a[href="https://wordpress.com/?ref=footer_website"]',
+					'a[href="https://wordpress.com/?ref=vertical_footer"]',
+					'a[href^="https://wordpress.com/?ref=footer_segment_"]',
+				].join(',');
+
+				var dnsLink = document.createElement( 'a' );
+				dnsLink.href = 'https://wordpress.com/advertising-program-optout/';
+				dnsLink.classList.add( 'do-not-sell-link' );
+				dnsLink.rel = 'nofollow';
+				dnsLink.style.marginLeft = '0.5em';
+				dnsLink.textContent = 'Do Not Sell or Share My Personal Information';
+
+				var creditLinks = document.querySelectorAll( linkElements );
+
+				if ( 0 === creditLinks.length ) {
+					return false;
+				}
+
+				Array.prototype.forEach.call( creditLinks, function( el ) {
+					el.insertAdjacentElement( 'afterend', dnsLink );
+				});
+
+				return true;
+			};
+
+		</script>
+		<script id="cmp-configuration" type="application/configuration">{"gvlVersion":"136","consentLanguage":"EN","locale":"en","vendorsAll":"BSUAOIRKgQQoJAQI4BAAhAEBiAYACECAAABAACAAAAAAABEAEAAAAAAAAAQAAAAAAAAABAAAAAAAAAAAABAAAIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAiAAIAAAgAAgAAAAAABAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA","vendorsLegInterest":"BSUAEAQKgAAoAAAIAAAAgAAACAIACAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAIAAAgAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA","ajaxUrl":"\/wp-admin\/admin-ajax.php","ajaxNonce":"1f5d65be8f","modulePath":"https:\/\/s0.wp.com\/wp-content\/blog-plugins\/wordads-classes\/js\/cmp\/v2\/","gvlPath":"https:\/\/public-api.wordpress.com\/wpcom\/v2\/sites\/14597269\/cmp\/v3\/vendors\/en\/","_":{"title":"Privacy & Cookies","intro":"We, WordPress.com, and our advertising partners store and\/or access information on your device and also process personal data, like unique identifiers, browsing activity, and other standard information sent by your device including your IP address. This information is collected over time and used for personalised advertising, advertising measurement, audience research and services development specific to our ads program. If this sounds good to you, select \"I Agree!\" below. Otherwise, you can get more information, customize your consent preferences for over 50 different ad vendors, or decline consent by selecting \"Learn More\". Note that your preferences apply to all websites in the <a href=\"https:\/\/automattic.com\/cookies\/#user-ads-consent\" target=\"_blank\">WordPress.com network<\/a>, and if you change your mind in the future you can update your preferences anytime by visiting the Privacy link displayed under each ad or by using the \"Privacy\" option in the Action Bar located at the bottom-right corner of the screen. One last thing, our partners may process some of your data based on legitimate interests instead of consent but you can object to that by choosing \"Learn More\" and then disabling the Legitimate Interests toggle under any listed Purpose or Partner.","config":"Learn More","accept":"I Agree!","viewPartners":"View Partners","error":"We're sorry but an unexpected error occurred. Please try again later."}}</script><script type="text/javascript">
+	window.google_analytics_uacct = "UA-52447-2";
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_gat._anonymizeIp']);
+	_gaq.push(['_setDomainName', 'wordpress.com']);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-3' href='/_static/??-eJyNjMEKgzAQBX9Ifdha9CJ+StF1KdFkN7gJ+X0RbM89zjAMSqxJJbEkhFxHnz9ODBunONN+M4Kq4O2EsHil3WDFRT4aMqvw/yHomj0baD40G/tf9BXXcApj27+ej6Hr2247ASkBO20=&cssminify=yes' type='text/css' media='all' />
+</head>
+
+<body class="wp-singular post-template-default single single-post postid-596 single-format-standard wp-theme-pubtwentyten customizer-styles-applied single-author jetpack-reblog-enabled has-marketing-bar has-marketing-bar-theme-twenty-ten">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="https://6guts.wordpress.com/" title="6guts" rel="home">6guts</a>
+					</span>
+				</div>
+				<div id="site-description">Tales of Raku guts hacking</div>
+
+									<a class="home-link" href="https://6guts.wordpress.com/" title="6guts" rel="home">
+						<img src="https://6guts.wordpress.com/wp-content/uploads/2010/07/cropped-30141.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="https://6guts.wordpress.com/">Home</a></li><li class="page_item page-item-2"><a href="https://6guts.wordpress.com/about/">About</a></li>
+<li class="page_item page-item-24"><a href="https://6guts.wordpress.com/interesting-papers/">Interesting Papers</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/" rel="prev"><span class="meta-nav">&larr;</span> Raku multiple dispatch with the new MoarVM&nbsp;dispatcher</a></div>
+					<div class="nav-next"><a href="https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/" rel="next">Recollections from the Raku Core&nbsp;Summit <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-596" class="post-596 post type-post status-publish format-standard hentry category-uncategorized">
+											<h2 class="entry-title"><a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" rel="bookmark">The new MoarVM dispatch mechanism is&nbsp;here!</a></h2>					
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" title="5:16 PM" rel="bookmark"><span class="entry-date">September 29, 2021</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="https://6guts.wordpress.com/author/jnthnwrthngtn/" title="View all posts by jnthnwrthngtn">jnthnwrthngtn</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						
+<p>Around 18 months ago, I set about working on the largest set of architectural changes that Raku runtime MoarVM has seen since its inception. The work was most directly triggered by the realization that we had no good way to fix a certain semantic bug in dispatch without either causing huge performance impacts across the board&nbsp;<em>or</em>&nbsp;increasingly complexity even further in optimizations that were already riding their luck. However, the need for something like this had been apparent for a while: a persistent struggle to optimize certain Raku language features, the pain of a bunch of performance mechanisms that were all solving the same kind of problem but each for a specific situation, and a sense that, with everything learned since I founded MoarVM, it was possible to do better.</p>
+
+
+
+<p>The result is the development of a new generalized dispatch mechanism. An overview can be found in my Raku Conference talk about it (<a href="https://jnthn.net/papers/2021-trc-dispatch.pdf">slides</a>,&nbsp;<a href="https://www.youtube.com/watch?v=yRFyGDVHl0E">video</a>); in short, it gives us a far more uniform architecture for all kinds of dispatch, allowing us to deliver better performance on a range of language features that have thus far been glacial, as well as opening up opportunities for new optimizations.</p>
+
+
+
+<p>Today, this work has been merged, along with the matching changes in NQP (the Raku subset we use for bootstrapping and to implement the compiler) and Rakudo (the full Raku compiler and standard library implementation). This means that it will ship in the October 2021 releases.</p>
+
+
+
+<p>In this post, I&#8217;ll give an overview of what you can expect to observe right away, and what you might expect in the future as we continue to build upon the possibilities that the new dispatch architecture has to offer.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#the-big-wins"></a>The big wins</h3>
+
+
+
+<p>The biggest improvements involve language features that we&#8217;d really not had the architecture to do better on before. They involved dispatch &#8211; that is, getting a call linked to a destination efficiently &#8211; but the runtime didn&#8217;t provide us with a way to &#8220;explain&#8221; to it that it was looking at a dispatch, let alone with the information needed to have a shot at optimizing it.</p>
+
+
+
+<p>The following graph captures a number of these cases, and shows the level of improvement, ranging from a factor of 3.3 to 13.3 times faster.</p>
+
+
+
+<figure class="wp-block-image size-large"><img data-attachment-id="598" data-permalink="https://6guts.wordpress.com/graph-1/" data-orig-file="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png" data-orig-size="601,318" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="graph-1" data-image-description="" data-image-caption="" data-medium-file="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png?w=300" data-large-file="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png?w=601" width="601" height="318" src="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png?w=601" alt="Graph showing benchmark results, described textually below" class="wp-image-598" srcset="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png 601w, https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png?w=150 150w, https://6guts.wordpress.com/wp-content/uploads/2021/09/graph-1.png?w=300 300w" sizes="(max-width: 601px) 100vw, 601px" /></figure>
+
+
+
+<p>Let&#8217;s take a quick look at each of these. The first,&nbsp;<code>new-buf</code>, asks how quickly we can allocate&nbsp;<code>Buf</code>s.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+for ^10_000_000 {
+    Buf.new
+}
+</pre></div>
+
+
+<p>Why is this a dispatch benchmark? Because&nbsp;<code>Buf</code>&nbsp;is not a class, but rather a role. When we try to make an instance of a role, it is &#8220;punned&#8221; into a class. Up until now, it works as follows:</p>
+
+
+
+<ol class="wp-block-list"><li>We look up the&nbsp;<code>new</code>&nbsp;method</li><li>The&nbsp;<code>find_method</code>&nbsp;method would, if needed, create a pun of the role and cache it</li><li>It would return a forwarding closure that takes the arguments and gives them to the same method called on the punned class, or spelt in Raku code,&nbsp;<code>-&gt; $role-discarded, |args { $pun."$name"(|args) }</code></li><li>This closure would be invoked with the arguments</li></ol>
+
+
+
+<p>This had a number of undesirable consequences:</p>
+
+
+
+<ol class="wp-block-list"><li>While the pun was cached, we still had a bit of overhead to check if we&#8217;d made it already</li><li>The arguments got slurped and flattened, which costs something, and&#8230;</li><li>&#8230;the loss of callsite shape meant we couldn&#8217;t look up a type specialization of the method, and thus lost a chance to inline it too</li></ol>
+
+
+
+<p>With the new dispatch mechanism, we have a means to cache constants at a given program location&nbsp;<em>and</em>&nbsp;to replace arguments. So the first time we encounter the call, we:</p>
+
+
+
+<ol class="wp-block-list"><li>Get the role pun produced if needed</li><li>Resolve the&nbsp;<code>new</code>&nbsp;method on the class punned from the role</li><li>Produce a dispatch program that caches this resolved method and also replaces the role argument with the pun</li></ol>
+
+
+
+<p>For the next thousands of calls, we interpret this dispatch program. It&#8217;s still some cost, but the method we&#8217;re calling is already resolved, and the argument list rewriting is fairly cheap. Meanwhile, after we get into some hundreds of iterations, on a background thread, the optimizer gets to work. The argument re-ordering cost goes away completely at this point, and&nbsp;<code>new</code>&nbsp;is so small it gets inlined &#8211; at which point the buffer allocation is determined dead and so goes away too. Some remaining missed opportunities mean we still are left with a loop that&#8217;s not quite empty: it busies itself making sure it&#8217;s really OK to do nothing, rather than just doing nothing.</p>
+
+
+
+<p>Next up, multiple dispatch with&nbsp;<code>where</code>&nbsp;clauses.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+multi fac($n where $n &lt;= 1) { 1 }
+multi fac($n) { $n * fac($n - 1) }
+for ^1_000_000 {
+    fac(5)
+}
+</pre></div>
+
+
+<p>These were really slow before, since:</p>
+
+
+
+<ol class="wp-block-list"><li>We couldn&#8217;t apply the multi-dispatch caching mechanism&nbsp;<em>at all</em>&nbsp;as soon as we had a&nbsp;<code>where</code>&nbsp;clause involved</li><li>We would run&nbsp;<code>where</code>&nbsp;clauses twice in the event the candidate was chosen: once to see if we should choose that multi candidate, and once again when we entered it</li></ol>
+
+
+
+<p>With the new mechanism, we:</p>
+
+
+
+<ol class="wp-block-list"><li>On the first call, calculate a multiple dispatch plan: a linked list of candidates to work through</li><li>Invoke the one with the&nbsp;<code>where</code>&nbsp;clause, in a mode whereby if the signature fails to bind, it triggers a dispatch resumption. (If it does bind, it runs to completion)</li><li>In the event of a bind failure, the dispatch resumption triggers, and we attempt the next candidate</li></ol>
+
+
+
+<p>Once again, after the setup phase, we interpret the dispatch programs. In fact, that&#8217;s as far as we get with running this faster for now, because the specializer doesn&#8217;t yet know how to translate and further optimize this kind of dispatch program. (That&#8217;s how I know it currently stands no chance of turning this whole thing into another empty loop!) So there&#8217;s more to be had here also; in the meantime, I&#8217;m afraid you&#8217;ll just have to settle for a factor of ten speedup.</p>
+
+
+
+<p>Here&#8217;s the next one:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+proto with-proto(Int $n) { 2 * {*} }
+multi with-proto(Int $n) { $n + 1 }
+sub invoking-nontrivial-proto() {
+    for ^10_000_000 {
+        with-proto(20)
+    }
+}
+</pre></div>
+
+
+<p>Again, on top form, we&#8217;d turn this into an empty loop too, but we don&#8217;t quite get there yet. This case wasn&#8217;t so terrible before: we did get to use the multiple dispatch cache, however to do that we also ended up having to allocate an argument capture. The need for this also blocked any chance of inlining the&nbsp;<code>proto</code>&nbsp;into the caller. Now that is possible. Since we cannot yet translate dispatch programs that resume an in-progress dispatch, we don&#8217;t yet get to further inline the called&nbsp;<code>multi</code>&nbsp;candidate into the&nbsp;<code>proto</code>. However, we now have a design that will let us implement that.</p>
+
+
+
+<p>This whole notion of a dispatch resumption &#8211; where we start doing a dispatch, and later need to access arguments or other pre-calculated data in order to do a next step of it &#8211; has turned out to be a great unification. The initial idea for it came from considering things like&nbsp;<code>callsame</code>:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+class Parent {
+    method m() { 1 }
+}
+class Child is Parent {
+    method m() { 1 + callsame }
+}
+for ^10_000_000 {
+    Child.m;
+}
+</pre></div>
+
+
+<p>Once I started looking at this, and then considering that a complex&nbsp;<code>proto</code>&nbsp;also wants to continue with a dispatch at the&nbsp;<code>{*}</code>, and in the case a&nbsp;<code>where</code>&nbsp;clauses fails in a&nbsp;<code>multi</code>&nbsp;it&nbsp;<em>also</em>&nbsp;wants to continue with a dispatch, I realized this was going to be useful for quite a lot of things. It will be a bit of a headache to teach the optimizer and JIT to do nice things with resumes &#8211; but a great relief that doing that once will benefit multiple language features!</p>
+
+
+
+<p>Anyway, back to the benchmark. This is another &#8220;if we were smart, it&#8217;d be an empty loop&#8221; one. Previously,&nbsp;<code>callsame</code>&nbsp;was very costly, because each time we invoked it, it would have to calculate what kind of dispatch we were resuming and the set of methods to call. We also had to be able to locate the arguments. Dynamic variables were involved, which cost a bit to look up too, and &#8211; despite being an implementation details &#8211; these also leaked out in introspection, which wasn&#8217;t ideal. The new dispatch mechanism makes this all rather more efficient: we can cache the calculated set of methods (or wrappers and multi candidates, depending on the context) and then walk through it, and there&#8217;s no dynamic variables involved (and thus no leakage of them). This sees the biggest speedup of the lot &#8211; and since we cannot yet inline away the&nbsp;<code>callsame</code>, it&#8217;s (for now) measuring the speedup one might expect on using this language feature. In the future, it&#8217;s destined to optimize away to an empty loop.</p>
+
+
+
+<p>A module that makes use of&nbsp;<code>callsame</code>&nbsp;on a relatively hot path is&nbsp;<code>OO::Monitors,</code>, so I figured it would be interesting to see if there is a speedup there also.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+use OO::Monitors;
+monitor TestMonitor {
+    method m() { 1 }
+}
+my $mon = TestMonitor.new;
+for ^1_000_000 {
+    $mon.m();
+}
+</pre></div>
+
+
+<p>A&nbsp;<code>monitor</code>&nbsp;is a class that acquires a lock around each method call. The module provides a custom meta-class that adds a lock attribute to the class and then wraps each method such that it acquires the lock. There are certainly costly things in there besides the involvement of&nbsp;<code>callsame</code>, but the improvement to&nbsp;<code>callsame</code>&nbsp;is already enough to see a 3.3x speedup in this benchmark. Since&nbsp;<code>OO::Monitors</code>&nbsp;is used in quite a few applications and modules (for example, Cro uses it), this is welcome (and yes, a larger improvement will be possible here too).</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#caller-side-decontainerization"></a>Caller side decontainerization</h3>
+
+
+
+<p>I&#8217;ve seen some less impressive, but still welcome, improvements across a good number of other microbenchmarks. Even a basic multi dispatch on the&nbsp;<code>+</code>&nbsp;op:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+my $i = 0;
+for ^10_000_000 {
+    $i = $i + $_;
+}
+</pre></div>
+
+
+<p>Comes out with a factor of 1.6x speedup, thanks primarily to us producing far tighter code with fewer guards. Previously, we ended up with duplicate guards in this seemingly straightforward case. The&nbsp;<code>infix:&lt;+&gt;</code>&nbsp;multi candidate would be specialized for the case of its first argument being an&nbsp;<code>Int</code>&nbsp;in a&nbsp;<code>Scalar</code>&nbsp;container and its second argument being an immutable&nbsp;<code>Int</code>. Since a&nbsp;<code>Scalar</code>&nbsp;is mutable, the specialization would need to read it and then guard the value read before proceeding, otherwise it may change, and we&#8217;d risk memory safety. When we wanted to inline this candidate, we&#8217;d also want to do a check that the candidate really applies, and so also would deference the&nbsp;<code>Scalar</code>&nbsp;and guard its content to do that. We can and do eliminate duplicate guards &#8211; but these guards are on two distinct reads of the value, so that wouldn&#8217;t help.</p>
+
+
+
+<p>Since in the new dispatch mechanism we can rewrite arguments, we can now quite easily do caller-side removal of&nbsp;<code>Scalar</code>&nbsp;containers around values. So easily, in fact, that the change to do it took me just a couple of hours. This gives a lot of benefits. Since dispatch programs automatically eliminate duplicate reads and guards, the read and guard by the multi-dispatcher and the read in order to pass the decontainerized value are coalesced. This means less repeated work prior to specialization and JIT compilation, and also only a single read and guard in the specialized code after it. With the value to be passed already guarded, we can trivially select a candidate taking two bare&nbsp;<code>Int</code>&nbsp;values, which means there&#8217;s no further reads and guards needed in the callee either.</p>
+
+
+
+<p>A less obvious benefit, but one that will become important with planned future work, is that this means&nbsp;<code>Scalar</code>&nbsp;containers escape to callees far less often. This creates further opportunities for escape analysis. While the MoarVM escape analyzer and scalar replacer is currently quite limited, I hope to return to working on it in the near future, and expect it will be able to give us even more value now than it would have been able to before.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#further-results"></a>Further results</h3>
+
+
+
+<p>The benchmarks shown earlier are mostly of the &#8220;how close are we to realizing that we&#8217;ve got an empty loop&#8221; nature, which is interesting for assessing how well the optimizer can &#8220;see through&#8221; dispatches. Here are a few further results on more &#8220;traditional&#8221; microbenchmarks:</p>
+
+
+
+<figure class="wp-block-image size-large"><img data-attachment-id="599" data-permalink="https://6guts.wordpress.com/graph2/" data-orig-file="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png" data-orig-size="600,270" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="graph2" data-image-description="" data-image-caption="" data-medium-file="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png?w=300" data-large-file="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png?w=600" width="600" height="270" src="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png?w=600" alt="Graph showing benchmark results, described textually below" class="wp-image-599" srcset="https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png 600w, https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png?w=150 150w, https://6guts.wordpress.com/wp-content/uploads/2021/09/graph2.png?w=300 300w" sizes="(max-width: 600px) 100vw, 600px" /></figure>
+
+
+
+<p>The complex number benchmark is as follows:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+my $total-re = 0e0;
+for ^2_000_000 {
+    my $x = 5 + 2i;
+    my $y = 10 + 3i;
+    my $z = $x * $x + $y;
+    $total-re = $total-re + $z.re
+}
+say $total-re;
+</pre></div>
+
+
+<p>That is, just a bunch of operators (multi dispatch) and method calls, where we really do use the result. For now, we&#8217;re tied with Python and a little behind Ruby on this benchmark (and a surprising 48 times faster than the same thing done with Perl&#8217;s&nbsp;<code>Math::Complex</code>), but this is also a case that stands to see a huge benefit from escape analysis and scalar replacement in the future.</p>
+
+
+
+<p>The hash read benchmark is:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+my %h = a =&gt; 10, b =&gt; 12;
+my $total = 0;
+for ^10_000_000 {
+    $total = $total + %h&lt;a&gt; + %h&lt;b&gt;;
+}
+</pre></div>
+
+
+<p>And the hash store one is:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+my @keys = 'a'..'z';
+for ^500_000 {
+    my %h;
+    for @keys {
+        %h{$_} = 42;
+    }
+}
+</pre></div>
+
+
+<p>The improvements are nothing whatsoever to do with hashing itself, but instead look to be mostly thanks to much tighter code all around due to caller-side decontainerization. That can have a secondary effect of bringing things under the size limit for inlining, which is also a big help. Speedup factors of 2x and 1.85x are welcome, although we could really do with the same level of improvement again for me to be reasonably happy with our results.</p>
+
+
+
+<p>The line-reading benchmark is:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+my $fh = open "longfile";
+my $chars = 0;
+for $fh.lines { $chars = $chars + .chars };
+$fh.close;
+say $chars
+</pre></div>
+
+
+<p>Again, nothing specific to I/O got faster, but when dispatch &#8211; the glue that puts together all the pieces &#8211; gets a boost, it helps all over the place. (We are also decently competitive on this benchmark, although tend to be slower the moment the UTF-8 decoder can&#8217;t take it&#8217;s &#8220;NFG can&#8217;t possibly apply&#8221; fast path.)</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#and-in-less-micro-things"></a>And in less micro things&#8230;</h3>
+
+
+
+<p>I&#8217;ve also started looking at larger programs, and hearing results from others about theirs. It&#8217;s mostly encouraging:</p>
+
+
+
+<ul class="wp-block-list"><li>The long-standing&nbsp;<code>Text::CSV</code>&nbsp;benchmark&nbsp;<code>test-t</code>&nbsp;has seen roughly 20% improvement (thanks to lizmat for measuring)</li><li>A simple&nbsp;<code>Cro::HTTP</code>&nbsp;test application gets through about 10% more requests per second</li><li>MoarVM contributor dogbert did comparative timings of a number of scripts; the most significant improvement saw a drop from 25s to 7s, most are 10%-30% faster, some without change, and only one that slowed down.</li><li>There&#8217;s around 2.5% improvement on compilation of&nbsp;<code>CORE.setting</code>, the standard library. However, a big pinch of salt is needed here: the compiler itself has changed in a number of places as part of the work, and there were a couple of things tweaked based on looking at profiles that aren&#8217;t really related to dispatch.</li><li>Agrammon, an application calculating farming emissions, has seen a slowdown of around 9%. I didn&#8217;t get to look at it closely yet, although glancing at profiling output the number of deoptimizations is relatively high, which suggests we&#8217;re making some poor optimization decisions somewhere.</li></ul>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#smaller-profiler-output"></a>Smaller profiler output</h3>
+
+
+
+<p>One unpredicted (by me), but also welcome, improvement is that profiler output has become significantly smaller. Likely reasons for this include:</p>
+
+
+
+<ol class="wp-block-list"><li>The dispatch mechanism supports producing value results (either from constants, input arguments, or attributes read from input arguments). It entirely replaces an earlier mechanism, &#8220;specializer plugins&#8221;, which could map guards to a target to invoke, but always required a call to something &#8211; even if that something was the identity function. The logic was that this didn&#8217;t matter for any really hot code, since the identity function will trivially be inlined away. However, since profile size of the instrumenting profiler is a function of the number of paths through the call tree, trimming loads of calls to the identity function out of the tree makes it much smaller.</li><li>We used to make lots of calls to the&nbsp;<code>sink</code>&nbsp;method when a value was in sink context. Now, if we see that the type simply inherits that method from&nbsp;<code>Mu</code>, we elide the call entirely (again, it would inline away, but a smaller call graph is a smaller profile).</li><li>Multiple dispatch caching would previously always call the&nbsp;<code>proto</code>&nbsp;when the cache was missed, but would then not call an onlystar&nbsp;<code>proto</code>&nbsp;again when it got cache hits in the future. This meant the call tree under many multiple dispatches was duplicated in the profile. This wasn&#8217;t just a size issue; it was a bit annoying to have this effect show up in the profile reports too.</li></ol>
+
+
+
+<p>To give an example of the difference, I took profiles from Agrammon to study why it might have become slower. The one from before the dispatcher work weighed in at 87MB; the one with the new dispatch mechanism is under 30MB. That means less memory used while profiling, less time to write the profile out to disk afterwards, and less time for tools to load the profiler output. So now it&#8217;s faster to work out how to make things faster.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#is-there-any-bad-news"></a>Is there any bad news?</h3>
+
+
+
+<p>I&#8217;m afraid so. Startup time has suffered. While the new dispatch mechanism is more powerful, pushes more complexity out of the VM into high level code, and is more conducive to reaching higher peak performance, it also has a higher warmup time. At the time of writing, the impact on startup time seems to be around 25%. I expect we can claw some of that back ahead of the October release.</p>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#what-will-be-broken"></a>What will be broken?</h3>
+
+
+
+<p>Changes of this scale always come with an amount of risk. We&#8217;re merging this some weeks ahead of the next scheduled monthly release in order to have time for more testing, and to address any regressions that get reported. However, even before reaching the point of merging it, we have:</p>
+
+
+
+<ul class="wp-block-list"><li>Ensured it passes the specification test suite, both in normal circumstances, but also under optimizer stressing (where we force it to prematurely optimize everything, so that we tease out optimizer bugs and &#8211; given how many poor decisions we force it to make &#8211; deoptimization bugs too)</li><li>Used&nbsp;<code>blin</code>&nbsp;to run the tests of ecosystem modules. This is a standard step when preparing Rakudo releases, but in this case we&#8217;ve aimed it at the&nbsp;<code>new-disp</code>&nbsp;branches. This found a number of regressions caused by the switch to the new dispatch mechanism, which have been addressed.</li><li>Patched or sent pull requests to a number of modules that were relying on unsupported internal APIs that have now gone away or changed, or on other implementation details. There were relatively few of these, and happily, many of them were fixed up by migrating to supported APIs (which likely didn&#8217;t exist at the time the modules were written).</li></ul>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#what-happens-next"></a>What happens next?</h3>
+
+
+
+<p>As I&#8217;ve alluded to in a number of places in this post, while there are improvements to be enjoyed right away, there are also new opportunities for further improvement. Some things that are on my mind include:</p>
+
+
+
+<ul class="wp-block-list"><li>Reworking callframe entry and exit. These are still decidedly too costly. Various changes that have taken place while working on the new dispatch mechanism have opened up new opportunities for improvement in this area.</li><li>Avoiding megamorphic pile-ups. Micro-benchmarks are great at hiding these. In fact, the&nbsp;<code>callsame</code>&nbsp;one here is a perfect example! The point we do the resumption of a dispatch is inside&nbsp;<code>callsame</code>, so all the inline cache entries of resumptions throughout the program stack up in one place. What we&#8217;d like is to have them attached a level down the callstack instead. Otherwise, the level of&nbsp;<code>callsame</code>&nbsp;improvement seen in micro-benchmarks will not be enjoyed in larger applications. This applies in a number of other situations too.</li><li>Applying the new dispatch mechanism to optimize further constructs. For example, a method call that results in invoking the special&nbsp;<code>FALLBACK</code>&nbsp;method could have its callsite easily rewritten to do that, opening the way to inlining.</li><li>Further tuning the code we produce after optimization. There is an amount of waste that should be relatively straightforward to eliminate, and some opportunities to tweak deoptimization such that we&#8217;re able to delete more instructions and still retain the ability to deoptimize.</li><li>Continuing with the escape analysis work I was doing before, which should now be rather more valuable. The more flexible callstack/frame handling in place should also unblock my work on scalar replacement of&nbsp;<code>Int</code>s (which needs a great deal of care in memory management, as they may box a big integer, not just a native integer).</li><li>Implementing specialization, JIT, and inlining of dispatch resumptions.</li></ul>
+
+
+
+<h3 class="wp-block-heading"><a href="https://gist.github.com/jnthn/a894b2e9496ef54d2ad1fbbe60b95010#thank-you"></a>Thank you</h3>
+
+
+
+<p>I would like to thank&nbsp;<a href="https://www.perlfoundation.org/">TPF</a>&nbsp;and their donors for providing the funding that has made it possible for me to spend a good amount of my working time on this effort.</p>
+
+
+
+<p>While I&#8217;m to blame for the overall design and much of the implementation of the new dispatch mechanism, plenty of work has also been put in by other MoarVM and Rakudo contributors &#8211; especially over the last few months as the final pieces fell into place, and we turned our attention to getting it production ready. I&#8217;m thankful to them not only for the code and debugging contributions, but also much support and encouragement along the way. It feels good to have this merged, and I look forward to building upon it in the months and years to come.</p>
+<div id="atatags-370373-693abb6cc7eea">
+		<script type="text/javascript">
+			__ATA = window.__ATA || {};
+			__ATA.cmd = window.__ATA.cmd || [];
+			__ATA.cmd.push(function() {
+				__ATA.initVideoSlot('atatags-370373-693abb6cc7eea', {
+					sectionId: '370373',
+					format: 'inread'
+				});
+			});
+		</script>
+	</div><span id="wordads-inline-marker" style="display: none;"></span><div id="jp-post-flair" class="sharedaddy sd-like-enabled sd-sharing-enabled"><div class="sharedaddy sd-sharing-enabled"><div class="robots-nocontent sd-block sd-social sd-social-icon-text sd-sharing"><h3 class="sd-title">Share this:</h3><div class="sd-content"><ul><li class="share-facebook"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-facebook-596"
+				class="share-facebook sd-button share-icon"
+				href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/?share=facebook"
+				target="_blank"
+				aria-labelledby="sharing-facebook-596"
+				>
+				<span id="sharing-facebook-596" hidden>Click to share on Facebook (Opens in new window)</span>
+				<span>Facebook</span>
+			</a></li><li class="share-x"><a rel="nofollow noopener noreferrer"
+				data-shared="sharing-x-596"
+				class="share-x sd-button share-icon"
+				href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/?share=x"
+				target="_blank"
+				aria-labelledby="sharing-x-596"
+				>
+				<span id="sharing-x-596" hidden>Click to share on X (Opens in new window)</span>
+				<span>X</span>
+			</a></li><li class="share-end"></li></ul></div></div></div><div class='sharedaddy sd-block sd-like jetpack-likes-widget-wrapper jetpack-likes-widget-unloaded' id='like-post-wrapper-14597269-596-693abb6cc8440' data-src='//widgets.wp.com/likes/index.html?ver=20251211#blog_id=14597269&amp;post_id=596&amp;origin=6guts.wordpress.com&amp;obj_id=14597269-596-693abb6cc8440' data-name='like-post-frame-14597269-596-693abb6cc8440' data-title='Like or Reblog'><div class='likes-widget-placeholder post-likes-widget-placeholder' style='height: 55px;'><span class='button'><span>Like</span></span> <span class='loading'>Loading...</span></div><span class='sd-text-color'></span><a class='sd-link-color'></a></div>
+<div id='jp-relatedposts' class='jp-relatedposts' >
+	<h3 class="jp-relatedposts-headline"><em>Related</em></h3>
+</div></div>											</div><!-- .entry-content -->
+
+		
+						<div class="entry-utility">
+							This entry was posted in <a href="https://6guts.wordpress.com/category/uncategorized/" rel="category tag">Uncategorized</a>. Bookmark the <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" title="Permalink to The new MoarVM dispatch mechanism is&nbsp;here!" rel="bookmark">permalink</a>.													</div><!-- .entry-utility -->
+					</div><!-- #post-596 -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/" rel="prev"><span class="meta-nav">&larr;</span> Raku multiple dispatch with the new MoarVM&nbsp;dispatcher</a></div>
+					<div class="nav-next"><a href="https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/" rel="next">Recollections from the Raku Core&nbsp;Summit <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">
+			7 Responses to <em>The new MoarVM dispatch mechanism is&nbsp;here!</em>			</h3>
+
+
+			<ol class="commentlist">
+						<li class="comment byuser comment-author-nigehamilton even thread-even depth-1" id="li-comment-8215">
+		<div id="comment-8215">
+			<div class="comment-author vcard">
+				<img referrerpolicy="no-referrer" alt='nigehamilton&#039;s avatar' src='https://2.gravatar.com/avatar/e3802e1e4161cacb150f9a24c281399cd5427ed3d29701b4d8004af4eb056638?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/e3802e1e4161cacb150f9a24c281399cd5427ed3d29701b4d8004af4eb056638?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/e3802e1e4161cacb150f9a24c281399cd5427ed3d29701b4d8004af4eb056638?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/e3802e1e4161cacb150f9a24c281399cd5427ed3d29701b4d8004af4eb056638?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/e3802e1e4161cacb150f9a24c281399cd5427ed3d29701b4d8004af4eb056638?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/e3802e1e4161cacb150f9a24c281399cd5427ed3d29701b4d8004af4eb056638?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn"><a href="http://nigelhamiltondotcom.wordpress.com" class="url" rel="ugc external nofollow">nigehamilton</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8215">
+				September 29, 2021 at 5:40 PM</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Fabulous work Jonathan and the Rakudo/MoarVM team! Well done.  :-)</p>
+</div>
+
+			<div class="reply">
+				<a rel="nofollow" class="comment-reply-link" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/?replytocom=8215#respond" data-commentid="8215" data-postid="596" data-belowelement="comment-8215" data-respondelement="respond" data-replyto="Reply to nigehamilton" aria-label="Reply to nigehamilton">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="https://placeholderapi.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here-6guts-%e2%9a%93-https-6guts/" class="url" rel="ugc external nofollow">The new #MoarVM dispatch mechanism is here! | 6guts ⚓ https://6guts&#8230; | Dr. Roy Schestowitz (罗伊)</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-samebchase odd alt thread-odd thread-alt depth-1" id="li-comment-8219">
+		<div id="comment-8219">
+			<div class="comment-author vcard">
+				<img referrerpolicy="no-referrer" alt='samebchase&#039;s avatar' src='https://2.gravatar.com/avatar/51078200e0e53555da86ad33e96d8516a55d8a02732e559d0779870bda56eeda?s=40&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/51078200e0e53555da86ad33e96d8516a55d8a02732e559d0779870bda56eeda?s=40&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/51078200e0e53555da86ad33e96d8516a55d8a02732e559d0779870bda56eeda?s=60&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/51078200e0e53555da86ad33e96d8516a55d8a02732e559d0779870bda56eeda?s=80&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/51078200e0e53555da86ad33e96d8516a55d8a02732e559d0779870bda56eeda?s=120&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/51078200e0e53555da86ad33e96d8516a55d8a02732e559d0779870bda56eeda?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">samebchase</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8219">
+				September 30, 2021 at 8:36 AM</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Outstanding work! Excited to try out the new branch 🤓</p>
+</div>
+
+			<div class="reply">
+				<a rel="nofollow" class="comment-reply-link" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/?replytocom=8219#respond" data-commentid="8219" data-postid="596" data-belowelement="comment-8219" data-respondelement="respond" data-replyto="Reply to samebchase" aria-label="Reply to samebchase">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="http://rakudoweekly.blog/2021/10/06/2021-40-its-here/" class="url" rel="ugc external nofollow">2021.40 It&#8217;s here! &#8211; Rakudo Weekly News</a></p>
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-8361">
+		<div id="comment-8361">
+			<div class="comment-author vcard">
+				<img referrerpolicy="no-referrer" alt='Peter Lund&#039;s avatar' src='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Peter Lund</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8361">
+				October 22, 2021 at 1:03 PM</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Congratulations!</p>
+<p>It seems there is prior art (of sorts) in the form of the &#8220;shuffle thunk cache&#8221; in Microsoft&#8217;s .NET implementation:</p>
+<p><a href="https://github.com/dotnet/coreclr/pull/18476#issuecomment-400805569" rel="nofollow ugc">https://github.com/dotnet/coreclr/pull/18476#issuecomment-400805569</a></p>
+<p>(search for &#8220;shuffle&#8221;)</p>
+<p>I bet it exists in some form or another in many other language implementations but it doesn&#8217;t seem to be well described in the literature or have a good name (and many of the implementations are likely less general than they could have been).  I hope it gets a good name soon and enters the literature so people no longer have to reinvent it.  It took you more than a year to come up with it &#8212; and then a year and a half to get it into the mainline repo, right?  Image if it had been a well known concept :)</p>
+</div>
+
+			<div class="reply">
+				<a rel="nofollow" class="comment-reply-link" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/?replytocom=8361#respond" data-commentid="8361" data-postid="596" data-belowelement="comment-8361" data-respondelement="respond" data-replyto="Reply to Peter Lund" aria-label="Reply to Peter Lund">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-8363">
+		<div id="comment-8363">
+			<div class="comment-author vcard">
+				<img referrerpolicy="no-referrer" alt='Peter Lund&#039;s avatar' src='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=40&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=40&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=60&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=80&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=120&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=160&#038;d=identicon&#038;r=G 4x' class='avatar avatar-40' height='40' width='40' loading='lazy' decoding='async' />				<cite class="fn">Peter Lund</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+
+				
+				
+			<div class="comment-meta commentmetadata"><a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8363">
+				October 22, 2021 at 1:10 PM</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Btw, I found the link above from this 2018 page about stubs in general in .NET:</p>
+<p><a href="https://mattwarren.org/2019/09/26/Stubs-in-the-.NET-Runtime/" rel="nofollow ugc">https://mattwarren.org/2019/09/26/Stubs-in-the-.NET-Runtime/</a></p>
+<p>They have a LOT of special casing for all their thunks!  They were in the process of moving them from hand-written platform-specific assembly to IL so the JIT could take care of the details (as you already do in Moar).</p>
+</div>
+
+			<div class="reply">
+				<a rel="nofollow" class="comment-reply-link" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/?replytocom=8363#respond" data-commentid="8363" data-postid="596" data-belowelement="comment-8363" data-respondelement="respond" data-replyto="Reply to Peter Lund" aria-label="Reply to Peter Lund">Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+				</li><!-- #comment-## -->
+		<li class="post pingback">
+		<p>Pingback: <a href="https://allunix.ru/2021/10/24/%d1%80%d0%b5%d0%bb%d0%b8%d0%b7-%d0%ba%d0%be%d0%bc%d0%bf%d0%b8%d0%bb%d1%8f%d1%82%d0%be%d1%80%d0%b0-rakudo-2021-10-%d0%b4%d0%bb%d1%8f-%d1%8f%d0%b7%d1%8b%d0%ba%d0%b0-%d0%bf%" class="url" rel="ugc external nofollow">Релиз компилятора Rakudo 2021.10 для языка программирования Raku (бывший Perl 6) &#8212; AllUNIX.ru &#8212; Всероссийский портал о UNIX-системах</a></p>
+				</li><!-- #comment-## -->
+			</ol>
+
+
+	
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a comment <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://6guts.wordpress.com/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+
+
+<div class="comment-form__verbum transparent"></div><div class="verbum-form-meta"><input type='hidden' name='comment_post_ID' value='596' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+
+			<input type="hidden" name="highlander_comment_nonce" id="highlander_comment_nonce" value="15a8489234" />
+			<input type="hidden" name="verbum_show_subscription_modal" value="" /></div><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="13ce7071e4" /></p><p style="display: none !important;" class="akismet-fields-container" data-prefix="ak_"><label>&#916;<textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100"></textarea></label><input type="hidden" id="ak_js_1" name="ak_js" value="120"/><script type="text/javascript">
+/* <![CDATA[ */
+document.getElementById( "ak_js_1" ).setAttribute( "value", ( new Date() ).getTime() );
+/* ]]> */
+</script>
+</p></form>	</div><!-- #respond -->
+	<p class="akismet_comment_form_privacy_notice">This site uses Akismet to reduce spam. <a href="https://akismet.com/privacy/" target="_blank" rel="nofollow noopener">Learn how your comment data is processed.</a></p>
+</div><!-- #comments -->
+
+	
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="https://6guts.wordpress.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>
+		<li id="recent-posts-2" class="widget-container widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/">Recollections from the Raku Core&nbsp;Summit</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" aria-current="page">The new MoarVM dispatch mechanism is&nbsp;here!</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2021/04/15/raku-multiple-dispatch-with-the-new-moarvm-dispatcher/">Raku multiple dispatch with the new MoarVM&nbsp;dispatcher</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2021/03/15/towards-a-new-general-dispatch-mechanism-in-moarvm/">Towards a new general dispatch mechanism in&nbsp;MoarVM</a>
+									</li>
+											<li>
+					<a href="https://6guts.wordpress.com/2020/10/05/taking-a-break-from-raku-core-development/">Taking a break from Raku core&nbsp;development</a>
+									</li>
+					</ul>
+
+		</li><li id="recent-comments-2" class="widget-container widget_recent_comments"><h3 class="widget-title">Recent Comments</h3>				<table class="recentcommentsavatar" cellspacing="0" cellpadding="0" border="0">
+					<tr><td title="wendyga" class="recentcommentsavatartop" style="height:48px; width:48px;"><a href="http://wendyga.wordpress.com" rel="nofollow"><img referrerpolicy="no-referrer" alt='wendyga&#039;s avatar' src='https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=48&#038;d=identicon&#038;r=G' srcset='https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=48&#038;d=identicon&#038;r=G 1x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=72&#038;d=identicon&#038;r=G 1.5x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=96&#038;d=identicon&#038;r=G 2x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=144&#038;d=identicon&#038;r=G 3x, https://2.gravatar.com/avatar/5ad691f7a728493c9eda51b06fef487d1f6c901ca75fbd95456d3cb58e3846b9?s=192&#038;d=identicon&#038;r=G 4x' class='avatar avatar-48' height='48' width='48' loading='lazy' decoding='async' /></a></td><td class="recentcommentstexttop" style=""><a href="http://wendyga.wordpress.com" rel="nofollow">wendyga</a> on <a href="https://6guts.wordpress.com/2023/06/18/recollections-from-the-raku-core-summit/#comment-24457">Recollections from the Raku Co&hellip;</a></td></tr><tr><td title="Релиз компилятора Rakudo 2021.10 для языка программирования Raku (бывший Perl 6) &#8212; AllUNIX.ru &#8212; Всероссийский портал о UNIX-системах" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="https://allunix.ru/2021/10/24/%d1%80%d0%b5%d0%bb%d0%b8%d0%b7-%d0%ba%d0%be%d0%bc%d0%bf%d0%b8%d0%bb%d1%8f%d1%82%d0%be%d1%80%d0%b0-rakudo-2021-10-%d0%b4%d0%bb%d1%8f-%d1%8f%d0%b7%d1%8b%d0%ba%d0%b0-%d0%bf%" rel="nofollow"></a></td><td class="recentcommentstextend" style=""><a href="https://allunix.ru/2021/10/24/%d1%80%d0%b5%d0%bb%d0%b8%d0%b7-%d0%ba%d0%be%d0%bc%d0%bf%d0%b8%d0%bb%d1%8f%d1%82%d0%be%d1%80%d0%b0-rakudo-2021-10-%d0%b4%d0%bb%d1%8f-%d1%8f%d0%b7%d1%8b%d0%ba%d0%b0-%d0%bf%" rel="nofollow">Релиз компилятора Ra&hellip;</a> on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8379">The new MoarVM dispatch mechan&hellip;</a></td></tr><tr><td title="Peter Lund" class="recentcommentsavatarend" style="height:48px; width:48px;"><img referrerpolicy="no-referrer" alt='Peter Lund&#039;s avatar' src='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=72&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=96&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=144&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=192&#038;d=identicon&#038;r=G 4x' class='avatar avatar-48' height='48' width='48' loading='lazy' decoding='async' /></td><td class="recentcommentstextend" style="">Peter Lund on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8363">The new MoarVM dispatch mechan&hellip;</a></td></tr><tr><td title="Peter Lund" class="recentcommentsavatarend" style="height:48px; width:48px;"><img referrerpolicy="no-referrer" alt='Peter Lund&#039;s avatar' src='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G' srcset='https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=48&#038;d=identicon&#038;r=G 1x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=72&#038;d=identicon&#038;r=G 1.5x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=96&#038;d=identicon&#038;r=G 2x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=144&#038;d=identicon&#038;r=G 3x, https://0.gravatar.com/avatar/9fed38dc0fe23976520886ad7b2a46bc2558add711ac729a0179afa13f56c1bd?s=192&#038;d=identicon&#038;r=G 4x' class='avatar avatar-48' height='48' width='48' loading='lazy' decoding='async' /></td><td class="recentcommentstextend" style="">Peter Lund on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8361">The new MoarVM dispatch mechan&hellip;</a></td></tr><tr><td title="2021.40 It&#8217;s here! &#8211; Rakudo Weekly News" class="recentcommentsavatarend" style="height:48px; width:48px;"><a href="http://rakudoweekly.blog/2021/10/06/2021-40-its-here/" rel="nofollow"></a></td><td class="recentcommentstextend" style=""><a href="http://rakudoweekly.blog/2021/10/06/2021-40-its-here/" rel="nofollow">2021.40 It&#8217;s h&hellip;</a> on <a href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comment-8260">The new MoarVM dispatch mechan&hellip;</a></td></tr>				</table>
+				</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">Archives</h3>
+			<ul>
+					<li><a href='https://6guts.wordpress.com/2023/06/'>June 2023</a></li>
+	<li><a href='https://6guts.wordpress.com/2021/09/'>September 2021</a></li>
+	<li><a href='https://6guts.wordpress.com/2021/04/'>April 2021</a></li>
+	<li><a href='https://6guts.wordpress.com/2021/03/'>March 2021</a></li>
+	<li><a href='https://6guts.wordpress.com/2020/10/'>October 2020</a></li>
+	<li><a href='https://6guts.wordpress.com/2019/01/'>January 2019</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/10/'>October 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/09/'>September 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/07/'>July 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/06/'>June 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/03/'>March 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2018/01/'>January 2018</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/11/'>November 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/09/'>September 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/08/'>August 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/07/'>July 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/06/'>June 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/05/'>May 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/04/'>April 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2017/03/'>March 2017</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/12/'>December 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/11/'>November 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/08/'>August 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/07/'>July 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/06/'>June 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/04/'>April 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/03/'>March 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/02/'>February 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2016/01/'>January 2016</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/12/'>December 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/11/'>November 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/10/'>October 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/09/'>September 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/08/'>August 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/07/'>July 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/06/'>June 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/05/'>May 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2015/04/'>April 2015</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/06/'>June 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/04/'>April 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2014/01/'>January 2014</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/12/'>December 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/10/'>October 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/09/'>September 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/08/'>August 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/07/'>July 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/05/'>May 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/04/'>April 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/02/'>February 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2013/01/'>January 2013</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/11/'>November 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/10/'>October 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/09/'>September 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/08/'>August 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/07/'>July 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/06/'>June 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/05/'>May 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/04/'>April 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/03/'>March 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/02/'>February 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2012/01/'>January 2012</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/11/'>November 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/10/'>October 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/09/'>September 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/08/'>August 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/07/'>July 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/06/'>June 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/05/'>May 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/04/'>April 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/02/'>February 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2011/01/'>January 2011</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/11/'>November 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/10/'>October 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/09/'>September 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/08/'>August 2010</a></li>
+	<li><a href='https://6guts.wordpress.com/2010/07/'>July 2010</a></li>
+			</ul>
+
+			</li><li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">Categories</h3>
+			<ul>
+					<li class="cat-item cat-item-1"><a href="https://6guts.wordpress.com/category/uncategorized/">Uncategorized</a>
+</li>
+			</ul>
+
+			</li><li id="meta-2" class="widget-container widget_meta"><h3 class="widget-title">Meta</h3>
+		<ul>
+			<li><a class="click-register" href="https://wordpress.com/start?ref=wplogin">Create account</a></li>			<li><a href="https://6guts.wordpress.com/wp-login.php">Log in</a></li>
+			<li><a href="https://6guts.wordpress.com/feed/">Entries feed</a></li>
+			<li><a href="https://6guts.wordpress.com/comments/feed/">Comments feed</a></li>
+
+			<li><a href="https://wordpress.com/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.com</a></li>
+		</ul>
+
+		</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="https://6guts.wordpress.com/" title="6guts" rel="home">
+					6guts				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_website" rel="nofollow">Create a free website or blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<!--  -->
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/files/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/pub/twentyten/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<script type="text/javascript" src="//0.gravatar.com/js/hovercards/hovercards.min.js?ver=202550924dcd77a86c6f1d3698ec27fc5da92b28585ddad3ee636c0397cf312193b2a1" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+//# sourceURL=wpgroho-js-extra
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Gravatar not found.': 'Gravatar not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+							'Is this you?': 'Is this you?',
+							'Claim your free profile.': 'Claim your free profile.',
+							'Email': 'Email',
+							'Home Phone': 'Home Phone',
+							'Work Phone': 'Work Phone',
+							'Cell Phone': 'Cell Phone',
+							'Contact Form': 'Contact Form',
+							'Calendar': 'Calendar',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	<div class="grofile-hash-map-ceee3db9ecffc3067ab1f12e663a2b05">
+	</div>
+	<div class="grofile-hash-map-1495085f87f1fa1955b9c977fd4a4b90">
+	</div>
+	<div class="grofile-hash-map-ff0ea14405074744b0a11b983a6d0f61">
+	</div>
+	<div class="grofile-hash-map-3a2b4609787771a2ea3bd9bd97d0592a">
+	</div>
+	</div>
+		<!-- CCPA [start] -->
+		<script type="text/javascript">
+			( function () {
+
+				var setupPrivacy = function() {
+
+					// Minimal Mozilla Cookie library
+					// https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie/Simple_document.cookie_framework
+					var cookieLib = window.cookieLib = {getItem:function(e){return e&&decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*"+encodeURIComponent(e).replace(/[\-\.\+\*]/g,"\\$&")+"\\s*\\=\\s*([^;]*).*$)|^.*$"),"$1"))||null},setItem:function(e,o,n,t,r,i){if(!e||/^(?:expires|max\-age|path|domain|secure)$/i.test(e))return!1;var c="";if(n)switch(n.constructor){case Number:c=n===1/0?"; expires=Fri, 31 Dec 9999 23:59:59 GMT":"; max-age="+n;break;case String:c="; expires="+n;break;case Date:c="; expires="+n.toUTCString()}return"rootDomain"!==r&&".rootDomain"!==r||(r=(".rootDomain"===r?".":"")+document.location.hostname.split(".").slice(-2).join(".")),document.cookie=encodeURIComponent(e)+"="+encodeURIComponent(o)+c+(r?"; domain="+r:"")+(t?"; path="+t:"")+(i?"; secure":""),!0}};
+
+					// Implement IAB USP API.
+					window.__uspapi = function( command, version, callback ) {
+
+						// Validate callback.
+						if ( typeof callback !== 'function' ) {
+							return;
+						}
+
+						// Validate the given command.
+						if ( command !== 'getUSPData' || version !== 1 ) {
+							callback( null, false );
+							return;
+						}
+
+						// Check for GPC. If set, override any stored cookie.
+						if ( navigator.globalPrivacyControl ) {
+							callback( { version: 1, uspString: '1YYN' }, true );
+							return;
+						}
+
+						// Check for cookie.
+						var consent = cookieLib.getItem( 'usprivacy' );
+
+						// Invalid cookie.
+						if ( null === consent ) {
+							callback( null, false );
+							return;
+						}
+
+						// Everything checks out. Fire the provided callback with the consent data.
+						callback( { version: 1, uspString: consent }, true );
+					};
+
+					// Initialization.
+					document.addEventListener( 'DOMContentLoaded', function() {
+
+						// Internal functions.
+						var setDefaultOptInCookie = function() {
+							var value = '1YNN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 365 * 24 * 60 * 60, '/', domain );
+						};
+
+						var setDefaultOptOutCookie = function() {
+							var value = '1YYN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 24 * 60 * 60, '/', domain );
+						};
+
+						var setDefaultNotApplicableCookie = function() {
+							var value = '1---';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 24 * 60 * 60, '/', domain );
+						};
+
+						var setCcpaAppliesCookie = function( applies ) {
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'ccpa_applies', applies, 24 * 60 * 60, '/', domain );
+						}
+
+						var maybeCallDoNotSellCallback = function() {
+							if ( 'function' === typeof window.doNotSellCallback ) {
+								return window.doNotSellCallback();
+							}
+
+							return false;
+						}
+
+						// Look for usprivacy cookie first.
+						var usprivacyCookie = cookieLib.getItem( 'usprivacy' );
+
+						// Found a usprivacy cookie.
+						if ( null !== usprivacyCookie ) {
+
+							// If the cookie indicates that CCPA does not apply, then bail.
+							if ( '1---' === usprivacyCookie ) {
+								return;
+							}
+
+							// CCPA applies, so call our callback to add Do Not Sell link to the page.
+							maybeCallDoNotSellCallback();
+
+							// We're all done, no more processing needed.
+							return;
+						}
+
+						// We don't have a usprivacy cookie, so check to see if we have a CCPA applies cookie.
+						var ccpaCookie = cookieLib.getItem( 'ccpa_applies' );
+
+						// No CCPA applies cookie found, so we'll need to geolocate if this visitor is from California.
+						// This needs to happen client side because we do not have region geo data in our $SERVER headers,
+						// only country data -- therefore we can't vary cache on the region.
+						if ( null === ccpaCookie ) {
+
+							var request = new XMLHttpRequest();
+							request.open( 'GET', 'https://public-api.wordpress.com/geo/', true );
+
+							request.onreadystatechange = function () {
+								if ( 4 === this.readyState ) {
+									if ( 200 === this.status ) {
+
+										// Got a geo response. Parse out the region data.
+										var data = JSON.parse( this.response );
+										var region      = data.region ? data.region.toLowerCase() : '';
+										var ccpa_applies = ['california', 'colorado', 'connecticut', 'delaware', 'indiana', 'iowa', 'montana', 'new jersey', 'oregon', 'tennessee', 'texas', 'utah', 'virginia'].indexOf( region ) > -1;
+										// Set CCPA applies cookie. This keeps us from having to make a geo request too frequently.
+										setCcpaAppliesCookie( ccpa_applies );
+
+										// Check if CCPA applies to set the proper usprivacy cookie.
+										if ( ccpa_applies ) {
+											if ( maybeCallDoNotSellCallback() ) {
+												// Do Not Sell link added, so set default opt-in.
+												setDefaultOptInCookie();
+											} else {
+												// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+												setDefaultOptOutCookie();
+											}
+										} else {
+											// CCPA does not apply.
+											setDefaultNotApplicableCookie();
+										}
+									} else {
+										// Could not geo, so let's assume for now that CCPA applies to be safe.
+										setCcpaAppliesCookie( true );
+										if ( maybeCallDoNotSellCallback() ) {
+											// Do Not Sell link added, so set default opt-in.
+											setDefaultOptInCookie();
+										} else {
+											// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+											setDefaultOptOutCookie();
+										}
+									}
+								}
+							};
+
+							// Send the geo request.
+							request.send();
+						} else {
+							// We found a CCPA applies cookie.
+							if ( ccpaCookie === 'true' ) {
+								if ( maybeCallDoNotSellCallback() ) {
+									// Do Not Sell link added, so set default opt-in.
+									setDefaultOptInCookie();
+								} else {
+									// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+									setDefaultOptOutCookie();
+								}
+							} else {
+								// CCPA does not apply.
+								setDefaultNotApplicableCookie();
+							}
+						}
+					} );
+				};
+
+				// Kickoff initialization.
+				if ( window.defQueue && defQueue.isLOHP && defQueue.isLOHP === 2020 ) {
+					defQueue.items.push( setupPrivacy );
+				} else {
+					setupPrivacy();
+				}
+
+			} )();
+		</script>
+
+		<!-- CCPA [end] -->
+				<div id="actionbar" dir="ltr" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow actnbr-has-actions">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-comment" href="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/#comments">
+							<svg class="gridicon gridicons-comment" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M12 16l-5 5v-5H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v9c0 1.1-.9 2-2 2h-7z"/></g></svg>							<span>Comment						</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+						<a class="actnbr-action actnbr-actn-reblog" href="">
+							<svg class="gridicon gridicons-reblog" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M22.086 9.914L20 7.828V18c0 1.105-.895 2-2 2h-7v-2h7V7.828l-2.086 2.086L14.5 8.5 19 4l4.5 4.5-1.414 1.414zM6 16.172V6h7V4H6c-1.105 0-2 .895-2 2v10.172l-2.086-2.086L.5 15.5 5 20l4.5-4.5-1.414-1.414L6 16.172z"/></g></svg><span>Reblog</span>
+						</a>
+					</li>
+									<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="https://6guts.wordpress.com">
+				<img loading='lazy' alt='' src='https://s0.wp.com/i/logo/wpcom-gray-white.png?m=1479929237i' srcset='https://s0.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				6guts			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																						<div class="actnbr-follow-count">Join 61 other subscribers</div>
+																					<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14597269" />
+										<input type="hidden" name="source" value="https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="be1d507898" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2021%2F09%2F29%2Fthe-new-moarvm-dispatch-mechanism-is-here%2F&#038;signup_flow=account">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+									<li class="actnbr-btn actnbr-hidden no-display" onclick="javascript:__tcfapi( 'showUi' );">
+						<a class="actnbr-action actnbr-actn-privacy" href="#">
+							<svg class="gridicon gridicons-info-outline" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M13 9h-2V7h2v2zm0 2h-2v6h2v-6zm-1-7c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8m0-2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/></g></svg>							<span>Privacy						</span>
+						</a>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+								<li class="actnbr-sitename">
+			<a href="https://6guts.wordpress.com">
+				<img loading='lazy' alt='' src='https://s0.wp.com/i/logo/wpcom-gray-white.png?m=1479929237i' srcset='https://s0.wp.com/i/logo/wpcom-gray-white.png 1x' class='avatar avatar-50' height='50' width='50' />				6guts			</a>
+		</li>
+								<li class="actnbr-folded-follow">
+										<a class="actnbr-action actnbr-actn-follow " href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+								</li>
+														<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+							<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2021%2F09%2F29%2Fthe-new-moarvm-dispatch-mechanism-is-here%2F&#038;signup_flow=account">Log in</a></li>
+																<li class="actnbr-shortlink">
+										<a href="https://wp.me/pZfpP-9C">
+											<span class="actnbr-shortlink__text">Copy shortlink</span>
+											<span class="actnbr-shortlink__icon"><svg class="gridicon gridicons-checkmark" height="16" width="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M9 19.414l-6.707-6.707 1.414-1.414L9 16.586 20.293 5.293l1.414 1.414"/></g></svg></span>
+										</a>
+									</li>
+																<li class="flb-report">
+									<a href="https://wordpress.com/abuse/?report_url=https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/" target="_blank" rel="noopener noreferrer">
+										Report this content									</a>
+								</li>
+															<li class="actnbr-reader">
+									<a href="https://wordpress.com/reader/blogs/14597269/posts/596">
+										View post in Reader									</a>
+								</li>
+															<li class="actnbr-subs">
+									<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+								</li>
+																<li class="actnbr-fold"><a href="">Collapse this bar</a></li>
+														</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "DOMContentLoaded", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "/wp-content/mu-plugins/actionbar/actionbar.css?v=20250116";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "/wp-content/mu-plugins/actionbar/actionbar.js?v=20250204";
+	document.body.appendChild( script );
+} );
+</script>
+
+			<div id="jp-carousel-loading-overlay">
+			<div id="jp-carousel-loading-wrapper">
+				<span id="jp-carousel-library-loading">&nbsp;</span>
+			</div>
+		</div>
+		<div class="jp-carousel-overlay" style="display: none;">
+
+		<div class="jp-carousel-container">
+			<!-- The Carousel Swiper -->
+			<div
+				class="jp-carousel-wrap swiper jp-carousel-swiper-container jp-carousel-transitions"
+				itemscope
+				itemtype="https://schema.org/ImageGallery">
+				<div class="jp-carousel swiper-wrapper"></div>
+				<div class="jp-swiper-button-prev swiper-button-prev">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskPrev" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="9" height="12">
+							<path d="M16.2072 16.59L11.6496 12L16.2072 7.41L14.8041 6L8.8335 12L14.8041 18L16.2072 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskPrev)">
+							<rect x="0.579102" width="23.8823" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+				<div class="jp-swiper-button-next swiper-button-next">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskNext" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="8" height="12">
+							<path d="M8.59814 16.59L13.1557 12L8.59814 7.41L10.0012 6L15.9718 12L10.0012 18L8.59814 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskNext)">
+							<rect x="0.34375" width="23.8822" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<!-- The main close buton -->
+			<div class="jp-carousel-close-hint">
+				<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<mask id="maskClose" mask-type="alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="15" height="14">
+						<path d="M19.3166 6.41L17.9135 5L12.3509 10.59L6.78834 5L5.38525 6.41L10.9478 12L5.38525 17.59L6.78834 19L12.3509 13.41L17.9135 19L19.3166 17.59L13.754 12L19.3166 6.41Z" fill="white"/>
+					</mask>
+					<g mask="url(#maskClose)">
+						<rect x="0.409668" width="23.8823" height="24" fill="#FFFFFF"/>
+					</g>
+				</svg>
+			</div>
+			<!-- Image info, comments and meta -->
+			<div class="jp-carousel-info">
+				<div class="jp-carousel-info-footer">
+					<div class="jp-carousel-pagination-container">
+						<div class="jp-swiper-pagination swiper-pagination"></div>
+						<div class="jp-carousel-pagination"></div>
+					</div>
+					<div class="jp-carousel-photo-title-container">
+						<h2 class="jp-carousel-photo-caption"></h2>
+					</div>
+					<div class="jp-carousel-photo-icons-container">
+						<a href="#" class="jp-carousel-icon-btn jp-carousel-icon-info" aria-label="Toggle photo metadata visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskInfo" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7537 2C7.26076 2 2.80273 6.48 2.80273 12C2.80273 17.52 7.26076 22 12.7537 22C18.2466 22 22.7046 17.52 22.7046 12C22.7046 6.48 18.2466 2 12.7537 2ZM11.7586 7V9H13.7488V7H11.7586ZM11.7586 11V17H13.7488V11H11.7586ZM4.79292 12C4.79292 16.41 8.36531 20 12.7537 20C17.142 20 20.7144 16.41 20.7144 12C20.7144 7.59 17.142 4 12.7537 4C8.36531 4 4.79292 7.59 4.79292 12Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskInfo)">
+										<rect x="0.8125" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+							</span>
+						</a>
+												<a href="#" class="jp-carousel-icon-btn jp-carousel-icon-comments" aria-label="Toggle photo comments visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskComments" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3271 2H20.2486C21.3432 2 22.2388 2.9 22.2388 4V16C22.2388 17.1 21.3432 18 20.2486 18H6.31729L2.33691 22V4C2.33691 2.9 3.2325 2 4.3271 2ZM6.31729 16H20.2486V4H4.3271V18L6.31729 16Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskComments)">
+										<rect x="0.34668" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+
+								<span class="jp-carousel-has-comments-indicator" aria-label="This image has comments."></span>
+							</span>
+						</a>
+											</div>
+				</div>
+				<div class="jp-carousel-info-extra">
+					<div class="jp-carousel-info-content-wrapper">
+						<div class="jp-carousel-photo-title-container">
+							<h2 class="jp-carousel-photo-title"></h2>
+						</div>
+						<div class="jp-carousel-comments-wrapper">
+															<div id="jp-carousel-comments-loading">
+									<span>Loading Comments...</span>
+								</div>
+								<div class="jp-carousel-comments"></div>
+								<div id="jp-carousel-comment-form-container">
+									<span id="jp-carousel-comment-form-spinner">&nbsp;</span>
+									<div id="jp-carousel-comment-post-results"></div>
+																														<form id="jp-carousel-comment-form">
+												<label for="jp-carousel-comment-form-comment-field" class="screen-reader-text">Write a Comment...</label>
+												<textarea
+													name="comment"
+													class="jp-carousel-comment-form-field jp-carousel-comment-form-textarea"
+													id="jp-carousel-comment-form-comment-field"
+													placeholder="Write a Comment..."
+												></textarea>
+												<div id="jp-carousel-comment-form-submit-and-info-wrapper">
+													<div id="jp-carousel-comment-form-commenting-as">
+																													<fieldset>
+																<label for="jp-carousel-comment-form-email-field">Email (Required)</label>
+																<input type="text" name="email" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-email-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-author-field">Name (Required)</label>
+																<input type="text" name="author" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-author-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-url-field">Website</label>
+																<input type="text" name="url" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-url-field" />
+															</fieldset>
+																											</div>
+													<input
+														type="submit"
+														name="submit"
+														class="jp-carousel-comment-form-button"
+														id="jp-carousel-comment-form-button-submit"
+														value="Post Comment" />
+												</div>
+											</form>
+																											</div>
+													</div>
+						<div class="jp-carousel-image-meta">
+							<div class="jp-carousel-title-and-caption">
+								<div class="jp-carousel-photo-info">
+									<h3 class="jp-carousel-caption" itemprop="caption description"></h3>
+								</div>
+
+								<div class="jp-carousel-photo-description"></div>
+							</div>
+							<ul class="jp-carousel-image-exif" style="display: none;"></ul>
+							<a class="jp-carousel-image-download" href="#" target="_blank" style="display: none;">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.84615 5V19H19.7775V12H21.7677V19C21.7677 20.1 20.8721 21 19.7775 21H5.84615C4.74159 21 3.85596 20.1 3.85596 19V5C3.85596 3.9 4.74159 3 5.84615 3H12.8118V5H5.84615ZM14.802 5V3H21.7677V10H19.7775V6.41L9.99569 16.24L8.59261 14.83L18.3744 5H14.802Z" fill="white"/>
+									</mask>
+									<g mask="url(#mask0)">
+										<rect x="0.870605" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+								<span class="jp-carousel-download-text"></span>
+							</a>
+							<div class="jp-carousel-image-map" style="display: none;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		
+	<script type="text/javascript">
+		window.WPCOM_sharing_counts = {"https://6guts.wordpress.com/2021/09/29/the-new-moarvm-dispatch-mechanism-is-here/":596};
+	</script>
+				<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJzTLy/QTc7PK0nNK9EvyClNz8wr1i+uzCtJrMjITM/IAeKS1CJMEWP94uSizIISoOIM5/yiVL2sYh19yo1yKiotzgjISczMAxpon2traGpuYGRgYmlhmgUAFLxAeg=='></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?m=1363304414i&amp;ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	document.addEventListener( 'is.post-load', function () {
+		SyntaxHighlighter.highlight();
+	} );
+</script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??/wp-content/blog-plugins/wordads-classes/js/watl-v2.js,/wp-content/mu-plugins/likes/queuehandler.js,/wp-includes/js/comment-reply.min.js?m=1760446017j'></script>
+<script type="text/javascript" src="/wp-content/plugins/gutenberg-core/v22.2.0/build/scripts/hooks/index.min.js?m=1764855221i&amp;ver=1764773745495" id="wp-hooks-js"></script>
+<script type="text/javascript" src="/wp-content/plugins/gutenberg-core/v22.2.0/build/scripts/i18n/index.min.js?m=1764855221i&amp;ver=1764773747362" id="wp-i18n-js"></script>
+<script type="text/javascript" id="wp-i18n-js-after">
+/* <![CDATA[ */
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+//# sourceURL=wp-i18n-js-after
+/* ]]> */
+</script>
+<script type="text/javascript" id="verbum-settings-js-before">
+/* <![CDATA[ */
+window.VerbumComments = {"Log in or provide your name and email to leave a reply.":"Log in or provide your name and email to leave a reply.","Log in or provide your name and email to leave a comment.":"Log in or provide your name and email to leave a comment.","Receive web and mobile notifications for posts on this site.":"Receive web and mobile notifications for posts on this site.","Name":"Name","Email (address never made public)":"Email (address never made public)","Website (optional)":"Website (optional)","Leave a reply. (log in optional)":"Leave a reply. (log in optional)","Leave a comment. (log in optional)":"Leave a comment. (log in optional)","Log in to leave a reply.":"Log in to leave a reply.","Log in to leave a comment.":"Log in to leave a comment.","Logged in via %s":"Logged in via %s","Log out":"Log out","Email":"Email","(Address never made public)":"(Address never made public)","Instantly":"Instantly","Daily":"Daily","Reply":"Reply","Comment":"Comment","WordPress":"WordPress","Weekly":"Weekly","Notify me of new posts":"Notify me of new posts","Email me new posts":"Email me new posts","Email me new comments":"Email me new comments","Cancel":"Cancel","Write a comment...":"Write a comment...","Write a reply...":"Write a reply...","Website":"Website","Optional":"Optional","We'll keep you in the loop!":"We'll keep you in the loop!","Loading your comment...":"Loading your comment...","Discover more from":"Discover more from 6guts","Subscribe now to keep reading and get access to the full archive.":"Subscribe now to keep reading and get access to the full archive.","Continue reading":"Continue reading","Never miss a beat!":"Never miss a beat!","Interested in getting blog post updates? Simply click the button below to stay in the loop!":"Interested in getting blog post updates? Simply click the button below to stay in the loop!","Enter your email address":"Enter your email address","Subscribe":"Subscribe","Comment sent successfully":"Comment sent successfully","Save my name, email, and website in this browser for the next time I comment.":"Save my name, email, and website in this browser for the next time I comment.","hovercardi18n":{"Edit your profile \u2192":"Edit your profile \u2192","View profile \u2192":"View profile \u2192","Contact":"Contact","Send money":"Send money","Profile not found.":"Profile not found.","Too Many Requests.":"Too Many Requests.","Internal Server Error.":"Internal Server Error.","Sorry, we are unable to load this Gravatar profile.":"Sorry, we are unable to load this Gravatar profile."},"siteId":14597269,"postId":596,"mustLogIn":false,"requireNameEmail":true,"commentRegistration":false,"connectURL":"https://6guts.wordpress.com/public.api/connect/?action=request\u0026from_comments=yes","logoutURL":"https://6guts.wordpress.com/wp-login.php?action=logout\u0026_wpnonce=19ecbc94f5","homeURL":"https://6guts.wordpress.com/","subscribeToBlog":true,"subscribeToComment":true,"isJetpackCommentsLoggedIn":false,"jetpackUsername":"","jetpackUserId":0,"jetpackSignature":"","jetpackAvatar":"https://0.gravatar.com/avatar/?s=96\u0026amp;d=identicon\u0026amp;r=G","enableBlocks":true,"enableSubscriptionModal":true,"currentLocale":"en","isJetpackComments":false,"allowedBlocks":["core/paragraph","core/list","core/code","core/list-item","core/quote","core/image","core/embed","core/quote","core/code"],"embedNonce":"f194a974de","verbumBundleUrl":"/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/features/verbum-comments/dist/index.js","isRTL":false,"vbeCacheBuster":1738686361,"iframeUniqueId":0,"colorScheme":false}
+//# sourceURL=verbum-settings-js-before
+/* ]]> */
+</script>
+<script type="text/javascript" src="/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/assets/dynamic-loader.js?m=1755005491i&amp;minify=false&amp;ver=adc3e7b923a66edb437b" id="verbum-dynamic-loader-js" defer="defer" data-wp-strategy="defer"></script>
+<script type="text/javascript" id="coblocks-loader-js-extra">
+/* <![CDATA[ */
+var wpcom_coblocks_js = {"coblocks_masonry_js":"https://s0.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/js/coblocks-masonry.min.js?m=1681832297i","coblocks_lightbox_js":"https://s0.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/js/coblocks-lightbox.min.js?m=1681832297i","jquery_core_js":"/wp-includes/js/jquery/jquery.min.js","jquery_migrate_js":"/wp-includes/js/jquery/jquery-migrate.min.js","masonry_js":"/wp-includes/js/masonry.min.js","imagesloaded_js":"/wp-includes/js/imagesloaded.min.js"};
+var coblocksLigthboxData = {"closeLabel":"Close Gallery","leftLabel":"Previous","rightLabel":"Next"};
+//# sourceURL=coblocks-loader-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-carousel-js-extra">
+/* <![CDATA[ */
+var jetpackSwiperLibraryPath = {"url":"/wp-content/mu-plugins/jetpack-plugin/moon/_inc/blocks/swiper.js"};
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"https://6guts.wordpress.com/wp-admin/admin-ajax.php","nonce":"e1db123ea1","display_exif":"1","display_comments":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","image_label":"Open image in full-screen.","download_original":"View full size \u003Cspan class=\"photo-size\"\u003E{0}\u003Cspan class=\"photo-size-times\"\u003E\u00d7\u003C/span\u003E{1}\u003C/span\u003E","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"0","require_name_email":"1","login_url":"https://6guts.wordpress.com/wp-login.php?redirect_to=https%3A%2F%2F6guts.wordpress.com%2F2021%2F09%2F29%2Fthe-new-moarvm-dispatch-mechanism-is-here%2F","blog_id":"14597269","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"stats_query_args":"blog=14597269&v=wpcom&tz=1&user_id=0&subd=6guts","is_public":"1"};
+//# sourceURL=jetpack-carousel-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="sharing-js-js-extra">
+/* <![CDATA[ */
+var sharing_js_options = {"lang":"en","counts":"1","is_stats_active":"1"};
+//# sourceURL=sharing-js-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-script-data-js-before">
+/* <![CDATA[ */
+window.JetpackScriptData = {"site":{"host":"wpcom","is_wpcom_platform":true}};
+//# sourceURL=jetpack-script-data-js-before
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='/_static/??-eJydkd1uwyAMhV9o4KVb/y6mPUpFgGUkgBE2ifb2TdMki6ppmnYFHB9/RzYwJKExso0MyZfGRQKNtUfdEexkdZKVIBeStyLbXr6CccTQfpuER2VslsFF2dITbHijoRELdMBslCGhvSKyNCFCgn53O2RdovH2ERDK2t5aTkp3YpSGpDHMBQiIcSleehsNZlCFMShmp9e2WyYT1MV5s4qks0ssjGL1h+Rt4MVFPcO0yljI+tW3CD9tZINVnaNgWbzI5ztuET7yZDa/9C4R91U8PP8/Cn2qbMdPMl/T1cVmnuE9vFXHQ3U6n4/7Q3sFTRzRmw=='></script>
+<script type="text/javascript" id="sharing-js-js-after">
+/* <![CDATA[ */
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-facebook' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-facebook' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomfacebook', 'menubar=1,resizable=1,width=600,height=400' );
+						return false;
+					}
+				} );
+			} )();
+var windowOpen;
+			( function () {
+				function matches( el, sel ) {
+					return !! (
+						el.matches && el.matches( sel ) ||
+						el.msMatchesSelector && el.msMatchesSelector( sel )
+					);
+				}
+
+				document.body.addEventListener( 'click', function ( event ) {
+					if ( ! event.target ) {
+						return;
+					}
+
+					var el;
+					if ( matches( event.target, 'a.share-x' ) ) {
+						el = event.target;
+					} else if ( event.target.parentNode && matches( event.target.parentNode, 'a.share-x' ) ) {
+						el = event.target.parentNode;
+					}
+
+					if ( el ) {
+						event.preventDefault();
+
+						// If there's another sharing window open, close it.
+						if ( typeof windowOpen !== 'undefined' ) {
+							windowOpen.close();
+						}
+						windowOpen = window.open( el.getAttribute( 'href' ), 'wpcomx', 'menubar=1,resizable=1,width=600,height=350' );
+						return false;
+					}
+				} );
+			} )();
+//# sourceURL=sharing-js-js-after
+/* ]]> */
+</script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/72x72/","ext":".png","svgUrl":"https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/","svgExt":".svg","source":{"concatemoji":"/wp-includes/js/wp-emoji-release.min.js?m=1764078722i&ver=6.9-RC2-61304"}}
+</script>
+<script type="module">
+/* <![CDATA[ */
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=/wp-includes/js/wp-emoji-loader.min.js
+/* ]]> */
+</script>
+	<iframe src='https://widgets.wp.com/likes/master.html?ver=20251211#ver=20251211' scrolling='no' id='likes-master' name='likes-master' style='display:none;'></iframe>
+	<div id='likes-other-gravatars' role="dialog" aria-hidden="true" tabindex="-1"><div class="likes-text"><span>%d</span></div><ul class="wpl-avatars sd-like-gravatars"></ul></div>
+	<script src="//stats.wp.com/w.js?68" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14597269','blog_tz':'1','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+		// Prevent sending pageview tracking from WP-Admin pages.
+		_stq.push(['view', {'blog':'14597269','v':'wpcom','tz':'1','user_id':'0','post':'596','subd':'6guts'}]);
+		_stq.push(['extra', {'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWFnNncxc1tjZG9XVXhRY2gzcWgrSVBOLUJFJlA3bENkM2tneDdlTis4Y1RBVkpKZFJMRTRVOC5WSVl8Uj9kN3NIT1I3Y0prfndtdE9ORjZVLF8ySnJlK2x2bWxIZTdNbVQybXM0UTdZcj9zTWF+ZDdJUnl3UWZMbz9ub3Z3MXxrLnZpLGZUcVZ2ZCtvOTNyWDU3K01iTVpQRTFWTkhiPXIwLCYvTmtbQ2Rsdj1tXV1kcFM5NyxTdXxFLGZnWUZOfj9wVFNyV0JdRj11aktLc0pqTjJpUWZFaWZnND1tZWNuWVhCaGwvanlpVi9FZ1RGREVCL3YzP2UxZENjXVorSC94TFRxLmhVSiZlTy9+cVYuMnVlSkJ0LT92djltNGN0YyZTaWFWUzdmNC0ya0hGbDgvLXk5R0tMdjF1cVt6TzFvcTljN0RUJWNoUSZseQ=='}]);
+_stq.push([ 'clickTrackerInit', '14597269', '596' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<meta id="bilmur" property="bilmur:data" content="" data-provider="wordpress.com" data-service="simple" data-site-tz="Etc/GMT-1" data-custom-props="{&quot;logged_in&quot;:&quot;0&quot;,&quot;wptheme&quot;:&quot;pub\/twentyten&quot;,&quot;wptheme_is_block&quot;:&quot;0&quot;}"  >
+		<script defer src="/wp-content/js/bilmur.min.js?i=17&amp;m=202550"></script> 	<div id="marketingbar" class="marketing-bar noskim  "><div class="marketing-bar-text">Design a site like this with WordPress.com</div><a class="marketing-bar-button" href="https://wordpress.com/start/?ref=marketing_bar">Get started</a><a class="marketing-bar-link" tabindex="-1" aria-label="Create your website at WordPress.com" href="https://wordpress.com/start/?ref=marketing_bar"></a></div>		<script type="text/javascript">
+			window._tkq = window._tkq || [];
+
+			window._tkq.push( [ 'recordEvent', 'wpcom_marketing_bar_impression', {"is_current_user_blog_owner":false} ] );
+
+			document.querySelectorAll( '#marketingbar > a' ).forEach( link => {
+				link.addEventListener( 'click', ( e ) => {
+					window._tkq.push( [ 'recordEvent', 'wpcom_marketing_bar_cta_click', {"is_current_user_blog_owner":false} ] );
+				} );
+			});
+		</script>
+<script>
+(function() {
+	'use strict';
+
+	const fetches = {};
+	const promises = {};
+	const urls = {
+		'wp-polyfill': '/wp-includes/js/dist/vendor/wp-polyfill.min.js?m=1764669441i&ver=3.15.0',
+		'verbum': '/wp-content/mu-plugins/jetpack-mu-wpcom-plugin/moon/jetpack_vendor/automattic/jetpack-mu-wpcom/src/build/verbum-comments/verbum-comments.js?m=1765405478i&minify=false&ver=87a45c8962a448c74c1e'
+	};
+	const loaders = {
+		'verbum': () => {
+			fetchExternalScript('wp-polyfill');
+			fetchExternalScript('verbum');
+			promises['wp-polyfill'] = promises['wp-polyfill'] || loadWPScript('wp-polyfill');
+			promises['verbum'] = promises['verbum'] || promises['wp-polyfill'].then( () => loadWPScript('verbum') );
+			return promises['verbum'];
+		},
+		
+	};
+	const scriptExtras = {
+		
+	};
+
+	window.WP_Enqueue_Dynamic_Script = {
+		loadScript: (handle) => {
+			if (!loaders[handle]) {
+				console.error('WP_Enqueue_Dynamic_Script: unregistered script `' + handle + '`.');
+			}
+			return loaders[handle]();
+		}
+	};
+
+	function fetchExternalScript(handle) {
+		if (!urls[handle]) {
+			return Promise.resolve();
+		}
+
+		fetches[handle] = fetches[handle] || fetch(urls[handle], { mode: 'no-cors' });
+		return fetches[handle];
+	}
+
+	function runExtraScript(handle, type, index) {
+		const id = 'wp-enqueue-dynamic-script:' + handle + ':' + type + ':' + (index + 1);
+		const template = document.getElementById(id);
+		if (!template) {
+			return Promise.reject();
+		}
+
+		const script = document.createElement( 'script' );
+		script.innerHTML = template.innerHTML;
+		document.body.appendChild( script );
+		return Promise.resolve();
+	}
+
+	function loadExternalScript(handle) {
+		if (!urls[handle]) {
+			return Promise.resolve();
+		}
+
+		return fetches[handle].then(() => {
+			return new Promise((resolve, reject) => {
+				const script = document.createElement('script');
+				script.onload = () => resolve();
+				script.onerror = (e) => reject(e);
+				script.src = urls[handle];
+				document.body.appendChild(script);
+			});
+		});
+	}
+
+	function loadExtra(handle, pos) {
+		const count = (scriptExtras[handle] && scriptExtras[handle][pos]) || 0;
+		let promise = Promise.resolve();
+
+		for (let i = 0; i < count; i++) {
+			promise = promise.then(() => runExtraScript(handle, pos, i));
+		}
+
+		return promise;
+	}
+
+	function loadWPScript(handle) {
+		// Core loads scripts in this order. See: https://github.com/WordPress/WordPress/blob/a59eb9d39c4fcba834b70c9e8dfd64feeec10ba6/wp-includes/class-wp-scripts.php#L428.
+		return loadExtra(handle, 'translations')
+			.then(() => loadExtra(handle, 'before'))
+			.then(() => loadExternalScript(handle))
+			.then(() => loadExtra(handle, 'after'));
+	}
+} )();
+</script>
+</body>
+</html>

@@ -24,23 +24,23 @@ my %r2i =
 The decode algorithm can be implemented by matching all the symbols, taking a slice of the conversion
 map and then reducing the slice to its sum.
 
-```` raku
+```raku
 my $roman = 'CCXLVI';
 say [+] %r2i{ $roman.match(/ ( <{%r2i.keys}> )* /).flat>>.Str }
-````
+```
 
-````
+```
 ./roman-decode.raku
 246
-````
+```
 
 That works fine but is surprisingly slow, more so for long numerals. Instead of using a regex
 match, we can use `split` and keep the delimiter values with `:v` – though we do need to filter out
 all the zero length strings between the delimiters.
 
-```` raku
+```raku
 say [+] %r2i{ $roman.split(%r2i.keys, :v).grep(*.Bool) }
-````
+```
 
 [Try it Online!](https://tio.run/##Nc6xCsIwFIXh3ae4i7TVEFKxgkodjEuhWUtAHByKFCMNiQpFfPaYm8Tty7n/EN0btXGPCeZmNUA9A8iaDOoDlMSrC1x7RlU4ysAtwTa6ZH6XbYzRkVWYecxZ6Hnq8XJKEZqLVOFD/CO2d/Y6wXl5Cd/7gFUvo6nVanjmuNB7P1kCu3dBb6bX@YIex1EV8HVOcNFKKZvuBw)
 
@@ -52,19 +52,19 @@ It would be nice if there was a version of `Str.match` that took a list of liter
 
 The encode algorithm can be implemented by using integer arithmetic to find how many of each symbol is required, starting with the numerically largest symbol `M` and then concatenating the symbols together.
 
-```` raku
+```raku
 say [~] gather {
     for %i2r.keys.sort: -* -> $radix {
         take %i2r{$radix} x $number / $radix;
         $number %= $radix;
     }
 }
-````
+```
 
-````
+```
 ./roman.raku encode 39
 XXXIX
-````
+```
 
 [Try it Online!](https://tio.run/##VY7PC4IwFIDv/hXvoAilpmGRiV3sEtQ1guiwaNXol2wKiti/bnvbCtrp2/s@9lZQfp/2jwYcPmaQWQDuyoVsAZEnaaswlqhpgsOdwsTDVnMUyvlurWNkjRM1znUeqj43PZqliZDzjanwsvlGYWrhz9iYQ6Y@GJBnyQrCuFDGflaPI0U5FPeKF2kvSAP79wEupLxK0cqdAOcXV48EN9qIQLx4OQd/AP4CbE5OrDYZnpLcqGpbrTqof1tGJk9/9dc42Z/qrK7vo2QWfwA)
 
@@ -73,7 +73,7 @@ explicit iterative solution. Enough time spent already so that will be for anoth
 
 ### The Resulting Program
 
-```` raku
+```raku
 my %r2i =
 'I' => 1, 'IV' => 4, 'V' => 5, 'IX' => 9,
 'X' => 10, 'XL' => 40, 'L' => 50, 'XC' => 90,
@@ -93,9 +93,9 @@ multi MAIN('encode', Int $number is copy where 0 <= $number <= 3999) {
         }
     }
 }
-````
+```
 
-````
+```
 ./roman.raku decode MMXIX
 2019
 
@@ -107,4 +107,4 @@ MMXIX
 
 ./roman.raku encode 1984
 MCMLXXXIV
-````
+```

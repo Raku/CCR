@@ -11,7 +11,7 @@ multi foo(&c where { .arity == 1 }) { say "One." };
 multi foo(&c where { .arity == 2 }) { say "Two." };
 ````
 
-That is, multi-dispatching on the arity of the passed code block. (This worked, it was just when `foo({{$^a + $^b + $^c })` was called, with arity 3, it gave the wrong kind of error.) You can do some wonderful things in Raku. :-)
+That is, multi-dispatching on the arity of the passed code block. (This worked, it was just when `foo({$^a + $^b + $^c })` was called, with arity 3, it gave the wrong kind of error.) You can do some wonderful things in Raku. :-)
 
 Another quirk found through playing around with this was that if you wrote a sub taking a parameter with the sigil `&`, we needed to check that it was something that you could invoke. In Raku, that's the `Callable` role. So I stubbed that in, got `Code` to do it, and added a small temporary workaround to make typechecking work out on it since we aren't re-blessing Parrot subs into Raku types just yet. And now if you were to call `foo(42)`, continuing the example above, you'll get a type-check failure. Happily, multi-dispatch based on the sigil type just worked from this chance without any additional tweaks, which is what I expected.
 

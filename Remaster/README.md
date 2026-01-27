@@ -6,7 +6,7 @@ This phase produces cleaned up and updated versions of blog posts in markdown, s
 It currently provides remastered blog posts by:
 - [Donald Hunter](Donald Hunter)
 - [Robert Lemmen](Robert Lemmen)
-- [Carl Mäsak](Carl Masak)
+- [Carl Masak](Carl Masak)
 - [Elizabeth Mattijsen](Elizabeth Mattijsen)
 - [Jonathan Worthington](Jonathan Worthington)
 - [Zoffix Znet](Zoffix Znet)

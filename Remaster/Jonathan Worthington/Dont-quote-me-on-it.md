@@ -62,8 +62,8 @@ The single and double quotes are suitable for a bunch of cases, but what if you 
 ```` raku
 > say q{C'est la vie}
 C'est la vie
-> say q{{ Unmatched } and { are { OK } in { here}}
- Unmatched } and { are { OK } in { here
+> say q[[Unmatched ] and [ are [ OK ] in [ here]]
+Unmatched ] and [ are [ OK ] in [ here
 > say qq!Lottery results: {(1..49).roll(6).sort}!
 Lottery results: 12 13 26 34 36 46
 ````

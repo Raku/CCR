@@ -26,7 +26,7 @@ map and then reducing the slice to its sum.
 
 ```raku
 my $roman = 'CCXLVI';
-say [+] %r2i{ $roman.match(/ ( <{%r2i.keys}> )* /).flat>>.Str }
+say [+] %r2i{ $roman.match(/ ( <{ %r2i.keys }> )* /).flat>>.Str }
 ```
 
 ```

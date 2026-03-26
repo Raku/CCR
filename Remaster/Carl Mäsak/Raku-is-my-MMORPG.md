@@ -4,17 +4,20 @@
 
 On the way to lunch today, I queried two collegues about [Eve Online](http://www.eveonline.com/), their favourite way to spendevenings and weekends:
 
-*<masak> So, are people confused by all the detail when they first join?*
-
-*<jonalv> Of course.*
-
-*<masak> And how do you... handle that? How do you make it easy and fun for people to get up to speed?*
-
-*<jonalv> Well, people tend to find the fun in it themselves. As to getting up to speed, they simply have to start in one end and unwind the whole thing.*
-
-*<Gpox> It *is* complicated. There are occasional jokes about the [<a href='LearningCurve.jpg'>learning curve</a>](LearningCurve.jpg) involved.*
-
-*<jonalv> Nowadays people have the wiki to help them get started as well. There wasn't one when I joined.*
+```
+<masak> So, are people confused by all the detail when they first join?
+<jonalv> Of course.
+<masak> And how do you... handle that? How do you make it easy and fun
+for people to get up to speed?
+<jonalv> Well, people tend to find the fun in it themselves. As to
+getting up to speed, they simply have to start in one end and unwind
+the whole thing.
+<Gpox> It *is* complicated. There are occasional jokes about the
+<a href='LearningCurve.jpg'>learning curve</a> involved.
+<jonalv> Nowadays people have the wiki to help them get started as
+well. There wasn't one when I joined.
+```
+![Learning Curve](LearningCurve.jpg)
 
 I think the parallels to the Raku community are so clear that I don't even need to point them out.
 

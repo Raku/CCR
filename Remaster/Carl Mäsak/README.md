@@ -1,4 +1,4 @@
-This directory contains remastered versions of 8 blog posts by Carl Mäsak.
+This directory contains remastered versions of 22 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -6,5 +6,19 @@ This directory contains remastered versions of 8 blog posts by Carl Mäsak.
 - 2008-09-03 [Comments](Comments.md)
 - 2008-09-03 [Lovely patchers](Lovely-patchers.md)
 - 2008-09-24 [I'll call you back](Ill-call-you-back.md)
+- 2008-10-23 [Nonlinear development history](Nonlinear-development-history.md)
+- 2008-11-01 [November 1 2008 — the .end is here](November-1-2008-—-the-end-is-here.md)
+- 2008-11-03 [November 2, 2008 — one step forward, two steps back](November-2-2008-—-one-step-forward-two-steps-back.md)
+- 2008-11-04 [November 3, 2008 — today is Skin Monday!](November-3-2008-—-today-is-Skin-Monday.md)
+- 2008-11-04 [November 4, 2008 — "bug wrangler"](November-4-2008-—-"bug-wrangler".md)
+- 2008-11-05 [November 5, 2008 — remember, remember](November-5-2008-—-remember-remember.md)
+- 2008-11-07 [November 6, 2008 — making waves](November-6-2008-—-making-waves.md)
+- 2008-11-08 [November 7, 2008 — just walk into the building](November-7-2008-—-just-walk-into-the-building.md)
+- 2008-11-09 [November 8, 2008 — the joys of discovery](November-8-2008-—-the-joys-of-discovery.md)
+- 2008-11-09 [November 9, 2008 — developing code is like baking bread](November-9-2008-—-developing-code-is-like-baking-bread.md)
+- 2008-11-10 [November 10, 2008 — sleep deprivation, I presume?](November-10-2008-—-sleep-deprivation-I-presume.md)
+- 2008-11-11 [November 11, 2008 — the calm after the storm](November-11-2008-—-the-calm-after-the-storm.md)
+- 2008-11-13 [November 12, 2008 — blowing stuff up](November-12-2008-—-blowing-stuff-up.md)
+- 2008-11-14 [November 13, 2008 — the storm after the storm](November-13-2008-—-the-storm-after-the-storm.md)
 - 2009-08-11 [Raku is my MMORPG](Raku-is-my-MMORPG.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

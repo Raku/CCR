@@ -1,4 +1,4 @@
-This directory contains remastered versions of 40 blog posts by Carl Mäsak.
+This directory contains remastered versions of 51 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -38,5 +38,16 @@ This directory contains remastered versions of 40 blog posts by Carl Mäsak.
 - 2008-11-30 [November 29, 2008 — "I will call it 'the graphophone'!"](November-29-2008-—-"I-will-call-it-the-graphophone".md)
 - 2008-12-01 [November 30, 2008 — improvements](November-30-2008-—-improvements.md)
 - 2008-12-05 [That was the month that was](That-was-the-month-that-was.md)
+- 2008-12-20 [Fun with code blocks in Raku](Fun-with-code-blocks-in-Raku.md)
+- 2008-12-23 [This is your chance to write Raku code! Yes, you!](This-is-your-chance-to-write-Raku-code-Yes-you.md)
+- 2008-12-27 [The care and feeding of S29](The-care-and-feeding-of-S29.md)
+- 2008-12-30 [Scripters, now is the time!](Scripters-now-is-the-time.md)
+- 2009-01-03 [A Perl one-liner grows up](A-Perl-one-liner-grows-up.md)
+- 2009-01-08 [A farewell to ideas](A-farewell-to-ideas.md)
+- 2009-01-13 [Pretending that Envy is one of the Perl virtues](Pretending-that-Envy-is-one-of-the-Perl-virtues.md)
+- 2009-01-27 [Three bugs that bug me right now](Three-bugs-that-bug-me-right-now.md)
+- 2009-02-08 [Attitude](Attitude.md)
+- 2009-03-06 [November won a prize](November-won-a-prize.md)
+- 2009-03-06 [Throwing confetti](Throwing-confetti.md)
 - 2009-08-11 [Raku is my MMORPG](Raku-is-my-MMORPG.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

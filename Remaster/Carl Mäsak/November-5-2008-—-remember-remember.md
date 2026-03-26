@@ -10,9 +10,9 @@ Why the Gunpowder Treason
 Should ever be forgot.
 ```
 
-403 years ago today, Guido "Guy" Fawkes was arrested for attempting to blow up Parliament. The so-called [Gunpowder Plot](http://en.wikipedia.org/wiki/Gunpowder_Plot) failed and Guy Fawkes was killed, but they are still celebrated in Britain and New Zealand.
+403 years ago today, Guido "Guy" Fawkes was arrested for attempting to blow up Parliament. The so-called [Gunpowder Plot](https://en.wikipedia.org/wiki/Gunpowder_Plot) failed and Guy Fawkes was killed, but they are still celebrated in Britain and New Zealand.
 
-Wikipedia on the memetic heritage of [Guy Fawkes](http://en.wikipedia.org/wiki/Guy_Fawkes):
+Wikipedia on the memetic heritage of [Guy Fawkes](https://en.wikipedia.org/wiki/Guy_Fawkes):
 
 > The Fawkes story continued to be celebrated in poetry. The Latin verse In Quintum Novembris was written c. 1626. John Milton’s Satan in book six of Paradise Lost was inspired by Fawkes — the Devil invents gunpowder to try to match God's thunderbolts. Post-Reformation and anti–Catholic literature often personified Fawkes as the Devil in this way. From Puritan polemics to popular literature, all sought to associate Fawkes with the demonic. However, his reputation has since undergone a rehabilitation, and today he is often toasted as, "The last man to enter Parliament with honourable intentions."
 

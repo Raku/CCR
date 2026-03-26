@@ -2,7 +2,7 @@
     
 *Originally published on [4 November 2008](http://strangelyconsistent.org/blog/november-4-2008-bug-wrangler) by Carl Mäsak.*
 
-86 years ago today, archaeologist and Egyptologist Howard Carter made a historical discovery: the steps leading to [Tutankhamun](http://en.wikipedia.org/wiki/Tutankhamun)'s tomb, "by far the best preserved and most intact pharaonic tomb ever found in the Valley of the Kings". The [Wikipedia article](http://en.wikipedia.org/wiki/Howard_Carter_(archaeologist)) about Carter tells the story about the discovery:
+86 years ago today, archaeologist and Egyptologist Howard Carter made a historical discovery: the steps leading to [Tutankhamun](https://en.wikipedia.org/wiki/Tutankhamun)'s tomb, "by far the best preserved and most intact pharaonic tomb ever found in the Valley of the Kings". The [Wikipedia article](http://en.wikipedia.org/wiki/Howard_Carter_(archaeologist)) about Carter tells the story about the discovery:
 
 > He wired Carnarvon [Lord Carnarvon financed Carter's search for the tomb] to come, and on 26 November 1922, with Carnarvon, Carnarvon's daughter, and others in attendance, Carter made the famous "tiny breach in the top left hand corner" of the doorway, and was able to peer in by the light of a candle and see that many of the gold and ebony treasures were still in place. He did not yet know at that point whether it was "a tomb or merely a cache", but he did see a promising sealed doorway between two sentinel statues. When Carnarvon asked him if he saw anything, Carter replied: "Yes, wonderful things".
 

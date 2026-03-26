@@ -2,7 +2,7 @@
     
 *Originally published on [13 November 2008](http://strangelyconsistent.org/blog/november-12-2008-blowing-stuff-up) by Carl Mäsak.*
 
-38 years ago today, the [Oregon Highway Division](http://en.wikipedia.org/wiki/Oregon_Department_of_Transportation) tried to get rid of a rotting beached sperm whale by blowing it up. This event has become known as the [exploding whale](http://en.wikipedia.org/wiki/Exploding_whale) incident. [Wikipedia](http://en.wikipedia.org/wiki/Exploding_whale) has the story:
+38 years ago today, the [Oregon Highway Division](https://en.wikipedia.org/wiki/Oregon_Department_of_Transportation) tried to get rid of a rotting beached sperm whale by blowing it up. This event has become known as the [exploding whale](http://en.wikipedia.org/wiki/Exploding_whale) incident. [Wikipedia](http://en.wikipedia.org/wiki/Exploding_whale) has the story:
 
 > The explosion caused large pieces of blubber to land some distance away from the beach, some of which caused heavy damage to a nearby car. The explosion disintegrated only some of the whale, most of which remained on the beach for the Oregon Highway Division workers to clear away.
 

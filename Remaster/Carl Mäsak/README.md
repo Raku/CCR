@@ -1,4 +1,4 @@
-This directory contains remastered versions of 26 blog posts by Carl Mäsak.
+This directory contains remastered versions of 40 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -24,5 +24,19 @@ This directory contains remastered versions of 26 blog posts by Carl Mäsak.
 - 2008-11-15 [November 15, 2008 — a pact](November-15-2008-—-a-pact.md)
 - 2008-11-17 [November 16, 2008 — the right man for the job](November-16-2008-—-the-right-man-for-the-job.md)
 - 2008-11-18 [November 17, 2008 — it's a small step for a robotic dog...](November-17-2008-—-its-a-small-step-for-a-robotic-dog.md)
+- 2008-11-18 [November 18, 2008 — of mice and babies](November-18-2008-—-of-mice-and-babies.md)
+- 2008-11-20 [November 19, 2008 — things to keep in mind](November-19-2008-—-things-to-keep-in-mind.md)
+- 2008-11-21 [November 20, 2008 — fifty thousand orbits around the Earth](November-20-2008-—-fifty-thousand-orbits-around-the-Earth.md)
+- 2008-11-22 [November 21, 2008 — a torrent of things](November-21-2008-—-a-torrent-of-things.md)
+- 2008-11-23 [November 22, 2008 — there's more than one way to write it](November-22-2008-—-theres-more-than-one-way-to-write-it.md)
+- 2008-11-24 [November 23, 2008 — the rite to write](November-23-2008-—-the-rite-to-write.md)
+- 2008-11-25 [November 24, 2008 — evolving things](November-24-2008-—-evolving-things.md)
+- 2008-11-25 [November 25, 2008 — the lexbug of death is dead](November-25-2008-—-the-lexbug-of-death-is-dead.md)
+- 2008-11-27 [November 26, 2008 — we come in peace! bzzz...](November-26-2008-—-we-come-in-peace-bzzz.md)
+- 2008-11-28 [November 27, 2008 — it's just a fleshwound](November-27-2008-—-its-just-a-fleshwound.md)
+- 2008-11-29 [November 28, 2008 — "...take thee, Annam Whatley..."](November-28-2008-—-"take-thee-Annam-Whatley".md)
+- 2008-11-30 [November 29, 2008 — "I will call it 'the graphophone'!"](November-29-2008-—-"I-will-call-it-the-graphophone".md)
+- 2008-12-01 [November 30, 2008 — improvements](November-30-2008-—-improvements.md)
+- 2008-12-05 [That was the month that was](That-was-the-month-that-was.md)
 - 2009-08-11 [Raku is my MMORPG](Raku-is-my-MMORPG.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

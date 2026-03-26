@@ -15,7 +15,7 @@ Later in the week, Илья Беликин (*ihrd*++) of Vladivostok.pm joined f
 - First, feel free to **ignore these rules** if they inconvenience you. They are there to help you, not to restrict you.
 - The three files **`FEATURES`, `JANITORS`** and **`LOOKINTO`** together constitute our roadmap right now. Note that these files are found in `p5w/`, the Perl implementation of the wiki. **[Update 2008-09-21: Now they're found in `docs/` instead.]** 
 - As a rule, we implement feature-size things in `p5w` before we try them out on p6w. This is because bugs easily distract from the goal in `p6w`. The Perl version is a sort of **live spec** for the Raku version.
-- We're currently doing quite a bit of our work in **branches**. Currently, there are two branches: `new-html-template` aims to replace the `HTML::Template` with a new grammar-using module, and `tests` is a playground for new test files for other modules. (Things like branches change quickly. [github](http://github.com/viklund/november/) is the ultimate reference.)
+- We're currently doing quite a bit of our work in **branches**. Currently, there are two branches: `new-html-template` aims to replace the `HTML::Template` with a new grammar-using module, and `tests` is a playground for new test files for other modules. (Things like branches change quickly. [github](https://github.com/viklund/november/) is the ultimate reference.)
 - Patches are very welcome, nowadays through the **mailing list** november-wiki@googlegroups.com, or the **IRC channel** `#november` over at `irc.freenode.org`.
 
 

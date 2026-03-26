@@ -2,7 +2,7 @@
     
 *Originally published on [4 November 2008](http://strangelyconsistent.org/blog/november-3-2008-today-is-skin-monday) by Carl Mäsak.*
 
-Today we honor Laika (Лайка) who 51 years ago today was shot into space. In the words of [Wikipedia](http://en.wikipedia.org/wiki/Laika), she "became the first living mammal to orbit the Earth and the first orbital casualty."
+Today we honor Laika (Лайка) who 51 years ago today was shot into space. In the words of [Wikipedia](https://en.wikipedia.org/wiki/Laika), she "became the first living mammal to orbit the Earth and the first orbital casualty."
 
 > Although Laika did not survive the trip, the experiment proved that a living passenger could survive being launched into orbit and endure weightlessness. It paved the way for human spaceflight and provided scientists with some of the first data on how living organisms react to spaceflight environments.
 

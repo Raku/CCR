@@ -2,13 +2,13 @@
     
 *Originally published on [14 November 2008](http://strangelyconsistent.org/blog/november-14-2008-pioneers) by Carl Mäsak.*
 
-98 years ago today, [Eugene Ely](http://en.wikipedia.org/wiki/Eugene_Burton_Ely) performs history's first take off from a ship. He took off from a makeshift deck on the [USS Birmingham](http://en.wikipedia.org/wiki/USS_Birmingham_(CL-2)) in a [Curtiss](http://en.wikipedia.org/wiki/Glenn_Curtiss) [pusher](http://en.wikipedia.org/wiki/Pusher_configuration).
+98 years ago today, [Eugene Ely](https://en.wikipedia.org/wiki/Eugene_Burton_Ely) performs history's first take off from a ship. He took off from a makeshift deck on the [USS Birmingham](http://en.wikipedia.org/wiki/USS_Birmingham_(CL-2)) in a [Curtiss](http://en.wikipedia.org/wiki/Glenn_Curtiss) [pusher](http://en.wikipedia.org/wiki/Pusher_configuration).
 
 > On November 14, 1910, Ely took off in a Curtiss pusher from a temporary platform erected over the bow of the light cruiser USS Birmingham. The aeroplane plunged downward as soon as it cleared the 83-foot platform runway; and the aircraft wheels dipped into the water before rising. Ely's goggles were covered with spray, and the aviator promptly landed on a beach rather than circling the harbor and landing at the Norfolk Navy Yard as planned. Following this flight, Ely was made a lieutenant in the California National Guard to qualify for a $500 prize offered to the first reservist to make such a flight.
 
-Barely one year later, in October 1911, he crashed during a flying exhibition in Macon, Georgia. He was posthumously awarded the [Distinguished Flying Cross](http://en.wikipedia.org/wiki/Distinguished_Flying_Cross_(USA)) in recognition of his contribution to naval aviation.
+Barely one year later, in October 1911, he crashed during a flying exhibition in Macon, Georgia. He was posthumously awarded the [Distinguished Flying Cross](https://en.wikipedia.org/wiki/Distinguished_Flying_Cross_(USA)) in recognition of his contribution to naval aviation.
 
-So he was a cool guy. But I especially like how he got into flying. [Wikipedia](http://en.wikipedia.org/wiki/Eugene_Burton_Ely#Background) again:
+So he was a cool guy. But I especially like how he got into flying. [Wikipedia](https://en.wikipedia.org/wiki/Eugene_Burton_Ely#Background) again:
 
 > They [Ely and wife] relocated to Portland, Oregon in early 1910, where he got a job as a salesman, working for E. Henry Wemme. Soon after, Wemme purchased one of Glenn Curtiss' first four-cylinder biplanes and acquired the franchise for the Pacific Northwest. Wemme was unable to fly the Curtiss biplane, but Ely, believing that flying was as easy as driving a car, offered to fly it. He ended up crashing it instead, and feeling responsible, bought the wreck from Wemme. Within a few months he had repaired the aircraft and learned to fly.
 

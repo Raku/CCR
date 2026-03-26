@@ -21,7 +21,7 @@ To learn more, please browse the slides from the YAPC:EU 2008 lightning talk:
 November is free, released under the Artistic License 2.0, and available online:
 <dl>
 <dd>
- <<a href='http://github.com/viklund/november/'>http://github.com/viklund/november/</a>>
+ <<a href='https://github.com/viklund/november/'>http://github.com/viklund/november/</a>>
 </dd>
 </dl>
 

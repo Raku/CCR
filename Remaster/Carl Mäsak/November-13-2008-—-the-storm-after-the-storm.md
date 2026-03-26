@@ -2,7 +2,7 @@
     
 *Originally published on [14 November 2008](http://strangelyconsistent.org/blog/november-13-2008-the-storm-after-the-storm) by Carl Mäsak.*
 
-38 years ago today, what has been called the [20th century's worst natural disaster](http://en.wikipedia.org/wiki/1970_Bhola_cyclone) claimed between 300,000 and 500,000 lives in one night, primarily as a result of the storm surge that flooded much of the low-lying islands of the Ganges Delta.
+38 years ago today, what has been called the [20th century's worst natural disaster](https://en.wikipedia.org/wiki/1970_Bhola_cyclone) claimed between 300,000 and 500,000 lives in one night, primarily as a result of the storm surge that flooded much of the low-lying islands of the Ganges Delta.
 
 > The Pakistan Meteorological Department issued a report calling for "danger preparedness" in the coastal regions in danger during the day on November 12. As the storm neared the coast, a "great danger signal" was broadcast on Pakistan Radio. Survivors later said that this meant little to them, but that they had recognised a No. 1 warning signal as representing the greatest possible threat. It is estimated that 90% of the population in the area was aware of the cyclone before it hit, but only about 1% sought refuge in fortified structures.
 

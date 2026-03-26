@@ -20,7 +20,7 @@ Then there's the issues, the kind that inevitably exist in projects at this earl
 
 Current flaws in Rakudo range from missing features to actual problems, the latter which you can often work around, albeit laboriously. There are also defects which even fall outside of this spectrum; bugs that conjure up thoughts about bureaucratic red tape, sudden epilleptic seizures, or Heisenberg's uncertainty relation.
 
-Many of the features described are in use in [November](http://github.com/viklund/november/) today. Some of the problems described are felt (with varying severity) in November today.
+Many of the features described are in use in [November](https://github.com/viklund/november/) today. Some of the problems described are felt (with varying severity) in November today.
 
 ## The good
 
@@ -52,7 +52,7 @@ In an almost Escher-like fashion, PGE is also being exposed in Rakudo, through t
 
 The sheer power of this is beginning to be felt in the wiki project, as we move more and more of our text handling over to grammars. We've been parsing the wiki syntax itself using a grammar for weeks now, and the code for this is shorter, more nicely separated, and easier to maintain than its Perl counterpart.
 
-In the past few days, we've been [rewriting](http://github.com/viklund/november/tree/new-html-template) our `HTML::Template` module to use grammars instead of bare regexes. The code got smaller (5.4 kb before, 3.9 kb after), *and* it handles nested templates! A grammar makes a parse tree of the template, and a method with some loops and if statements traverse the tree and do the appropriate things. The future addition of the `{*}` construct (which allows methods to hook seamlessly into regexes) would make even the traversal code go away.
+In the past few days, we've been [rewriting](https://github.com/viklund/november/tree/new-html-template) our `HTML::Template` module to use grammars instead of bare regexes. The code got smaller (5.4 kb before, 3.9 kb after), *and* it handles nested templates! A grammar makes a parse tree of the template, and a method with some loops and if statements traverse the tree and do the appropriate things. The future addition of the `{*}` construct (which allows methods to hook seamlessly into regexes) would make even the traversal code go away.
 
 Whereas Perl philosophy involves making easy tasks easy and hard tasks possible, this new ability to create your own grammars effectively shifts a whole category of problems from hard to easy. It expands the boundaries of the "Practical Extraction" that Perl can reasonably do. That's pretty awesome.
 

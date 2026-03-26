@@ -1,8 +1,7 @@
----
-title: You're in a space of twisty little mazes, all alike
-author: Carl Mäsak
-created: 2015-02-15T00:15:49+01:00
----
+# You're in a space of twisty little mazes, all alike
+
+*Originally published on [15 February 2015](http://strangelyconsistent.org/blog/youre-in-a-space-of-twisty-little-mazes-all-alike) by Carl Mäsak.*
+
 It started with a mini-challenge on the #perl6 channel.
 
     <masak> today's mini-challenge: a 4x4 grid has 24 internal walls. in the
@@ -28,7 +27,7 @@ We could think of each internal wall being controlled by a bit of storage somewh
 
 ...which also means that we have an upper bound on the number of mazes, because there are only so many length-24 bit strings!
 
-```` raku
+```raku
 > 2 ** 24
 16777216
 > sub triples { $^s.flip.comb(/. ** 1..3/).flip }; Nil
@@ -74,7 +73,7 @@ Our whole problem can now be restated as "enumerate all possible spanning trees 
 
 This also means that, thanks to [the binomial theorem](https://en.wikipedia.org/wiki/Binomial_theorem), we've lowered our upper bound to 1.3 million.
 
-```` raku
+```raku
 > sub postfix:<!>($n) { [*] 2..$n }; Nil
 > sub choose($n, $k) { $n! / ($k! * ($n - $k)!) }; Nil
 > choose(24, 9)
@@ -93,7 +92,7 @@ Of these, only the upper right one is a correct maze. It's not just how many wal
 
 At least we can be a bit clever when searching for bit strings. Instead of iterating through all 16.7 million of them, we can iterate through only the 1.3 million with nine `1`s in them. Order-of-magnitude speedup? Yes, please! The below code for doing so is inspired by MJD's post, from nine years ago, about [enumerating strings of things](http://blog.plover.com/CS/parentheses.html).
 
-```` raku
+```raku
 my $s = "0" x 15 ~ "1" x 9;
 say $s;
 

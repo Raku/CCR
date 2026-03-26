@@ -1,4 +1,4 @@
-This directory contains remastered versions of 22 blog posts by Carl Mäsak.
+This directory contains remastered versions of 26 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -20,5 +20,9 @@ This directory contains remastered versions of 22 blog posts by Carl Mäsak.
 - 2008-11-11 [November 11, 2008 — the calm after the storm](November-11-2008-—-the-calm-after-the-storm.md)
 - 2008-11-13 [November 12, 2008 — blowing stuff up](November-12-2008-—-blowing-stuff-up.md)
 - 2008-11-14 [November 13, 2008 — the storm after the storm](November-13-2008-—-the-storm-after-the-storm.md)
+- 2008-11-14 [November 14, 2008 — pioneers](November-14-2008-—-pioneers.md)
+- 2008-11-15 [November 15, 2008 — a pact](November-15-2008-—-a-pact.md)
+- 2008-11-17 [November 16, 2008 — the right man for the job](November-16-2008-—-the-right-man-for-the-job.md)
+- 2008-11-18 [November 17, 2008 — it's a small step for a robotic dog...](November-17-2008-—-its-a-small-step-for-a-robotic-dog.md)
 - 2009-08-11 [Raku is my MMORPG](Raku-is-my-MMORPG.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

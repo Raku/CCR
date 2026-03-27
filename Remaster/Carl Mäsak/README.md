@@ -1,4 +1,4 @@
-This directory contains remastered versions of 87 blog posts by Carl Mäsak.
+This directory contains remastered versions of 100 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -86,4 +86,17 @@ This directory contains remastered versions of 87 blog posts by Carl Mäsak.
 - 2009-08-16 [Week 13 of Web.pm — abstracting away the webserver, live!](Week-13-of-Webpm-—-abstracting-away-the-webserver-live.md)
 - 2009-08-18 [The Cult of Done](The-Cult-of-Done.md)
 - 2009-08-24 [Week 14 of Web.pm — a persistence module](Week-14-of-Webpm-—-a-persistence-module.md)
+- 2009-09-01 [An introduction to maze-making (in Literate Raku)](An-introduction-to-maze-making-in-Literate-Raku.md)
+- 2009-09-05 [Cheese speleology](Cheese-speleology.md)
+- 2009-09-08 [The April List: things I think ought to work in Rakudo Star](The-April-List-things-I-think-ought-to-work-in-Rakudo-Star.md)
+- 2009-09-17 [Helpfully addictive: TDD on crack](Helpfully-addictive-TDD-on-crack.md)
+- 2009-09-21 [Week 15 of Web.pm — another, better persistence module](Week-15-of-Webpm-—-another-better-persistence-module.md)
+- 2009-09-28 [Week 16 of Web.pm — more Squerl work](Week-16-of-Webpm-—-more-Squerl-work.md)
+- 2009-10-04 [The dot is the cutest sigil](The-dot-is-the-cutest-sigil.md)
+- 2009-10-06 [Some thoughts on tote](Some-thoughts-on-tote.md)
+- 2009-10-11 [Laziness for the impatient](Laziness-for-the-impatient.md)
+- 2009-10-12 [Week 17 of Web.pm — putting Druid on the Web](Week-17-of-Webpm-—-putting-Druid-on-the-Web.md)
+- 2009-10-21 [The joy of breaking stuff](The-joy-of-breaking-stuff.md)
+- 2009-10-24 [Week 18 of Web.pm — the rubber meets the road](Week-18-of-Webpm-—-the-rubber-meets-the-road.md)
+- 2009-10-29 [I'm in for an interesting month](Im-in-for-an-interesting-month.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

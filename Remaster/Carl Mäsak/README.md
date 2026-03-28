@@ -1,4 +1,4 @@
-This directory contains remastered versions of 156 blog posts by Carl Mäsak.
+This directory contains remastered versions of 174 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -155,4 +155,22 @@ This directory contains remastered versions of 156 blog posts by Carl Mäsak.
 - 2010-03-16 [Plain old assignment, and freaky binding](Plain-old-assignment-and-freaky-binding.md)
 - 2010-03-22 [Pushups, repetition, and newbies](Pushups-repetition-and-newbies.md)
 - 2010-03-29 [Step 1 on the road to recovery: admitting you have a problem](Step-1-on-the-road-to-recovery-admitting-you-have-a-problem.md)
+- 2010-04-01 [Yapsi 2010.04 Released!](Yapsi-201004-Released.md)
+- 2010-04-09 [It's about time](Its-about-time.md)
+- 2010-04-14 [Levels](Levels.md)
+- 2010-04-22 [I can haz constant?](I-can-haz-constant.md)
+- 2010-04-29 [GSoC, contextuals, and intolerance (three posts in one)](GSoC-contextuals-and-intolerance-three-posts-in-one.md)
+- 2010-05-01 [Yapsi 2010.05 Released!](Yapsi-201005-Released.md)
+- 2010-05-02 [Raku: the Frankenstein's monster of operators](Raku-the-Frankensteins-monster-of-operators.md)
+- 2010-05-09 [The tests Rakudo doesn't run](The-tests-Rakudo-doesnt-run.md)
+- 2010-05-21 [The trip to Moscow and the DevConf talk (iambic pentameter)](The-trip-to-Moscow-and-the-DevConf-talk-iambic-pentameter.md)
+- 2010-05-28 [Week 1 of GSoC work on Buf — not a chocolate cake recipe](Week-1-of-GSoC-work-on-Buf-—-not-a-chocolate-cake-recipe.md)
+- 2010-05-31 [GGE now runs fine on Rakudo master](GGE-now-runs-fine-on-Rakudo-master.md)
+- 2010-06-01 [Yapsi 2010.06 Released!](Yapsi-201006-Released.md)
+- 2010-06-05 [Week 2 of GSoC work on Buf — the power of Swedish beer](Week-2-of-GSoC-work-on-Buf-—-the-power-of-Swedish-beer.md)
+- 2010-06-08 [This Week's Contribution to Raku Week 6](This-Weeks-Contribution-to-Raku-Week-6.md)
+- 2010-06-14 [Week 3 of GSoC work on Buf — talk like a Parrot day](Week-3-of-GSoC-work-on-Buf-—-talk-like-a-Parrot-day.md)
+- 2010-06-17 [It isn't quite TDD, but I like it](It-isnt-quite-TDD-but-I-like-it.md)
+- 2010-06-18 [Announce: Rakudo Raku development release #30 ("Kiev")](Announce-Rakudo-Raku-development-release-#30-"Kiev".md)
+- 2010-06-28 [Weeks 4 and 5 of GSoC work on Buf — chrono-flies](Weeks-4-and-5-of-GSoC-work-on-Buf-—-chrono-flies.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

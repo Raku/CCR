@@ -1,4 +1,4 @@
-This directory contains remastered versions of 141 blog posts by Carl Mäsak.
+This directory contains remastered versions of 156 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -140,4 +140,19 @@ This directory contains remastered versions of 141 blog posts by Carl Mäsak.
 - 2009-12-11 [Some module names don't deserve to be short](Some-module-names-dont-deserve-to-be-short.md)
 - 2009-12-18 [The wish, the tuning fork, and the one true heir](The-wish-the-tuning-fork-and-the-one-true-heir.md)
 - 2009-12-27 [Notation, and the 'business case' for Raku](Notation-and-the-business-case-for-Raku.md)
+- 2010-01-01 [Highlights of Raku spec changes of 2009](Highlights-of-Raku-spec-changes-of-2009.md)
+- 2010-01-08 [Adding 'goto' to your Raku program](Adding-goto-to-your-Raku-program.md)
+- 2010-01-16 [Ovid is right: roles are awesome](Ovid-is-right-roles-are-awesome.md)
+- 2010-01-19 [The taming of the newbie - a comedy on IRC](The-taming-of-the-newbie-a-comedy-on-IRC.md)
+- 2010-01-22 [Code generation and stone soup](Code-generation-and-stone-soup.md)
+- 2010-01-29 [Mildew, Sprixel, Vill: In praise of the alternatives](Mildew-Sprixel-Vill-In-praise-of-the-alternatives.md)
+- 2010-02-04 [Blast from the past: E02](Blast-from-the-past-E02.md)
+- 2010-02-08 [The typo trap: a farcical FAQ](The-typo-trap-a-farcical-FAQ.md)
+- 2010-02-15 [Ok, so the ante is upped: E03](Ok-so-the-ante-is-upped-E03.md)
+- 2010-02-20 [E03, the modern, pragmatic, honest version, with corners cut](E03-the-modern-pragmatic-honest-version-with-corners-cut.md)
+- 2010-03-02 [I'm a snowplow](Im-a-snowplow.md)
+- 2010-03-09 [The ghost of Algol 68](The-ghost-of-Algol-68.md)
+- 2010-03-16 [Plain old assignment, and freaky binding](Plain-old-assignment-and-freaky-binding.md)
+- 2010-03-22 [Pushups, repetition, and newbies](Pushups-repetition-and-newbies.md)
+- 2010-03-29 [Step 1 on the road to recovery: admitting you have a problem](Step-1-on-the-road-to-recovery-admitting-you-have-a-problem.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

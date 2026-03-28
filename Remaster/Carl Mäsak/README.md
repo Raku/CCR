@@ -1,4 +1,4 @@
-This directory contains remastered versions of 174 blog posts by Carl Mäsak.
+This directory contains remastered versions of 192 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -173,4 +173,22 @@ This directory contains remastered versions of 174 blog posts by Carl Mäsak.
 - 2010-06-17 [It isn't quite TDD, but I like it](It-isnt-quite-TDD-but-I-like-it.md)
 - 2010-06-18 [Announce: Rakudo Raku development release #30 ("Kiev")](Announce-Rakudo-Raku-development-release-#30-"Kiev".md)
 - 2010-06-28 [Weeks 4 and 5 of GSoC work on Buf — chrono-flies](Weeks-4-and-5-of-GSoC-work-on-Buf-—-chrono-flies.md)
+- 2010-07-01 [Yapsi 2010.07 Released!](Yapsi-201007-Released.md)
+- 2010-07-02 [Speaking hypothetically in Raku](Speaking-hypothetically-in-Raku.md)
+- 2010-07-04 [Dreaming in mixins](Dreaming-in-mixins.md)
+- 2010-07-10 [Weeks 6 and 7 of GSoC work on Buf — roundtrip](Weeks-6-and-7-of-GSoC-work-on-Buf-—-roundtrip.md)
+- 2010-07-11 [Iterating your way to happiness with Raku](Iterating-your-way-to-happiness-with-Raku.md)
+- 2010-07-15 [Phasers are a blast: FIRST and LAST](Phasers-are-a-blast-FIRST-and-LAST.md)
+- 2010-07-18 [Happy 10th anniversary, Raku](Happy-10th-anniversary-Raku.md)
+- 2010-07-23 [6 built-ins in Raku that you never knew you needed](6-built-ins-in-Raku-that-you-never-knew-you-needed.md)
+- 2010-08-02 [Yapsi 2010.08 Released!](Yapsi-201008-Released.md)
+- 2010-08-05 [Raku and Perl are different languages](Raku-and-Perl-are-different-languages.md)
+- 2010-08-10 [There's just no way to keep up with all you people](Theres-just-no-way-to-keep-up-with-all-you-people.md)
+- 2010-08-14 [Weeks 8..12 of GSoC work on Buf — not packing it in yet](Weeks-812-of-GSoC-work-on-Buf-—-not-packing-it-in-yet.md)
+- 2010-08-22 [Where in the world is the package lexpad?](Where-in-the-world-is-the-package-lexpad.md)
+- 2010-08-27 [Idiomatic Raku](Idiomatic-Raku.md)
+- 2010-09-02 [Yapsi 2010.09 Released!](Yapsi-201009-Released.md)
+- 2010-09-06 [The Pugs repository is dead; long live Mu!](The-Pugs-repository-is-dead-long-live-Mu.md)
+- 2010-09-29 [Dog food with a distinct Raku flavor](Dog-food-with-a-distinct-Raku-flavor.md)
+- 2010-09-29 [It's just a tree, silly!](Its-just-a-tree-silly.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

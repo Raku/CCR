@@ -1,4 +1,4 @@
-This directory contains remastered versions of 351 blog posts by Carl Mäsak.
+This directory contains remastered versions of 362 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -350,4 +350,15 @@ This directory contains remastered versions of 351 blog posts by Carl Mäsak.
 - 2013-05-05 [After the #masakism workshop](After-the-masakism-workshop.md)
 - 2013-05-31 [A VM for 6model](A-VM-for-6model.md)
 - 2013-08-29 [t3: Wire crossings](t3-Wire-crossings.md)
+- 2014-01-04 [Lexpads and why roles need fixups](Lexpads-and-why-roles-need-fixups.md)
+- 2014-03-23 [Parsing indented text](Parsing-indented-text.md)
+- 2014-05-30 [t4: Rain in a world of cubes](t4-Rain-in-a-world-of-cubes.md)
+- 2014-06-16 [Boxes and pebbles](Boxes-and-pebbles.md)
+- 2014-10-02 [Macros progress report: after a long break](Macros-progress-report-after-a-long-break.md)
+- 2014-10-13 [Macros: thunkish parameters](Macros-thunkish-parameters.md)
+- 2014-10-14 [Feedback on "Macros: thunkish parameters"](Feedback-on-"Macros-thunkish-parameters".md)
+- 2014-10-14 [Macros: nesting macros](Macros-nesting-macros.md)
+- 2014-11-28 [Macros: "Define Your Own Literals" Day](Macros-"Define-Your-Own-Literals"-Day.md)
+- 2014-12-04 [Macros: Placeholdeeers!](Macros-Placeholdeeers.md)
+- 2014-12-13 [Feedback on "Macros: Placeholdeeers!"](Feedback-on-"Macros-Placeholdeeers".md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

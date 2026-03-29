@@ -1,4 +1,4 @@
-This directory contains remastered versions of 369 blog posts by Carl Mäsak.
+This directory contains remastered versions of 374 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -369,3 +369,8 @@ This directory contains remastered versions of 369 blog posts by Carl Mäsak.
 - 2015-10-27 [Macros: Time travel is hard](Macros-Time-travel-is-hard.md)
 - 2015-12-08 [Double-oh seven](Double-oh-seven.md)
 - 2015-12-31 [Strategic rebasing](Strategic-rebasing.md)
+- 2016-01-17 [Macros: what the FAQ are they?](Macros-what-the-FAQ-are-they.md)
+- 2016-04-28 [Trinity](Trinity.md)
+- 2016-06-18 [Train tracks](Train-tracks.md)
+- 2016-09-21 [Where in the sky](Where-in-the-sky.md)
+- 2016-09-28 [The curious case of the disappearing test](The-curious-case-of-the-disappearing-test.md)

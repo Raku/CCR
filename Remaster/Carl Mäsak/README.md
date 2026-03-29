@@ -1,4 +1,4 @@
-This directory contains remastered versions of 374 blog posts by Carl Mäsak.
+This directory contains remastered versions of 378 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -374,3 +374,7 @@ This directory contains remastered versions of 374 blog posts by Carl Mäsak.
 - 2016-06-18 [Train tracks](Train-tracks.md)
 - 2016-09-21 [Where in the sky](Where-in-the-sky.md)
 - 2016-09-28 [The curious case of the disappearing test](The-curious-case-of-the-disappearing-test.md)
+- 2017-02-01 [Deep Git](Deep-Git.md)
+- 2017-04-22 [The root of all eval](The-root-of-all-eval.md)
+- 2017-12-08 [Has it been three years?](Has-it-been-three-years.md)
+- 2019-05-05 [Refactoring the universe](Refactoring-the-universe.md)

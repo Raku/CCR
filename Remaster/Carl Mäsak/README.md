@@ -1,4 +1,4 @@
-This directory contains remastered versions of 341 blog posts by Carl Mäsak.
+This directory contains remastered versions of 351 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -340,4 +340,14 @@ This directory contains remastered versions of 341 blog posts by Carl Mäsak.
 - 2012-10-26 [Sweet ports](Sweet-ports.md)
 - 2012-11-02 [Macros progress report: D2 merged](Macros-progress-report-D2-merged.md)
 - 2012-12-14 [The 2012 Raku Coding Contest](The-2012-Raku-Coding-Contest.md)
+- 2013-01-19 [The Raku Coding Contest (2012 edition) is now closed](The-Raku-Coding-Contest-2012-edition-is-now-closed.md)
+- 2013-02-01 [I am going to FOSDEM](I-am-going-to-FOSDEM.md)
+- 2013-02-16 [Raku is now half as old as Perl](Raku-is-now-half-as-old-as-Perl.md)
+- 2013-02-22 [t1: Tell knights from knaves](t1-Tell-knights-from-knaves.md)
+- 2013-04-24 [The #masakism workshop](The-#masakism-workshop.md)
+- 2013-04-24 [The #masakism workshop](The-masakism-workshop.md)
+- 2013-04-25 [t2: Rectangle haikus](t2-Rectangle-haikus.md)
+- 2013-05-05 [After the #masakism workshop](After-the-masakism-workshop.md)
+- 2013-05-31 [A VM for 6model](A-VM-for-6model.md)
+- 2013-08-29 [t3: Wire crossings](t3-Wire-crossings.md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)

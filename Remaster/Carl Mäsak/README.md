@@ -1,4 +1,4 @@
-This directory contains remastered versions of 362 blog posts by Carl Mäsak.
+This directory contains remastered versions of 369 blog posts by Carl Mäsak.
 
 - 2008-08-17 [Announcing November, a wiki in Raku](Announcing-November-a-wiki-in-Raku.md)
 - 2008-08-24 [November meets the Web](November-meets-the-Web.md)
@@ -362,3 +362,10 @@ This directory contains remastered versions of 362 blog posts by Carl Mäsak.
 - 2014-12-04 [Macros: Placeholdeeers!](Macros-Placeholdeeers.md)
 - 2014-12-13 [Feedback on "Macros: Placeholdeeers!"](Feedback-on-"Macros-Placeholdeeers".md)
 - 2015-02-15 [You're in a space of twisty little mazes, all alike](youre-in-a-space-of-twisty-little-mazes-all-alike.md)
+- 2015-04-10 [Here be heredocs](Here-be-heredocs.md)
+- 2015-05-25 [Send more money (in Raku)](Send-more-money-in-Raku.md)
+- 2015-06-06 [When I don't even feel like using blame](When-I-dont-even-feel-like-using-blame.md)
+- 2015-10-17 [Macros: Your macro has been put on hold](Macros-Your-macro-has-been-put-on-hold.md)
+- 2015-10-27 [Macros: Time travel is hard](Macros-Time-travel-is-hard.md)
+- 2015-12-08 [Double-oh seven](Double-oh-seven.md)
+- 2015-12-31 [Strategic rebasing](Strategic-rebasing.md)

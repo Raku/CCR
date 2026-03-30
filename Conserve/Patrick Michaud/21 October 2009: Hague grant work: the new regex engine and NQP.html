@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Hague grant work: the new regex engine and NQP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Hague grant work: the new regex engine and NQP</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-10-21T04:56:04</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>It's been quite a while since I've written any articles about
+Rakudo's progress, but the delay in articles has been because
+I've been really focused on code development for a number of
+things we're going to need quickly for 
+<a class='urllink' href='http://use.perl.org/user/pmichaud/journal/39411'>Rakudo Star</a>.
+</p>
+
+<p>At long last I've made the time to make substantial progress on my 
+<a class='urllink' href='http://news.perlfoundation.org/2008/11/tpf_awards_first_hague_grant_t.html'> Hague Grant</a>, 
+which will enable us to bring Rakudo's grammar and parser much
+more in line with the current 
+<a class='urllink' href='http://svn.pugscode.org/pugs/src/perl6/STD.pm'>STD.pm grammar</a>.
+In fact, looking at the
+<a class='urllink' href='http://github.com/rakudo/rakudo/blob/master/docs/ROADMAP'> Rakudo ROADMAP</a>
+one can see that a significant number of the critical tasks needed for
+Rakudo Star are depending on the "PGE refactors" identified in the
+grant.
+</p>
+
+<p>This brings me to one of the major points of this post:
+In the weeks that follow this month's release we expect that
+Rakudo will be quite unstable as we undertake some much-needed
+refactoring and redevelopment of some of Rakudo's core pieces.
+The biggest change will be a complete replacement of Rakudo's
+underlying grammar; the grammar we have today is still largely
+based on the Perl 6 grammar as it existed in January 2008, but
+STD.pm and the Perl 6 specification have evolved significantly
+since then.  
+</p>
+
+<p>Jonathan and I believe that now's the time
+to bite the bullet and make another big refactor to bring Rakudo
+in line with the spec, even though it will likely involve a
+rework of many features and perhaps a few significant
+(but temporary) regressions.  So, if you see some chaos and
+upheaval in Rakudo development in the next few weeks, it's
+a planned and necessary sort of mayhem.
+</p>
+
+<p>Many of the needed grammar changes will be possible because
+of the grant work on protoregexes and a new operator precedence
+parser.  Originally the plan was to build these features into
+the Parrot Grammar Engine (PGE), but after thinking long and
+hard about it I concluded that it would
+be better to redesign and reimplement a new regex engine than
+to try to fix PGE.  For one, I think maintaining backwards
+compatibility would be a significant challenge (and a drain
+on my energy and resources).  Another reason favoring a
+rewrite is that we now have better language tools available
+for Parrot, and a rewrite can take advantage of those tools.
+</p>
+
+<p>Thus, instead of compiling directly to PIR, the new regex
+engine compiles to Parrot's abstract syntax tree
+representation (PAST).  In addition, the source code
+for the regex engine is written in NQP instead of PIR.
+</p>
+
+<p>For those not familiar with NQP, it's a Perl 6-like language I
+designed for Parrot in conjunction with the Parrot Compiler
+Toolkit.  NQP acts like a "mini Perl 6", it understands a
+subset of Perl 6 language constructs and can generate Parrot
+code that doesn't rely on additional runtime libraries.
+Most of the HLL compiler authors for Parrot have been using
+NQP to generate PAST, and it's proven to be much easier to
+write and maintain than PIR.
+</p>
+
+<p>Since the regex engine will now be written using NQP, it 
+also seemed fitting that NQP would receive the ability to 
+use Perl 6 regexes and grammars directly.  Adding regexes
+and grammars to the NQP language means that a compiler writer
+can write nearly all of the components (parser, ast conversion, 
+runtime libraries) using NQP.  This is in contrast to the existing
+setup that requires multiple languages and APIs.
+</p>
+
+<p>The new version of NQP is currently called "nqp-rx" ("NQP with regexes");
+I may come up with another name for the bundle but I'm somewhat
+attached to "NQP".  This new version also has a new source code
+repository (separate from Parrot) -- it's hosted on GitHub at
+<a class='urllink' href='http://github.com/perl6/nqp-rx'>http://github.com/perl6/nqp-rx</a> .  
+</p>
+
+<p>Since mid-September I've been working on nqp-rx, and I'm very
+pleased with how it's all coming together.
+</p>
+
+<p>For example, late last week I completed most of the work on 
+the new regex engine.  This first version includes a very naive
+implementation of protoregexes, which PGE lacked, and ultimately 
+should perform pattern matching and parsing more efficiently than PGE does.  
+It now compiles to PAST instead of directly to PIR, which means
+it will fit more cleanly with the rest of Rakudo, especially
+with being able to handle lexical variables and code blocks in
+regexes.
+</p>
+
+<p>More importantly, the regex compiler is <strong>self-hosted</strong> (or 
+"bootstrapped").  In other words, the regex engine is able to 
+parse and compile the specification that was used to build 
+itself.  Stated another way, the regex engine is written 
+using Perl 6 grammars and regular expressions that it knows 
+how to compile.
+</p>
+
+<p>Since completing the regex bootstrap I've been working on 
+creating the new version of 
+NQP based on the new regex engine.  Over the weekend I created
+some common rules for parsing number and quoted string tokens,
+and yesterday and today I completed a new operator precedence
+parser (all of these based on the STD.pm equivalents).  Now
+all of the pieces are in place to create a new NQP compiler,
+which I plan to do over the next couple of days.  And, like 
+the regex engine, I'm planning to make this new version of 
+NQP self-hosted as well.
+</p>
+
+<p>So, when all of this is completed, NQP will continue to be a 
+"Perl 6 lite" language, but it will also support grammars, 
+regular expressions, protoregexes, longest token matching, 
+a very powerful operator precedence parser, attributes on
+classes, and a fair bit more.  It should
+also be a bit faster than the previous NQP, and have a few
+additional optimizations (such as inlining of blocks).  
+</p>
+
+<p>Thus, here's a quick rundown of the status and plan for
+the next couple of weeks:
+</p>
+<ol><li>Parrot 1.7 was released today (October 20).
+</li><li>Jonathan has just completed <a class='urllink' href='http://use.perl.org/user/JonathanWorthington/journal/39772'>a significant refactor of Rakudo's signature binding code</a> and merged it into Rakudo's master.
+</li><li>Scott Duff ("PerlJam") will be cutting the October Rakudo 
+release on Thursday, based on the Parrot 1.7 release.
+</li><li>Immediately following the Parrot release, new code for the
+Parrot Calling Conventions is set to be merged to the
+Parrot trunk.  This is one of the major tasks (B) listed in
+Rakudo's ROADMAP.
+</li><li>In the days following the Rakudo release, we'll be working
+to synchronize the multidispatch and binding algorithms in
+Rakudo with the new Parrot calling conventions.
+</li><li>Also in the next few days, we'll complete implementation of nqp-rx,
+or at least bring it to the point that it can be used instead
+of the previous compiler tools for building Rakudo.
+</li><li>When we're comfortable that the Parrot calling conventions
+work has sufficiently stabilized, we'll start a new branch
+for the major refactor of Rakudo's internals, switching to
+the new compiler tools, and updating the grammar to be much
+closer to STD.pm.
+</li><li>We don't know how long this last piece will take, but it
+could easily occupy most of the month before the November
+Rakudo release.
+</li><li>During the time that work is taking place in the branch, we
+don't expect much progress or changes to be made in Rakudo's
+master branch, so that people can continue to use and test
+the "more functional" version.
+</li><li>If work bogs down in the branch, we'll regroup and come up
+with an alternate plan.  But I don't think this likely.
+</li></ol>
+<p>It looks to be an exciting couple of weeks!  I'll be writing 
+more articles with details about the new regex engine, NQP
+implementation, and Rakudo conversion to the new tools.
+I hope and expect that by the November release we'll be 
+completely switched over to the new regex engine and
+have knocked out a large number of the "critical" items 
+on the ROADMAP for Rakudo Star.
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Exciting work!</h2>
+<h3><a href="/user/Hercynium/">Hercynium</a> on 2009-10-22T15:29:06</h3>
+<p>This is terrific, pmichaud! I think having Perl 6 Grammars and Regexes in NQP will make it a killer app for Parrot.</p><p>Thank you for all your hard work and innovation!</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

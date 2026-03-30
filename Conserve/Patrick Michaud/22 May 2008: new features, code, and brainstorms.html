@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: new features, code, and brainstorms</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>new features, code, and brainstorms</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-05-22T18:32:23</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>The big headline for this week is that <a href='http://news.perlfoundation.org/2008/05/tpf_receives_large_donation_in.html'>The Perl Foundation received a very large grant to support Perl 6 development</a>, so we're all very excited about that.<br/><br/>I'm also pleased at the increasing number of contributors we have to Rakudo and Parrot.  Some highlights over the past week:<br/><br/><ul><li>Moritz Lenz refactored the test harness so that "<a href='http://www.rakudo.org/2008/05/new-make-spectest-regression-t.html'>make spectest_regression</a>" gives far more usable output.
+</li><li>Eevee contributed an implementation of the 'reduce' method to List objects.  Thus one can now write:
+<code>
+    ##  long version of [+] operator
+    my $sum = (1..6).reduce { $^a + $^b };
+</code>
+</li><li>Vasily Chekalkin added a .kv method for hashes, and .sort and .map for lists.
+</li><li>Tene (Stephen Weeks) continued to improve placeholder variables and topic handling in blocks.
+</li><li>Jonathan continued his amazing work by implementing private methods, .?, .+, and .* forms of method calls, specifying the name of an invocant in method signatures, the prefix:&lt;^&gt; operator, and much more.
+</li></ul>
+This week I spent most of my hacking time (1) brainstorming; (2) implementing a new Perl 6-like metaclass system for Parrot, the compiler tools, and Rakudo; and (3) answering questions and closing RT tickets.<br/><br/>Most of the brainstorming I did was on "major pieces" that we will need for implementing Perl 6 on Parrot.  First, thanks to the new metaclass system (described below and next post), I finally figured out how to refactor PGE's base Match, Regex, and Grammar classes to be much less convoluted than they are now.  In the process I also figured out how we can implement <i>protoregexes</i> from Synopsis 5, which should improve our parsing speed a fair bit and also allows us to bring Rakudo's grammar much closer to STD.pm.  The change I have in mind still doesn't bring us full "longest-token-matching" capabilities yet, but it will still be a substantial improvement.<br/><br/>PGE also needs a little bit of refactoring for its operator precedence parser in order to properly handle list vs. item assignment.  Since that's one of the highest priorities for Rakudo at the moment, I'll be tackling that this week also.<br/><br/>The other thing that finally started to make sense to me was how to handle variables (mutables) in Parrot.  After discussing the ideas with Jonathan last week, our plan now is to create a Mutable PMC that can serve as the base implementation for variable types like Scalar, Array, and Hash.  It should simplify a lot of things in Rakudo's implementation.<br/><br/>The new P6object.pbc metaclass library replaces the old Protoobject.pbc library that PGE and PCT were using, as well as the various "Perl6Protoobject" classes that Rakudo perl was using.  This means we now have common metaobject model underpinning the various Parrot tools that have Perl 6-like behaviors.  In particular, every class gets a protoobject, objects in the class have standard Perl 6 methods like .WHAT and .HOW, and the like.<br/><br/>On Tuesday I converted PGE and PCT over to the new metaclass library, and then Jonathan, Jerry Gay, and I did a massive hacking session yesterday to convert Rakudo over to the new library.  Moritz addition of the "spectest_regression" target was a <i>huge</i> help to making it all work correctly.  Thanks to everyone's help we were able to make this massive internal change in the span of just a few hours.<br/><br/>I'm quite happy with the final result -- the underlying implementations are all much cleaner and more regular than they were before, and we were able to eliminate a fair bit of cruft that had been accumulating in Rakudo and PCT.  So it was well worth the effort, and will greatly simplify things for people who later work with the compiler tools or Rakudo.<br/><br/>I'll post more details about the P6object library in my next post.  I still also need to write up the details of the PCT code generation changes I made last week, but that's a bit more involved and so I may save that for much later (so I can keep up my momentum on writing code that we really need sooner rather than later).<br/><br/>Questions and comments welcomed as always.<br/><br/>Pm
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: A wholly inadequate reply to an Anonymous Monk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>A wholly inadequate reply to an Anonymous Monk</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2010-04-22T21:47:27</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>[Reposted from <URL: http://www.perlmonks.org/?node_id=836349>.  Normally I wouldn't repost but I'd like it to appear in my normal Perl 6 journal and rss feeds as well as on PerlMonks.  --Pm]
+
+<p>An Anonymous Monk on perlmonks.org recently started a discussion on
+"<a href='http://www.perlmonks.org/?node_id=835419'>The current state of Perl 6</a>" in which he (she? they?) offers his
+views on various aspects of Perl 6 development.  Personally, I 
+find nearly all of Anonymous Monk's comments in the thread to be
+so devoid of logic and so far removed from reality/facts that it's
+hard to imagine providing an adequate reply to them.</p>
+
+<p>Beyond that, I have other priorities in my life right now.
+Uppermost is that my family is going through a very difficult
+period at present -- I need to take care of them first.  Rakudo and
+Perl 6 come in at a somewhat distant second to that.  Responding to
+garbage being spouted by anonymous person(s) probably ought
+to not even be anywhere on my radar.</p>
+
+<p>But at least one post in the thread bugs me sufficiently that 
+I'd like to respond, even if it's an inadequate response.
+And I don't want my response buried in a thread somewhere, so it
+gets its own post.</p>
+
+<p>Anonymous Monk <a href='http://www.perlmonks.org/?node_id=835737'>writes</a>:</p>
+
+<blockquote><em>
+Oh I'll tell you how you do that &#91;write a grammar engine capable 
+of supporting Perl 6]. It's very simple. You get people skilled 
+for this exact task ! Those skills are acquired in 
+universities(preferably good ones) where professors teach 
+courses like "Formal Languages and Automata" or "Compiler 
+theory". If you have a bunch of people who are open-source 
+contributors but don't have the knowledge or haven't studied 
+the right things ... <strong>&#91;t]hey don't know it in theory 
+and they're trying to put it in practice! 
+</strong></em> (emphasis in original)</blockquote>
+
+<p>Who does Anonymous Monk think is working on Perl 6?  Personally, I
+have a Ph.D. in Computer Science and taught university language 
+courses for nearly 14 years.  Damian Conway certainly also
+has a fairly strong university background (Monash University) and 
+understands the theory and practice of language and compiler design.  
+Jonathan Worthington has a degree from the University of Cambridge, 
+where he specialized in compiler construction and formal languages.  
+Larry Wall has a degree in Natural and Artificial Languages 
+with two years of graduate work in Linguistics at U.C. Berkeley.  
+Many of our other key contributors also have degrees and backgrounds 
+in language theory and practice.  I'd be willing to compare the
+academic credentials of this group against any other dynamic 
+language team Anonymous Monk might care to postulate.</p>
+
+<blockquote><em>If you can't get <strong>real</strong> compiler people
+to use Perl6 and help with it, the average open-source rookie
+won't be able to deal with this.</em></blockquote>
+
+<p>Somehow I have trouble classifying Larry, Damian, Allison, etc. as
+being "not real compiler people".  And they along with many other
+Perl 6 contributors have a lot of experience in nurturing open
+source developers and projects.  If you feel Larry et al. are 
+indeed unqualified to be working in the field of programming
+language design and implementation, you probably don't want to 
+be using Perl at all, much less Perl 6.</p>
+
+<p>People like Anonymous Monk spew lots of opinions about how long
+they think Perl 6 development should take, and then speculate on
+the reasons why it has taken longer than they estimate it should
+be taking.  The speculations that crop up most often are things
+like "the people involved are clueless about language
+design/implementation" (see above), "the design process itself
+is flawed", "they're building on an inadequate toolset like Parrot",
+etc.  For such people it's easy to toss out random thoughts about
+"the problems with Perl 6" without bothering to look at
+the obvious evidence to the contrary, as Anonymous Monk
+does above.  Indeed, I'm often amused when people suggest that
+we should be doing things
+<em><a href='http://use.perl.org/comments.pl?sid=43556&cid=70194'>that we're already doing</a></em>.</p>
+
+<p>Returning to the topic of developing a grammar engine, which
+Anonymous Monk claims above as "very simple" and just needing
+"people skilled for this exact task", it's interesting to contrast
+his opinions with the actual development of the Perl 6 standard grammar
+(<a href='http://svn.pugscode.org/pugs/src/perl6/STD.pm6'>STD.pm6</a>).
+I think STD.pm6 is also indicative of the challenges confronting all
+Perl 6 implementors.  Consider:
+
+<ul><li>Larry is the primary implementor for the standard grammar.</li>
+<li> The standard grammar doesn't need a frozen specification
+  to be implemented, because its implementation is considered
+  part of the spec.</li>
+<li>The implementation is built entirely on top of Perl 5 -- there
+  are no "unproven virtual machines" involved or holding things
+  back.</li></ul></p>
+
+<p>I think one could consider this to be an almost perfect situation
+for developing a new language implementation -- an experienced language
+designer/implementor working without significant external
+restrictions on top of an advanced programming platform like
+Perl 5.  Yet it's been three years since Larry started working
+on this implementation of the standard grammar and parser, and
+while STD.pm6 is very powerful, it's also certainly not "finished",
+and has been through a number of significant refactors in its
+development.  This says to me that the amount of time and effort
+involved is more likely due to the sheer audacity and ambition of what
+Perl 6 seeks to accomplish.</p>
+
+<p>(Some will undoubtedly look at the above and knee-jerk respond
+with something like "If it's taken three years just to create
+the parser, then finishing a compiler will take far longer still
+and therefore Perl 6 will never see the light of day."
+This argument ignores the fact that other pieces
+are being implemented in parallel with Larry's work, that
+software development is not a strictly sequential process, and
+the obvious fact that there are already "working" Perl 6
+implementations available.)</p>
+
+<p>Anyone who thinks that Perl 6 is fundamentally based on
+traditional compiler construction techniques taught in
+universities frankly has no clue as to what a fundamental
+paradigm shift Perl 6 represents to language design and
+implementation.  It's this fundamental change that ultimately
+gives Perl 6 its power, but it's also why Perl 6 development
+is not a trivial exercise that can be done by a few
+dedicated undergraduates.  As
+<a href='http://irclog.perlgeek.de/perl6/2010-04-22#i_2253574'>TimToady on #perl6 says</a>,
+"We already have lots of those kinds of languages." </p>
+
+<p>Personally, I'm impressed and honored to be associated with
+the people who are working on Rakudo and Perl 6.  I understand
+that people are frustrated (and even feel burned by) the long
+wait for something as cool as Perl 6; I share the frustration
+and like to think that I'm doing something constructive about it.
+But I also find the vast majority of suggestions, comments, and 
+conclusions coming from Perl 6's anonymous detractors to be
+(1) things we've already done or are doing, (2) ungrounded in
+reality, (3) in direct contradiction to reasonably observable 
+facts, or (4) attempts to discredit a product they have little
+interest in ever using themselves.  And far too many of the
+comments, like the ones I've highlighted in this post, are
+so easily refuted with just a little bit of fact digging and
+common sense, it's often hard to believe anyone can be seriously
+making them in the first place.  Yet there they are.</p>
+
+<p>Returning to my original theme, I think my response here is
+inadequate because it leaves so many other of Anonymous Monk's
+claims in the thread unrefuted.  I could undoubtedly spend many
+more hours analyzing and responding to the many fallacies and untruths
+in the thread, but frankly I don't believe that's the best use of
+my time.  People such as Moritz Lenz, chromatic, Michael Schwern,
+and others are 
+also writing extremely well-reasoned posts refuting the garbage, for
+which I'm grateful, but it's far easier for Anonymous Monk and his like
+to spin garbage than it is for a small number of us to clean up after
+it.  And it does need to be cleaned up, otherwise it festers and
+results in even more public garbage <a href='http://arstechnica.com/open-source/news/2010/04/perl-5-development-resumes-version-512-released.ars?comments=1#comment-20189196'>that someone has to clean up</a>.</p>
+
+<p>I hope that this post will at least encourage more people in the
+Perl community to critically examine the things they hear and
+read regarding Perl 6, especially when coming from sources with
+no apparent standing or reputation within the community.  And
+maybe a few more people will even assist in publicly refuting
+the garbage ("many hands make light work"), so that the sloppy
+thinking, analysis, and dialogue that people like Anonymous Monk
+post doesn't spread to infect all of Perl.</p>
+
+<p>Pm</p>
+
+<p>P.S.: Some may reasonably conclude from what I've written
+above that Perl 6 is somehow "aiming too high", that our goals 
+should be scaled back to make something ready "right now".
+I have two responses to this: (1) we <em>are</em> making things
+ready 'right now', just grab any of the available packages and
+start working and reporting bugs, and (2) there are already 
+'scaled back' versions of Perl 6 appearing and being used,
+such as NQP or even the components that execute the standard
+grammar.  Some of these other projects, like NQP, are being
+used for "real" programs and applications today; they're not
+simply theoretical exercises or research projects.</p>
+
+<p>Others often claim that all this effort on Perl 6 would be
+better spent on improving Perl 5.  In my experience, those of us
+working on Perl 6 have absolutely no qualms with seeing Perl 5
+improve and continue to grow -- we welcome it.  Indeed,
+many of the features appearing in Perl 5 today come directly
+from ideas and things first attempted in Perl 6, and we're
+genuinely happy to see that.  But just because Perl 6 developers
+also like Perl 5 doesn't mean that doing Perl 5 core development is
+interesting to us, or that (in my case at least) we'd even be
+qualified to do Perl 5 core changes.  We aren't commodity programmers
+that are interested in simply being unplugged from one project and
+into some other project that others think is more worthwhile.
+Personally, I'd prefer to see people who are really into Perl 5
+improvements continue to work to make them happen, and that
+the surrounding ecosystem continue to evolve to enable that
+to happen more easily for more people.  Indeed, this is my wish
+for all open-source projects, even the ones I don't find
+interesting or otherwise disagree with.</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>thanks, Patrick</h2>
+<h3><a href="/user/rjbs/">rjbs</a> on 2010-04-22T23:32:59</h3>
+<p>I am continually impressed with your calm, reasoned response to the onslaught of boorish armchair compiler designers.  I don't know why people feel good about attacking other people, but it makes <em>me</em> feel good when I see responses like yours.</p>
+
+
+
+<blockquote>
+
+<h2>Re:thanks, Patrick</h2>
+<h3><a href="/user/ank/">ank</a> on 2010-06-14T19:53:04</h3>
+<p>Ricardo:
+</p><p>Years ago, I was talking with a few others in #perl about how cool perls features were, and you characterised that conversation as a "circle jerk." I wasn't aware of its meaning at that point, so I asked mugwump and he confirmed that it was a derogatory term.
+</p><p>When I see your response here, and Pmichaud's post, I have no option but to agree with your comment - this is indeed a "circle jerk."</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>It is not the critic who counts</h2>
+<h3><a href="/user/schwigon/">schwigon</a> on 2010-04-23T00:16:57</h3>
+<p>Thanks, Patrick, and also all those others for really doing the hard work. And Thank you for preparing that concise answer. It certainly will not fix the opinions of anonymous persons fearing they could experience something they not already know. Don't care too much for them.
+</p><p>If anything then their appearance just demonstrates the heavy impact you work on.
+</p><p>"It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood, who strives valiantly; who errs and comes short again and again; because there is not effort without error and shortcomings; but who does actually strive to do the deed; who knows the great enthusiasm, the great devotion, who spends himself in a worthy cause, who at the best knows in the end the triumph of high achievement and who at the worst, if he fails, at least he fails while daring greatly. So that his place shall never be with those cold and timid souls who know neither victory nor defeat."
+<br>
+-- Theodore Roosevelt</p>
+
+
+
+<h2>it is sad but it generates value</h2>
+<h3><a href="/user/gabor/">gabor</a> on 2010-04-23T07:49:20</h3>
+It is sad that you need to spend time, energy and feelings on answering silly or nasty accusations instead of spending those with your family or working on Rakudo but there is also a positive side to it.
+<p>
+You made some very good points (along with chromatic, moritz, Your Mother, petdance, CountZero and probably others) that people like me can use in other situations when talking about Perl 6 and Rakudo.
+</p><p>
+Thank you for your hard work and patience!
+</p><p>
+You rock!</p>
+
+
+
+<h2>A wholesome and shining reply</h2>
+<h3><a href="/user/audreyt/">audreyt</a> on 2010-04-23T09:02:25</h3>
+<p>Pm, that's wonderful on so many levels. I'd like to translate that into Chinese and repost with credit on my personal blog, if it's okay with you...</p><p>Also, reading your piece prompted me to add
+<a href="http://www.modernperlbooks.com/mt/2010/04/the-thing-about-volunteers-and-civility.html#comment-351" title="modernperlbooks.com">my own reply</a modernperlbooks.com> to chromatic++, as a practical exercise in sublimation of our collective memories.</p><p>All in all, thank you for carrying the torch forward, with a very sound design, and a much higher bus number by now.<nobr> <wbr></nobr>:-)</p>
+
+
+
+<blockquote>
+
+<h2>Re:A wholesome and shining reply</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2010-04-23T17:04:55</h3>
+<p>Audrey-</p><p>I'd love to have it translated and reposted, so please feel free to do so.</p><p>(The same goes for others who might wish to broadcast this farther and wider.)</p><p>Pm</p>
+
+
+
+<blockquote>
+
+<h2>Re:A wholesome and shining reply</h2>
+<h3><a href="/user/audreyt/">audreyt</a> on 2010-05-02T05:14:34</h3>
+I've just posted a translation on <a href="http://bit.ly/awTinN" title="bit.ly">http://bit.ly/awTinN</a bit.ly> - It's translated verbatim except for a final ":-)" suffix.
+<p>
+Thank you again for the wonderful post!</p>
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>Hear, hear !</h2>
+<h3><a href="/user/thickas/">thickas</a> on 2010-04-26T09:22:42</h3>
+<tt>Read your Journal post on "Current State of P6" and wanted to express my<br>support for you/your work and to says "thanks" for taking on a very hard<br>job. I'm only an occasional Perl user - but have a friend who actively<br>contributes and maintains a useful segment of code in Nagios, so I get<br>pointed to interesting stuff like your post.<br>[I'm writing because I don't need to create another login out there in<br>the Web-verse. If there's anything useful in this, you have my<br>permission to edit and post as you see fit.]<br><br>There's a very impolite, but relevant response to critics in the<br>Computing World:<br> -"put up or shut up",<br>which translates to a nicer "Really? Show me how yours does it."<br><br>This was the stance within Bell Labs Computing Research (dept 1127).<br>And I'm guessing, something like this could've gone on at Xerox PARC.<br>It's not accidental that both these (small) groups profoundly changed<br>the world of computing.<br>Exactly as Perl, in all its manifestations, has done.<br><br>In 1995 as the Web was exploding, what were the alternatives to Perl for<br>CGI's and system admin?<br>Tcl? C? and some proprietary products.<br><br>Languages like&nbsp; Java, Python, Ruby have all arrived, I'd argue, as a<br>direct response to perceived inadequacies of Perl 5.<br>I'm not sure where to put PHP<nobr> <wbr></nobr>:-)<br><br>But while they've garnered support/usage, do they have the same range of<br>use as the "Swiss Army Chainsaw"?<br>And how do they compare on software metrics that matter in production:<br>memory footprint, execution speed, robustness.<br><br>Is C++ a better, more useful C? Does it help with<br>Programming-in-the-large or Object Oriented programming?<br> I don't think so... Nor do Apple. OS/X, from the iPhone to Mac to<br>Servers, is written in Objective-C.<br>Nor do the bulk of FOSS projects: 'C' is still the lingua franca of the<br>Open Source world.<br><br>Perl (5) is like 'C'.<br>Many people think it 'could be better' and many have tried to create<br>replacements, but its use keeps expanding.<br>'C' is *really* hard to beat, it is (quoting PJ Plauger) "wallpaper -<br>you expect it everywhere" and has base of trained, competent/experienced<br>programmers.<br>'C' is not only 'sufficient' for the range of procedural language tasks,<br>it is excellent on many levels.<br>Like all professional tools, it is 'sharp'. You can hurt yourself badly<br>with high-power tools... Or handled well, produce incredible works. It's<br>all about the workman, not the tools.<br><br>For me, the overwhelming reason to use P5 is CPAN. This is the<br>definitive example of Software ReUse - which should be a cornerstone of<br>Software Engineering (and training in it). Somehow people end up wanting<br>to Invent the Wheel again themselves... Which doesn't take the<br>profession forward in any way. I love the small irony that CPAN is<br>actually a reused idea itself - based on CTAN for TeX.<br><br>The very success of CPAN, far eclipsing its progenitor, and that Tcl,<br>Python, Ruby etc *don't* have an equivalent illustrates two things about<br>the Perl Community:<br>- they are collaborative and 'give back' as a matter of course, and<br>- they are Software professionals who's interest is producing products<br>for others, and just amusing themselves or in the thrall of N.I.H.<br><br>It's what you do that counts, not say... "Ideas are Cheap", as was the<br>mantra at Xerox PARC.<br><br>Whichever of the Anonymous Monk posted the criticism of "it can't be all<br>that hard to write a parser" obviously hasn't tried to write a full<br>language. It isn't nearly as simple as a 3-4th year compiler project.<br>And all those "University Experts" - if they were really good at new<br>languages and compilers, then P5 and 'C' would be a thing of the past.<br>Proof by Existence<nobr> <wbr></nobr>:-)<br><br>Experience counts in programming:<br> Computing is a *performance* discipline.<br><br>Like Architecture, Surgery, Music, Art and Flying...<br>You need "Heads and Hands" - both knowledge/theory and experience/practice.<br><br>Professional Programming is different again:<br> - it is always done by a team: collaboration &amp; co-operation is fundamental<br> - it's not a hobby, but paid work, where feeding your Ego isn't the<br>prime motivation<br> - it's about programming "for the next guy", who may well be yourself<br>in 6 months time<br> - it's about Programming-in-the-Large<br> - it's about delivering "Good Enough", which sometimes is It-just-runs,<br>and sometimes absolutely robust.<br> - and finally, its about *delivery*. Getting Things Done, not ideation<br>or criticism.<br>&nbsp; Coulda, Shoulda, Woulda doesn't cut it in the Professional world.<br> - there's another thing to do with Professionals and Engineering:<br>&nbsp; - Is there ever any excuse for a Professional to repeat, or allow<br>repetition of a know Error, Fault or Failure?<br>&nbsp; - Engineering is about Safe, Reliable, Effective and Economical<br>solutions for others.<br><br>There's a very simple example to show the level of Professional Software<br>Engineering embodied in Perl:<br> cpan install.<br><br>Firstly, the source code, in 'C', is available if needed. and its<br>Version controlled, not lost like 40% of pre-Y2K source.<br>There's a well known, robust and simple process to get &amp; install new<br>modules in an absolutely repeatable and predictable manner - with<br>over-rides when needed, not a constrained straight-jacket.<br>The stuff you're downloading has been testing on multiple platforms. It<br>comes quite trustworthy.<br>Everything that installs comes with its own set of *tests*.<br><br>And if it doesn't work for you, there are debuggers and more for your<br>programming pleasure<nobr> <wbr></nobr>:-)<br><br>Perl doesn't pay lip-service to good Software Engineering practices - it<br>just does them...<br>That's part of its success. It builds on strong professional<br>disciplines, and embeds them in its process.<br><br>The other part is that it leverages itself and work that's gone before.<br>It's more than CPAN and software re-use...<br><br>Finally, "Computing/I.T. is a Cognitive Amplifier".<br>It does for cognitive functions what machines do for muscles.<br><br>Alan Kay, inventor of Objects (in Smalltalk), is well know for saying<br>"Point of View is worth 80 IQ points".<br>Or, give ordinary people the right tools, and they can beat geniuses.<br><br>Perl has always performed this "cognitive amplifier" task.<br>That's worth more than Kay's 80 IQ points.<br>It turns a single Perl coder into a large team with best-in-the-world<br>solutions for many problems.<br><br>How would I have reacted to the Anonymous Monk?<br> - Show me what you've done that you think you have the knowledge, skill<br>and experience to criticise.<br> - If you have a point, do some work and commit some changes. Don't<br>waste my time and yours with hot air.<br><br>And what might Perl 6 achieve?<br>Coming from the 'pens' of highly competent &amp; experienced folk, who've<br>already done this before, it's gotta be close to definitive solution to<br>the problem field it chooses to answer.<br><br>If P6 arrives with an IDE and good, integrated tool-chain, it should<br>scale to Programming-in-the-Large and 'real' programming projects. It<br>won't displace C or Objective-C, but will be a 'slam-dunk' solution to<br>general software practice.<br><br>But in typical Perl style, I expect the Revolution and Conquering the<br>World to be very low-key, even 'stealth mode'.<br>It'll probably pass with a whisper and people may ask, "isn't it obvious<br>to do this?".<br>Or not<nobr> <wbr></nobr>:-)<br><br>Many thanks for your years of hard work and contribution at a level I<br>could only wish for.<br><br>(From a former colleague of mine)</tt>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

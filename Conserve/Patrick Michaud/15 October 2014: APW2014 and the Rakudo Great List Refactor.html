@@ -1,0 +1,797 @@
+https://pmthium.com/2014/10/apw2014/
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<title>APW2014 and the Rakudo Great List Refactor | Pmthium</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://pmthium.com/wp/wp-content/themes/pmthium-1/style.css" />
+<link rel="pingback" href="https://pmthium.com/wp/xmlrpc.php" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="Pmthium &raquo; Feed" href="https://pmthium.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Pmthium &raquo; Comments Feed" href="https://pmthium.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Pmthium &raquo; APW2014 and the Rakudo Great List Refactor Comments Feed" href="https://pmthium.com/2014/10/apw2014/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/pmthium.com\/wp\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.7.29"}};
+			!function(t,a,e){var r,n,i,o=a.createElement("canvas"),l=o.getContext&&o.getContext("2d");function c(t){var e=a.createElement("script");e.src=t,e.defer=e.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(e)}for(i=Array("flag","emoji4"),e.supports={everything:!0,everythingExceptFlag:!0},n=0;n<i.length;n++)e.supports[i[n]]=function(t){var e,a=String.fromCharCode;if(!l||!l.fillText)return!1;switch(l.clearRect(0,0,o.width,o.height),l.textBaseline="top",l.font="600 32px Arial",t){case"flag":return(l.fillText(a(55356,56826,55356,56819),0,0),o.toDataURL().length<3e3)?!1:(l.clearRect(0,0,o.width,o.height),l.fillText(a(55356,57331,65039,8205,55356,57096),0,0),e=o.toDataURL(),l.clearRect(0,0,o.width,o.height),l.fillText(a(55356,57331,55356,57096),0,0),e!==o.toDataURL());case"emoji4":return l.fillText(a(55357,56425,55356,57341,8205,55357,56507),0,0),e=o.toDataURL(),l.clearRect(0,0,o.width,o.height),l.fillText(a(55357,56425,55356,57341,55357,56507),0,0),e!==o.toDataURL()}return!1}(i[n]),e.supports.everything=e.supports.everything&&e.supports[i[n]],"flag"!==i[n]&&(e.supports.everythingExceptFlag=e.supports.everythingExceptFlag&&e.supports[i[n]]);e.supports.everythingExceptFlag=e.supports.everythingExceptFlag&&!e.supports.flag,e.DOMReady=!1,e.readyCallback=function(){e.DOMReady=!0},e.supports.everything||(r=function(){e.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",r,!1),t.addEventListener("load",r,!1)):(t.attachEvent("onload",r),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&e.readyCallback()})),(r=e.source||{}).concatemoji?c(r.concatemoji):r.wpemoji&&r.twemoji&&(c(r.twemoji),c(r.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-content/plugins/google-analyticator/external-tracking.min.js?ver=6.5.2'></script>
+<link rel='https://api.w.org/' href='https://pmthium.com/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://pmthium.com/wp/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://pmthium.com/wp/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='A Perl 6 developer&#8217;s reply to a Russian Perl Podcast' href='https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/' />
+<link rel='next' title='Suspending Rakudo support for Parrot' href='https://pmthium.com/2015/02/suspending-rakudo-parrot/' />
+<meta name="generator" content="WordPress 4.7.29" />
+<link rel="canonical" href="https://pmthium.com/2014/10/apw2014/" />
+<link rel='shortlink' href='https://pmthium.com/?p=413' />
+<link rel="alternate" type="application/json+oembed" href="https://pmthium.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fpmthium.com%2F2014%2F10%2Fapw2014%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://pmthium.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fpmthium.com%2F2014%2F10%2Fapw2014%2F&#038;format=xml" />
+<link rel="stylesheet" type="text/css" href="https://pmthium.com/wp/wp-content/plugins/wp-recaptcha/recaptcha.css" /><!-- Google Analytics Tracking by Google Analyticator 6.5.2: http://www.videousermanuals.com/google-analyticator/ -->
+<script type="text/javascript">
+    var analyticsFileTypes = [''];
+    var analyticsSnippet = 'disabled';
+    var analyticsEventTracking = 'enabled';
+</script>
+<script type="text/javascript">
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-21075795-1', 'auto');
+ 
+	ga('send', 'pageview');
+</script>
+</head>
+
+<body class="post-template-default single single-post postid-413 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="https://pmthium.com/" title="Pmthium" rel="home">Pmthium</a>
+					</span>
+				</div>
+				<div id="site-description">The Pm element</div>
+
+										<img src="https://pmthium.com/wp/wp-content/uploads/2011/02/pmthium-1.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+								<div class="menu"><ul>
+<li ><a href="https://pmthium.com/">Home</a></li><li class="page_item page-item-2"><a href="https://pmthium.com/about/">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/" rel="prev"><span class="meta-nav">&larr;</span> A Perl 6 developer&#8217;s reply to a Russian Perl Podcast</a></div>
+					<div class="nav-next"><a href="https://pmthium.com/2015/02/suspending-rakudo-parrot/" rel="next">Suspending Rakudo support for Parrot <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-413" class="post-413 post type-post status-publish format-standard hentry category-perl6 category-rakudo">
+					<h1 class="entry-title">APW2014 and the Rakudo Great List Refactor</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="https://pmthium.com/2014/10/apw2014/" title="15:01" rel="bookmark"><span class="entry-date">2014/10/15</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="https://pmthium.com/author/admin/" title="View all posts by pmichaud">pmichaud</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>This past weekend I attended the <a href="http://act.useperl.at/apw2014/">2014 Austrian Perl Workshop and Hackathon</a> in Salzburg, which turned out to be an excellent way for me to catch up on recent changes to <a href="http://perl6.org/">Perl 6</a> and <a href="http://rakudo.org/">Rakudo</a>. I also wanted to participate directly in discussions about the Great List Refactor, which has been a longstanding topic in Rakudo development.</p>
+<p>What exactly is the &#8220;Great List Refactor&#8221; (GLR)? For several years Rakudo developers and users have identified a number of problems with the existing implementation of list types &#8212; most notably performance. But we&#8217;ve also observed the need for user-facing changes in the design, especially in generating and flattening lists.  So the term GLR now encompasses all of the list-related changes that seem to want to be made.</p>
+<p>It&#8217;s a significant (&#8220;great&#8221;) refactor because our past experience has shown that small changes in the list implementation often have far-reaching effects. Almost any bit of rework of list fundamentals requires a fairly significant refactor throughout much of the codebase. This is because lists are so fundamental to how Perl 6 works internally, just like the object model. So, as the number of things that are desirable to fix or change has grown, so has the estimated size of the GLR effort, and the need to try to achieve it &#8220;all at once&#8221; rather than piecemeal.</p>
+<p>The pressure to make progress on the GLR has been steadily increasing, and APW2014 was significant in that a lot of the key people needed for that would be in the same location. Everyone I&#8217;ve talked to agrees that APW2014 was a smashing success, and I believe that we&#8217;ve now resolved most of the remaining GLR design issues. The rest of this post will describe that.</p>
+<p>This is an appropriate moment to recognize and thank the people behind the APW effort. The organizers did a great job.  The Techno-Z and ncm.at venues were fantastic locations for our meetings and discussions, and I especially thank <a href="http://ncm.at/">ncm.at</a>, <a href="http://www.techno-z.at/">Techno-Z</a>, <a href="http://www.yelsterdigital.com/">yesterdigital</a>, and <a href="http://vienna.pm.org/">vienna.pm</a> for their generous support in providing venues and food at the event.</p>
+<p>So, here&#8217;s my summary of GLR issues where we were able to reach significant progress and consensus.</p>
+<h2>You are now leaving flatland</h2>
+<p>(Be sure to visit our gift shop!)</p>
+<p>Much of the GLR discussion at APW2014 concerned flattening list context in Perl 6. Over the past few months and years Perl 6 has slowly but steadily reduced the number of functions and operators that flatten by default. In fact, a very recent (and profound) change occurred within the last couple of months, when the <code>.[]</code> subscript operator for Parcels switched from flattening to non-flattening. To illustrate the difference, the expression</p>
+<pre>(10,(11,12,13),(14,15)).[2]</pre>
+<p>previously would flatten out the elements to return 12, but now no longer flattens and produces <code>(14,15)</code>. As a related consequence, <code>.elems</code> no longer flattens either, changing from 6 to 3.</p>
+<p>Unfortunately, this change created a inconsistency between Parcels and Lists, because <code>.[]</code> and <code>.elems</code> on Lists continued to flatten. Since programmers often don&#8217;t know (or care) when they&#8217;re working with a Parcel or a List, the inconsistency was becoming a significant pain point. Other inconsistencies were increasing as well: some methods like <code>.sort</code>, <code>.pick</code>, and <code>.roll</code> have become non-flattening, while other methods like <code>.map</code>, <code>.grep</code>, and <code>.max</code> continue to flatten. There&#8217;s been no really good guideline to know or decide which should do which.</p>
+<p>Flattening behavior is great when you want it, which is a lot of the time.  After all, that&#8217;s what Perl 5 does, and it&#8217;s a pretty popular language. But once a list is flattened it&#8217;s hard to get the original structure if you wanted that &#8212; flattening discards information.</p>
+<p>So, after many animated discussions, review of lots of code snippets, and seeking some level of consistency, the consensus on Perl 6 flattening behavior seems to be:</p>
+<div class="lispace">
+<ul>
+<li>List assignment and the <code>[ ]</code> array constructor are unchanged; they continue to flatten their input elements. (Arrays are naturally flat.)</li>
+<li>The for statement is unchanged. <code>for @a,@b { ... }</code> flattens <code>@a,@b</code> and applies the block to each element of <code>@a</code> followed by each element of <code>@b</code>. Note that flattening can easily be suppressed by itemization, thus <code>for @a, $@b { ... }</code> flattens <code>@a</code> but does all of <code>@b</code> in a single iteration.</li>
+<li>Method calls tend to not flatten their invocant. This most impacts <code>.map</code>, <code>.grep</code>, and <code>.first</code>&#8230; the programmer will have to use <code>.flat.grep</code> and <code>.flat.first</code> to flatten the list invocant.  Notably, <code>.map</code> will no longer flatten its invocant &#8212; a significant change &#8212; but we&#8217;re introducing <code>.for</code> as a shortcut for <code>.flat.map</code> to preserve a direct isomorphism with the <code>for</code> statement.There&#8217;s ongoing conjecture of creating an operator or syntax for flattening, likely a postfix of some sort, so that something like <code>.|grep</code> would be a convenient alternative to <code>.flat.grep</code>, but it doesn&#8217;t appear that decision needs to be made as part of the GLR itself.</li>
+<li>Argument lists continue to depend on the context in which they are bound: flattening for slurpy parameters, top-level itemizing for slice parameters, and non-flattening (or deferred flattening) for Positionals.</li>
+<li>The above two points produce a general guideline that method call invocants are generally not-flattened, while function call arguments are more likely to be.
+<pre>((1,2), 3, (4,5)).map({...}) # iterates over three elements
+map {...}, ((1,2),3,(4,5))   # iterates over five elements
+
+(@a, @b, @c).pick(1)         # picks one of three arrays
+pick 1, @a, @b, @c           # flatten arrays and pick one element
+</pre>
+</li>
+<li>We think it will be very difficult to have a guideline that applies 100% of the time &#8212; there will be a few exceptions to the rule but they should generally feel natural.</li>
+<li>The flattening behavior of operators continues to be specific to each operator &#8212; some will flatten, others will not. Fortunately, any flattening behavior should be grouped by precdence level, is generally dwimmy, and there are easy ways to use contextualizers to quickly switch to the behavior you want.</li>
+</ul>
+<h2>United Parcel Severance</h2>
+<p>As a result of improvements in flattening consistency and behavior, it appears that we can eliminate the Parcel type altogether. There was almost unanimous agreement and enthusiasm at this notion, as having both the Parcel and List types is quite confusing.</p>
+<p>Parcel was originally conceived for Perl 6 as a &#8220;hidden type&#8221; that programmers would rarely encounter, but it didn&#8217;t work out that way in practice. It&#8217;s nice that we may be able to hide it again &#8212; by eliminating it altogether. 🙂</p>
+<p>Thus <code>infix:&lt;,&gt;</code> will now create Lists directly. It&#8217;s likely that comma-Lists will be immutable, at least in the initial implementation. Later we may relax that restriction, although immutability also provides some optimization benefits, and Jonathan points out that may help to implement fixed-size Arrays.</p>
+<p>Speaking of optimization, eliminating Parcel may be a big boost to performance, since Rakudo currently does a fair bit of converting Parcels to Lists and vice-versa, much of which goes away if everything is a List.</p>
+<h2>A few more times around the (loop) blocks</h2>
+<p>During a dinner discussion Jonathan reminded me that Synopsis 4 has all of the looping constructs as list generators, but Rakudo really only implements <code>for</code> at the moment. He also pointed out that if the loop generators are implemented, many functions that currently use <code>gather/take</code> could potentially use a loop instead, and this could be much more performant. After thinking on it a bit, I think Jonathan is on to something. For example, the code for <code>IO::Handle.lines()</code> currently does something like:</p>
+<pre>gather {
+    until not $!PIO.eof {
+        $!ins = $!ins + 1;
+        take self.get;
+    }
+ }</pre>
+<p>With a lazy <code>while</code> generator, it could be written as</p>
+<pre>(while not $!PIO.eof { $!ins++; self.get });</pre>
+<p>This is lazily processed, but doesn&#8217;t involve any of the exception or continuation handling that <code>gather/take</code> requires. And since <code>while</code> might choose to not be strictly lazy, but <code>lines()</code> definitely should be, we may also use the <code>lazy</code> statement prefix:</p>
+<pre>lazy while not $!PIO.eof { $!ins++; self.get };</pre>
+<p>The <code>lazy</code> prefix tells the list returned from the <code>while</code> that it&#8217;s to generate as lazily as it possibly can, only returning the minimum number of elements needed to satisfy each request.</p>
+<p>So as part of the GLR, we&#8217;ll implement the lazy list forms of all of the looping constructs (<code>for</code>, <code>while</code>, <code>until</code>, <code>repeat</code>, <code>loop</code>). In the process I also plan to unify them under a single <code>LoopIter</code> type, which can avoid repetition and be heavily optimized.</p>
+<p>This new loop iterator pattern should also make it possible to improve performance of <code>for</code> statements when performed in sink context. Currently <code>for</code> statements always generate calls to <code>.map</code>, passing the body of the loop as a closure. But in sink context the block of a <code>for</code> statement could potentially be inlined. This is the way blocks in most other loops are currently generated. Inlining the block of the body could greatly increase performance of <code>for</code> loops in sink context (which are quite common).</p>
+<p>Many people are aware of the problem that constructs such as <code>for</code> and <code>map</code> aren&#8217;t &#8220;consuming&#8221; their input during processing. In other words, if you&#8217;re doing <code>.map</code> on a temporary list containing a million elements, the entire list stays around until all have been processed, which could eat up a lot of memory.</p>
+<p>Naive solutions to this problem just don&#8217;t work &#8212; they carry lots of nasty side effects related to binding that led us to design immutable Iterators. We reviewed a few of them at the hackathon, and came back to the immutable Iterator we have now as the correct one. Part of the problem is that the current implementation is a little &#8220;leaky&#8221;, so that references to temporary objects hang around longer than we&#8217;d like and these keep the &#8220;processed&#8221; elements alive. The new implementation will plug some of the leaks, and then some judicious management of temporaries ought to take care of the rest.</p>
+<h2>I&#8217;ve got a sinking feeling&#8230;</h2>
+<p>In the past year much work has been done to improve sink context to Rakudo, but I&#8217;ve never felt the implementation we have now is what we really want. For one, the current approach bloats the codegen by adding a call to <code>.sink</code> after every sink-context statement (i.e., most of them). Also, this only handles sink for the object returned by a Routine &#8212; the Routine itself has no way of knowing it&#8217;s being called in sink context such that it could optimize what it produces (and not bother to calculate or return a result).</p>
+<p>We&#8217;d really like each Routine to know when it&#8217;s being called in sink context.  Perl 5 folks will instantly say &#8220;Hey, that&#8217;s <code>wantarray</code>!&#8221;, which we long ago determined <a href="http://faq.perl6.org/#want">isn&#8217;t generally feasible in Perl 6</a>.</p>
+<p>However, although a generalized <code>wantarray</code> is still out of reach, we <em>can</em> provide it for the limited case of detecting sink contexts that we&#8217;re generating now, since those are all statically determined. This means a Routine can check if it&#8217;s been called in sink context, and use that to select a different codepath or result.  Jonathan speculates that the mechanism will be a flag in the callsite, and I further speculate the Routine will have a macro-like keyword to check that flag.</p>
+<p>Even with detecting context, we still want any objects returned by a Routine to have <code>.sink</code> invoked on them.  Instead of generating code for this after each sink-level statement, we can do it as part of the general return handler for Routines; a Routine in sink context invokes <code>.sink</code> on the object it would&#8217;ve otherwise returned to the caller.  This directly leads to other potential optimizations:  we can avoid <code>.sink</code> on some objects altogether by checking their type, and the return handler probably doesn&#8217;t need to do any decontainerizing on the return value.</p>
+<p>As happy as I am to have discovered this way to pass sink context down into Routines, please don&#8217;t take this as opening an easy path to lots of other wantarray-like capabilities in Perl 6. There may be others, and we can look for them, but I believe sink context&#8217;s static nature (as well as the fact that a false negative generally isn&#8217;t harmful) makes it quite a special case.</p>
+<h2>The value of consistency</h2>
+<p>One area that has always been ambiguous in the Synopses is determining when various contextualizing methods must return a copy or are allowed to return <code>self</code>. For example, if I invoke <code>.values</code> on a List object, can I just return <code>self</code>, or must I return a clone that can be modified without affecting the original? What about <code>.list</code> and <code>.flat</code> on an already-flattened list?</p>
+<p>The ultra-safe answer here is probably to always return a copy&#8230; but that can leave us with a lot of (intermediate) copies being made and lying around. Always returning <code>self</code> leads to unwanted action-at-a-distance bugs.</p>
+<p>After discussion with Larry and Jonathan, I&#8217;ve decided that true contextualizers like <code>.list</code> and <code>.flat</code> are allowed to return <code>self</code>, but other method are generally obligated to return an independent object.  This seems to work well for all of the methods I&#8217;ve considered thus far, and may be a general pattern that extends to contextualizers outside of the GLR.</p>
+<h2>Now it&#8217;s just a SMOPAD</h2>
+<p>(small matter of programming and documentation)</p>
+<p>The synopses &#8212; especially Synopsis 7 &#8212; have always been problematic in describing how lists work in Perl 6. The details given for lists have often been conjectural ideas that quickly prove to epic fail in practice. The last major list implementation was done in Summer 2010, and Synopsis 7 was supposed to be updated to reflect this design. However, the ongoing inconsistencies (that have led to the GLR) really precluded any meaningful update to the synopses.</p>
+<p>With the progress recently made at APW2014, I&#8217;m really comfortable about where the Great List Refactor is leading us. It won&#8217;t be a trivial effort; there will be significant rewrite and refactor of the current Rakudo codebase, most of which will have to be done in a branch. And of course we&#8217;ll have to do a lot of testing, not only of the Perl 6 test suite but also the impact on the module ecosystem. But now that much of the hard decisions have been made, we have a roadmap that I hope will enable most of the GLR to be complete and documented in the synopses by Thanksgiving 2014.</p>
+<p>Stay tuned.</p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						This entry was posted in <a href="https://pmthium.com/category/perl6/" rel="category tag">perl6</a>, <a href="https://pmthium.com/category/rakudo/" rel="category tag">rakudo</a>. Bookmark the <a href="https://pmthium.com/2014/10/apw2014/" title="Permalink to APW2014 and the Rakudo Great List Refactor" rel="bookmark">permalink</a>.											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/" rel="prev"><span class="meta-nav">&larr;</span> A Perl 6 developer&#8217;s reply to a Russian Perl Podcast</a></div>
+					<div class="nav-next"><a href="https://pmthium.com/2015/02/suspending-rakudo-parrot/" rel="next">Suspending Rakudo support for Parrot <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">30 Responses to <em>APW2014 and the Rakudo Great List Refactor</em></h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-1001645">
+		<div id="comment-1001645">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/8b34ca1d3ea6820d42f0682cd824a3b0?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/8b34ca1d3ea6820d42f0682cd824a3b0?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Elizabeth Mattijsen</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1001645">
+				2014/10/15 at 20:25</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p><code><br />
+while $!PIO.eof { $!ins++; self.get }<br />
+</code></p>
+<p>should probably read:</p>
+<p><code><br />
+while !$!PIO.eof { $!ins++; self.get }<br />
+</code></p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1001645#respond' onclick='return addComment.moveForm( "comment-1001645", "1001645", "respond", "413" )' aria-label='Reply to Elizabeth Mattijsen'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-admin bypostauthor odd alt depth-2" id="li-comment-1001790">
+		<div id="comment-1001790">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn"><a href='http://pmichaud.com/' rel='external nofollow' class='url'>pmichaud</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1001790">
+				2014/10/15 at 21:13</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Great catch!  I&#8217;ve updated the article, but used &#8220;not&#8221; instead of &#8220;!&#8221; to make it a bit more visually appealing.  (I could&#8217;ve also switched back to &#8220;until&#8221;, but I think some will more readily recognize &#8220;while&#8221; as the looping construct.)</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1001790#respond' onclick='return addComment.moveForm( "comment-1001790", "1001790", "respond", "413" )' aria-label='Reply to pmichaud'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even depth-2" id="li-comment-1001839">
+		<div id="comment-1001839">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1001839">
+				2014/10/15 at 21:42</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Do we no longer have to prefix <code>do</code> to get a return value from loops?</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1001839#respond' onclick='return addComment.moveForm( "comment-1001839", "1001839", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-admin bypostauthor odd alt depth-3" id="li-comment-1001840">
+		<div id="comment-1001840">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn"><a href='http://pmichaud.com/' rel='external nofollow' class='url'>pmichaud</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1001840">
+				2014/10/15 at 21:49</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>If I understand correctly, placing the loop in parentheses (or any opening bracket) will also allow return values from loops.   And contextualizers like &#8216;lazy&#8217; and &#8216;eager&#8217; also imply getting a return value from the loop.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1001840#respond' onclick='return addComment.moveForm( "comment-1001840", "1001840", "respond", "413" )' aria-label='Reply to pmichaud'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-1001863">
+		<div id="comment-1001863">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1001863">
+				2014/10/15 at 21:52</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>The flattening rules still sound scary tbh, but I guess I&#8217;ll have to try it out in practice to know how natural it will actually feel.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1001863#respond' onclick='return addComment.moveForm( "comment-1001863", "1001863", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1" id="li-comment-1002776">
+		<div id="comment-1002776">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/194ef8f807c34a9d7aab0e11a8674768?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/194ef8f807c34a9d7aab0e11a8674768?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Andrew</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1002776">
+				2014/10/16 at 00:58</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I was never comfortable with the idea of parcels, so I&#8217;m happy to see that go. I&#8217;m skeptical about whether the flattening rules will truly dwim, but I&#8217;ll reserve judgment.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1002776#respond' onclick='return addComment.moveForm( "comment-1002776", "1002776", "respond", "413" )' aria-label='Reply to Andrew'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-1005412">
+		<div id="comment-1005412">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/186e13a397e8103084f71ffc0a490512?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/186e13a397e8103084f71ffc0a490512?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Richard Huxton</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1005412">
+				2014/10/16 at 09:51</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><blockquote><p><code><br />
+((1,2), 3, (4,5)).map({...}) # iterates over three elements<br />
+map {...}, ((1,2),3,(4,5))   # iterates over five elements<br />
+</code></p>
+<blockquote>
+<p>Surely not? thing.map(f) and map(f,thing) HAVE to do the same thing, don&#8217;t they? If I can&#8217;t rely on a core function like this to behave consistently, what hope once I need to use libraries? What&#8217;s wrong with a new function &#8220;flatmap&#8221; or just write &#8220;flat.map&#8221; when I need it?</p></blockquote>
+</blockquote>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1005412#respond' onclick='return addComment.moveForm( "comment-1005412", "1005412", "respond", "413" )' aria-label='Reply to Richard Huxton'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-admin bypostauthor odd alt depth-2" id="li-comment-1006407">
+		<div id="comment-1006407">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn"><a href='http://pmichaud.com/' rel='external nofollow' class='url'>pmichaud</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1006407">
+				2014/10/16 at 13:25</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>It&#8217;s already the case that thing.map(f) and map(f,thing) don&#8217;t always do exactly the same thing, even before the GLR.  Consider</p>
+<p>    <code>$list.map(&#038;block)</code><br />
+    <code>map(&#038;block, $list)</code></p>
+<p>The first one iterates $list and applies &#038;block to each element.  The second one iterates once, applying &#038;block to $list.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1006407#respond' onclick='return addComment.moveForm( "comment-1006407", "1006407", "respond", "413" )' aria-label='Reply to pmichaud'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-3" id="li-comment-1007732">
+		<div id="comment-1007732">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/186e13a397e8103084f71ffc0a490512?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/186e13a397e8103084f71ffc0a490512?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Richard Huxton</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1007732">
+				2014/10/16 at 17:06</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>If map(&#8230;, $list) not mapping over the contents of $list doesn&#8217;t seem badly broken to you then I&#8217;m not sure what I can add.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1007732#respond' onclick='return addComment.moveForm( "comment-1007732", "1007732", "respond", "413" )' aria-label='Reply to Richard Huxton'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-4" id="li-comment-1008673">
+		<div id="comment-1008673">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1008673">
+				2014/10/16 at 22:24</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>How so? I don&#8217;t know where you&#8217;re coming from, but it shouldn&#8217;t seem broken to someone with a Perl background.</p>
+<p>The <code>map</code> function (both in Perl 5 and Perl 6), treats its first argument as the code to call for each iteration, and the rest of the argument list as the list to iterate over.</p>
+<p>The &#8216;<code>$</code>&#8216; sigil in <code>$list</code> explicitly signifies, loosely speaking, that the object referenced by that variable should be treated as a <b>single</b> item when it appears in list context (such as in the aforementioned argument list).</p>
+<p>You can always refer to the actual items of the list object using one of these ways:</p>
+<p><code><br />
+map(..., $list.list)<br />
+map(..., @($list))<br />
+map(..., @$list)<br />
+</code></p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1008673#respond' onclick='return addComment.moveForm( "comment-1008673", "1008673", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-1005489">
+		<div id="comment-1005489">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1005489">
+				2014/10/16 at 10:07</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>So, to be clear, the list literal</p>
+<p><code>1, $(2, 3,), (4, 5)</code></p>
+<p>creates an immutable list with three items:<br />
+a) an Int<br />
+b) a read-only Scalar containing a List<br />
+c) a List<br />
+&#8230;correct?</p>
+<p>And flattening simply means the operation of creating a duplicate of the list object, where child items which are of type List (but not in Scalar containers) have been recursively replaced with their contents?</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1005489#respond' onclick='return addComment.moveForm( "comment-1005489", "1005489", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment odd alt depth-2" id="li-comment-1005514">
+		<div id="comment-1005514">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1005514">
+				2014/10/16 at 10:12</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>&#8230;and items of type Array too, of course</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1005514#respond' onclick='return addComment.moveForm( "comment-1005514", "1005514", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-admin bypostauthor even depth-2" id="li-comment-1006511">
+		<div id="comment-1006511">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn"><a href='http://pmichaud.com/' rel='external nofollow' class='url'>pmichaud</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1006511">
+				2014/10/16 at 13:40</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>More precisely, non-Scalar values of type Iterable flatten.  Iterable includes List and Array, of course, but it also includes things like Range and Hash.  So, something like</p>
+<p><code>1, $(2, 3), (4, 5..7), 8..10</code></p>
+<p>would be a list with four elements (Int, item List, List, Range).  When flattened, it would produce a List containing (1, $(2,3), 4, 5, 6, 7, 8, 9, 10).</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1006511#respond' onclick='return addComment.moveForm( "comment-1006511", "1006511", "respond", "413" )' aria-label='Reply to pmichaud'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='http://p6weekly.wordpress.com/2014/10/20/2014-41-42-apw-glr-progress-perl%e2%80%af6-ide/' rel='external nofollow' class='url'>2014.41 &amp; .42: APW, GLR progress, Perl 6 IDE, &#8230; | Weekly changes in and around Perl 6</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-1033040">
+		<div id="comment-1033040">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/9106340a33a2407d63d22e6275300d33?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/9106340a33a2407d63d22e6275300d33?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">anonymous</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1033040">
+				2014/10/22 at 16:40</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Alternatively, instead of seven bullet points about how flattening works, you could simply make it so that when a user wants a flattened list, they call a flatten function on it&#8230;</p>
+<p>This is one of those things that, when I think about showing Perl (both 5 and 6) to people who know another dynamic language, I know they are going to recoil in horror about. It makes dealing with nested data structures more complicated: in Perl 5 it requires convoluted syntax, whereas in Perl 6 it requires memorizing a whole lot of other stuff and their various exceptions.</p>
+<p>Perhaps I&#8217;m just not a true Perl programmer, because I&#8217;d prefer to consistently not have information discarded rather than having to memorize all the various ways that Perl 6 makes guesses as to what I mean as it tries to &#8220;do what I mean.&#8221; Please just give me my data structure transformed the way I asked it to be transformed, using the consistent semantics I&#8217;d find in other languages.</p>
+<p>I&#8217;m sorry to say this, because P6 offers lots of really awesome things: namely a dynamic language with great concurrency support that isn&#8217;t written in s-expressions (Clojure) or which requires the actor model all the way down (Erlang/Elixir). This is something <i>sorely needed right now</i> and a huge opportunity for Perl 6. But these weird decisions that require people to carry around all this context of various rules in their heads is only going to alienate non-Perlers &#8212; and last I saw, they far outnumber us. I know it&#8217;s not a numbers game, but one of the biggest strengths of P5 &#8212; the richness of CPAN &#8212; came about due to Perl&#8217;s popularity. Can we achieve that same richness in P6?</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1033040#respond' onclick='return addComment.moveForm( "comment-1033040", "1033040", "respond", "413" )' aria-label='Reply to anonymous'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-1137259">
+		<div id="comment-1137259">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/3c9321ba6f56fe40378b66f2a059841b?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/3c9321ba6f56fe40378b66f2a059841b?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Anon</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1137259">
+				2014/11/25 at 01:07</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>I&#8217;m with you on this one. As a Perl 5 programmer who moved to Ruby but who wishes Perl 6 would present a compellig reason to return, I&#8217;m dismayed to discover that Perl&#8217;s most fundamental data structure is still the subject of so much confusiont. I&#8217;m sure there are uses for list flattening but outside Perl the language is often disparaged as having no proper data structures, with the finger pointing squarely at flattening.</p>
+<p>A usable, popluar Perl 6 is essential to revitalise the Perl community but if this List Refactor is considered &#8220;Great&#8221; then I really do dispare. Maybe Perl has just become too attached to list flattening to ever have a chance of moving on.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1137259#respond' onclick='return addComment.moveForm( "comment-1137259", "1137259", "respond", "413" )' aria-label='Reply to Anon'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-1272433">
+		<div id="comment-1272433">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/3c03d8cb2d0aaf8d0274b9bada4e09c4?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/3c03d8cb2d0aaf8d0274b9bada4e09c4?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Christopher E. Stith</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1272433">
+				2015/01/09 at 16:42</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Here&#8217;s an idea: never flatten implicitly.  Have a <code>.flatten</code> or <code>.flat</code> method on all list-like structures that produces a flattened list explicitly.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1272433#respond' onclick='return addComment.moveForm( "comment-1272433", "1272433", "respond", "413" )' aria-label='Reply to Christopher E. Stith'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment even depth-2" id="li-comment-1402979">
+		<div id="comment-1402979">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1402979">
+				2015/02/16 at 18:07</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>That <code>.flat</code> method already exists. It&#8217;s just not the <i>only</i> way to get flattening behavior.</p>
+<p>Nor would it necesssarily make things more explicit to make it the only way. Think about it: If a function chooses to call <code>.flat</code> on an argument it is given, this will feel very &#8220;explicit&#8221; for the author of the function, but from the point of view of code that <i>calls</i> the function, it will effectively be implicit behavior that needs to be learned.<br />
+By letting functions encode the desire to operate on flattened arguments into their signature (by specifying a slurpy parameter), it at least becomes self-documenting and easy to discover.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1402979#respond' onclick='return addComment.moveForm( "comment-1402979", "1402979", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt depth-2" id="li-comment-1402980">
+		<div id="comment-1402980">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/83ece50530e2901f15da5d0e755deb46?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">smls</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1402980">
+				2015/02/16 at 18:11</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>Really, after coming back to this blog post again, I realize that the list of &#8220;flattening rules&#8221; given here only seems so complicated because it describes things in comparison to the pre-GLR Perl 6 design.</p>
+<p>It&#8217;s actually reasonably simple. Only two language features I&#8217;m aware of perform implicit flattening of their inputs:</p>
+<p>&#8211; list assignment<br />
+&#8211; for loops</p>
+<p>And then there are ways to &#8220;explicitly&#8221; get things to flatten:</p>
+<p>&#8211; Calling the <code>flat</code> method/sub on an object<br />
+&#8211; Specifying a function/method/operator parameter as &#8220;slurpy&#8221;</p>
+<p>Some built-in functions/method/operators use such slurpy parameters, and in theory you&#8217;ll need to learn which ones do case by case, but in practice it should feel pretty obvious once you get a hang of the language. And you can always look at a routine&#8217;s signature to make sure.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1402980#respond' onclick='return addComment.moveForm( "comment-1402980", "1402980", "respond", "413" )' aria-label='Reply to smls'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-1310091">
+		<div id="comment-1310091">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/6812a25e879cb71b1c27a3b2bf7c2c0d?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/6812a25e879cb71b1c27a3b2bf7c2c0d?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">BSD</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1310091">
+				2015/01/20 at 15:32</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>@anonymous and @Anon &#8230; the list describing the flattening behavior is really only three items long (items 4. and 5. are really an extension to item 3. maybe 3a, 3b and the last two points are really  just comments/discussion). Arguably item 1. just describes something that isn&#8217;t going to change so, rather than horror and confusion, the points are the start a discussion of what really is more like two broad and easy to remember general principles that are still being worked on. </p>
+<p>For me it makes sense to have a @list.operation method call leave what ever list-ish or Array object it is called on as is (though the shorthand .|operation seems like a neat idea) since I&#8217;m treating it like an object. At the same time having a function  operation( @list ) make sensible decisions about flattening gives me useful way to leverage context in the language. </p>
+<p>Since this will still be perl, I expect any behavior will be extremely well-documented and since it is perl6 I expect it will come with deluxe informative error messages and warnings.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1310091#respond' onclick='return addComment.moveForm( "comment-1310091", "1310091", "respond", "413" )' aria-label='Reply to BSD'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='https://p6weekly.wordpress.com/2015/02/04/2015-05-fosdem-happened/' rel='external nofollow' class='url'>2015.05 FOSDEM happened | Weekly changes in and around Perl 6</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='http://pmthium.com/2015/02/suspending-rakudo-parrot/' rel='external nofollow' class='url'>Suspending Rakudo support for Parrot | Pmthium</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-1411432">
+		<div id="comment-1411432">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/8021678ed419eb7e9d898658b56689ef?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/8021678ed419eb7e9d898658b56689ef?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn">Darren Duncan</cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1411432">
+				2015/02/20 at 01:04</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>How difficult would it be to never implicitly flatten in any circumstance, and always require some explicit marker to cause flattening?  That would make things a lot more consistent I think.  The marker could even be some syntax other than .flat, it could be connected with assignment or &#8216;for&#8217; but it is still something explicit and visible.</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1411432#respond' onclick='return addComment.moveForm( "comment-1411432", "1411432", "respond", "413" )' aria-label='Reply to Darren Duncan'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	<ul class="children">
+	<li class="comment byuser comment-author-admin bypostauthor even depth-2" id="li-comment-1411570">
+		<div id="comment-1411570">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/de5e8997fc2ae86fa58a2e4c99cbdfa3?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn"><a href='http://pmichaud.com/' rel='external nofollow' class='url'>pmichaud</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2014/10/apw2014/#comment-1411570">
+				2015/02/20 at 01:59</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>We considered this extensively at APW2014, and have continued to consider it since then&#8230; but so far we haven&#8217;t found a suitable marker or way of doing it that is sufficiently better than &#8220;.flat&#8221;.</p>
+<p>Pm</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2014/10/apw2014/?replytocom=1411570#respond' onclick='return addComment.moveForm( "comment-1411570", "1411570", "respond", "413" )' aria-label='Reply to pmichaud'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='http://ceronman.com/2015/02/23/perl-6-giving-with-one-hand-and-taking-with-the-other/' rel='external nofollow' class='url'>Perl 6: Giving with One Hand and Taking with the Other | Manuel Cerón</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='http://11qq.ru/go?https://techplanet.today/post/kak-izbavitsya-ot-trevoznosti-samostoyatelno-tabletki-protiv-trevogi' rel='external nofollow' class='url'>как избавиться от тревоги самостоятельно таблетки</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='https://techplanet.today/post/kak-izbavitsya-ot-trevoznosti-samostoyatelno-tabletki-protiv-trevogi#1' rel='external nofollow' class='url'>Как избавиться от страха и чувства тревоги, беспокойства без причины и стресса</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='http://1190.bicyclesonthemoon.info/ott2/redirect?f=https://sway.office.com/7EaFL50sPMxn99sC' rel='external nofollow' class='url'>как избавиться от чувства вины и стыда</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='https://kaalama.org/read-blog/195793' rel='external nofollow' class='url'>как избавиться от чувства вины</a></p>
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback: <a href='https://www.csrgardens.in/sites/default/files/webform/Buy%20Atarax%2010%20mg,%2025%20mg%20online.html' rel='external nofollow' class='url'>Buy Atarax 10 mg, 25 mg online</a></p>
+	</li><!-- #comment-## -->
+			</ol>
+
+
+	
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2014/10/apw2014/#respond" style="display:none;">Cancel reply</a></small></h3>			<form action="https://pmthium.com/wp/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" aria-required="true" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='413' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="857534a5b3" /></p>                <script type='text/javascript'>
+                    var RecaptchaOptions = { theme : 'red', lang : 'en' , tabindex : 5 };
+                </script><script type="text/javascript" src="https://www.google.com/recaptcha/api/challenge?k=6LeQI9MSAAAAAC2dGUcrFgLvU0LveGjdGUEvio-a"></script>
+
+	<noscript>
+  		<iframe src="https://www.google.com/recaptcha/api/noscript?k=6LeQI9MSAAAAAC2dGUcrFgLvU0LveGjdGUEvio-a" height="300" width="500" frameborder="0"></iframe><br/>
+  		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
+	</noscript>                        <div id="recaptcha-submit-btn-area">&nbsp;</div>
+                        <noscript>
+                         <style type='text/css'>#submit {display:none;}</style>
+                         <input name="submit" type="submit" id="submit-alt" tabindex="6" value="Submit Comment"/> 
+                        </noscript><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="118"/></p>			</form>
+			</div><!-- #respond -->
+	
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="https://pmthium.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">Recent Posts</h3>		<ul>
+					<li>
+				<a href="https://pmthium.com/2015/02/suspending-rakudo-parrot/">Suspending Rakudo support for Parrot</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2014/10/apw2014/">APW2014 and the Rakudo Great List Refactor</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/">A Perl 6 developer&#8217;s reply to a Russian Perl Podcast</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2012/09/a-rakudo-performance/">A Rakudo Performance</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2012/05/roborama-2012a/">Roborama 2012a</a>
+						</li>
+				</ul>
+		</li>		<li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">Related sites</h3><div class="menu-other-sites-container"><ul id="menu-other-sites" class="menu"><li id="menu-item-273" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-273"><a href="http://modelscoutrobotics.org/">Model Scout Robotics</a></li>
+<li id="menu-item-276" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-276"><a href="http://perl6.org/">Perl 6</a></li>
+<li id="menu-item-271" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-271"><a href="http://perlweekly.com/">Perl Weekly</a></li>
+<li id="menu-item-272" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-272"><a href="http://perl6maven.com/">Perl 6 Maven</a></li>
+<li id="menu-item-274" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-274"><a href="http://pmwiki.org/">PmWiki</a></li>
+</ul></div></li>
+<!-- Quick Adsense Wordpress Plugin: http://quicksense.net/ -->
+<li id="adswidget1-quick-adsense" class="widget-container  lambda_1">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-2896276000075357";
+/* pmthium-600w */
+google_ad_slot = "4343149604";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</li><li id="recent-comments-2" class="widget-container widget_recent_comments"><h3 class="widget-title">Recent Comments</h3><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link"><a href='https://www.csrgardens.in/sites/default/files/webform/Buy%20Atarax%2010%20mg,%2025%20mg%20online.html' rel='external nofollow' class='url'>Buy Atarax 10 mg, 25 mg online</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2013327">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='https://kaalama.org/read-blog/195793' rel='external nofollow' class='url'>как избавиться от чувства вины</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2011724">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='http://1190.bicyclesonthemoon.info/ott2/redirect?f=https://sway.office.com/7EaFL50sPMxn99sC' rel='external nofollow' class='url'>как избавиться от чувства вины и стыда</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2009503">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='https://techplanet.today/post/kak-izbavitsya-ot-trevoznosti-samostoyatelno-tabletki-protiv-trevogi#1' rel='external nofollow' class='url'>Как избавиться от страха и чувства тревоги, беспокойства без причины и стресса</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2005989">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='http://11qq.ru/go?https://techplanet.today/post/kak-izbavitsya-ot-trevoznosti-samostoyatelno-tabletki-protiv-trevogi' rel='external nofollow' class='url'>как избавиться от тревоги самостоятельно таблетки</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2005937">APW2014 and the Rakudo Great List Refactor</a></li></ul></li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">Archives</h3>		<ul>
+			<li><a href='https://pmthium.com/2015/02/'>February 2015</a></li>
+	<li><a href='https://pmthium.com/2014/10/'>October 2014</a></li>
+	<li><a href='https://pmthium.com/2013/06/'>June 2013</a></li>
+	<li><a href='https://pmthium.com/2012/09/'>September 2012</a></li>
+	<li><a href='https://pmthium.com/2012/05/'>May 2012</a></li>
+	<li><a href='https://pmthium.com/2012/04/'>April 2012</a></li>
+	<li><a href='https://pmthium.com/2012/02/'>February 2012</a></li>
+	<li><a href='https://pmthium.com/2011/08/'>August 2011</a></li>
+	<li><a href='https://pmthium.com/2011/07/'>July 2011</a></li>
+	<li><a href='https://pmthium.com/2011/06/'>June 2011</a></li>
+	<li><a href='https://pmthium.com/2011/02/'>February 2011</a></li>
+	<li><a href='https://pmthium.com/2011/01/'>January 2011</a></li>
+		</ul>
+		</li><li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">Categories</h3>		<ul>
+	<li class="cat-item cat-item-9"><a href="https://pmthium.com/category/android/" >android</a>
+</li>
+	<li class="cat-item cat-item-21"><a href="https://pmthium.com/category/fll/" >fll</a>
+</li>
+	<li class="cat-item cat-item-22"><a href="https://pmthium.com/category/lego/" >lego</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="https://pmthium.com/category/linux/" >linux</a>
+</li>
+	<li class="cat-item cat-item-23"><a href="https://pmthium.com/category/northtexasfll/" >northtexasfll</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="https://pmthium.com/category/nqp/" >nqp</a>
+</li>
+	<li class="cat-item cat-item-8"><a href="https://pmthium.com/category/parrot/" >parrot</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="https://pmthium.com/category/perl6/" >perl6</a>
+</li>
+	<li class="cat-item cat-item-13"><a href="https://pmthium.com/category/projects/" >projects</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="https://pmthium.com/category/rakudo/" >rakudo</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="https://pmthium.com/category/review/" >review</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="https://pmthium.com/category/robotics/" >robotics</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://pmthium.com/category/uncategorized/" >Uncategorized</a>
+</li>
+		</ul>
+</li>
+<!-- Quick Adsense Wordpress Plugin: http://quicksense.net/ -->
+<li id="adswidget2-quick-adsense" class="widget-container  lambda_2">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-2896276000075357";
+/* pmthium-200 */
+google_ad_slot = "4170547563";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</li><li id="meta-2" class="widget-container widget_meta"><h3 class="widget-title">Meta</h3>			<ul>
+						<li><a href="https://pmthium.com/wp/wp-login.php">Log in</a></li>
+			<li><a href="https://pmthium.com/feed/">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://pmthium.com/comments/feed/">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>			</ul>
+			</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="https://pmthium.com/" title="Pmthium" rel="home">
+					Pmthium				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.org/" title="Semantic Personal Publishing Platform">Proudly powered by WordPress.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+                <script type="text/javascript">
+                var sub = document.getElementById('submit');
+                document.getElementById('recaptcha-submit-btn-area').appendChild (sub);
+                document.getElementById('submit').tabIndex = 6;
+                if ( typeof _recaptcha_wordpress_savedcomment != 'undefined') {
+                        document.getElementById('comment').value = _recaptcha_wordpress_savedcomment;
+                }
+                document.getElementById('recaptcha_table').style.direction = 'ltr';
+                </script><script type='text/javascript' src='https://pmthium.com/wp/wp-content/plugins/akismet/_inc/form.js?ver=3.3'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/comment-reply.min.js?ver=4.7.29'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/wp-embed.min.js?ver=4.7.29'></script>
+</body>
+</html>

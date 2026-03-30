@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Even more fun from perl6 and Parrot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Even more fun from perl6 and Parrot</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-01-03T08:29:10</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Progress continues on perl6 for Parrot and the Parrot compiler tools.  Things are starting to happen so quickly now that it's hard to remember them all for these journal posts.  I'll need more frequent posts.  In the meantime, if anyone notices that I've overlooked something newsworthy then let me know and I'll add it to the next post.<br/><br/>I think the biggest splash over the past couple of days appears to be that we now have a "make perl6" target that directly creates an executable binary for perl6 on Parrot.  So now someone with a working Parrot can do:
+     
+    $ make perl6
+    $ ./perl6 hello.pl                                                                                                                                          <br/><br/>There are still some limitations -- in particular, the perl6 executable is dependent on files in the Parrot build installation (the binary requires a few hard-coded paths to Parrot libraries).  Fixing this is likely going to require getting Parrot's 'make install' target to work properly, which is a long-standing issue of its own.  So, it's not a perfect solution yet.  Also, the process for building the standalone executable may not work on all platforms -- we need more feedback from different platforms.  Still, being able to treat perl6 as a standalone executable goes a long way to making it easier use and experiment with.                                                 <br/><br/>The magic for creating an executable binary from Parrot bytecode comes from chromatic and Jerry Gay's pbc_to_exe script.  A number of important contributions and improvements also came from Will Coleda, Bernhard Schmalhofer, Andy Lester, and Francois Perrad.  It's impressive to see how quickly it all came together.<br/><br/>In fact, based on this Andy Lester is <i>already</i> <a href='https://rt.perl.org/rt3/Ticket/Display.html?id=49296'>asking for the "-e" option to be implemented in perl6</a>.  And the question about Perl 6 standard command line options also came up during today's Perl 6 design team meeting.  Larry says he will be looking at what options every Perl 6 implementation should be providing, and that will give us something solid to work from.  In the meantime someone will likely implement the '-e' option.  :-)<br/><br/>Yesterday I added the "defined-or" operator and the @*ARGS array to the perl6 compiler, so now the <a href='http://www.perlfoundation.org/perl6/index.cgi?tower_of_hanoi'>Towers of Hanoi example</a> works with perl6 on Parrot:<br/><br/>  $ ./perl6 hanoi.pl
+  ndisks = 3
+  AB
+  AS
+  BS
+  AB
+  SA
+  SB
+  AB
+  $<br/><br/>In other news on perl6 compiler improvements, Jonathan Worthington added a preliminary version of 'given'/'when', and even performed the commit "live on stage" at the Israeli Perl Workshop.  Jonathan has also added more to his Junctions implementation.  Personally, I had feared that Junctions was likely to be one of the more difficult pieces for us to add -- especially autothreading support -- but based on Jonathan's implementation and some IRC conversations with him I think it might go a lot easier than I originally expected.  Time will tell...<br/><br/>Jonathan also implemented a 'set_outer' method that should let us implement a workable eval() function, but I think we'll also need a couple of PCT/PAST improvements for it.<br/><br/>Jerry Gay has been adding radix conversions to perl6, and today started on named/optional/slurpy parameters to subroutines.  He's already implemented the same features for NQP, so he has a good model to work from when doing the perl6 implementation.<br/><br/>Yesterday I started a long-awaited refactor of the "official Perl 6 test suite", which is currently housed in the Pugs repository.  Essentially I'm hoping to reorganize the tests along the lines of the chapters and sections given in the Synopses and the Perl 5 camel book, to make it easier to locate tests and determine where to add new ones.  So far I've only done a few of the operator tests from S03, but have notes about other tests that belong in S02 and S04.  As part of refactoring the tests into more a more sane organization, we're also verifying that they are still correct with the latest synopses and that all of the details are covered.  Where things need more work, we're adding "XXX" notes so that others can come along and improve the tests even further.<br/><br/>The "make spectest" target is now active again in perl6 on Parrot, and as more tests make it through the refactor we'll be adding them to the spectest suite in Parrot.  Of course, others are very welcome to contribute tests, help with the test refactoring, and the like.  All you need is a Pugs commit bit, which is very easy to obtain.<br/><br/>Larry, Jerry, and I also had an excellent conversation last night about ways different Perl 6 implementations can mark the test suite with todo/skip flags without stepping all over each other.  I very much like what we ended up with... but since this post is already getting a bit long I'll describe it all in a subsequent post (probably also when there are some examples to point to).<br/><br/>The thing I haven't done yet that I want to do is to have an example of using Perl 6 to create built-in functions for the perl6 on Parrot compiler.  If anyone can write up an example of a Perl 6 builtin function or method that is itself written in Perl 6, then I'll be very glad to get it integrated into the compiler so we can use it as a template/example for others to follow.<br/><br/>In other news, Will Coleda is working on a web interface to quickly summarize tickets in RT that are of high-priority to the perl6 compiler (or other efforts).  When it's finished I hope it will make it easier for us to point people to where effort is needed.<br/><br/>Jeff Horwitz has written an interesting article on the Parrot wiki that describes <a href='http://www.perlfoundation.org/parrot/index.cgi?mod_parrot'>how mod_parrot works</a>.  It's worth a look if you'd like to see more about mod_parrot, especially since mod_parrot integrates the whole Parrot stack from HLL languages down to embedding and NCI interfacing.<br/><br/>In fact, this is a good place for me to point out that the <a href='http://www.perlfoundation.org/perl6/index.cgi'>Perl 6 wiki</a> has also gotten received quite a bit of reorganization and improvement this past week; many thanks go to Conrad Schneiker, Aaron Trevena, Herbert Breunung, and others for the updates.  Please feel free to help us flesh it out -- even just asking questions or saying "this is confusing" is very helpful!<br/><br/>Finally, in the -Ofun department:  Tonight Will Coleda used my <a href="http://svn.perl.org/parrot/trunk/tools/dev/mk_language_shell.pl">"create a Parrot language" script</a> to start a <a href='http://svn.perl.org/parrot/trunk/languages/lolcode/'>LOLCODE implementation for Parrot</a>.  Then Simon Cozens (lathos) extended it to include variable support.  Given that it didn't even exist four hours ago, it's a pretty good demonstration that Parrot's compiler and language tools are working the way we want.<br/><br/><b>Update:</b> Simon has also <a href='http://blog.simon-cozens.org/post/view/1323'>blogged about his experience</a> in writing compilers for Parrot using Perl 6.<br/><br/>You can see that there is a huge amount of activity taking place with Perl 6 and Parrot; in fact, most of what I've written about here has occurred in the 72 hours since my last journal post (December 31).  And there's undoubtedly some stuff that I've overlooked.  Next on my list of things to work on is more test suite improvements, implementing eval(), addressing a few RT tickets, making sure that people working on the compilers can continue to be productive, and adding more documentation and details so that others can more easily join in the fun.<br/><br/>As always, more to come...<br/><br/>Pm</p>
+
+
+<hr/>
+
+
+
+<h2>Good work fella!</h2>
+<h3><a href="/user/TeeJay/">TeeJay</a> on 2008-01-03T10:41:20</h3>
+Repeating what I've said on the perl6-users list - I'm astonished at you guys have acheived in such a short time<nobr> <wbr></nobr>.. now, how often do you hear something like that said about perl 6<nobr> <wbr></nobr>;)
+
+
+
+<h2>Well done</h2>
+<h3><a href="/user/Alias/">Alias</a> on 2008-01-03T11:21:45</h3>
+It's nice to see we're past the tipping point now.<br><br>I'm wondering how hard it would be to modify Perl::Dist to replace the Perl 5 code with a parrot/perl6 build process...
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

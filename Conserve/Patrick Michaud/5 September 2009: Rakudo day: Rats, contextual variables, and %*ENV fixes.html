@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo day: Rats, contextual variables, and %*ENV fixes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo day: Rats, contextual variables, and %*ENV fixes</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-09-05T19:56:45</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>As I mentioned in my 
+<a class='urllink' href='http://use.perl.org/user/pmichaud/journal/39543'>previous post</a>,
+I'm doing two Rakudo days per week for my Vienna.pm grant
+to make up for some of the weeks I missed during conferences and
+summer travel.  This week I focused on adding a rational (<code>Rat</code>)
+data type, support for contextual variables, and fixing up the
+handling of environment variables via <code class='escaped'>%*ENV</code>.
+</p>
+
+<p>After the work that was done on operator overloading last week,
+implementing a basic <code>Rat</code> data type ended up being surprisingly
+easy.  In fact, I just wrote it as a straightforward Perl 6 class
+and added it to the setting -- you can see the easy-to-read results in
+<a class='urllink' href='http://github.com/rakudo/rakudo/tree/master/src/setting/Rat.pm'>src/setting/Rat.pm</a>.
+I did just enough of the implementation to get the basics in place, 
+at which point Solomon Foster, Moritz Lenz, and others started 
+working out a lot of the other details such as conversions to and
+from <code>Rat</code> and other MMD considerations.  As a result we have
+quite a few clarifications and improvements to the specification,
+a lot of new tests have been written, and Rakudo passes a lot more
+tests in the test suite.
+</p>
+
+<p>While adding <code>Rat</code> was relatively easy, adding contextual variables
+to Rakudo was quite a bit more challenging.  Contextual variables
+are similar to lexicals, except that searching for a contextual
+variable involves looking at a block's callers instead of
+the block's outer lexical scopes.  Contextuals have many 
+similarities to the way that Unix environment variables work, but 
+they also fill many of the niches that would have otherwise been 
+handled by global or environment variables.
+</p>
+
+<p>Contextual variables in Perl 6 are denoted using the <code>*</code> twigil.
+Here's a simple example that uses a contextual:
+</p>
+<pre>
+    sub foo() {
+        say $*PHRASE;
+    }
+
+    sub bar() {
+        my $*PHRASE = 'world';
+        foo();
+    }
+
+    my $*PHRASE = 'hello';
+    foo();
+    bar();
+</pre>
+<p>When run, this outputs "hello\nworld\n".  When <code>foo()</code> needs to look up
+the value of <code>$*PHRASE</code>, it does so by first checking its local 
+lexpad, then checking its caller's lexpad, then its caller's caller's
+lexpad, and so forth until it finds a declared <code>$*PHRASE</code>.  
+Thus in the first call to <code>foo()</code> above, <code>foo()</code>'s caller is the mainline
+and so <code>foo()</code> finds the mainline's definition of <code>$*PHRASE</code> ("hello").
+The call to <code>bar()</code> declares a new contextual named <code>$*PHRASE</code>,
+and thus the second call to <code>foo()</code> sees <code>bar()</code>'s value of
+<code>$*PHRASE</code> ("world").
+</p>
+
+<p>In other words, contextual variable lookups always use the (dynamic) 
+caller chain instead of (static) lexical scoping.
+</p>
+
+<p>This turns out to be incredibly useful in a number of situations where
+we want to provide called functions with an idea of the dynamic
+context in which they're being called.  One of the most common uses
+for contextuals can be to override the default output for <code>print</code>,
+<code>say</code>, and other builtin I/O functions.  The <code>print</code> and <code>say</code> 
+builtins output to <code>$*OUT</code>, a contextual variable.  So, to change the
+output destination for any calls to <code>say</code> or <code>print</code>, simply declare
+a new contextual $*OUT:
+</p>
+<pre>
+    say "Hello world on standard output";
+
+    {
+        my $*OUT = open("outfile.txt", :w);
+        say "This text is going to outfile.txt";
+        say "Report follows:";
+        print_report();
+        $*OUT.close;
+    }
+
+    say "...and this also goes to standard output";
+</pre>
+<p>So, in the bare block in the above code, the declaration
+of a new <code>$*OUT</code> contextual causes all of the calls to 
+<code>say</code> and <code>print</code> executed inside of that block to 
+send their output to <em>outfile.txt</em> instead of the
+default standard output.  This behavior holds even for 
+nested function calls such as <code>print_report()</code> -- its calls
+to <code>say</code> and <code>print</code> also get sent to <em>outfile.txt</em>.
+</p>
+
+<p>This ability to establish a dynamic context value that 
+can be quickly looked up from within nested function calls
+is key to simplifying many compiler implementation details.
+If you look at <a class='urllink' href='http://svn.pugscode.org/pugs/src/perl6/STD.pm'>STD.pm</a> 
+you'll quickly see how much it relies on contextuals.  Indeed,
+one of my next tasks will be to add contextuals to NQP and PGE
+so that we can move even closer to the way STD.pm handles
+parsing.
+</p>
+
+<p>As I alluded above, contextual variables also fill some of the
+niches held by global and environment variables.  If a search
+for a contextual variable doesn't find it declared in any of
+the callers' lexpads, we then fall back to looking in the <code>GLOBAL</code>
+and <code>PROCESS</code> packages.  Thus a <code>$GLOBAL::foo</code> variable can
+be quickly accessed using <code>$*foo</code> if no caller has
+declared its own <code>$*foo</code>.  
+</p>
+
+<p>In fact, most of the predefined contextuals such as 
+<code>$*OUT</code>, <code>$*ERR</code>, <code>%*ENV</code>, <code>$*PID</code>, etc., are actually
+defined in the <code>PROCESS</code> package.  This gives us a lot
+of flexibility in deciding things:
+</p>
+<pre>
+    $*OUT          # the standard output of my caller
+    $PROCESS::OUT  # the standard output for this process
+</pre>
+<p>The implementation for contextual variables in Rakudo required
+creating new Parrot operations for finding variables in the 
+dynamic caller chain instead of the static outer scope chain, 
+creating a (<code>!find_contextual</code>) sub in Rakudo to handle the 
+contextual lookups, refactoring the compiler to treat the <code>*</code>
+twigil as a contextual instead of a global variable, and migrating 
+the previous "contextual globals" we had into the <code>PROCESS</code> namespace.  
+These later steps took the longest by far to accomplish.
+</p>
+
+<p>Finally for this week's Rakudo days, there have been a number of RT 
+tickets and requests for fixing up the handling of <code>%*ENV</code> --
+previously it was based on Parrot's <code>Env</code> PMC and
+some of the Parrot-isms leaked out (e.g. 
+<a class='urllink' href='http://rt.perl.org/rt3//Public/Bug/Display.html?id=57400'>RT #57400</a>).  
+The implementation of contextual variables opened 
+the door to cleaning up <code>%*ENV</code> to work more
+appropriately, so I went ahead and did that.
+</p>
+
+<p>Overall I'm very pleased by the progress made in this
+week's pair of Rakudo days:  we got a good start on
+rational datatypes and cleaning up the relationships
+among the built-in scalar types, we now have a working
+contextual model that we'll need for the next phases
+of compiler development, and environment variables are
+now working more like they are supposed to.
+</p>
+
+<p>Many thanks to Vienna.pm for sponsoring this work.
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Performance of contextual variables</h2>
+<h3><a href="/user/clintongormley/">clintongormley</a> on 2009-09-06T08:35:00</h3>
+<p>Hi patrick</p><p>while I agree that contextual variables are a very neat solution, do they not make using these variables very slow?</p><p>Even when not using contextual variables explicitly, every use of say() would need to check that no caller has overridden the value of $*OUT</p><p>Clint</p>
+
+
+
+<blockquote>
+
+<h2>Re:Performance of contextual variables</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-09-10T18:51:09</h3>
+<p>From what I can tell, contextuals don't appear to me to be all that much slower than ordinary lexicals.  There might be a case where a deeply nested call stack could increase the search time, but I suspect that will be rather rare.</p><p>Beyond that, there are all sorts of ways to optimize for the cases where speed ends up being more important than flexibility.  For example, a block that is going to make a lot of calls to say() can do:</p><blockquote><div><p> <tt>my $*OUT = CALLER::&lt;$*OUT&gt;;</tt></p></div> </blockquote><p>and this will reduce the number of caller contexts that say() will need to search in order to find $*OUT.</p><p>I suspect it will even be possible for compilers to detect frequent use of say() in a set of blocks and optimize the contextual lookup similar to what I've done above.</p><p>Pm</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

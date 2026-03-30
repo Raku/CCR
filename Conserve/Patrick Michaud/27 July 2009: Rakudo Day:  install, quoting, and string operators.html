@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo Day:  install, quoting, and string operators</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Day:  install, quoting, and string operators</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-07-27T04:47:27</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Since I was busy at <a class='urllink' href='http://en.oreilly.com/oscon2009'>OSCON</a> all this week, it was difficult to find
+a single day to dedicate to my Vienna.pm grant.  But I did manage
+to get several major tasks done from my hotel room,
+so I'm going to bundle those together and count them as my
+"Rakudo day" for the week.
+</p>
+
+<p>The biggest accomplishment was to finally get
+Rakudo so that it can build from an installed Parrot.  Prior to
+Parrot 1.4.0 this has been exceedingly difficult, as an installed
+copy of Parrot did not provide all of the tools needed to
+compile dynamic PMCs and dynamic opcodes on our target platforms.
+But over the past few weeks Allison Randal and Will Coleda
+have gotten it to work for 
+<a class='urllink' href='http://partcl.googlecode.com/'>ParTcl</a>, and now I've
+been able to adapt those techniques to work with Rakudo.  The
+current state of building Rakudo from an installed Parrot is
+in the "ins2" branch of the github repository, if you wish to
+give it a try.  (See below for instructions.)  Note that some of 
+the spectests will fail if you try "make spectest"; because 
+the "ins2" branch is using an older version of Rakudo and some 
+spectests have been added to the test suite since then.
+Since we're really just testing build/install, "make test"
+is sufficient here (and I'll clean up any spectest issues when
+I merge it back to the master branch).
+</p>
+
+<p>Some may ask why we don't simply merge it back to master now;
+I haven't wanted to merge the ins2 branch back into trunk until
+we have verification that it builds properly on a variety of
+platforms.  So far I've only had it fully tested on a couple
+of versions of Linux; I don't want to end up cutting out
+other operating systems from playing with Rakudo.
+</p>
+
+<p>One of the downsides of building Rakudo from an installed Parrot 
+is that we effectively lose the ability to easily build Rakudo
+from a build-tree copy of Parrot (like we do now).  Part of the
+problem is that the filesystem layout of a build-tree copy of Parrot
+is very different from the filesystem layout of an installed Parrot.
+So at a minimum we would need a lot of code that says "if installed
+Parrot use this path, if Parrot build use this other path".  This
+is true not only for file locations, but also for the tools used to
+build dynamically loaded PMCs and opcodes.  Instead of trying to
+support both layouts, I'd prefer to just stick with using an
+installed Parrot for now.
+</p>
+
+<p>(Note that it doesn't have to be a system-installed Parrot, the
+<code>--gen-parrot</code> option to Rakudo's <code>Configure.pl</code> will make
+a local install of Parrot and then build Rakudo from that.)
+</p>
+
+<p>We're not abandoning the ability to build Rakudo from a build-copy
+of Parrot, we're just switching gears for a while.
+Based on conversations with other Parrot team members at
+YAPC::NA Pittsburgh and online, we've decided that of building 
+(but not installing) Parrot should result in something that 
+directly mimics the filesystem layout of an installed Parrot.
+When this is done, it will be easier for HLL languages
+and other tools built on Parrot to work from either a build
+tree or install tree version of Parrot.
+</p>
+
+<p>In other areas, during Monday's OSCON tutorial sessions I
+sat in on Damian Conway's "<a class='urllink' href='http://en.oreilly.com/oscon2009/public/schedule/detail/8061'>Perl 6: Why? What? How?</a>" tutorial.  I wanted to
+see the tutorial itself, but I was also curious to know what
+problems would arise during the tutorial so that I could work 
+on fixing them quickly.  One of the problems that was quickly
+identified was that the <code>&lt;&lt; ... &gt;&gt;</code> quoting operator
+wasn't handling comments properly.  In other words, the following code
+</p>
+<pre>
+    my $a = <<
+        do         # a deer
+        re         # a drop of golden sun
+        mi         # a name I call myself
+    >>;
+</pre>
+<p>would act like a list of eighteen words instead of three.  To be
+honest, I had overlooked that comments were allowed here, so that
+evening I quickly updated the parser to skip over comments as well
+as whitespace, and now the above works the way it is supposed to.  
+Note that it even skips embedded and pod comments:
+</p>
+<pre>
+    my $a = << do #(a deer) re #(a drop of golden sun) >>;  # ("do", "re")
+</pre>
+<p>We had quite a few tickets dealing with places where operations
+end up returning Parrot <code>String</code> objects instead of Perl 6
+<code>Str</code> objects.  The easiest way to detect when this happens
+is to attempt to perform <code>.trans</code> on the string -- the <code>.trans</code>
+method for Parrot strings doesn't work the same as Rakudo's
+<code>.trans</code> method.  So I converted a few settings functions
+(e.g., <code>.uc</code>, <code>.flip</code>, <code>.lc</code>, etc.) to explicitly call 
+<code>prefix:&lt;~&gt;</code> on the result value; this guarantees that we 
+end up with a Perl 6 <code>Str</code> object.
+</p>
+
+<p>When we ultimately switch Rakudo to use HLL mapping of Parrot
+types, these explicit coercions won't be needed.  However,
+at the moment using HLL mapping imposes a significant speed
+penalty on Rakudo (we're working on this), and given that
+things are on the slow side already I'd rather keep the
+speed and maintain workarounds for the time being.
+</p>
+
+<p>I also fixed up stringification of several of the builtin types,
+especially <code>Int</code>, <code>Num</code>, and <code>Junction</code>.  Previously
+printing a Junction object would produce a string like
+<code>"Junction()&lt;0x7fb898cb42b0&gt;"</code>, which is almost certainly not
+what is wanted.  So I updated <code>Junction.Str</code> to simply
+return its <code>.perl</code> representation.
+</p>
+
+<p>Finally, Rakudo had been misparsing function names that began with
+a keyword followed by an apostrophe or hyphen.  For example:
+</p>
+<pre>
+    sub do-something() { say 'hello'; }
+
+    do-something();
+</pre>
+<p>Because <code>do</code> is a keyword, Rakudo would often end up parsing
+the above as <code>do -something()</code>, which of course wouldn't
+work properly.  Similar issues existed with other keywords such
+as <code>if</code>, <code>for</code>, <code>while</code>, etc.
+</p>
+
+<p>Having a longest-token matcher in the parser can avoid a lot
+of these misparses, but it's not always a complete solution.
+The STD grammar (as well as Rakudo's grammar) has a special
+<code>&lt;.nofun&gt;</code> lookahed subrule that can be used to verify that
+the keyword we just scanned is actually a keyword and not
+simply the lead-in to a function call.  I went ahead and
+added a few &lt;.nofun&gt; calls to Rakudo's grammar, and now
+subroutine names that begin with keywords work like they're
+supposed to.  (Thus making them a lot more fun.  :-)
+</p>
+
+<p>There were other fixes here and there throughout the week, and
+of course Moritz Lenz did the Rakudo #19 release on Thursday
+(which I describe in <a href='http://use.perl.org/user/pmichaud/journal/39352'>another post</a>.
+I also worked with 
+Jonathan on improving our internal object metamodel and 
+introspection capabilities, and he and I worked out some 
+ideas for refactoring our handling of lexicals.  And all of
+this took place while I was attending OSCON, giving various
+presentations, and engaging in useful hallway discussions with
+other Perl folks.  So it's been a busy and good week.
+</p>
+
+<p>As always, my thanks go to Vienna.pm for sponsoring the work
+I did on the above tasks.  Because of all of the travel and
+conferences I'm a bit behind on Rakudo days, so I will likely
+try to double-up on them for a few weeks until I'm caught up.
+</p>
+
+<p>Pm
+</p>
+
+<p>To test the ins2 branch:
+</p>
+<pre>
+    $ git clone git://github.com/rakudo/rakudo.git
+    $ git branch ins2 origin/ins2
+    $ git checkout ins2
+    $ perl Configure.pl --gen-parrot
+    $ make test
+</pre>
+
+</p>
+
+
+<hr/>
+
+
+
+<h2>Missing?</h2>
+<h3><a href="/user/colomon/">colomon</a> on 2009-07-27T11:42:11</h3>
+This needs at least a "cd rakduo" somewhere in there, right?<br/><br/>
+I did that right after the first line.  But (not knowing git, really) I was thoroughly unconvinced that git had actually switched to the branch -- there wasn't any real feedback like when doing a "git pull".  (It gave the appearance of having logically switched to the branch without having updated files, if that makes any sense.)<br/><br/>
+Still, it built and passed make test under OS X 10.5.6.  Is there any way to verify that it was the correct branch that built, and not just Chicago (which also works)?
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

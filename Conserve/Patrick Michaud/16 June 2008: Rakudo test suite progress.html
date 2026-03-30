@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo test suite progress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo test suite progress</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-06-16T06:34:15</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>[Rakudo spec regression status: 64 files, 779 tests]
+</p>
+
+<p>In my previous posts I reported on Rakudo's progress in passing the
+test suite.  For those I had been using the output of Test::Harness
+to estimate the number of passing tests, but ultimately decided that
+it wasn't really giving me the information I want in the form I want
+it.  So I wrote a custom test summarizer for Rakudo to make it
+easier to measure our test passing rate in the spectest suite.
+</p>
+
+<p>Here's how things have been progressing over the last three weeks:
+</p>
+<pre>
+          Rakudo spectest regression daily results
+                          files test pass fail todo skip
+2008-05-22 00:00             31  564  223    0    0  341
+2008-05-23 00:00             32  569  228    0    0  341
+2008-05-24 00:00             32  569  228    0    0  341
+2008-05-25 00:00             39  666  310    0    0  356
+2008-05-26 00:00             39  666  310    0    0  356
+2008-05-27 00:00             39  666  310    0    0  356
+2008-05-28 00:00             39  666  317    0    0  349
+2008-05-29 00:00             43  774  394    4   15  361
+2008-05-30 00:00             43  775  415    0   15  345
+2008-05-31 00:00             43  775  415    0   15  345
+2008-06-01 00:00             52  892  518    0   15  359
+2008-06-02 00:00             55 1012  623    0   15  374
+2008-06-03 00:00             55 1012  623    0   15  374
+2008-06-04 00:00             55 1012  624    0   14  374
+2008-06-05 00:00             58 1107  668    0   15  424
+2008-06-06 00:00             58 1110  674    0   14  422
+2008-06-07 00:00             59 1139  682    0   16  441
+2008-06-08 00:00             59 1139  697    0   17  425
+2008-06-09 00:00             59 1139  699    0   15  425
+2008-06-10 00:00             59 1139  699    0   15  425
+2008-06-11 00:00             59 1145  705    0   15  425
+2008-06-12 00:00             59 1145  705    0   15  425
+2008-06-13 00:00             60 1148  707    0   15  426
+2008-06-14 00:00             60 1148  711    0   15  422
+2008-06-15 00:00             63 1201  754    0   15  432
+2008-06-16 00:00             64 1226  779    0   15  432
+</pre>
+
+
+<p>The 00:00 in the above table represents midnight U.S. Central
+Time.  The 'test' column indicates the number of tests run,
+and the 'pass' column shows how many tests were passing
+(excluding 'todo' and 'skip').  So, as of June 16 Rakudo is
+passing 779 tests in its spectest_regression suite.
+</p>
+
+<p>In order to get a feel for our overall trend, I like to
+look at week-over-week progress instead of just the daily
+numbers.  So, in the week from June 9 to June 16 we added
+779 - 699 = 80 new passing tests.  We'll see how things go
+in the future -- it will all depend on a combination of how
+quickly spectests can be reviewed and features added to
+Rakudo.
+</p>
+
+<p>At the top of my future posts I plan to include a one-line
+summary of Rakudo's passing rate so that people can continually
+monitor our ongoing progress without having to scan the
+article (see the top of this post for an example).
+</p>
+
+<p>Pm
+</p>
+
+<p><b>Update:</b>  Moritz has generated a <a href='http://www.pmichaud.com/perl6/spectest-progress.png'>PNG graph</a> of the above data, and is updating the script to take advantage of the <a href='http://svn.perl.org/parrot/trunk/languages/perl6/docs/spectest-progress.csv'>CSV version</a> of the data that we'll be maintaining in the repository.  (I don't know how often the graph will be updated yet.)
+
+</p>
+
+
+<hr/>
+
+
+
+<h2>Track that data in a csv file in the source?</h2>
+<h3><a href="/user/Tim Bunce/">Tim Bunce</a> on 2008-06-16T10:14:41</h3>
+It's great to be able to visualize progress.<br><br>I'd like to use these stats to add another graph to my 'myths' talk, like the ones on pages 7 and 11 of<br><a href="http://timbunce.files.wordpress.com/2008/06/perl-myths-200802-inc-perl6-olddraft.pdf" title="wordpress.com">http://timbunce.files.wordpress.com/2008/06/perl-myths-200802-inc-perl6-olddraf<nobr>t<wbr></nobr> .pdf</a wordpress.com><br><br>Any chance you could maintain a csv or tsv file of these data?
+
+
+
+<blockquote>
+
+<h2>Re:Track that data in a csv file in the source?</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2008-06-16T14:52:36</h3>
+Now available at <a href="http://svn.perl.org/parrot/trunk/languages/perl6/docs/spectest-progress.csv" title="perl.org">http://svn.perl.org/parrot/trunk/languages/perl6/docs/spectest-progress.csv</a perl.org> .  Enjoy!<br><br>Pm
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

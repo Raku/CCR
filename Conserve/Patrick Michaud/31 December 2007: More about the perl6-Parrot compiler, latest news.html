@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: More about the perl6/Parrot compiler, latest news</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>More about the perl6/Parrot compiler, latest news</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-12-31T08:39:03</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>I hope everyone is having a good holiday, I know that I am!  However, even with the holidays work has continued on perl6/Parrot, so here's some of the latest tidbits.<br/><br/>Several people have commented that the plethora of tools and acronyms used for building the perl6/Parrot compiler seems a bit overwhelming (PAST, PCT, PIR, PGE, NQP, ...).  I can totally understand the sentiment expressed, so this weekend I spent some time drafting some documentation that I hope will start to blaze a trail through the jungle.  The document is available in the Parrot repository as <a href='http://svn.perl.org/parrot/trunk/languages/perl6/docs/compiler_overview.pod'>languages/perl6/docs/compiler_overview.pod</a> (or follow the link to view it in a browser).<br/><br/>I also started a perl6-specific <a href='http://svn.perl.org/parrot/trunk/languages/perl6/docs/glossary.pod'>glossary of acroynms and terms for the compiler</a>.  Parrot has its own glossary that defines these items, it also includes a lot of terms and features that I think might be distracting to a perl6 hacker, so I created the perl6-specific one.<br/><br/>Of course, both documents are first drafts, so they may still not be totally clear, and there are some sections to be written still).  The main goal for the documents is to highlight the important components, so that newcomers will be less distracted by the things of lesser importance.<br/><br/>Any feedback or comments on the drafts would be greatly appreciated.  I'm hoping that these can also serve as a start to the generic compiler tools documentation, or "How to write a compiler for Parrot".<br/><br/>As to making it easier for people to contribute code, there's still one piece that needs to be in place first:  we need to decide on the file structure we'll use to organize the Perl 6 source files in the compiler, and how they'll be linked in to the perl6 runtime environment.  I expect to have this in place sometime tomorrow, and after that I think it will be much more obvious how it all fits together.<br/><br/>Several have expressed that they're looking to replace all of the existing PIR code with Perl 6 equivalent...but I don't think that's realistic (or necessary).  The PIR code that exists now is mainly for implementing Perl 6 primitive types and operations (things like Str, List, infix:<+>, etc.), and these are likely to remain in PIR because they're, well, primitives.  Once built, the primitives don't need much hackery anyway, and then other functions and features can be written using Perl 6 sources on top of those primitives.<br/><br/>Anyway, if you're at all interested, read the documents, ask questions, and give it another day or two and I think (hope) it will all become much clearer, or that we can put the pieces in place to make it so.  And I expect to have some good detailed examples soon as well.<br/><br/>In other news, chromatic++ and others have made some excellent progress on getting the pbc_to_c translator working.  I haven't had a chance to play with it much yet, but once all of the kinks are worked out we should be able to compile perl6 into its own executable, so that someone can type "perl6 hello.pl" and have it work the way we all expect.<br/><br/>Also, Jerry Gay did a lot of work last week on adding optional and named parameters to NQP.  While this doesn't translate directly to perl6, it does give us the basic outline for the perl6 implementation, which I think we will also have this week.<br/><br/>My other immediate task for the week is to get cracking on the test suite reorganization, because I know a lot of people are interested in helping with that.  As always, there's just so much to do!<br/><br/>Lastly, there have been quite a few opinion posts on perlbuzz this past week about the past, present, and future of Perl 6.  As part of the conversation Andy Lester asked if there was any way to describe what had been accomplished thus far in Perl 6, and in response I wrote up my <a href='http://perlbuzz.com/2007/12/one-view-of-heres-what-weve-done-in-perl-6.html'>view of "Here's what we've done"</a>.  I think it shows that we're a lot farther along than many people realize, and not only that but the pace of development is picking up dramatically.  It's worth a look.<br/><br/>Happy new year, everyone!<br/><br/>Pm
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

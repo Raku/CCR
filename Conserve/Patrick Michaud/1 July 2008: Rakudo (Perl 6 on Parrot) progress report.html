@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo (Perl 6 on Parrot) progress report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo (Perl 6 on Parrot) progress report</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-07-01T04:59:40</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>This is the third "monthly" report for my development grant from
+the Mozilla Foundation and The Perl Foundation.  As regular readers
+will have surmised by now, the definition of "month" has been stretched
+a bit for a variety of reasons, but as this report and the other
+reports will show, it's not been a hindrance to our progress.
+</p>
+
+<p>To review, the primary goals of this grant are:
+</p><ol><li>To have a Perl 6 on Parrot implementation that supports commonly-used Perl 6 constructs;
+</li><li>Improvements to the Perl 6 test suite;
+</li><li>To substantially complete the Parrot Compiler Toolkit, including documentation;
+</li><li>Increased community participation in Perl 6 and Parrot development, including development efforts on other languages utilizing Parrot and the Parrot Compiler Toolkit.
+</li></ol>
+<p>It's now clear that the work under this grant has been (or otherwise
+shortly will be) successful in meeting all of the above goals.  As before,
+in this report I'll highlight the major events and milestones that
+have been reached since the previous report, and let my other
+article postings provide increased details.
+</p>
+<h2>Progress, April 2008 to June 2008</h2>
+<p>* Of course, one of the biggest news items is that in May 2008 The
+Perl Foundation received a $200,000 <a class='urllink' href='http://news.perlfoundation.org/2008/05/tpf_receives_large_donation_in.html' rel='nofollow'>philanthropic donation</a> from
+Ian Hague, roughly half of which will be used to support further
+development of Perl 6 and to build upon the work performed under
+this grant.
+</p>
+
+<p>* In addition, Jonathan Worthington received <a class='urllink' href='http://use.perl.org/article.pl?sid=08/04/23/2314234' rel='nofollow'>a grant from Vienna.pm</a> to continue his work on developing Rakudo; this grant led to implementations of type checking, multimethod dispatch, regex and grammar support, public and private methods, Ranges, scalar variables, runtime role composition, enums, and a lot more.
+</p>
+
+<p>* During this period we continued to improve the documentation
+for the Rakudo (Perl 6 on Parrot) compiler, although more focus
+in this area is definitely needed.  In April we published a <a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP' rel='nofollow'>list of Rakudo milestones</a> as a basic "road map" to guide continued development.  We also generated
+numerous articles and blog postings that describe the various
+features of the compiler and how it's all being put together.
+</p>
+
+<p>* In May we started measuring progress on Rakudo by the number of
+passing tests from the official test suite.  As of June 30, Rakudo Perl
+is passing 1126 tests from the official test suite, and we're averaging
+100 new passing tests per week.  I'm hoping this trend will continue.
+</p>
+
+<p>* To facilitate development Moritz Lenz and Jerry Gay
+refactored the test harness to provide a "make spectest_regression" target.
+Now Rakudo developers can verify that changes to the compiler are not
+breaking any tests that were previously passing.  Based on this we're
+able to to maintain a <a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/docs/spectest-progress.csv' rel='nofollow'>spectest-progress</a> file, and Moritz created an excellent utility
+to display the  progress as a graph:
+</p>
+
+<p><a class='urllink' href='http://www.pmichaud.com/perl6/rakudo-tests-2008-06-30.png' rel='nofollow'>http://www.pmichaud.com/perl6/rakudo-tests-2008-06-30.png</a>
+</p>
+
+<p>* Work on refactoring, improving, and updating the Perl 6 test suite is being handled by Adrian Kreher, Moritz Lenz, and Jerry Gay under a <a class='urllink' href='http://auzon.blogspot.com/search/label/gsoc2008' rel='nofollow'>Google Summer of Code grant</a>, along with test contributions and suggestions from many others.  We now have a better process in place for reviewing and updating tests; this has enabled progress in other areas to also proceed more rapidly.
+</p>
+
+<p>* Many of the basic Perl 6 statement types and constructs are now in place -- the primary notable exception being list assignment and lazy list operations.  Implementing list assignment properly will require some modifications to the underlying grammar engine -- that work is expected to occur later this summer.  Lazy lists and operators are awaiting some improvements to Parrot's exception subsystem (expected in early July).
+</p>
+
+<p>* The Parrot Compiler Toolkit (PCT) and Not Quite Perl (NQP) tools developed in the first months of this grant continues to demonstrate its power and effectiveness.  Most of the HLL translators for Parrot have either adopted or are planning to using PCT/NQP for their underlying code generation.  In particular, both the Ruby and PHP implementations (Cardinal and Plumhead) have made significant progress by using the Parrot compiler tools.  PCT now has support for basic "return" control exceptions -- other types of control exceptions will be added shortly.
+</p>
+
+<p>* We continue to gather more active contributors to Parrot and Rakudo Perl.  There has been a substantial increase in patch submissions -- so much so that we've held discussions about how we might improve our ability to respond to code contributions more quickly.  I've given presentations about the recent improvements at <a class='urllink' href='http://www.fosdem.org/' rel='nofollow'>FOSDEM 2008</a>, <a class='urllink' href='http://www.texasoss.org/' rel='nofollow'>The Texas Open Source Symposium</a>, <a class='urllink' href='http://dfw.pm.org/' rel='nofollow'>DFW Perl Mongers</a>, and <a class='urllink' href='http://conferences.mongueurs.net/yn2008/' rel='nofollow'>YAPC::NA 2008</a>.  Each of these presentations have increased participation and enthusiasm about Rakudo Perl and Parrot.  More presentations about the project will be made at <a class='urllink' href='http://en.oreilly.com/oscon2008/' rel='nofollow'>OSCON 2008</a> and <a class='urllink' href='http://www.yapceurope2008.org/ye2008/' rel='nofollow'>YAPC::Europe 2008</a>.
+</p>
+
+<p>* At YAPC::NA 2008 Jim Keenan, Will Coleda, and others on the Parrot team organized a "Perl 6 and Parrot Workshop", in which we helped approximately 20 people download and build Parrot and Rakudo Perl and run through the basic test suite.  This has further increased interest in the project; indeed, some of the participants came across some bugs (and filed bug reports and/or patches), and many are planning to hold similar workshops in their local user groups.  We plan to repeat the workshop at other venues, including the <a class='urllink' href='http://pghpw.org/ppw2007/' rel='nofollow'>Pittsburgh Perl Workshop</a>, YAPC::EU, and likely other workshops and user groups.
+</p>
+
+<p>* All of the "specific tasks" targeted in the end of the last grant report have been achieved.
+</p>
+<h2>Where things are headed next</h2>
+<p>The goal for the next few weeks will be to continue (and perhaps improve) the excellent development momentum achieved during the past couple of months.   In particular, we will continue improving the test suite and Rakudo's ability to pass tests from the suite.  In addition, as some new Parrot features become available (e.g., improved exception and lexical variable handling) we will be able to take advantage of them in the compilers and compiler toolkits.  We will also begin identifying the specific individuals and tasks to be engaged under grants from the Ian Hague donation.
+</p>
+
+<p>Specific tasks for the remainder of this grant:
+</p>
+<ul><li>Continue improving the official test suite
+</li><li>Develop a more complete implementation of Perl 6's exception model
+</li><li>Implement basic lazy lists and operators
+</li><li>More refactoring of basic operators, functions, and classes according to recent changes in the language specification
+</li><li>Allow compiler and builtin library components to be written in Perl 6
+</li><li>Continue convergence efforts with other Perl 6 implementations
+</li><li>Write the final grant report, documenting the work performed, quantifying results achieved, and outlining the next phases of development
+</li></ul>
+<p>As things stand today, I expect to publish the final report for this grant
+sometime around OSCON 2008 (July 2008).  Of course, I will continue to post articles at <a class='urllink' href='http://use.perl.org/user/pmichaud/journal' rel='nofollow'>use.perl</a>, <a class='urllink' href='http://rakudo.org' rel='nofollow'>rakudo.org</a>, and <a class='urllink' href='http://parrotblog.org' rel='nofollow'>parrotblog.org</a>.
+</p>
+
+<p>Thanks for reading!
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

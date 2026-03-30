@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: a(nother) Reverse Polish Notation Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>a(nother) Reverse Polish Notation Calculator</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-03-02T19:41:55</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>In <a href='http://blog.afoolishmanifesto.com/archives/341'>a Reverse Polish Notation Calculator</a>, fREW Schmidt takes the RPN calculator example from <a href='http://www.amazon.com/gp/product/1558607013'>Higher Order Perl</a> and converts it over to Perl 6.<br/><br/>Very cool.<br/><br/>But as usual, I visually look at the Perl 6 version compared to the Perl 5 version and think "Can't we do better?"  In this case, we can.  Here's my version of the same code:<br/><br/><pre>
+    my %op_dispatch_table = {
+        '+'    => { .push(.pop + .pop) },
+        '-'    => { my $s = .pop; .push(.pop - $s) },
+        '*'    => { .push(.pop * .pop) },
+        '/'    => { my $s = .pop; .push(.pop / $s) },
+        'sqrt' => { .push(.pop.sqrt) },
+    };<br/><br/>    sub evaluate (%odt, $expr) {
+        my @stack;
+        my @tokens = $expr.split(/\s+/);
+        for @tokens {
+            when /\d+/     { @stack.push($_); }
+            when ?%odt{$_} { %odt{$_}(@stack); }
+            default        { die "Unrecognized token '$_'; aborting"; }
+        }
+        @stack.pop;
+    }<br/><br/>    say "Result: { evaluate(%op_dispatch_table, @*ARGS[0]) }";
+</pre><br/><br/>The result:
+<pre>
+$ ./perl6 calc.pl '5 6 +'
+Result: 11
+</pre><br/><br/>The major changes I made to fREW's code:<br/><br/>1.  Convert the explicit subs into simple closures, assuming that the stack is the implicit topic.
+2.  Use 'when' statements instead of if/elsif/else in the body of the 'evaluate' sub.<br/><br/>And yes, as frew points out -- when we get the 'R' metaoperator in place we can get rid of the 'my $s = ...' parts of subtraction and division.  Maybe I'll implement meta-R now... :-)<br/><br/>Thanks fREW for the very interesting example!<br/><br/>Pm<br/><br/><b>Update:</b>  I went ahead and implemented the R metaoperator.  For those who aren't familiar with meta-R, it reverses the order of the operands to an operator.  So, (5 R- 4)  is the same as (4 - 5), and (2 R/ 10) is the same as (10 / 2).  With this change, the RPN calculator becomes:<br/><br/><pre>
+    my %op_dispatch_table = {
+        '+'    => { .push(.pop + .pop)  },
+        '-'    => { .push(.pop R- .pop) },
+        '*'    => { .push(.pop * .pop)  },
+        '/'    => { .push(.pop R/ .pop) },
+        'sqrt' => { .push(.pop.sqrt)    },
+    };<br/><br/>    sub evaluate (%odt, $expr) {
+        my @stack;
+        my @tokens = $expr.split(/\s+/);
+        for @tokens {
+            when /\d+/     { @stack.push($_); }
+            when ?%odt{$_} { %odt{$_}(@stack); }
+            default        { die "Unrecognized token '$_'; aborting"; }
+        }
+        @stack.pop;
+    }<br/><br/>    say "Result: { evaluate(%op_dispatch_table, @*ARGS[0]) }";
+</pre><br/><br/></p>
+
+
+<hr/>
+
+
+
+<h2>Wow!</h2>
+<h3><a href="/user/frew/">frew</a> on 2009-03-02T20:12:05</h3>
+That's much more compact!  I'll try to absorb these changes so that next time I make a post about perl6 it will be closer to The Essence of Perl 6.<nobr> <wbr></nobr>:-)
+
+
+
+<h2>Making it even more compact...</h2>
+<h3><a href="/user/amahabal/">amahabal</a> on 2009-03-03T04:14:09</h3>
+I don't know how to do this, but I am sure Patrick or Jonathan can do this quickly...<br/><br/>In the code above, there is still repetition: all entries in %op_dispatch_table are nearly identical, differing only depending on the arity. We could replace that with something generic which is passed a sub, it pops as many elements as the arity of the passed sub and pushes back the value of applying the sub to the reverse of this list.<br/><br/>I was unable to do this myself because I could not get from the name of the sub to the callable object (I tried &amp;($name), but got a message that it is unimplemented).
+
+
+
+<blockquote>
+
+<h2>Re:Making it even more compact...</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-03-03T15:09:21</h3>
+<p>Yes, it could potentially be made slightly shorter... but I like the straightforward clarity of the above.  An advantage of the above approach is that it would work for almost any stack pattern -- including things that don't fit the ".push( fn(.pop) )" model.  For example, to add a 'say' operator that displays the top value of the stack (without removing it):</p><blockquote><div><p> <tt>&nbsp; &nbsp; 'say' =&gt; {<nobr> <wbr></nobr>.[*-1].say }</tt></p></div> </blockquote><p>I can also imagine functions that rotate or swap the top N operands, or the like.  Trying to wedge those into a standard<nobr> <wbr></nobr>.push/.pop sequence seems a little less straightforward than what we have above.</p><p>I'd still be interested in seeing the solution you have in mind, even if Rakudo doesn't compile/run it yet.  In fact, we'd be a bit more likely to make it do that if we had an example to work to.<nobr> <wbr></nobr>:-)</p><p>Thanks!</p><p>Pm</p>
+
+
+
+<blockquote>
+
+<h2>Re:Making it even more compact...</h2>
+<h3><a href="/user/amahabal/">amahabal</a> on 2009-03-03T18:58:57</h3>
+I have one version here:<br/><br/><a href="http://use.perl.org/user/amahabal/journal/38583" title="perl.org">http://use.perl.org/user/amahabal/journal/38583</a perl.org><br/><br/>Thanks to your suggestion, I added 'say' and 'rotate3'. I will try my original idea next, for which I need to go from a name (such as 'double') to a callable object (&amp;double). Not sure yet what I'd do with multis and such, but I will see how far I get.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

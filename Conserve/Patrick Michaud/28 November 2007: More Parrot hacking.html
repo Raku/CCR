@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: More Parrot hacking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>More Parrot hacking</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-11-28T12:56:12</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Another fruitful day of hacking.</p>
+
+<p>The big change for the day is that explanatory comments were added to abc's <i>src/grammar-actions.pl</i> file; hopefully this will help people understand how it all works and fits together.  I also added a couple of notes to the grammar ( <i>src/grammar.pg</i> ), but we obviously need to explain that one a bit better as well.
+
+<p>In fact, now that the compiler tools are nearing completion it's a great time to write a "compiler tutorial" that describes the process of building a compiler for Parrot (using abc as the canonical example, of course).  But I think that will have to wait a week or so, as there's other code (perl6!) that needs developing.
+
+<p>More improvements to the compiler toolkit today; completed the implementation of 'while', 'repeat_while' and 'try' nodes in PAST, and a couple of minor optimizations and improvements were made to the code generation.  Tonight I spent a couple of hours playing with some possible optimizations for better variable handling in the generated code.  The basics of what I tried worked nicely, but overall it's a very tricky problem in a dynamic system like Parrot, where some other subroutine or opcode can re-bind your symbols when you're not looking.  So, we'll leave this for a later optimization or something that someone else can attempt.  At this stage, working stable code definitely trumps fast and possibly unstable code.
+
+<p>NQP also got while/until/repeat_while/repeat_until statements added, in order to provide tests for PCT.  NQP doesn't have 'try' blocks yet... we may just save that for perl6 to test.  I also figured out how to finish out an implementation of class declarations in NQP, so that will be exciting.
+
+<p>Today on irc:#parrot Coke and others spent some very useful effort cleaning up outdated stuff in the Parrot repository and closing out obsolete RT tickets.  As for me, I think that I opened as many new tickets as I closed today.  :-|
+
+<p>This is a good place to mention that the Parrot developers hold weekly "status report" meetings on irc.perl.org/#parrotsketch every Tuesday at 18:30 UTC.  The meetings are archived at <a href=" http://www.parrotcode.org/misc/parrotsketch-logs"> http://www.parrotcode.org/misc/parrotsketch-logs</a>.
+
+<p>Andy Lester posted a nice article on PerlBuzz about the ROADMAP that was published for perl6 -- thanks Andy!
+
+<p>Now to see how well these shiny new tools perform in building a real compiler, like, say, perl6.  :-)
+
+<p>Pm</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

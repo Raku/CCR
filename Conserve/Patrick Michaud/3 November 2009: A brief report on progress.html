@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: A brief report on progress</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>A brief report on progress</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-11-03T18:25:28</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>It's been two weeks since I last did a blog post; and in that couple of weeks there's been an incredible flurry of activity and development.  In fact, so productive that I barely have had time to write about it, although that will happen soon.<br/><br/>As a simple indication of the speed in which things are moving, I thought I would just post a copy of my report to today's #parrotsketch meeting.  This represents things that have been achieved since October 27, and what we expect to be doing this upcoming week.<br/><br/><code>
+# parrotsketch report for 2009-11-03:
+What I did:
+* NQP stuff:
+** Added contextual variables, named arguments, modules, class
+   declarations, private class attributes, methods, 'make' statement,
+   pir::op access to PIR opcodes, grammars, tokens, rules, regexes,
+   INIT blocks, unified <noun> with <term>, lexical subroutines,
+   parameterized regexes, :my declarations in regexes, codeblocks
+   in regexes, code assertions in regexes, \x and \o escapes in
+   regexes and double-quoted strings, variable interpolation in 
+   double-quoted strings, a 'make install' target, a --parsetrace 
+   option, perl 6 pod comments, warnings for unsupported or NYI features
+** ... and made the nqp parser and compiler self-hosting.<br/><br/>* Rakudo stuff:
+** Started the new implementation of Rakudo based on the nqp-rx
+   engine, that is going very well.
+** Have a new implementation of Lists, Parcels and Arrays,
+   all of which can now have lazy semantics.
+** Fixed constants and containers handling, Rakudo no longer
+   allows assignment to constant values.
+** Implemented "real" assignment metaoperator parsing (e.g., &infix:<+=>);
+   Rakudo-ng now builds assignment metaoperators only when needed.
+** Changed subroutines to be stored with the & sigil.
+** Changed Rakudo operators to be "&infix:&lt;+&gt;" instead of "infix:+".
+** Have many of the sanity tests running again; Test.pm compiles
+   but doesn't run completely yet<br/><br/>* Plumage:
+** Updated Plumage Configure and code to work with nqp-rx, passes
+   Plumage's test suite.<br/><br/>What I'm doing this week:
+* Continuing to work on Rakudo-ng, get us running spectests again 
+  and compiling setting (now called "CORE")
+* More minor nqp-rx updates, error message improvements and better
+  syntax checking
+* Profiling the regex engine to find some speed improvements<br/><br/>What I'm blocking on:
+* Useful programming time
+</code><br/><br/>As you can see, things are happening quickly, and we're all pleased with the progress.  Together with Jonathan's work on dispatch, we appear to have overcome the two major hurdles identified for Rakudo Star.  From here on out it's basically just fleshing out the rest of the implementation and adding feature coverage according to the ROADMAP.<br/><br/>I'll write more details soon; I have to get back to a few other tasks right now.  Hope you enjoy reading the above list as much as I enjoyed writing it.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

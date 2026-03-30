@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: NQP news</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>NQP news</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-11-26T07:18:54</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Over the weekend I've been able to get a lot of new features implemented in NQP, so this is a status and update for NQP.<br/><br/>"What is NQP?"  <br/><br/>Well, NQP stands for "Not Quite Perl (6)", and it's one of the language tools being developed for Parrot.  It's intended to be a lightweight and quick way to write Parrot subroutines and methods using Perl 6 syntax.  In particular, I expect that it will get used for writing other compilers in Parrot, including bootstrapping perl6.<br/><br/>Of course, this begs the question of "why not just use Perl 6 for this?"  <br/><br/>Well, of course, one answer is that we don't have enough of a Perl 6 implementation for this yet.  But even when we do, the full Perl 6 implementation will likely need a substantial runtime library with it, and sometimes people targeting Parrot will want to develop code that doesn't require the entire Perl 6 runtime behind it.  <br/><br/>Also, Perl 6 will have its own idea of classes and objects, and sometimes we want to write code that uses the Parrot core types, or even a different class hierarchy.  <br/><br/>So, NQP is intended to fill this niche of being able to write code for Parrot using a Perl-like syntax, but staying fairly close to the capabilities, structure, and limitations of the Parrot VM.<br/><br/>----<br/><br/>Things that have been added to NQP this weekend:<br/><br/>* access symbols in other namespaces
+* named argument passing
+* method definitions
+* module/class declarations ('class' doesn't create the class yet... it just defines the namespace for enclosed methods/subs)
+* the 'make' function for result objects in matches (see S05 to find out what this is)<br/><br/>The next step for NQP will be to use it to re-implement "abc" for Parrot, as a proof-of-concept.  "abc" is a bc-clone that has been added to Parrot to illustrate Parrot's compiler tools.  Currently abc is written in a mix of PGE, PIR, and TGE -- but I'm thinking that soon we'll be able to make it almost entirely NQP-based.<br/><br/>After that is working fairly well, the next step will be to migrate the perl6 implementation to also be NQP based.  Stay tuned!<br/><br/>Pm</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

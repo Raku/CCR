@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: More rakudo and parrot news</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>More rakudo and parrot news</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-05-10T04:13:11</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>For the past couple of weeks I've been mostly providing feedback and guidance to others on IRC, as well as trying to keep up with $otherjob.  But this week I managed to get some coding in and continue progress.<br/><br/>Of course, it's great news that Jonathan++ has received a grant from Vienna.pm to continue his excellent work on Rakudo.  He's making so much progress lately that I'm finding it difficult to keep up with him.  Of course, that's a very good "problem" to have, so I'm not at all complaining.<br/><br/>Chromatic indicated that he had a <a href='http://www.parrotcode.org/misc/parrotsketch-logs/irclog.parrotsketch-200805/irclog.parrotsketch.20080506'>goal of reducing the number of open RT tickets for parrot to below 700</a>, so I spent some time over the last couple of days closing out some of my older tickets.  Earlier today were briefly down to 698, but then I found some additional Parrot bugs that brings us back to 700 as I'm writing this.  But I'm sure we'll be able to close a few more quickly.<br/><br/>The Parrot developers could really use some help with reviewing the Parrot RT queue.  Personally I think that a good number of those 700 open tickets must be irrelevant by now or otherwise already addressed.  Coke wrote a nice set of guidelines for this at <url:http://www.parrotblog.org/2008/05/700-ticket-challenge.html>, if you're interested in helping.  <br/><br/>Several RT tickets had to do with updating PGE to include some syntax changes in Synopsis 5.  Of course, changing PGE's syntax also means we have to update the various grammars that are using the older syntax, which takes a little while.  I think I managed to convert all of the existing languages except for Plumhead, which looked a little more involved than most.  So I'm hoping Bernhard will be able update that one soon.<br/><br/>I also cleared out a few RT tickets from the "perl6" queue, applying several useful patches and closing some out-of-date tickets.  This leaves us with 22 new/open tickets for Rakudo, although I expect that number to grow as more people start playing with it and trying out various tests.<br/><br/>Tonight I updated Rakudo's interface into the operator precedence parser so that the 'fatarrow' syntax now works properly.  So, we can use fat arrows for named parameters in subroutine and method calls.  Soon I'll want to work on the hash and list composers, and then start to tackle list context and list assignment.<br/><br/>For the upcoming weekend I'm planning to update the spectests so that "make spectest" in Rakudo doesn't give back a ton of not-very-useful-error messages.  As a result, we can't easily determine if a change to Rakudo causes something to break that was working previously.  Fortunately, the 'fudge' script makes it much easier for us to maintain this.  In an upcoming post I'll give an overview of spectests are being marked in Rakudo.<br/><br/>Spinclad on #parrot was remarking that was working on kjs' <a href='http://www.parrotblog.org/2008/03/targeting-parrot-vm.html'>Squaak tutorial</a>, and wanted to initialize the @?BLOCK variable using pure NQP instead of the PIR List class that the tutorial currently requires.  A couple of weeks ago I updated Parrot's ResizablePMCArray class to automatically provide the methods that the PIR List class was using, so I figured we'd be able to use those directly.  Turns out it's not quite as simple as that, but NQP still lets us work around it a bit.  What we ended up with was the following:<br/><br/>    Protomaker.new_subclass('ResizablePMCArray', 'List');
+    our @?BLOCK := List.new();<br/><br/>The first line uses PCT's "Protomaker" object to create a new "List" class that is a subclass of Parrot's ResizablePMCArray.  The second line then creates a new List object, and binds it to @?BLOCK.  Since List inherits from ResizablePMCArray, we automatically get the shift/unshift methods that Squaak needs to do its work.<br/><br/>In fact, another good task will be to update the Squaak tutorial (or create another tutorial) and use some of the more recent PCT and NQP features that were added in April.<br/><br/>However, it's probably not a good idea to rely too strongly on Protomaker just yet.  Currently we have two protoobject implementations -- one for PCT and another for Rakudo -- and after discussions with Jonathan and others I've decided that they really ought to be merged into a single implementation that is used by both.  Protomaker may very likely disappear in the merged version (but we'll undoubtedly have something equivalent).<br/><br/>Anyway, lots to work on as usual, and I'm glad I have a few weeks of available coding time again.<br/><br/>Pm
+</p>
+
+
+<hr/>
+
+
+
+<h2>Plumhead fixed</h2>
+<h3><a href="/user/Bernhard/">Bernhard</a> on 2008-05-11T13:08:27</h3>
+In r27444 I adapted Plumhead, PHP on Parrot, to the recent PGE changes. I only had to quote the arguments in the invocations of the subrule 'string_literal'.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo milestones posted</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo milestones posted</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-04-28T18:27:44</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Last week I heard that someone was having trouble finding the Rakudo sources, and it was suggested that blogging about it here might provide an additional pointer.  So, if you're looking for the sources to Rakudo Perl, it's currently held in the <a href='http://svn.perl.org/parrot/trunk/languages/perl6/'>languages/perl6/</a> directory of the Parrot repository.<br/><br/>Eventually Rakudo and other languages on Parrot will likely get separate repositories, but for now we all find it easier to keep everything in a single repository.<br/><br/>The architecture and layout of the Rakudo source code is described in <a href='http://svn.perl.org/parrot/trunk/languages/perl6/docs/compiler_overview.pod'>docs/compiler_overview.pod</a>.  This says what each source file does and how it all fits together.<br/><br/>Also, by popular demand, I've created a list of "milestones" for Rakudo Perl development and stuck them in the <a href='http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP'>ROADMAP</a>.  Reproducing the 2008-04-28 version here, we have:<br/><br/>* list context, list assignment
+* return and control exceptions
+* class, role, objects
+* regex, token, rule, grammar
+* selected libraries written in Perl 6
+* modules
+* junctions
+* lazy lists
+* slices
+* multi sub & multi-method dispatch
+* captures and signature handling
+* operator overloading
+* other S09 features (typed arrays, sized types)
+* heredocs
+* macros
+* module versioning<br/><br/>
+While the milestones roughly in priority sequence, this list isn't meant to be rigid or strictly sequential in nature.  If someone wants to work on a later milestone even though we haven't completed the earlier ones, that's certainly okay.  This list just gives us a way to see where things are fitting in my head.<br/><br/>Suggestions and additions to the above list are welcome.<br/><br/>Pm</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

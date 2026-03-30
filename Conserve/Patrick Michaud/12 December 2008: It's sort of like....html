@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: It's sort of like...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>It's sort of like...</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-12-12T17:34:36</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Earlier in the week, <a href='http://use.perl.org/user/fw/'>fw</a> wrote a journal post about his <a href='http://use.perl.org/user/fw/journal/38055'>First Perl6 program</a>.  I was quite excited to see this, but then read a <a href='http://use.perl.org/comments.pl?sid=41791&cid=66378'>comment from educated_foo</a> that pointed out that the Perl 5 version is actually shorter to write.<br/><br/>That didn't sit too well with me, because we really ought to make common things simpler, not harder.  What really bugged me (about Perl 6, not about fw's post) was the following for sorting a hash by values:
+<pre>
+for %words.pairs.sort: { $^b.value <=> $^a.value } -> $pair {
+    say $pair
+}
+</pre><br/><br/>Sorting hashes by value is a common operation, and although I can shorten the above a little bit<br/><br/><pre>
+.say for %words.sort: { $^b.value <=> $^a.value };
+</pre><br/><br/>it's still a bit long for my taste.  That <code>{ $^b.value &lt;=&gt; $^a.value }</code>
+just bugs me.<br/><br/>Then Moritz Lenz made a comment on #perl6 that perhaps sort should do something different with arity-1 blocks, and I then had an epiphany that led to the following pattern for sorting hashes by value:<br/><br/><pre>
+%hash.sort: { .value }
+</pre><br/><br/>I like this so much, I've gone ahead and implemented it in Rakudo, even though it's not officially part of the spec.  (I'm hoping it'll be adopted as such.)  So now in Rakudo we have the following:<br/><br/><pre>
+> my %hash = { c=>5, b=>7, a=>-4, e=>9, d=>0 };
+> .say for %hash.sort: { .value }
+a       -4
+d       0
+c       5
+b       7
+e       9<br/><br/>> .say for %hash.sort: { .key }
+a       -4
+b       7
+c       5
+d       0
+e       9
+</pre><br/><br/>That seems much nicer.  The general principal is that if the comparison argument to "sort" takes less than two arguments, then it's used to generate the <i>values</i> to be compared instead of the result of a comparison.<br/><br/>Of course, we aren't limited to just keys or values -- any operation we want to perform on the items being sorted will work.  To sort by the <i>magnitude</i> of the values of the hash:<br/><br/><pre>
+> .say for %hash.sort: { .value.abs }
+d       0
+a       -4
+c       5
+b       7
+e       9
+</pre><br/><br/>And of course this generalizes to more than just hashes; if <code>@dogs</code> contains a list of Dog objects we want to sort:
+<pre>
+@dogs.sort: { .name }      # sort dogs by name
+@dogs.sort: { .age }       # sort dogs by age
+</pre><br/><br/>This works because the ".name" and ".age" methods are invoked on each of the objects in the list to determine the value to use for that object in the sort.<br/><br/>Or for a simplistic case-insensitive sort:<br/><br/><pre>
+> my @a = <Fruit CHERRY danish Apple berry BaNaNa apricot>;
+> .say for @a.sort: { .lc }
+Apple
+apricot
+BaNaNa
+berry
+CHERRY
+danish
+Fruit
+</pre><br/><br/>Besides clarity, another big advantage of<br/><br/><pre>
+@a.sort: { .lc }
+</pre><br/><br/>over<br/><br/><pre>
+@a.sort: { $^a.lc leg $^b.lc }
+</pre><br/><br/>is that in the first version we compute .lc on each element only once for the entire sort, whereas in the second version it's computed once for each comparison.  And since we're typically doing O(n^2) comparisons, the first version can save a lot of method or function calls.<br/><br/>So, that was my fun for the morning.  Implementing this behavior turned out to be really easy -- in fact, I wrote the algorithm first as Perl 6 before translating it into PIR:<br/><br/><pre>
+multi method sort(@values: &by) {
+    ...
+    if &by.arity < 2 {
+        my @v     = @values.map(&by);
+        my @slice = (0..^@v).sort: { @v[$^a] cmp @v[$^b] };
+        return @values[ @slice ];
+    }
+    ...
+}
+</pre><br/><br/>The code just uses &by to compute the values (@v) to be used in the sort, does a sort on the indexes based on a comparison of those values, and uses the resulting sorted index list to return the (sorted) slice of the original list.  Note that the items in the result list are themselves unchanged from the original list -- they simply have a new sequence according to the &by criteria.<br/><br/>Since then PerlJam++ has suggested that we should do similar things for <code>min</code> and <code>max</code>:<br/><br/><pre>
+my $longest_string = @strings.max( { .chars } );
+</pre><br/><br/>This would use .chars as the criteria for determining the longest string but returns the longest string itself.<br/><br/>Perl 6 is very cool.<br/><br/>Pm<br/><br/>P.S.:  By the way, this means that the solution to the problem in fw's original post becomes:<br/><br/><pre>
+my %words;
+$*IN.slurp.comb.map: { %words{$_}++ };
+.say for reverse %words.sort: { .values };
+</pre><br/><br/>Not all of the above works in Rakudo yet (I think <code>.comb</code> is not yet implemented), but at least it's getting closer to what we'd really like to see here.<br/><br/>
+</p>
+
+
+<hr/>
+
+
+
+<h2>schwartzian transforms now a builtin</h2>
+<h3><a href="/user/Eric Wilhelm/">Eric Wilhelm</a> on 2008-12-12T19:16:25</h3>
+<p><div class="quote"><p> in the first version we compute<nobr> <wbr></nobr>.lc on each element only once for the entire sort, whereas in the second version it's computed once for each comparison.</p></div><p>Nice.</p>
+
+
+
+<h2>or this?</h2>
+<h3><a href="/user/markjugg/">markjugg</a> on 2008-12-12T21:24:19</h3>
+<p>Maybe this doesn't make sense but some way to stick with method calls appeals to me.</p><p>Instead of:</p><p><code><br>@dogs.sort: {<nobr> <wbr></nobr>.name }<br></code></p><p>Something like:</p><p><code><br>@dogs.sort_by.name<br></code></p><p>But even as already implemented, I agree it's an improvement and a nice language feature. Thanks, Patrick!</p>
+
+
+
+<blockquote>
+
+<h2>Re:or this?</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2008-12-12T22:15:44</h3>
+<p>Part of the difference here is that<nobr> <wbr></nobr>.sort_by (or<nobr> <wbr></nobr>.sort) is a method call on the list as a whole, and any method call after that really ought to be treated as a method call on the resulting sorted list.  For example,</p><blockquote><div><p> <tt>@list.sort.reverse<br>@list.sort.map {<nobr> <wbr></nobr>... }</tt></p></div> </blockquote><p>Also, something like <code>@list.sort_by.name</code>  gets the invocant in the wrong place, because in order for this to work the invocants to<nobr> <wbr></nobr>.name should be the individual elements of @list.</p><p>So, I think the information on how to sort (e.g.,<nobr> <wbr></nobr><code>.name</code>) really deserves to be an argument to the sort method, as opposed to a method itself.</p><p>I did think of using the method name<nobr> <wbr></nobr><code>.sort_by</code>  as a way of distinguishing the "sort by comparison function" from the "sort by value" behavior, but I think/hope the dwimminess of using the block to determine that is sufficient.  It's much nicer to always think "sort" than to have to wonder or remember the answer to "do I need '.sort' here or '.sort_by'?"</p><p>Of course, Larry and the folks on perl6-language get the strongest vote, and I'll be glad to implement whatever API they finally decide on.</p><p>Thanks!</p><p>Pm</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>Nice!</h2>
+<h3><a href="/user/davegaramond/">davegaramond</a> on 2008-12-12T23:32:24</h3>
+Nice. Ever since I learnt Ruby I'm kind of envious that it has a<nobr> <wbr></nobr>.sort_by method whereas in Perl we have to do fleshed-out Schwartzian transform. This will make me feel at home again in Perl<nobr> <wbr></nobr>:-)
+
+
+
+<h2>Aha!  It's already in the spec!</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2008-12-13T15:38:38</h3>
+<p>Turns out that this particular form of <code>sort</code> already exists in the Perl 6 spec -- it was just in an odd place.  In Synopis 3, we have:</p><blockquote><div><p> <tt>The advantage of the method form is that it can be used in places that<br>require tighter precedence than C&lt;~~&gt; provides:<br>
+&nbsp; <br>&nbsp; &nbsp; sort { $^a.M &lt;=&gt; $^b.M }, @files<br>
+&nbsp; <br>though that's a silly example since you could just write:<br>
+&nbsp; <br>&nbsp; &nbsp; sort {<nobr> <wbr></nobr>.M }, @files</tt></p></div> </blockquote><p>So, it's just Synopsis 29 that needs to be updated, and as of this morning Moritz++ has made that change.  So this is indeed an official part of the language, and we can go on remarking about how cool Perl 6 is.</p><p>Pm</p>
+
+
+
+<h2>A few problems...</h2>
+<h3><a href="/user/theorbtwo/">theorbtwo</a> on 2008-12-16T09:01:48</h3>
+1: Why do you test if the arity <br/><br/>2: Do you really want to compare with cmp always?  Your<nobr> <wbr></nobr>.say for %hash.sort: {<nobr> <wbr></nobr>.value.abs } example will no longer work if %hash has entries that are more then one digit.  (Or did cmp change meaning between 5 and 6 to magically DWIM re numeric vs stringy compares -- I haven't been paying all that much attention for a long while now.)
+
+
+
+<blockquote>
+
+<h2>Re:A few problems...</h2>
+<h3><a href="/user/theorbtwo/">theorbtwo</a> on 2008-12-18T18:13:29</h3>
+Sorry for the rather fragmented first issue.  It should say something along the lines of "why do you test if the airity is less then 2, rather then testing for it being exactly 1?"
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

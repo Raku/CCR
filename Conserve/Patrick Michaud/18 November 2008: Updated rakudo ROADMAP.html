@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Updated rakudo ROADMAP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Updated rakudo ROADMAP</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-11-18T06:03:52</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Tonight I updated Rakudo's <a href=http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP>ROADMAP</a> file to reflect the progress we've made since it was last done (August 2008, YAPC::EU).  At first I thought there wouldn't be much to update, but it turns out we've accomplished a fair bit.<br/><br/>More importantly, more infrastructure pieces are falling into place so that the remaining items become even easier than they were before.   I expect to see good progress during the next month or so.<br/><br/>This weekend many of us attended the <a href='http://www.parrot.org/wiki/parrot-developer-summit-2008'>Parrot Developer's Summit</a> to plan the way forward to Parrot 1.0 (March 2009).  In parallel several of us also made plans for Rakudo's development in that time -- our goal is to have Rakudo on its own release cycle by then.  I very much like the way the time-based monthly release cycle has worked for Parrot development, so we will undoubtedly continue this in Rakudo.  Development for Rakudo will continue to track the Parrot trunk for a while, and we'll time Rakudo releases to follow a few days after each Parrot release.<br/><br/>We'll put together more details as we get closer; until then we're continuing to work on feature development.<br/><br/>During my airplane travel and at the summit I was able to get a lot of work on fixing lexical variables in Parrot.  Unfortunately I've also found several places where Parrot was not properly allocating and freeing contexts, so those need to be reviewed and fixed before we can merge the branch back into trunk.  Initial tests show that the design itself appears to work as expected, so now it's just a matter of reviewing and repairing context handling in Parrot.  I'm expecting (hoping) to merge the branch back into trunk sometime on Wednesday (after tomorrow's Parrot release), which will close out quite a few RT tickets.<br/><br/>Pm</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

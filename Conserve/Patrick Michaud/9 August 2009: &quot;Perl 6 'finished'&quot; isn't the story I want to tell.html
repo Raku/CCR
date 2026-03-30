@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: &quot;Perl 6 'finished'&quot; isn't the story I want to tell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>&quot;Perl 6 'finished'&quot; isn't the story I want to tell</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-08-09T02:26:14</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>In a comment to my post <a href='http://use.perl.org/user/pmichaud/journal/39411'>announcing Rakudo Star</a>, <a href='http://use.perl.org/user/gdonald/'>gdonald</a> <a href='http://use.perl.org/comments.pl?sid=43537&cid=69909'>writes</a>:<br/><br/><blockquote><i>Here, I'll explain since you don't seem to get it.  When people ask "When will Perl6 be finished?", they want to know when there will be a Perl 6.0 release.</i></blockquote><br/><br/>Actually, I really think I do "get it", although I admit I may not be clearly expressing that.  Later in the same comment thread gdonald <a href='http://use.perl.org/comments.pl?sid=43537&cid=69916'>follows up</a> with:<br/><br/><blockquote><i>Seriously, the Perl6 spec isn't even nailed down yet? What is the hold-up on that? Design by committee? </i></blockquote><br/><br/>To me, that sounds an awful lot like a variation of "When will Perl 6 be finished?", especially the "What is the hold-up..." part.  In short, the thread quickly went from "you don't seem to get it" to ultimately saying something very like the question I used to start my original post.<br/><br/>Neither this reply nor my original article are intended to imply that people shouldn't be asking such questions or that they're wrong for doing so.  I call out gdonald's messages not because I wish to ridicule him or prove him wrong, but simply because I think they illustrate well the "disconnect" that exists in discussions about Perl 6, and why I'm hoping to change the discussions to something more useful than "finished" and "not finished".  Because the end result of the "finished/not finished" discussion is often:<br/><br/><blockquote><i>Seems like Perl6 might be going the way of GNU/Hurd, eternally under development, and never to land.</i></blockquote><br/><br/>I don't believe that Perl 6 will be eternally under development -- but I am concerned that the perception of "eternally under development" is potentially a significant blocker to continued progress on Rakudo and Perl 6.  That's one of the major issues that Rakudo Star is intended to address.<br/><br/>I also completely "get it" that for most people the real thing they want to know is "When can I start using Perl 6?" in the sense of "apt-get install perl6".  But I think even that question has many hidden assumptions that must be exposed before there can be any sort of useful answer.  Indeed, the answer changes depending on who is asking the question and what they want to do.  So another purpose for Rakudo Star is to illuminate the development process and our ongoing status so that people can begin answering that question for themselves.<br/><br/>As the quotes above illustrate, somewhere there's an implicit assumption that the specification should be finished already.  When we then say that the spec isn't finished (and it isn't), people often conclude that Perl 6 is suffering from a "design by committee process flaw" that is preventing the specification from being finished, and in turn that's what is blocking "apt-get install perl6".  I think these misconceptions arise from assuming a "waterfall" development model where it's a one-way path from specification to implementation.  But just because (unlike Perl 5) Perl 6 has a spec that is separate from its implementations doesn't mean the specification comes first.<br/><br/>Looking back, it's not too surprising to me that people have assumed a waterfall model of development -- those of us working on Perl 6 haven't given a good public picture of the true story.  The various development roadmaps we've provided have been accurate as far as they went, but they didn't really give insight into the underlying processes.  And for many of us, myself included, we're only now learning how to put words to parts of the process to be able to tell others about them.  Here's my version...<br/><br/>For the past few years, changes to the specification have been made almost exclusively in response to the concerns and issues that have come about from compiler implementations and application programs written in Perl 6.  For example, while implementing a feature in Rakudo we often discover a place where the specification is self-contradictory, so the specification is changed to resolve the contradiction.  Or, someone will be using Perl 6 to write an application, and as a result we find places where the specification is deeply sub-optimal and needs to be cleaned up.  These days it's very rare that the design team says "wouldn't it be nice/better if Perl 6 changed to do X" on its own initiative; our discussions are nearly always "implementations are having trouble with this part of the specification, what do we need to change to improve that?"<br/><br/>So the specification isn't finished, but that's mainly because it's evolving in response to implementations and applications, and not due to a tendency to over-design it.  Because the specification is evolving based on implementation issues, simply freezing what exists now as "6.0.0" will make things harder on implementors, not easier.  In other words, freezing the existing spec will paradoxically delay implementations of Perl 6, not expedite them.<br/><br/>We are rapidly entering a phase where what we will need most is for more people to be creating real use cases in Perl 6, testing the soundness of the design and implementation.  That is, we need to see more applications to be written in Perl 6 so we can harden the specification even further.  For many people and applications Rakudo is ready for use today, but there are still enough issues that I'm hesitant to call it anything other than a "development release" for a more general audience.  The problem then is that many people rightly take "development release" to mean "not ready to use yet", and that's also counterproductive to what we need.<br/><br/>This is where Rakudo Star comes in, and this is what I mean by "a useful implementation of Perl 6".  It's intended to recognize that a Perl 6 release can be useful to many even though it may be incomplete.  It's intended to provide a bright line where we can say "here's what is working now" and "here's what is not working yet".  It's intended to help people determine when Perl 6 has been sufficiently realized to be ready for their needs.  And it's intended to make it possible for more people to start writing programs in Perl 6, because one of the things we are needing is real-world use cases to test, refine, and extend the existing design.<br/><br/>At the same time, we need to be very careful about using the label "finished" or "1.0" for anything that isn't all of what has been promised for Perl 6.0.  (See KDE 4 development for why this is a bad thing.)  In fact, I'd like us avoid the notion of "finished" altogether.  Instead, I want us to regularly deliver something that is useful and usable, make it clear what we are delivering, make it clear what we're not delivering, and enable people to see when Perl 6 is likely be ready for them (as opposed to "ready for all").<br/><br/>Ultimately Rakudo Star is intended to give some justifiable support and clarity to phrases like "Perl 6 exists" and "you can now write usable applications in Perl 6", without the distractions that arise from the "When will [Perl 6 | Rakudo] be finished?" sorts of questions.  It's not that I think people are somehow wrong for asking these questions -- I think I do very much understand what leads people to ask them -- it's just that I'd like us to start finding ways to move our discussions beyond the "finished / not finished" trap that we seem to have fallen into.  I'd like to help us all escape this trap because (1) I don't think it reflects reality, and (2) if "Perl 6 is finished" remains the primary criteria that most people use to decide whether or not to write applications in Perl 6 (and the criteria that we hold ourselves to), then we'll never get there.<br/><br/>
+Pm
+</p>
+
+
+<hr/>
+
+
+
+<h2>by way of parallel...</h2>
+<h3><a href="/user/rjbs/">rjbs</a> on 2009-08-09T02:55:07</h3>
+<p>I heard that about a year ago, a language that had been in use for something like twenty years added a bunch of new keywords, broke binary compat, and even changed some of its operators.  Next, there's talk of changing how it handles Unicode, changing the set of first class data types...</p><p>For Pete's sake, WHEN WILL PERL 5 BE FINISHED?</p>
+
+
+
+<blockquote>
+
+<h2>Re:by way of parallel...</h2>
+<h3><a href="/user/slanning/">slanning</a> on 2009-09-01T07:20:22</h3>
+The developers of my pwecious don't seem to have any trouble finding real-world use cases. ^.^
+
+
+
+
+
+</blockquote>
+
+
+<h2>Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/cowens/">cowens</a> on 2009-08-09T05:47:58</h3>
+<p>The top five things holding me back from using Rakudo for anything but experimental playing with Perl 6 are (in order of imporatance):</p><p>1. lack of lazy evaluation<br>2. s/// is not implemented<br>3. it cannot be installed ("removing or moving the build tree will cause the binary to stop working")<br>4. I cannot easily tell what parts of the spec are implemented and which are not<br>5. The REPL has executes every line in its own scope making lexical variables (and therefore the REPL itself) next to useless.</p><p>I may be wrong about some or all of these because I only stop to look at Perl 6 about once a month or so.  The next to last one is probably my fault for not looking in the right place.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-08-09T06:00:04</h3>
+<p>All of these issues are slated to be resolved by the time Rakudo Star is released.  Indeed, I expect that all of them except for #4 will be resolved by the September 2009 compiler release.</p><p>#2 can already be done in current versions of Rakudo, just use<nobr> <wbr></nobr><code>.subst()</code> instead of <code>s///</code>.  The <code>s///</code> form should be available when we start using the STD.pm parser in Rakudo, currently planned for December 2009.</p><p>Pm</p>
+
+
+
+<blockquote>
+
+<h2>Re:Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/cowens/">cowens</a> on 2009-08-09T07:01:53</h3>
+<p>That makes me happy.  It would be nice if there were an article about what is planned to be (or not be, if that is shorter) in Rakudo Star.  Of course, it is entirely possible there is already a road map on a public site that I have not seen yet, and there is still a lot of time until Spring.</p><p>I am not worried about the spec (and therefore the implementations) changing or growing; I am worried about how much of what is currently spec'ed will be implemented by the deadline.  A Perl 6 implementation that can't do what the spec says is Perl 6 doesn't seem to be a real release to me.  I see it as being promised Perl 5, but having to settle for Perl 4.</p><p>Beyond my worries about how much of the current spec will be implemented in Rakudo Star, the only thing that worries me about Rakudo Star is its name.  If I understand what I have read about Perl 6, * is whatever, which means it will be the "Rakudo, whatever", release.  Not a very inspiring name.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-08-09T17:00:12</h3>
+<blockquote><div><p> <i>It would be nice if there were an article about what is planned to be (or not be, if that is shorter) in Rakudo Star.</i></p></div> </blockquote><p>We worked on this at YAPC::EU in Lisbon, I'm currently in the process of writing it up to be somewhat coherent and understandable.  Stay tuned.</p><blockquote><div><p> <i>A Perl 6 implementation that can't do what the spec says is Perl 6 doesn't seem to be a real release to me.</i></p></div> </blockquote><p>The whole point of Rakudo Star is to say "this isn't all of Perl 6".  Anyone that gets Rakudo Star and expects all of Perl 6 to be implemented by then will undoubtedly be disappointed.</p><blockquote><div><p> <i>I see it as being promised Perl 5, but having to settle for Perl 4.</i></p></div> </blockquote><p>Rakudo Star is all about making a new promise:  "The full Perl 6 language isn't done, but here are the parts you can safely start using."  If we have to avoid making any sort of usable release until all of "promised Perl 6" is ready, we'll never get there.</p><blockquote><div><p> <i>If I understand what I have read about Perl 6, * is whatever, which means it will be the "Rakudo, whatever", release. Not a very inspiring name.</i></p></div> </blockquote><p>Actually, an uninspiring name is quite okay with me.  I don't want to hype the release, I don't want it to be easy for people to conclude "Perl 6 will be done in April" only to suffer extreme disappointment when Rakudo Star arrives.  If the name "Rakudo Star" helps in any way to make people realize "this is not the 1.0 release you're looking for", then it's hitting its intended mark exactly.</p><p>Pm</p>
+
+
+
+<h2>Re:Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/petdance/">petdance</a> on 2009-08-10T14:22:56</h3>
+<i>
+It would be nice if there were an article about what is planned to be (or not be, if that is shorter) in Rakudo Star.
+</i>
+<p>
+Patrick and I discussed this at OSCON.  Our rough plan is that I'm going to be helping track and communicate what is in Rakudo Star, and what isn't, and how close we are to having those things ready to go.</p>
+
+
+
+<h2>Re:Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/recoil/">recoil</a> on 2009-08-11T03:48:01</h3>
+<p><div class="quote"><p>I see it as being promised Perl 5, but having to settle for Perl 4.</p></div><p>Even Perl 5 isn't "finished" though.  If the original Perl 5 had been the ultimate destination then everyone would have been sat in the same place for the last 15 years.</p><p>Perhaps it's better to imagine the Perl 6 spec as being analogous to what people might have envisioned for, say, Perl 5.10.  The original Perl 5 didn't implement all the features from that "spec" (like given/when, or say), but it was still usable.  The Perl 6 spec will inevitably evolve in the same way that the Perl 5 implementation has, and by its very nature a spec is always going to be a step or three ahead of its implementations.</p><p>Whether that leaves Rakudo Star as analogous to Perl 5.0 or to some 5.0 pre-release I don't know.  Provided that it's clear enough what Rakudo Star does and does not do then I don't see a problem.  The only difference from Perl 5 is the existence of that spec, which just means that we have better fore-knowledge of where we might be going.</p>
+
+
+
+
+
+</blockquote>
+
+</blockquote>
+
+
+<h2>Re:Top five things I think are missing from Rakudo</h2>
+<h3><a href="/user/davegaramond/">davegaramond</a> on 2009-08-11T10:51:00</h3>
+Actually, what I want from Rakudo right now is just more speed (like 10-100x the speed it is now) so I can run it and crash it faster/more often<nobr> <wbr></nobr>:-). I guess to be comparable to Perl5 we need like 1000x times the current speed, but I'm willing to settle for less.
+
+
+
+
+
+</blockquote>
+
+
+<h2>nothing new here, except the official spec</h2>
+<h3><a href="/user/jmm/">jmm</a> on 2009-08-09T20:19:34</h3>
+<tt>perl 3 was a language that was useful for production work.<br><br>Through the point releases of perl 3 and perl 4 that language got extended drastically - always in a 99.9% backward compatible fashion for each step, and always being useful for production work.<br><br>perl 5 was only 99% backward compatible, but turned the language upside down and extended an order of magnitude, and, after the first couple of point releases worked the kinks out, was useful for production work (in an order of magnitude larger number of areas of application).<br><br>It's only the last 10 years or so in which there haven't been ongoing constant changes that add totally new major capabilities with amazingly little breakage to existing code - instead there have been smaller, mostly less visible changes in the language with much of the dramatic new capability appearing instead in CPAN and modules (as was the design intent of perl 5).<br><br>The only difference with the proposed Rakudo Star and the "traditional" perl release model is that now there is a spec, so the pieces that aren't there yet are known and missed, rather than being happy surprises when the next release comes along. Surely people can be taught to live with that.</tt>
+
+
+
+<h2>A tongue-in-cheek answer</h2>
+<h3><a href="/user/sjn/">sjn</a> on 2009-08-10T08:27:21</h3>
+<ol> <li>Perl 6 isn't a product, but a <em>project</em> with no single delivery date. Think about the difference wetween a coffee mug (product) and the english language (project.)</li><li>When is the english language "finished"? Would <em>you</em> put off learning english until someone said it's spec was "finished"?</li></ol>
+
+
+
+<h2>Rakudo, implementing a useful subset of Perl 6</h2>
+<h3><a href="/user/gabor/">gabor</a> on 2009-08-10T14:15:57</h3>
+I really liked the description you gave during the Rakudo BOF on YAPC::EU. Maybe we should use it
+as a subtitle of Rakudo:
+<p>
+<b>Rakudo, implementing a useful subset of Perl 6</b>
+</p><p>
+Later I thought that by using the name Rakudo we can actually avoid the Perl 5/6 trap and the "when is Perl 6 going to be ready?" trap.
+</p><p>
+Maybe the disconnect between Rakudo and when is "Perl 6 going to be ready" could be increased by giving small and increasing version numbers to the Rakudo releases - even starting by the next one - and having a <b>Rakudo spec</b> coming with it.
+</p><p>
+You could use 0.20 or even 0.020 instead of the upcoming release 20 of Rakudo giving enough version numbers before you reach the magical 1.00.
+</p><p>
+You could also start this process from April next year though I think the sooner the better.
+</p><p>
+Each version could come with its own specification
+- basically a subset of the Perl 6 specs that covers that version.
+We could embed some marks in the Synopsis (or have those marks externally, similar to the smart-link in the test-suit) and have some code extract the relevant parts from the specs.
+</p><p>
+We could use marks with the planned version numbers when those feature will be implemented.
+Making it easier to draw up a roadmap.
+</p><p>
+This way people can start using Rakudo 0.20 or whatever version number, and know what to expect.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Rakudo, implementing a useful subset of Perl 6</h2>
+<h3><a href="/user/chromatic/">chromatic</a> on 2009-08-10T18:12:03</h3>
+<p>If people are going to put thought and effort into understanding if Rakudo is useful for them, I'd like them to do so based on the ratio of planned and implemented features important to their work, not on lengthy explanations of magical version number schemes.</p><p>It would be a shame to fall into the magical version numbers trap while trying to avoid the magical version numbers trap.  ("Rakudo 0.2 in April?  Those fools!  Can't they release software?  Everyone knows that software isn't usable for anything until at least 1.0.1!")</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>Great response</h2>
+<h3><a href="/user/cjfields/">cjfields</a> on 2009-08-12T02:07:51</h3>
+I'm glad to see you responded to gdonald's questions, addressing all the key points, including the common misconception about what Rakudo * is and is not, Perl 6 being 'finished', et. al.  Nicely done!
+
+
+
+<h2>Perl 6 is dead. Long live Perl Trek!</h2>
+<h3><a href="/user/furry_marmot/">furry_marmot</a> on 2009-08-19T22:32:18</h3>
+<p>Well color me contradictory and call me flame-bait, but I'm really annoyed by
+the original blog posting, as well as this follow-up article. Am I the only
+one? In truth, you've answered a lot of questions for me. But it leaves open
+some more.</p><p>What first got me going was when people don't ask the *right* question, your
+seeming to come off like someone who responds to the question, "Can I have a
+cookie?" with "Don't you mean *MAY* I have a cookie?" I'm sorry you don't like
+the word "finished" but as you say yourself,</p><blockquote><div><p>...for many of us, myself included, we're only now learning how to put
+    words to parts of the process to be able to tell others about them.</p></div></blockquote><p>My bullshit detector went through the roof when I read that. So I read on, and
+on, and on.</p><p>The gist of the whole thing seems to be some philosophical tripe about the
+word "finished". You seem completely unaware that most people know and fully
+expect that a "point-oh" release may not be complete and will probably have
+bugs. Perl 5.10.1 was just released and some of the brand-new 5.10 features
+have already been changed due to feedback after people had a chance to use it.
+No one expected Perl 5.10 to be "finished" in the sense you imply. Yet you
+present a long-winded dance around whether anything can ever really be
+finished and about whether it will be useful to many people versus everyone.
+You even say</p><blockquote><div><p>The problem then is that many people rightly take 'development
+    release' to mean 'not ready to use yet', and that's also counterproductive
+    to what we need."</p></div></blockquote><p>If drawing the correct conclusion is counter-productive, then the problem
+must lie elsewhere -- that is, not with the questioners but with what is being
+questioned. You conclude with</p><blockquote><div><p>Ultimately Rakudo Star is intended to give some justifiable
+    support and clarity to phrases like "Perl 6 exists" and "you can now write
+    usable applications in Perl 6", without the distractions that arise from
+    the "When will [Perl 6 | Rakudo] be finished?" sorts of questions...I'd
+    like us to start finding ways to move our discussions beyond the "finished
+    / not finished" trap that we seem to have fallen into. I'd like to help us
+    all escape this trap because (1) I don't think it reflects reality, and
+    (2) if "Perl 6 is finished" remains the primary criteria that most people
+    use to decide whether or not to write applications in Perl 6 (and the
+    criteria that we hold ourselves to), then we'll never get
+    there.</p></div></blockquote><p>Asking when it will be completed is a trap? Asking when we can write
+applications is a distraction? Assuming you have a prioritized list of
+features that you will implement in a release that may or may not be 6.0 will
+keep you from ever getting...somewhere??? After writing several inappropriate
+responses, I started thinking about how you could possibly write the above
+with a straight face (I assume you had a straight face when you wrote it).
+</p><p>The conclusion I came to is that as long as it is called Perl 6, you will
+never escape the "trap" because the project is no longer Perl 6. It's that
+simple.</p><p>Ten years ago, Jon Orwant started throwing mugs against a wall, saying to
+Larry Wall, "we are fucked unless we can come up with something that will
+excite the community, because everyone's getting bored and going off and doing
+other things." Larry decided Perl 6 was that something. Perl 5 was a complete
+rewrite of Perl 4, and so Perl 6 would be a complete rewrite. Then came the
+Apocalypses and the Exegeses -- these were supposed to be the spec. There was
+to be a virtual machine, and eventually Parrot was decided upon. Then it all
+went quiet.</p><p>In 2005, the pugs project implemented what there was of the Perl 6 spec in
+Haskell. Okay, interesting, but I think it was then that people started asking
+whatever happened to Perl 6. And that's when the philosophical non-answers
+started. And the people espousing the non-answers don't seem to grok why they
+do not satisfy the askers of said questions.</p><p>The problem is that it's is no longer Perl 6. It seems to be some kind of Perl
+Trek, forever exploring new features, new paradigms, boldly considering new
+ways of thinking about computer languages. Maybe it was the exposure to
+Haskell that made people rethink Perl's underlying workings, but in the end it
+seems to have resulted in a permanent attention-deficit disorder problem,
+where the developers are forever attracted to every shiny object that wanders
+into their field of view.</p><p>Perl 6 was supposed to excite the Perl community, but the excitement has
+waned and Jon Orwant has gone off and left the Perl community entirely. Perl
+Trek has to be explained at great length, amidst pleas to not use the word
+"finished", while no one gets it anyway, and the ship's captain has some
+philosophical issue with "finishing" things.</p><p>Perl 6 had the beginnings of a spec. Perl Trek has a spec that is really a
+journal of the strange new worlds the crew has visited, and that may be
+rewritten at any time.</p><p>Perl 6 was going to rewrite Perl 5 and bring it up to date and make it more
+consistent with the last 20 years of software language development. Perl Trek
+is not the successor to Perl 5 and has no real idea what it wants to be when
+it grows up, but we can never really know until we get there, and when you get
+down to it, the "there" you get to is not the final destination, so how can we
+really talk about "there" when it could be anywhere???</p><p>Perl 6 should have a release date. You prioritize what will go into that
+release, you implement it, and then you release it. Perl Trek will have a
+release named Rakudo, which appears designed to get people off the back of the
+crew of the SS A.D.D so they can return to aimlessly exploring, or endlessly
+navel-gazing, or whatever it is that they think is so much more important than
+releasing something long-time Perl users would be proud of. For that matter,
+has the Perl community even come onto your radar recently, except as a
+distraction from your "explorations"?</p><p>Look, if you want to complete *ANYTHING* -- a language, a race, something
+you're cooking for dinner -- you need to decide what you're doing and do it.
+Once you're done, you can redo it or add to it or whatever. You discard any
+pretensions about whether something can be "finished" or not and you spec out
+what you're going to do. Then you do it. Then you gather feedback, and you
+consider all the things you'd like to change/add/remove, and you write a new
+spec. Then you implement it. *THAT* process is never finished. But each
+iteration most certainly is finished.</p><p>This is the kind of project that gets cancelled in the real world of
+software development because they cost too much or the need they were meant to
+fill, or the competition they were meant to compete with, have moved on,
+rendering the project pointless. But a project like Perl 6 can never be
+cancelled. It can only go on and on, insisting on its own relevance, as people
+forget about it (as they largely have).</p><p>I may get flamed for this, but I'm writing this because I care about Perl,
+about the community, about Perl 6. Flame me if you must, but when people ask
+when Perl 6 will be finished, at least give the honest answer: you have no
+intention of ever finishing, let alone releasing, what was promised 10 years
+ago.</p>
+
+
+
+<blockquote>
+
+<h2>Re:Perl 6 is dead. Long live Perl Trek!</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-08-20T08:43:28</h3>
+<blockquote><div><p> <i>Perl 6 should have a release date. You prioritize what will go into that release, you implement it, and then you release it.</i></p></div> </blockquote><p>I believe that this is exactly what the Rakudo Star announcement says we are going to do.  It names a release date, says that we will prioritize what will go into that release, gives a criteria by which we will come up with priorities, and says we will focus our efforts over the next eight months on implementing those priorities.</p><blockquote><div><p> <i>Look, if you want to complete *ANYTHING* -- a language, a race, something you're cooking for dinner -- you need to decide what you're doing and do it. Once you're done, you can redo it or add to it or whatever. You discard any pretensions about whether something can be "finished" or not and you spec out what you're going to do. Then you do it. Then you gather feedback, and you consider all the things you'd like to change/add/remove, and you write a new spec.</i></p></div> </blockquote><p>I believe that this is exactly what the Rakudo Star announcement says we are going to do, even to the point of <i>explicitly</i> discarding any pretensions we may be having about whether something can be "finished".  Rakudo Star is all about gathering feedback for what has been done before, so that we can update and improve the spec.</p><p>In short, as far as I can tell the plain text of the announcement says that we are going to do exactly what you say we ought to be doing, and for largely the reasons you claim we should be doing it.</p><p>Pm</p>
+
+
+
+<h2>Re:Perl 6 is dead. Long live Perl Trek!</h2>
+<h3><a href="/user/mattw/">mattw</a> on 2009-08-20T08:57:30</h3>
+Virtually nothing new has gone into the Perl 6 spec for a long time. The big new stuff came along at the beginning - the time involved reflects just how big and new a lot of these things are, and how difficult it is to get everything into a coherent sort of whole. This is not navel-gazing or ADD or being distracted by shiny things. The shiny things are here, they're in the spec, many of them are in the code. Many of them have rough edges and we're still trying to get them to fit together into a nice pattern to create a language which will be pleasing to use and powerful to go with it.
+<p>
+Writing a programming language is an extremely difficult sort of task. You can never be entirely sure if something works well until you see people using it, but in order to see people using it you need to get an implementation which supports your current thinking so that they can try it out. Often, in implementing parts of Perl 6, the developers of Pugs or Rakudo or any of the other implementations bubbling away have come across bits of spec which make no sense, or are absurdly difficult to implement for no real benefit, or turn out to be Just Plain Stupid. This feeds back to the spec, and so the spec has to be adjusted, rethought and polished into a new form which the implementors then take and the cycle begins anew.
+</p><p>
+Added to this are the users, the people who are writing Perl 6 today, who keep up with spec changes (there's a lot of interest around various distinctly unfinished areas at the moment) and offer their own suggestions and ideas.
+</p><p>
+This is a new kind of area for Perl. Perl 5 is an implementation - Perl 6 is a spec. Perl 6 is the Perl which opened its doors to the community and said 'what do you want'. It's a fundamental rethink of the language from the ground up. It's the first time Perl has completely broken backward source-level compatibility. It's still, even after its long development period, one of the most advanced programming languages in the world.
+</p><p>
+It is, in short, <i>incredibly cool</i>. It's still what was promised when the whole process started - it's just taking a little longer than expected (remember that virtually all of the development work on the spec and the implementations has been voluntary - there are grants being paid to people working on Rakudo, but that's a fairly recent development although it's taken us a long, long way). Rakudo Star is the first time an implementation and the spec have been in a state where anybody can say 'here is some of Perl 6. Have fun with it' and know that people will be able to take it and use it and do useful things with it. It's a huge milestone for Perl 6, and I think it's going to lead us into an exciting future.</p>
+
+
+
+<h2>Re:Perl 6 is dead. Long live Perl Trek!</h2>
+<h3><a href="/user/finanalyst/">finanalyst</a> on 2009-08-20T13:10:30</h3>
+Perl 6 is alive. A trek? No. Rakudo is a building site for a fantastic new structure. And building sites look messy, outsiders see activity but cant distinguish it from progress because they are outsiders, the architect's plans are being adapted to reality whilst retaining the overall concept, and the exterior will only be visible and shinny immediately before its ready to be used (and even then the plumbing usually goes wrong on the first  day).<p>It seems to me to be honest and respectful of the building's users if the developer decides to open a wing of the building before completing the whole, which means that the new wing will still have some of the appearance of a building site, even though its operational.</p><p>Different metaphor -&gt; different view point. The progress is truly remarkable. And as for 'community' and 'caring': the community developing rakudo is tolerant, helpful, and very enthusiastic. Its a pleasure to be an observer and a part of it. Some of us already use rakudo for things we need to do, and I derive great satisfaction in being able to write in an elegant manner in an expressive language.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Perl 6 Scripting Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Perl 6 Scripting Games</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-12-23T06:35:58</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Are you interested in playing with Perl 6 and Rakudo Perl but
+can't figure out what to do?  Here's an idea that came up
+during Jon Allen's talk "<a class='urllink' href='http://www.yapceurope2008.org/ye2008/talk/1365' rel='nofollow'>The Camel and the Snake</a>" at YAPC::EU in Copenhagen.
+</p>
+
+<p>For the past few years Microsoft has sponsored an annual <a class='urllink' href='http://www.microsoft.com/technet/scriptcenter/funzone/games/default.mspx' rel='nofollow'>Scripting Games competition</a>, where they publish problems of varying difficulty levels to be solved using Perl 5, VBScript, Python, or other languages.  I think it might be very interesting and useful to see people develop and publish Perl 6 solutions to those problems.
+</p>
+
+<p>So, here's my idea:  If you're interested in learning more about Perl 6, select one or more problems from the Scripting Games website, develop solution(s) for them in Perl 6, and then publish your solutions somewhere along with a description of what you like, don't like, learned, didn't learn, etc. about Perl 6 and Rakudo Perl.
+</p>
+
+<p>One of the things we've observed from our experience with the <a class='urllink' href='http://github.com/viklund/november/tree/master' rel='nofollow'>November Wiki</a> and other similar projects is that having "running code examples" and "real problems" is one of the best drivers for compiler and language development.  I'm thinking that having people craft solutions to the scripting problems might do more of the same for Rakudo, while also sparking discussion and reflection on Perl 6 itself.
+</p>
+
+<p>So, where to start?  Start by <a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/README' rel='nofollow'>obtaining and building a copy of Rakudo Perl</a>, write and test your solutions to one or more problems, and post the results and your experiences somewhere for others to see.  You can post to use.perl.org, your private blog, the perl6-users mailing list, or anywhere else you find convenient.  The point isn't to develop a centralized repository of solutions (although we can do that), but rather to use the problems as a way to spread discussion, feedback, and experience with Perl 6.
+</p>
+
+<p>I should also make it plain that people are very likely to run into some of Rakudo Perl's "rough edges" -- places where we don't yet implement key features or where they don't work exactly as they're supposed to.  But to the designers and implementors that's part of the point -- we need to know where those rough edges are.  Overall, I'm hoping that with <a class='urllink' href='http://twitter.com/rakudoperl' rel='nofollow'>the recent improvements to Rakudo Perl</a> there won't be so many rough edges as to make the effort more disappointing than enjoyable.  And there are lots of people eager to answer questions and help out on the perl6-users mailing list, IRC #perl6 (irc.freenode.net), and other common Perl forums.  It's all about learning and improving what we have with Perl 6.
+</p>
+
+<p>I look forward to seeing your questions and answers.
+</p>
+
+<p>Happy holidays,
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>99 Problems in Perl 6</h2>
+<h3><a href="/user/Ovid/">Ovid</a> on 2008-12-23T11:44:35</h3>
+<p>Don't forget that <a href="http://www.oreillynet.com/onlamp/blog/2006/12/99_problems_in_perl_6.html" title="oreillynet.com">99 Problems in Perl 6</a oreillynet.com> is still in the pugs repository.  One neat solution which is a bit tricky in other languages is the "lotto" problem (Draw N different random numbers from the set 1..M).  This was my try at a solution for the actual lotto function:</p><blockquote><div><p> <tt>subset Positive::Int of Int where { $_ &gt; 0 };<br> <br>sub lotto (Positive::Int $count, Positive::Int $range) returns List {<br>&nbsp; &nbsp; return (1<nobr> <wbr></nobr>.. $range).pick($count);<br>}</tt></p></div> </blockquote><p>Many of the problems in the repository were solved sub-optimally due to the state of pugs, so there's plenty of room to play.</p>
+
+
+
+<h2>An answer</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2008-12-23T23:32:04</h3>
+<p>Dave Whipp submitted an interesting solution <a href="http://use.perl.org/user/dpuu/journal/38142" title="perl.org">here</a perl.org>.</p><p>Pm</p>
+
+
+
+<h2>Let scripting games begin.</h2>
+<h3><a href="/user/bacek/">bacek</a> on 2008-12-24T06:17:45</h3>
+<a href="http://use.perl.org/user/bacek/journal/38146" title="perl.org">http://use.perl.org/user/bacek/journal/38146</a perl.org><br/><br/>First solution for first problem
+
+
+
+<h2>What the heck...</h2>
+<h3><a href="/user/colomon/">colomon</a> on 2008-12-24T14:40:22</h3>
+I created a journal for this, too: <a href="http://use.perl.org/user/colomon/journal/" title="perl.org">http://use.perl.org/user/colomon/journal/</a perl.org>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

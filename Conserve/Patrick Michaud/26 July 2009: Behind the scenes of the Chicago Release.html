@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Behind the scenes of the Chicago Release</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Behind the scenes of the Chicago Release</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-07-26T02:24:53</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>This week I learned just how well Rakudo development is able to
+continue even when I'm preoccupied with things not directly
+related to making commits to the Rakudo repository.  
+</p>
+
+<p>As you probably know, I spent this past week in San Jose at 
+<a class='urllink' href='http://en.oreilly.com/oscon2009'>OSCON</a>, 
+which was as usual was a fantastic conference.  
+I was able to give some presentations about Rakudo and Parrot 
+(recruiting!), meet lots of new people, visit and make plans 
+with others working on Perl 6, and otherwise just have a good time.
+</p>
+
+<p>Prior to coming to San Jose I had been planning that I would have
+some time in the evenings to work directly on Rakudo and prepare
+for its #19 release on Thursday (Jul 23).  
+In past years at OSCON I've been able to get a fair amount of
+hacking done in the evenings... but that didn't happen this year.
+</p>
+
+<p>First of all, I found myself having far more hallway discussions
+and other sorts of meetings with folks than I have in past OSCONs.  
+Then, on Tuesday night I decided that I really wanted to do
+a significant refactor of the 
+"<a class='urllink' href='http://en.oreilly.com/oscon2009/public/schedule/detail/8582'>Hacking Rakudo Perl</a>" 
+talk that I
+would be giving on Wednesday.  I knew this would take away from
+my tuits for preparing the Thursday Rakudo release, but I felt
+the benefit of having a better talk (which I will also be giving
+at <a class='urllink' href='http://yapceurope2009.org/ye2009/'>YAPC::EU in Lisbon</a>) 
+was worth the risk of having
+trouble getting the release out on Thursday.
+</p>
+
+<p>Fortunately I never had to run that risk.  A couple of weeks ago
+I posted an article about 
+<a class='urllink' href='http://use.perl.org/user/pmichaud/journal/39286'>getting release managers for Rakudo</a>.
+On Tuesday (while I was busy at OSCON), Moritz Lenz was able to use
+the <a class='urllink' href='http://github.com/rakudo/rakudo/blob/master/docs/release_guide.pod'>release guide</a> to produce a "practice release" as
+described in the article.
+</p>
+
+<p>As a result, on early Wednesday morning I was able to see that Moritz
+had produced a practice release, and knowing that I wanted to focus
+on my presentation I immediately asked him if he would like to do
+the official release on Thursday.  (I also asked Jonathan if he
+could work on eliminating a Null PMC error that was showing up
+in backtraces and didn't look good for the release, which he 
+of course took care of very quickly.)
+</p>
+
+<p>Moritz accepted the release task, and I am <em>extremely</em> pleased 
+with how everything turned out.  First of course is the release 
+itself, which is equal or better to anything I would've produced.  
+Moritz, along with help from others on IRC #perl6, assembled the 
+ChangeLog, drafted the release announcement (adding a new section
+for deprecations), and as far as I can tell executed the release
+flawlessly.  As it turns out, my role in the release consisted only
+of reviewing the release announcement on Wednesday night, adding
+a couple of statistics to the announcement, and telling Moritz 
+that he could issue the release whenever he felt it was ready.
+I didn't have any further involvement after that -- the next
+I heard about it was someone coming up to me at OSCON on 
+Thursday afternoon to congratulate me on the <a class='urllink' href='http://rakudo.org/node/50'>Chicago release</a>.
+</p>
+
+<p>This past week saw more than just the release; during the course of
+the week several people added new features and bugfixes to Rakudo
+(with Moritz and others applying contributed patches).  Rakudo's
+passing spectest count increased by over 100 during the course of
+the week.
+</p>
+
+<p>So, my thanks go out to Moritz, Jonathan, Carl, Kyle, Scott, and 
+everyone else who worked on the release and Rakudo this week.
+You all did a fantastic job, and tremendously simplified my 
+life while I was at OSCON.
+</p>
+
+<p>Of equal importance, we've now demonstrated that others besides
+myself can do Rakudo releases (although I had little doubt of this).
+As a result, I'm now issuing an <em>official</em> "call for release
+managers" for the remaining Rakudo releases in 2009.  Ideally 
+I'd like to see that the release responsibility is regularly 
+rotated across multiple managers (as Parrot does), so that no 
+single person ends up being burdened with producing releases.  
+I'm also planning that I personally won't do any more Rakudo 
+releases myself in 2009, unless we're completely unable to 
+find release managers.
+</p>
+
+<p>If you're interested in becoming a Rakudo release manager --
+take a look at the 
+<a class='urllink' href='http://github.com/rakudo/rakudo/blob/master/docs/release_guide.pod'>release guide</a>, make sure you've filed a 
+<a class='urllink' href='http://www.perlfoundation.org/legal'>Contributor License Agreement</a>, 
+and we'll put together a schedule for the 2009 releases.
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>$bus_number++;</h2>
+<h3><a href="/user/ChrisDolan/">ChrisDolan</a> on 2009-07-26T17:37:29</h3>
+<p>This is a scalability win on the social side of the project.  Nicely done.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

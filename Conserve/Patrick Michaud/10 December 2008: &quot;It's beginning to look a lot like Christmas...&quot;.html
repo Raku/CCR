@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: &quot;It's beginning to look a lot like Christmas...&quot;</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>&quot;It's beginning to look a lot like Christmas...&quot;</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-12-10T06:14:31</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>A <i>lot</i> has happened with Rakudo Perl over the past few days.  The biggest news is that Rakudo is now supporting list assignment and list slices.  (Hash slices will show up in a day or two.)  Now that we have those features working, I can finally start to say that Rakudo Perl is starting to feel to me like, well, <i>Perl</i>.<br/><br/>So, while we're still a good distance from an true Perl 6 release (a.k.a. "Christmas"), today we at least seem to have a tree with some shiny ornaments on it and even a few presents under the tree.  :-)<br/><br/>Getting slices and assignment to work required a fair bit of refactoring of the base classes and operations, and I also did a lot of code cleanup which really needed to be done anyway.  While cleaning up assignment code I also fixed up the assignment metaoperators (things like +=, *=, etc.) so that most of them are automatically generated instead of written by hand.  Then for fun I went ahead and added some basic Perl 6 reduction operators.<br/><br/>I'm sure some are asking "What in the world are 'reduction operators'?"  Well, they are another of the many shiny new presents Perl 6 is bringing us.  A reduction operator is indicated by square brackets, and it turns an infix operator into a list operator.  For example, while infix:&lt;+&gt; adds only two operands, the [+] operator will add together all of the elements of a list.  Similarly, [*] means "multiply all of the elements of the list", and [&lt;=] returns true if the elements of a list are numerically sorted.<br/><br/><pre>
+    $sum = [+] @x;                      # sum all elements of @x
+    $smallest = [min] $a, $b, $c, $d;   # minimum of $a, $b, $c or $d
+    $issorted = [<=] @x;                # true if @x is numerically sorted
+    $fact = [*] 1..$n;                  # $n factorial
+</pre><br/><br/>Today Jonathan extended some of the work I did on reduction operators to add more of them, and then added many of the infix hyperoperators (e.g., &gt;&gt;+&lt;&lt;) and cross operators.  See <a href='http://use.perl.org/user/JonathanWorthington/journal/38056'>Jonathan's post</a> for more details about those.<br/><br/>All of us working with Parrot and Rakudo are excited at the progress being made with Rakudo -- as of tonight we're closing in on 4,900 passing spectests, and I'm hoping we can make it to 5,000 by Tuesday's Parrot release.  It really means I need to find a day to review the existing tests and RT tickets for things we're really passing or could be passing with just a little bit of effort.<br/><br/>I'll also be working to update our milestone and roadmap documents, and try to present a much clearer picture of where things presently stand for Rakudo.<br/><br/>On a Parrot note, this past weekend I also made some improvements to PGE and Parrot that give us a ~20% improvement in parsing and code generation speed.<br/><br/>Pm</p>
+
+
+<hr/>
+
+
+
+<h2>Reduction</h2>
+<h3><a href="/user/tsee/">tsee</a> on 2008-12-10T08:09:25</h3>
+<p>I really like the reduction operators. The concept is something I've been missing from Perl 5 as well as any other language I've used for more than fun and the syntax seems a quite natural, too.</p><p>However, what's supposed to happen if the operator is not associative? I suppose it evaluates left to right? Is there a way to make it evaluate right to left or does that require something like [-] reverse(...)?</p>
+
+
+
+<h2>[Syntax] is fugly</h2>
+<h3><a href="/user/parv/">parv</a> on 2008-12-11T00:19:25</h3>
+<p>(Had a visceral reaction just after reading the example code.)</p><p>Reduction operators with '[' ']' look horrendously ugly as they remind me of Subject: header of mailing lists which either include the list name or the major topic in square brackets.</p><p>But, I will take it even if I don't have to like it.</p>
+
+
+
+<blockquote>
+
+<h2>Re:[Syntax] is fugly</h2>
+<h3><a href="/user/davegaramond/">davegaramond</a> on 2008-12-11T10:26:37</h3>
+<p>I personally don't have a problem with the usage of [] (and remembering the recent PHP \ namespace separator "fiasco"<nobr> <wbr></nobr>:-)<nobr> <wbr></nobr>...)
+
+</p><p>Hopefully with Perl 6's mutable grammar that Larry et al envisioned, you will be able to change the syntax. Of course this is not yet implemented in any of the current Perl 6 implementations.</p>
+
+
+
+<h2>Re:[Syntax] is fugly</h2>
+<h3><a href="/user/JonathanWorthington/">JonathanWorthington</a> on 2008-12-11T11:29:29</h3>
+I think they're intended to remind you of arrays/lists, since you're doing an operation over one. I guess when it comes to syntax, beauty is very much in the eye of the beholder - there is a method form of reduce that you can call on an array too, BTW.<nobr> <wbr></nobr>:-)
+
+
+
+<blockquote>
+
+<h2>Re:[Syntax] is fugly</h2>
+<h3><a href="/user/parv/">parv</a> on 2008-12-12T02:21:47</h3>
+<p>Well, I indeed like the concept.</p><p>Given that I was shocked already, the points put forward by davegaramond remind me that things could be worse, and your own point, my hate probably will most  dissipate.  I will need to try harder to disassociate square brackets abuse on some mailing lists.</p>
+
+
+
+<blockquote>
+
+<h2>Re:[Syntax] is fugly</h2>
+<h3><a href="/user/Aristotle/">Aristotle</a> on 2008-12-13T17:04:10</h3>
+<p>There is a long section in my<nobr> <wbr></nobr><code>.procmailrc</code> whose job is to get rid of that square bracket detritus from the lists I&#8217;m subscribed to&#8230;</p>
+
+
+
+<blockquote>
+
+<h2>Re:[Syntax] is fugly</h2>
+<h3><a href="/user/parv/">parv</a> on 2008-12-14T10:24:16</h3>
+<p>Yes, I have that going too in procmail. I choose to invoke Perl to handle the cleaning bits.</p><p>I am sure somebody else would have bad reaction reading "procmail".</p>
+
+
+
+<blockquote>
+
+<h2>Re:[Syntax] is fugly</h2>
+<h3><a href="/user/Aristotle/">Aristotle</a> on 2008-12-14T11:17:21</h3>
+<p>Oh, I hate it too&#8230; but it exists and works, which beats my non-existent better solutions.<nobr> <wbr></nobr><tt>:-)</tt> </p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

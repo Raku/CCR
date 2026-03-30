@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Building a &quot;useful release of Perl 6&quot;</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Building a &quot;useful release of Perl 6&quot;</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-08-05T18:42:56</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>The most common question I get from people who aren't generally
+involved with Perl 6 development is:
+</p>
+<blockquote><em>"When will Perl 6 be finished?"</em>
+</blockquote>
+<p>In some ways the wording of this question bugs me a bit, 
+because the word "finished" implies there's a point at which
+we all say "We're done" and development ceases (or at least 
+moves to some other phase).  But there really isn't a "finish
+line" for Perl 6, there are just stages of development at which
+more and more people are able to make use of whatever is currently
+available.
+</p>
+
+<p>So, once we eliminate the notion of "finished", the wording is
+often changed to try to make it more tractable, often by asking
+when there will be a "stable release", or when the specification
+will be frozen so an implementation can be completed, or many other
+variations on the theme.  I understand the assumptions behind 
+questions like these, but at the same time part of me thinks 
+"Huh?  Those questions don't really fit with the way things 
+really happen in language development..."  
+</p>
+
+<p>The truth is that language design is an evolutionary process,
+with the design and implementation efforts serving to influence
+and guide further progress in the other.  (See "whirlpool model".)
+</p>
+
+<p>But there's another important input to the process: "real-world"
+application programs.  We need to know how Perl 6 is actually
+being used in order to finish parts of the specification and 
+implementation.  Indeed, there are parts of Perl 6 (e.g., 
+concurrency) where the specification is incomplete or
+underspecified precisely because we need input from people
+writing Perl 6 applications.
+</p>
+
+<p>But this poses a problem of sorts, because if programmers are
+waiting for Perl 6 to "finish" before they start using it
+to write programs, and if Perl 6 is blocking on feedback from
+applications and implementations before it can progress, then
+we have a deadlock of sorts.
+</p>
+
+<p>So, we need a way to break the deadlock.  To me, one good answer
+is to start making releases of Perl 6 that may not implement
+the entire Perl 6 specification, but that application writers
+will feel comfortable enough to start using in their projects.
+I've started to call these "useful releases" or "usable releases".
+While it might not have every feature described in the Perl 6
+synopses, enough features will be present that can make it a
+reasonable choice for application programs.
+</p>
+
+<p>In doing this, I'd like to also refocus conversations to avoid
+words like "finished" and "stable", because they have such
+varied and strong meanings in this context.
+</p>
+
+<p>So, here's what the Rakudo Perl project is going to do:
+</p>
+<blockquote>We will make an "official", intermediate, <em>useful</em> and <em>usable</em>
+release of Perl 6 (an appropriate subset) by Spring 2010.
+</blockquote>
+<p>Of course, we have to decide what will will be included (and
+<em>excluded</em>) in this intermediate "official release".  At
+the Rakudo BOF on Monday we held a lively discussion about 
+what the release could look like, what needed to be present,
+and how it could be packaged.  During the hackathons and days
+following YAPC::EU we'll be drafting and publishing the more 
+detailed blueprint for the release.  But one of our guiding 
+principles will be to "under-promise and over-deliver", 
+to make it clear what <em>can</em> be done with the release, 
+and to make it very clear which parts of Perl 6 are not yet
+supported in the release.
+</p>
+
+<p>A short list of things we <em>know</em> will be in the release (that
+Rakudo doesn't already have):  use of the STD.pm grammar for parsing, 
+laziness, better support for modules, fewer bugs, better error 
+messages, better speed.  Again, our goal is to make something that 
+is reasonable for people to start using, even if it doesn't
+meet all of the requirements for Perl 6.0.0.
+</p>
+
+<p>We've also had discussions about what to call the intermediate
+release.  We've considered tagging it as "Rakudo 1.0", but some
+of us think that the "1.0" name might tend towards "overpromise".
+We also considered things like "0.5" or "0.9", but these come with
+the message of "not ready for use", and that's not what the impression
+we want to make either.
+</p>
+
+<p>So, yesterday morning I finally got around to thinking about it
+as "Rakudo 'whatever'".  In Perl 6 the <code>*</code> term is used to signify
+"whatever", so that leads to a working name of "Rakudo *"  (or
+"Rakudo Star").
+</p>
+
+<p>So, the focus of the Rakudo project is to release "Rakudo Star" 
+in Spring 2010 as a <em>useful</em> (but incomplete) implementation 
+of Perl 6.  More details about the features, milestones, and roadmap
+for this release will be forthcoming over the next few days.
+</p>
+
+<p>Pm
+</p>
+
+<p>P.S.:  Several of our "down-under" community members have pointed out that "Spring 2010" can be a bit ambiguous.  I'm using a season (instead of a month) to leave a month or two of wiggle room, but my intention is April 2010.  As we get a bit more detail into the plan, we'll identify a specific month.</p>
+
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

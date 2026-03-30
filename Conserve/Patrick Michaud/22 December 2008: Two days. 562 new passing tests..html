@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Two days. 562 new passing tests.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Two days. 562 new passing tests.</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-12-22T08:26:22</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>For some unknown reason I woke up at 3am on Saturday morning and couldn't
+get back to sleep.  So, I decided I might as well use the time for some 
+productive Rakudo hacking.  
+</p>
+
+<p>I decided to start by reviewing the spectest 
+suite a bit.  In the past couple of days I've noticed 
+that although we've been increasing the number of spectests that Rakudo
+passes, we didn't seem to be shrinking the number of tests that are
+in the spectest suite but don't attempt to run (the grey area
+in the graphs).  So, I decided to review the test files that we
+<em>don't</em> run, instead of the ones we do.  I also reviewed the RT
+queue for patches to apply.
+</p>
+
+<p>By 23:59 on Sunday, we had 526 more passing tests than we started
+with on Saturday.  In fact, in the past two weeks Rakudo has increased
+its count of passing spectests by over 1,000.  We're now at 5,790
+total passing tests.
+</p>
+
+<p>Here's some of what was accomplished this weekend:
+</p>
+<ul><li>recognize the difference between array and hash subscripting.
+</li><li>align with a change to S02 that now uses \c for decimal character encoding
+</li><li>added the .kv method to Pair, to enable the pair.t spectests
+</li><li>recognize more unicode codepoints (though still not all) as alphabetic
+</li><li>enable the various unicode bracketing characters for quotes
+</li><li>added the unicode versions of the infix hyperops we added last week
+</li><li>added the <code>p5=&gt;</code> "fat comma" operator
+</li><li>cleaned up the readline method on IO
+</li><li>recognize radix conversions in strings
+</li><li>add +Inf, -Inf, and NaN processing
+</li><li>add some workarounds so that Complex numbers work again (they broke with mmd)
+</li><li>implement the use of the "whatever star" in list and array slices
+</li></ul>
+<p>Getting the "whatever star" to work was a nice surprise -- thunking
+the arguments to postcircumfix:&lt;[ ]&gt; turned out to be quite a bit
+easier than I had expected.  Rakudo can now do things like 
+<code> @a[*-10 .. *-1] </code> to get the last ten elements of an array.
+</p>
+
+<p>Over the weekend Cory Spencer submitted several incredibly useful 
+patches to fix array initialization in my() lists and properly refactor
+many of the list builtins.  He has two more patches in the queue that I
+plan to review and likely apply tomorrow morning.
+</p>
+
+<p>Overall, I'm very satisfied with the progress Rakudo contributors
+have made over the past couple of weeks.  In addition to getting
+new features to work, there's also been a lot of internal
+refactoring and cleanup that will make things more efficient and
+help with the next phases of development.  So, although I'm not
+sure that we'll be able to repeat the past couple of weeks, things
+still look very good for ongoing improvements to Rakudo.
+</p>
+
+<p>Don't forget:  we have a <a class='urllink' href='http://twitter.com/rakudoperl' rel='nofollow'>Rakudo Perl Twitter feed</a> if you want to be notified of all of the new updates to Rakudo Perl.
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Wow!</h2>
+<h3><a href="/user/masak/">masak</a> on 2008-12-22T11:23:33</h3>
+<p>Few people follow the progress of Rakudo more closely than I do -- and even I have trouble keeping up with all the improvements lately.<nobr> <wbr></nobr>:) Massive kudos.</p><p>I've been looking forward to that <code>@a[*-1]</code> feature for a while now. And suddenly Rakudo has it! Wow.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

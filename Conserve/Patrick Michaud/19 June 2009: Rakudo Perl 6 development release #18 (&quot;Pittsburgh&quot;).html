@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo Perl 6 development release #18 (&quot;Pittsburgh&quot;)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Perl 6 development release #18 (&quot;Pittsburgh&quot;)</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-06-19T05:17:59</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>On behalf of the Rakudo development team, I'm pleased to announce
+the June 2009 development release of Rakudo Perl #18 "Pittsburgh".
+Rakudo is an implementation of Perl 6 on the <a href='http://parrot.org/'>Parrot Virtual Machine</a>.
+The tarball for the June 2009 release is available from
+<a class='urllink' href='http://github.com/rakudo/rakudo/downloads'>http://github.com/rakudo/rakudo/downloads</a> .
+</p>
+
+<p>Due to the continued rapid pace of Rakudo development and the
+frequent addition of new Perl 6 features and bugfixes, we continue
+to recommend that people wanting to use or work with Rakudo obtain
+the latest source directly from the main repository at github.
+More details are available at <a class='urllink' href='http://rakudo.org/how-to-get-rakudo'>http://rakudo.org/how-to-get-rakudo</a> .
+</p>
+
+<p>Rakudo Perl follows a monthly release cycle, with each release code named
+after a Perl Mongers group.  This release is named "Pittsburgh", which
+is the host for <a href='http://yapc10.org/'>YAPC|10</a> (YAPC::NA 2009) and the 
+<a class='urllink' href='http://yapc10.org/yn2009/talk/2045'>Parrot Virtual Machine
+Workshop</a>.  Pittsburgh.pm has also sponsored hackathons for Rakudo 
+Perl as part of the <a class='urllink' href='http://pghpw.org/ppw2008/'>2008 Pittsburgh Perl Workshop</a>.
+</p>
+
+<p>In this release of Rakudo Perl, we've focused our efforts on refactoring
+many of Rakudo's internals; these refactors improve performance, 
+bring us closer to the Perl 6 specification, operate more cleanly
+with Parrot, and provide a stronger foundation for features to be
+implemented in the near future.  Some of the specific major changes
+and improvements in this release include:
+</p>
+<ul><li>Rakudo is now passing 11,536 spectests, an increase of 194
+passing tests since the May 2009 release.  With this release
+Rakudo is now passing 68% of the available spectest suite.
+</li><li>Method dispatch has been substantially refactored; the new dispatcher
+is significantly faster and follows the Perl 6 specification more
+closely.
+</li><li>Object initialization via the BUILD and CREATE (sub)methods is
+substantially improved.
+</li><li>All return values are now type checked (previously only explicit
+'return' statements would perform type checking).
+</li><li>String handling is significantly improved: fewer Unicode-related
+bugs exist, and parsing speed is greatly improved for some programs 
+containing characters in the Latin-1 set.
+</li><li>The IO .lines and .get methods now follow the specification more closely.
+</li><li>User-defined operators now also receive some of their associated 
+meta variants.
+</li><li>The 'is export' trait has been improved; more builtin functions
+and methods can be written in Perl 6 instead of PIR.
+</li><li>Many Parrot changes have improved performance and reduced overall
+memory leaks (although there's still much more improvement needed).
+</li></ul>
+<p>The development team thanks all of our contributors and sponsors for
+making Rakudo Perl possible.  If you would like to contribute,
+see <a class='urllink' href='http://rakudo.org/how-to-help'>http://rakudo.org/how-to-help</a> , ask on the perl6-compiler@perl.org
+mailing list, or ask on IRC #perl6 on freenode.
+</p>
+
+<p>The next release of Rakudo (#19) is scheduled for July 23, 2009.
+A list of the other planned release dates and codenames for 2009 is
+available in the "docs/release_guide.pod" file.  In general, Rakudo
+development releases are scheduled to occur two days after each
+Parrot monthly release.  Parrot releases the third Tuesday of each month.
+</p>
+
+<p>Have fun!
+</p>
+
+<p>References:
+<br  />[1]  Parrot, <a class='urllink' href='http://parrot.org/'>http://parrot.org/</a>
+<br  />[2]  YAPC|10 <a class='urllink' href='http://yapc10.org/yn2009/'>http://yapc10.org/yn2009/</a>
+<br  />[3]  Parrot Virtual Machine Workshop, <a class='urllink' href='http://yapc10.org/yn2009/talk/2045'>http://yapc10.org/yn2009/talk/2045</a>
+<br  />[4]  Pittsburgh Perl Workshop, <a class='urllink' href='http://pghpw.org/ppw2008/'>http://pghpw.org/ppw2008/</a>
+</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

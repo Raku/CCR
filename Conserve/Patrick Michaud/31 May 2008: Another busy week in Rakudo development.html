@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Another busy week in Rakudo development</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Another busy week in Rakudo development</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-05-31T23:23:36</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><!--PageText-->
+<div id='wikitext'>
+<p>It's been another big week in Rakudo Perl and Parrot development,
+with a lot of visible signs of progress and also a lot of "behind the
+scenes" sort of things as well.  This updates some of the important
+events of the week (and there was a lot), and then it'll be time for
+me to craft my next "monthly report" for the Mozilla Foundation and
+TPF grants.
+</p>
+
+<p>Earlier today I also posted an article on parrotblog.org: <a class='urllink' href='http://www.parrotblog.org/2008/05/p6object-perl-6-metaclasses-for-parrot.html' rel='nofollow'>P6object: Perl 6 metaclasses for Parrot</a>.  This article goes into some detail about Perl 6 metaprogramming and the P6object library I <a class='urllink' href='http://use.perl.org/user/pmichaud/journal/36494' rel='nofollow'>wrote about last week</a>.
+</p>
+
+<p>Late last week I noticed that Rakudo's code for parsing and building
+Pairs was getting a bit out of whack, and also that there was a <em>lot</em>
+of special-casing on <code>infix:&lt;,&gt;</code> that shouldn't be there -- building
+lists in the AST is something that should come more naturally.  So,
+over the weekend I ripped out the old argument and Pair handling code
+and put in something much saner.  As a result, Rakudo now parses pairs
+and arguments correctly.  But doing this also pointed up a couple
+of major issues:
+</p>
+<ul><li>Perl 6's <code>list()</code> function doesn't really follow the model for
+Pair arguments and named arguments, and
+</li><li>Parrot's argument passing conventions aren't really up to handling
+what Perl 6 requires.
+</li></ul>
+<p>The problems with argument passing I already knew about, but I was
+waiting until we needed action on it to do anything about it.  But
+since Rakudo started handling pairs and named arguments correctly,
+we ended up with quite a few RT tickets that generally came down to
+"Parrot's argument handling doesn't support that yet."  So, I posted <a class='urllink' href='http://groups.google.com/group/perl.perl6.internals/browse_thread/thread/fce44e38aa856be9' rel='nofollow'>a message</a> to parrot-porters to resolve the issue, and after a few discussions we now know how we're going to solve it.
+</p>
+
+<p>As far as <code>list()</code> goes, the problem becomes apparent with something like:
+</p>
+<blockquote><tt>
+    list(1, 2, c=&gt;3, 4, d=&gt;5)
+</tt></blockquote>
+<p>This is intended to create a list with five elements (including two
+Pairs), but according to Synopsis 6 the <code>c=&gt;3</code> and <code>d=&gt;5</code> should
+be treated as named arguments and not positional ones.  Anyway, some
+approaches for dealing with this were discussed in #perl6 and during
+the weekly design meeting, and I expect it'll be resolved soon.  Watch
+the synopses and mailing lists for details.
+</p>
+
+<p>While fixing up Pairs and infix:&lt;,&gt; I also added the ternary <code>?? !!</code>
+operator to NQP, and fixed both NQP and Rakudo to correctly access 
+array elements by integer (since Parrot doesn't always distinguish 
+the two cleanly on its own).  We'll undoubtedly have to revisit this
+issue again in the future, though, when we start to do slices.
+</p>
+
+<p>After that I started looking at Rakudo's code for handling List objects,
+and it had gotten kind of ugly.  Methods weren't in any particular
+order, and a lot of them were doing their work by using indexed
+element accesses instead of iterators.  So, I started a major refactor
+of all of the base classes, and in the process figured out how to
+properly handle scalar and list contexts.  Thus, the following 
+long-standing bugs/annoyances now work in Rakudo:
+</p>
+<blockquote><tt>
+     my @a = 1;              # works, used to turn @a into an Int
+<br />     my $a = (1, 2, 3);      # works, $a becomes an Array
+<br />     my %h = (a=&gt;1, b=&gt;2);   # works -- used to not work at all :-P
+</tt></blockquote>
+<p>In addition, functions and lists now also understand flattening
+in list context at the operator level (list contexts for parameters 
+will be coming soon).  We don't have lazy lists yet, but with this 
+work in place we have the right framework for adding them.
+</p>
+
+<p>One nice outcome of this is that we're rapidly expanding the scope
+of tests in the official suite (<a class='urllink' href='http://svn.pugscode.org/pugs/t/spec/' rel='nofollow'>spectests</a>) that we can now run and/or pass.  Vasily Chekalkin (bacek), Moritz Lenz, and Jerry Gay were very productive this week terms of finding spectests that can be added to the <a class='urllink' href='http://www.rakudo.org/2008/05/new-make-spectest-regression-t.html' rel='nofollow'>regression target</a>, fixing tests that were incorrect, and suggesting or providing fixes to Rakudo that would enable it to pass more tests.  Moritz even developed a script that runs all of the tests in the suite and suggests those that may be candidates for adding to the regression list.
+</p>
+
+<p>As of this writing Rakudo's spectest_regression target is running 43 test files in the suite, passing 775 tests.  It's a small number to begin with, but I expect it to grow rapidly and will update this statistic in future posts.  The other thing we're discovering is how much we really want to improve Rakudo's parsing speed, but that will be coming with PGE improvements soon.
+</p>
+
+<p>[<b>Update:</b>  Oops!  A bug in Test.pm caused the number of passing tests to be misreported -- the actual number was 430.  See <a href='http://use.perl.org/user/pmichaud/journal/36564'>my next post</a> for details. --Pm]</p>
+
+<p>While all of this was taking place, Jonathan was doing lots of <a class='urllink' href='http://use.perl.org/user/JonathanWorthington/journal/36552' rel='nofollow'>travel and presentations</a> about Rakudo and Parrot.  But he still managed to find time to come up with an implementation for mutable Scalar variables as PMCs.  Of course, that presented an issue of its own because Jonathan was working in a branch while I was crazily refactoring everything in the trunk.  (Sorry, Jonathan!)  Merging the two back together took the better part of a day, but that was primarily because PMCs (written in C) can take a fair bit of work to troubleshoot and find all of the miscues.  In this case it's even more difficult than usual because a Perl6Scalar PMC delegates nearly everything to its contents, and we have to be judicious about what gets delegated and when.  Plus in the process I was also refactoring things in src/parser/actions.pm to be more sane and use less inline PIR.  As usual, Jonathan did a terrific job on a piece of the puzzle that I wasn't too keen on tackling myself.
+</p>
+
+<p>Also, take a look at <a class='urllink' href='http://www.smashing.org/jeff/node/35' rel='nofollow'>what Jeff Horwitz has been doing with mod_perl6</a>.  His work shows that we really can start to do real applications with Rakudo and Parrot.
+</p>
+
+<p>I'm very pleased with all that was accomplished this week.  However, for everything we achieved I think we identified another important piece that we're ready to tackle next.  That's probably good.  We're also finding that finally all of the infrastructure is coming together to let more people hack and test Rakudo and Parrot.
+</p>
+</div>
+<!--/PageText-->
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Perl 6 on Parrot (Rakudo) progress report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Perl 6 on Parrot (Rakudo) progress report</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-04-02T21:11:33</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>This is a long-overdue report on the state of Perl 6 on Parrot (now "Rakudo Perl") development. In late 2007 I had been writing progress reports on a regular basis as as part of a grant from the Mozilla Foundation (MF) and The Perl Foundation (TPF), but in early January I had to pause work on the grant and my reporting to take care of a family emergency. I'm very glad that things have now settled down and that I can focus energy back on Perl again.<br/><br/>In spite of my distractions, a lot of progress has been made on Rakudo since last the last major report I wrote in December 2007. The work performed in November and December of last year has opened the door for many others to participate in Perl 6 and Parrot development, and as you'll see in this report, many have done so. I'm very pleased with the team of developers that has arisen and the quality of tools we've created for compiler development on Parrot. If anything, the hiatus has shown that our ability to advance isn't dependent on a single individual.<br/><br/><b>Progress, December 2007 to March 2008</b><br/><br/>An early draft of this report started by going into substantial detail about the progress that has been made in recent months, but I soon realized that so much has happened that the resulting report would be far too lengthy to be interesting or useful. Thus for this report I've decided to briefly highlight some of the events and milestones reached to give a good sense of the progress being made, and then write later articles that provide more detail. If I've overlooked an important contributor or event, please accept my apologies and let me know so I can highlight them appropriately.<br/><br/>* In January, the Perl 6 on Parrot compiler was renamed to "Rakudo Perl", or "Rakudo" for short. "Rakudo" is short for "Rakuda-do", or "The Way of the Camel" in Japanese. ("Rakudo" also happens to mean "paradise" in Japanese, which is nice.)<br/><br/>* A tool created by chromatic and Jerry Gay (with contributions from Will Coleda, Bernhard Schmalhofer, Andy Lester, and Francois Perrad) makes it possible to build an executable "perl6" binary. As a result, many people can now use Rakudo to execute Perl 6 programs by simply typing "./perl6 script.pl".<br/><br/>* In December we substantially completed the implementations for the Parrot Compiler Toolkit (PCT) and Not Quite Perl (NQP). The end result is that many of Parrot's HLL compilers are now written using Perl 6 source code instead of PIR.<br/><br/>* Jeff Horwitz continued to extend the implementation of <a href='http://www.perlfoundation.org/parrot/index.cgi?mod_parrot'>mod_parrot</a> to include scripting in Perl 6 (Rakudo) and PHP (Plumhead).<br/><br/>* We've increased the quantity and quality of documentation on Parrot's compiler tools to make them more accessible to a wider range of programmers. As part of this, we also created a "<a href='http://svn.perl.org/parrot/trunk/tools/dev/mk_language_shell.pl'>make a new Parrot language shell</a>" tool that populates a directory with a basic setup for implementing a new compiler in Parrot.<br/><br/>* As an unplanned demonstration of how well the tools work, in January Will Coleda and Simon Cozens used the new tools to create a working LOLCODE implementation (<a href=" http://lolcode.com"> http://lolcode.com</a>) from scratch with just a few hours' effort. Simon <a href='http://blog.simon-cozens.org/post/view/1323'>wrote about the experience</a> and LOLCODE has served as a great example for others who are interested in compiler development under Parrot.<br/><br/>* We developed and initiated a plan for reviewing and refactoring the Perl 6 tests of the Pugs repository to become the "official" Perl 6 test suite (<a href=" http://svn.pugscode.org/pugs/t/spec"> http://svn.pugscode.org/pugs/t/spec</a>).<br/><br/>* Larry Wall and Jerry Gay designed and implemented tools to allow the official test suite to be easily used by multiple Perl 6 implementations, including those that may be incomplete in the early stages of development.  Both Pugs and Rakudo are now using these tools (<a href='http://svn.pugscode.org/pugs/t/spec/fudge'>fudge</a>/<a href='http://svn.pugscode.org/pugs/t/spec/fudgeall'>fudgeall</a>).<br/><br/>* Jonathan Worthington added junctions, classes, objects, roles, given/when statements, and many other significant features to Rakudo. He presented his work at several conferences and workshops, and <a href='http://www.jnthn.net/cgi-bin/blog_read.pl?id=589'>wrote an article</a> about his positive experience using the new tools to add features to Rakudo.<br/><br/>* Jerry Gay added support for radix conversions, command line argument handling, new test harnesses, many builtin functions and operators, and a perl6doc parser. He has also continued to serve as a mentor and advisor for other Rakudo developers.<br/><br/>* Recently Klaas-Jan Stol completed a <a href='http://www.parrotblog.org/2008/03/targeting-parrot-vm.html'>draft tutorial</a> for building compilers using the various compiler tools in Parrot.<br/><br/>* We added a <a href='http://svn.perl.org/parrot/trunk/languages/perl6/docs/compiler_overview.pod'>compiler overview</a> that describes the architecture and layout of the components of the Rakudo Perl 6 compiler.<br/><br/>* Since December at least twenty individuals contributed patches for new features to Rakudo Perl and the Parrot Compiler Toolkit. In addition, the Parrot subversion repository received a record number of commits in the months of December (1175) and January (1025).<br/><br/><b>Where things are headed next</b><br/><br/>The overarching goal for the next couple of weeks will be to again boost development momentum on Rakudo Perl and Parrot compilers to the levels we were seeing in December and early January. Because we now have many of the compiler tools and core code components in place, parallel development efforts for Rakudo are much more possible than they have been in the past. A key task for the next couple of weeks will be to recruit and support additional individuals who can help with the implementation effort.<br/><br/>Specific tasks for the upcoming weeks will include:<br/><br/>* Continue building and refining documentation for the compiler tools and Rakudo implementation
+* Review code added to Rakudo in the past couple of months 
+* Perform a refactor of Rakudo's base classes and namespace handling to better support junctions, classes, and objects in Perl 6.
+* Add control exceptions
+* Add more hash and list operations
+* Continue improving and refactoring the official test suite
+* Update test system to provide graphical views of passing/failing tests in Rakudo<br/><br/>Thanks for reading!<br/><br/>Pm
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

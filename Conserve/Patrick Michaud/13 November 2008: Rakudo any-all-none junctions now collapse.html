@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo any/all/none junctions now collapse</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo any/all/none junctions now collapse</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-11-13T20:18:28</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>For those who are wondering what happened to my journal posts over the past couple of months -- I've been focusing on some underlying Rakudo/Parrot design issues and supporting others more than writing code or prose.  Also, I think I needed a bit of a break.<br/><br/>I've decided that it'll be easier (and thus more likely) for me to increase visibility on Rakudo progress if I blog about new features and decisions as they happen rather than try to batch them up for a post every few days.  I do still plan to come up with "weekly summaries" as well, but I figure the immediate posts will be more satisfying for me and more helpful for others.<br/><br/>So, here's the first such post -- earlier this week I refactored Rakudo's Junction implementation to be cleaner and more correct, and bacek++ provided a patch to collapse duplicate values of one, any, and none Junctions.  We had to wait for confirmation from perl6-language for this, which we just got today.  So, we now have:<br/><br/>    > say any(1,2,2,1,3,2).perl;
+    any(1, 2, 3);
+    > say (any(1,2,3) % 2).perl;
+    any(1, 0);<br/><br/>Although any/all/none junctions collapse, one() junctions do not:<br/><br/>    > say (one(1,2,2,1,3,2) % 2).perl
+    one(1, 0, 0, 1, 1, 0)<br/><br/>This is because duplicate values change the boolean meaning of a one() junction, so we can't simply collapse them.  As Larry says, "... one() junctions produce bags rather than sets."<br/><br/>As a result we've been able to unfudge more spectest for rakudo -- we're currently (r32625) passing 4598 spectests.<br/><br/>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

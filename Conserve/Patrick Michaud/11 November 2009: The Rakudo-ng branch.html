@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: The Rakudo-ng branch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>The Rakudo-ng branch</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-11-11T04:57:29</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>As I <a class='urllink' href='http://use.perl.org/user/pmichaud/journal/39779'>wrote a few weeks ago</a>,
+the period since Rakudo's October release has been one of a lot of
+refactoring and rebuilding to a new grammar and core implementation.  So far everything
+has gone almost exactly as I outlined at the end of that post, so this
+is just a status update to let people know where we are.
+</p>
+
+<p>The new version of NQP ("<a class='urllink' href='http://github.com/perl6/nqp-rx'>nqp-rx</a>") has been substantially completed
+and includes many new features that weren't available in the previous
+regex engine.  In particular, Perl 6 grammars can now support
+protoregexes, and we also have the ability to execute code blocks,
+declare variables, and add parameters to regexes.  The new version
+of NQP is also bootstrapped, which means that the code for all of 
+NQP (and its regex engine) is mostly written in NQP.
+</p>
+
+<p>On October 30, Jonathan and I started a 
+<a class='urllink' href='http://github.com/rakudo/rakudo/tree/ng'>new branch</a> 
+(called "ng" for "new grammar" or "next generation")
+for refactoring Rakudo to use the new NQP and regex engine 
+implementation.  Nearly all of our work since then has been in
+this new branch, and I think it is going exceedingly well.
+Today we were able to get the sanity tests and core compiler
+to where it can again begin compiling and running the test suite.
+</p>
+
+<p>Outwardly this probably seems like very slow progress for 10 days
+of effort, but running the test suite doesn't tell the whole story.  
+In the process of getting to this point, we also knocked off several
+of the critical features needed for Rakudo Star that weren't
+possible in the previous version of Rakudo, including lazy lists,
+proper array element vivification,
+dynamically generated metaoperators, correct handling of 
+containers and constant values, better dispatch semantics, and a 
+whole host of other features that make the Rakudo core much 
+stronger and easier to work with as we move forward from here.
+</p>
+
+<p>Not only that, but we're already at the level where we are
+implementing builtin classes and methods in Perl 6 (as opposed
+to PIR).  And we're also taking this as an opportunity
+to rewrite some of the previous PIR-based components into Perl 6.
+</p>
+
+<p>So, <em>over the next couple of weeks we will continue to focus on bringing the new "ng" branch up to the same level as the current "master" branch.</em>  When we do that, the "ng" branch will likely
+become the new master branch.  I'm still a little reluctant to
+give a time estimate for when we'll make this switch, but given 
+our current momentum (and the ease in which things are coming 
+together) I suspect it won't be far off -- a few weeks at most.
+More importantly, unless we hit any major roadblocks, I expect 
+we will have nearly all of the critical components needed for 
+Rakudo Star (and certainly the most challenging ones) implemented 
+by the end of December.  We'll then use the remaining months
+until April to add other important but less-critical features,
+continue improving performance, and work on packaging and
+documentation issues.
+</p>
+
+<p>Most of the progress reports (and 
+<a class='urllink' href='http://twitter.com/rakudoperl'>Twitter messages</a>) I'll be
+writing over the next few weeks will be about progress in nqp-rx
+and in the "ng" branch as opposed to the Rakudo "master" branch.
+Stay tuned!
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Nice!</h2>
+<h3><a href="/user/sjn/">sjn</a> on 2009-11-11T08:30:31</h3>
+<p>It's sooo nice to read these updates. Thanks! ^^</p>
+
+
+
+<h2>Kudos</h2>
+<h3><a href="/user/bill_mcgonigle/">bill_mcgonigle</a> on 2009-11-12T00:22:32</h3>
+Your hard work is much appreciated.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

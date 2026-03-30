@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: &quot;Final report&quot; for Mozilla Foundation and TPF grant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>&quot;Final report&quot; for Mozilla Foundation and TPF grant</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-09-11T00:41:26</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Last year I received a <a class='urllink' href='http://news.perlfoundation.org/2007/11/patrick_michaud_awarded_perl_6.html' rel='nofollow'>Perl 6 development grant</a> from the <a class='urllink' href='http://www.mozillafoundation.org/' rel='nofollow'>Mozilla Foundation</a> and <a class='urllink' href='http://www.perlfoundation.org/' rel='nofollow'>The Perl Foundation</a>.  Below is a copy of the final report I've submitted to close out the grant.  It's also available in <a class='urllink' href='http://www.pmichaud.com/perl6/mfp6grant.pdf' rel='nofollow'>PDF</a> if anyone wants a more printable version.
+</p>
+
+<p>My thanks to everyone who helped me with this grant, and I'm looking forward to the next one.
+</p>
+
+<p>[2008-09-11 update:  the original version of this report mis-attributed the Squaak tutorial to Kevin Tew; the corrected author is Klaas-Jan Stol (kjs).  My sincere apologies for the mistake, it is now corrected below.]</p>
+
+<p>----------
+<br />
+</p><h2  style='text-align: center;'><strong>Perl 6 Development Grant<br />Final Report</strong></h2>
+<p  style='text-align: center;'>Patrick R. Michaud<br />September 10, 2008
+</p>
+<h3><strong>INTRODUCTION</strong></h3>
+<p>This is the final report for the Perl 6 and Parrot development grant provided by the Mozilla Foundation and The Perl Foundation.  This report summarizes the work performed under the grant, what has been accomplished, and where things are headed from here.  As this report illustrates, we have achieved all of the goals and outcomes intended for this grant.
+</p>
+<h3><strong>REPORT</strong></h3>
+<p>The primary focus of the project was to get Perl 6 on Parrot development "over the hump" and acquire a critical mass of infrastructure, developers, and tools from which sustained further development of Perl 6 can take place.  The project proposal identified five specific expected outcomes:
+</p><ol><li>A working Perl 6 on Parrot implementation that supports commonly used Perl constructs and operators
+</li><li>Review and improvements to the Perl 6 language test suite
+</li><li>A substantially complete Parrot Compiler Toolkit, with documentation
+</li><li>Ongoing, active development efforts for other languages based on the Parrot Compiler Toolkit
+</li><li>An increased number of participants in Perl 6 and Parrot design, implementation, and testing
+</li></ol>
+<p><em>1.  A working Perl 6 on Parrot implementation</em>
+</p>
+
+<p>We now have a substantial Perl 6 implementation on Parrot. At the beginning of this project, we had a rudimentary Perl 6 compiler that could handle some of the basic features and syntax of Perl.  However, some key features such as arrays and hashes were only marginally implemented, and most of the translation components of the compiler were written in Parrot's intermediate assembly language (PIR).
+</p>
+
+<p>Today the Perl 6 on Parrot compiler has been substantially rewritten using the Parrot Compiler Toolkit (described below), and is now known as "Rakudo Perl" or "Rakudo"  [1] .  Rakudo currently supports arrays, hashes, classes, objects, inheritance, roles, enumeration types, subset types, role composition, multimethod dispatch, type checking, basic I/O, named regular expressions, grammars, optional parameters, named parameters, slurpy parameters, closures, smart match, junctions, and many other features expected from Perl 6.  Rakudo has progressed to the point that others are now using Rakudo as an Apache handler ("mod_perl6")  [2] , a wiki engine ("November")  [3] , and recently to build applications on Xlib  [4] .  The Perl Foundation also recently awarded a grant to Vadim Konovalov to implement a Tk GUI interface for Rakudo  [5] .
+</p>
+
+<p>During the project there have been many contributors to the development of Rakudo Perl; some of the major contributors include chromatic, Vasily Chekalkin (bacek), Jerry Gay, Jeff Horwitz, Moritz Lenz, Carl M&auml;sak, Cory Spencer, Stephen Weeks (Tene), and Jonathan Worthington.  Jonathan Worthington's efforts deserve special mention: he is primarily responsible for the bulk of the work on classes and types in Rakudo Perl, and much of his work was supported by a grant from Vienna.pm  [6] .
+</p>
+
+<p><em>2.  Review and improvements to the Perl 6 test suite</em>
+</p>
+
+<p>At the beginning of this project, the test suite that existed for Perl 6 had been implemented as part of the Pugs effort and contained approximately 16,000 tests.  However, in many cases the tests were out of date with respect to the current Perl 6 language specification, and we needed a way for multiple independent Perl 6 implementations to be able to easily make use of the test suite.
+</p>
+
+<p>In December 2007 I proposed a structure for reorganizing the test suite  [7] ; Jerry Gay and Larry Wall then extended this proposal and developed tools to make it easier to share the tests among multiple implementations.  In May 2008 Moritz Lenz refactored Rakudo's test harness to provide a "make spectest_regression" target -- since then this has become our primary measure of Rakudo progress  [8] .  Moritz Lenz also developed a tool to display the progress in graphical form:
+</p>
+
+<p>    <url:http://www.pmichaud.com/perl6/rakudo-tests-2008-09-10.png></p>
+
+<p>Adrian Kreher received a Google Summer of Code grant (with Moritz Lenz and Jerry Gay as mentors) to continue the test suite refactoring  [9] .  As of early September 2008, the official, refactored test suite contains a little over 8,000 tests, or approximately half the size of the original Pugs test suite.  Furthermore, the official suite includes many new tests for object-oriented and typing features of Perl 6 that weren't present in the original test suite.  As the graph above indicates, Rakudo is currently passing over 3,200 of the tests in the official suite, and work is continuing on refactoring the suite and increasing Rakudo's pass rate.
+</p>
+
+<p><em>3.  A substantially complete Parrot Compiler Toolkit, with documentation</em>
+</p>
+
+<p>As mentioned previously, the compilers that existed for Parrot at the beginning of the project (such as Perl 6) were primarily written in Parrot's intermediate assembly language.  This made working on the compilers less accessible to new developers, as well as increasing the time needed to build a compiler.  Therefore, the first couple of months of this project were spent on developing the Parrot Compiler Toolkit (PCT) and a simple Parrot language called Not Quite Perl (NQP).  PCT provides an abstract syntax tree representation and code generator for Parrot languages; NQP enables compiler writers to easily create compilers and builtin functions for Parrot using a simplified Perl 6 syntax.
+</p>
+
+<p>Once PCT and NQP were substantially complete, we were then able to convert Perl 6 (now "Rakudo Perl") and many other Parrot compilers to use the new toolkit.  This went surprisingly quickly -- most of the existing compilers were converted within just a couple of weeks.  In addition, a few new compilers and languages arrived on the scene:  Will Coleda and Simon Cozens quickly created an implementation of LOLCODE  [10] , and Klaas-Jan Stol created a language called "Squaak" as a demonstration and tutorial for the toolkit  [11] .  A couple of quotes from the period give a sense of how these tools opened up Parrot development to others:
+</p>
+<blockquote>"The real fun, though, has been digging into perl6, the Parrot Perl 6 implementation. Recently, Patrick Michaud has been doing some incredible work building NQP (Not Quite Perl 6), a bootstrapping language for implementing Perl 6, and extensively refactoring the existing Perl 6 on Parrot compiler to fit with it. I'm still very much getting my head wrapped around the whole thing, but it's been easy enough to start digging into and implementing and fixing a few things."
+<blockquote>- Jonathan Worthington, December 2007  [12] 
+</blockquote>"It's really, really true. Parrot lets you implement your own languages using Perl 6 rules for the grammar and Perl 6 for the compiler."
+<blockquote>- Simon Cozens, January 2008  [13] 
+</blockquote></blockquote>
+<p>Both PCT and NQP stabilized early in the project; recent changes have been primarily to optimize existing features or make other minor improvements.  We expect these tools to continue to evolve as needed to support compiler development; however, given the wide variety of languages being implemented using the toolkit surprisingly few changes have been needed.  Primary documentation for the toolkit consists of a Parrot Design Document (PDD26) for the abstract syntax tree representation  [14] , the Squaak tutorial  [11] , and numerous example languages in the Parrot repository.  More detailed documentation and examples for the toolkit are expected to be developed over the coming months.
+</p>
+
+<p><em>4.  Ongoing, active development efforts for other languages based on the Parrot Compiler Toolkit</em>
+</p>
+
+<p>Currently there is active development on at least three languages for Parrot; these include Perl 6 (Rakudo Perl), PHP (Pipp), and Ruby (Cardinal).  In addition, there is ongoing but less active
+development on implementations of Python (Pynie) and Smalltalk (ChitChat). All of these are based on the tools from the Parrot Compiler Toolkit.  The Perl 6 and PHP implementations are usable from mod_parrot  [2] , and our next steps are to improve the toolkit and library conventions to support loading multiple languages simultaneously in Parrot.
+</p>
+
+<p><em>5.  An increased number of participants in Perl 6 and Parrot design, implementation, and testing</em>
+</p>
+
+<p>There can be little question that momentum for Perl 6 and Parrot development continues to grow, and the work supported by this grant has been a major catalyst for that growth.  For the twelve months prior to September 2007 the Parrot subversion repository had a total of 6,634 commits; in the subsequent twelve months Parrot had 9,686 commits -- a year-over-year increase of 46% in the commit rate.
+</p>
+
+<p>At the beginning of this project there were perhaps three or four active contributors to the Perl 6 on Parrot compiler (i.e., Rakudo Perl); over the course of the past year that number has increased to at least ten active contributors and at least as many more occasional contributors to Rakudo Perl.  Parrot and the Parrot Compiler Toolkit have also garnered new contributors,  including several new committers.  There are also new teams of developers working on applications based on Rakudo Perl and Parrot, such as the November wiki engine and the Rakudo/Tk GUI interface.
+</p>
+
+<p>Lastly, recent improvements in the Rakudo compiler architecture will allow much of the Perl 6 runtime library currently written in PIR to be rewritten substantially in Perl 6.  This will enable even more new contributors to participate in Perl 6 development.
+</p>
+<h3><strong>PROJECT EVALUATION</strong></h3>
+<p>The project proposal identified five criteria by which the success of this project could be measured:
+</p><ul><li>Ability to write and test Perl 6 programs and language features
+</li><li>Passing rate for Perl 6 language test suite
+</li><li>Improved coverage and accuracy of the Perl 6 language test suite
+</li><li>Increased number of participants in Perl 6 and Parrot development
+</li><li>Active development of at least two other languages using Parrot compiler tools
+</li></ul>
+<p>This report demonstrates the success of this project along all of these measures.  Perl 6 on Parrot ("Rakudo") is being used to write and test Perl 6 programs and language features, and has become a strong driver for improving the coverage and accuracy of the test suite (and indeed, of the Perl 6 language specification itself).  Continual reporting and publication on Perl 6 and Parrot activities continues to attract increased interest and participation from the wider community.
+</p>
+
+<p>Moreover, this project helped jump-start even larger fund-raising efforts.  In May 2008 the Perl Foundation received a $200,000 philanthropic donation from Ian Hague; roughly half of this donation is intended to continue the Perl 6 development efforts that have been part of this project  [15] .  And, as mentioned earlier, Jonathan Worthington and others are receiving grants for continued work on Rakudo Perl and Parrot  [6,8,16] .
+</p>
+<h3><strong>CONCLUSION AND FUTURE WORK</strong></h3>
+<p>The funding provided by the Mozilla Foundation and The Perl Foundation has indeed enabled us to get Perl 6 on Parrot development "over the hump" in development.  We now have a robust platform for higher-level language development on Parrot, along with an active and growing development and support community (which is the hallmark of any successful open source project).  All of the desired outcomes of this project have been realized.
+</p>
+
+<p>Our next steps will be to continue to extend and build upon the work of this project -- increasing Rakudo's coverage of the Perl 6 language and bringing all of our efforts much closer to production releases.  In fact, we recently developed a "road map" for Rakudo Perl that identifies the major steps to be taken in the upcoming months and assists in coordinating the remaining development activities  [17] .
+</p>
+
+<p>Lastly, I want to express my sincere appreciation to the many people who contribute time and energy to Perl 6 and Parrot, and to give special thanks to the people of the Mozilla Foundation and The Perl Foundation for their ongoing support and enthusiasm for this project.  It is a great honor to work and correspond with such a terrific and professional group of individuals.
+</p>
+<h3><strong>REFERENCES</strong></h3>
+<ol><li> P. Michaud (January 16, 2008), "The compiler formerly known as 'perl6'", <a class='urllink' href='http://use.perl.org/user/pmichaud/journal/35400' rel='nofollow'>http://use.perl.org/user/pmichaud/journal/35400</a>
+</li><li> J. Horwitz, "Mod_parrot website", <a class='urllink' href='http://www.smashing.org/mod_parrot/' rel='nofollow'>http://www.smashing.org/mod_parrot/</a>
+</li><li> C. M&auml;sak, "Announcing November, a wiki in Perl 6", <a class='urllink' href='http://use.perl.org/user/masak/journal/37212' rel='nofollow'>http://use.perl.org/user/masak/journal/37212</a>
+</li><li> <a class='urllink' href='http://svn.perl.org/parrot/trunk/examples/nci/xlibtest.p6' rel='nofollow'>http://svn.perl.org/parrot/trunk/examples/nci/xlibtest.p6</a>
+</li><li> Alberto Sim&otild;es (August 30, 2008), "2008Q3 Grants Results", <a class='urllink' href='http://news.perlfoundation.org/2008/08/2008q3_grants_results.html' rel='nofollow'>http://news.perlfoundation.org/2008/08/2008q3_grants_results.html</a>
+</li><li> "Vienna.pm funds Jonathan Worthington to work on Ra[kudo]" (April 23, 2008), <a class='urllink' href='http://use.perl.org/article.pl?sid=08/04/23/2314234' rel='nofollow'>http://use.perl.org/article.pl?sid=08/04/23/2314234</a> 
+</li><li> P. Michaud (December 20, 2007), "Proposal: refactor the test suite according to synopsis, <a class='urllink' href='http://groups.google.com/group/perl.perl6.compiler/msg/ed748490f030da2f' rel='nofollow'>http://groups.google.com/group/perl.perl6.compiler/msg/ed748490f030da2f</a> 
+</li><li> P. Michaud (June 16, 2008), "Rakudo test suite progress", <a class='urllink' href='http://use.perl.org/user/pmichaud/journal/36695' rel='nofollow'>http://use.perl.org/user/pmichaud/journal/36695</a> 
+</li><li> A. Kreher, "Auzon's Blog: gsoc2008", <a class='urllink' href='http://auzon.blogspot.com/search/label/gsoc2008' rel='nofollow'>http://auzon.blogspot.com/search/label/gsoc2008</a> 
+</li><li> "I HAZ A PARROT" (January 3, 2008), <a class='urllink' href='http://lolcode.com/news/i-haz-a-parrot' rel='nofollow'>http://lolcode.com/news/i-haz-a-parrot</a> 
+</li><li> K. Stol (March 9, 2008), "PCT Tutorial Episode 1: Introduction", <a class='urllink' href='http://www.parrotblog.org/2008/03/targeting-parrot-vm.html' rel='nofollow'>http://www.parrotblog.org/2008/03/targeting-parrot-vm.html</a> 
+</li><li> J. Worthington, "Chipping away at perl6", <a class='urllink' href='http://www.jnthn.net/cgi-bin/blog_read.pl?id=589' rel='nofollow'>http://www.jnthn.net/cgi-bin/blog_read.pl?id=589</a> 
+</li><li> S. Cozens (January 3, 2008), "Parrot is really quite wonderful", <a class='urllink' href='http://blog.simon-cozens.org/post/view/132' rel='nofollow'>http://blog.simon-cozens.org/post/view/132</a>
+</li><li> "Parrot Abstract Syntax Tree (PDD 26)", <a class='urllink' href='http://www.parrotcode.org/docs/pdd/pdd26_ast.html' rel='nofollow'>http://www.parrotcode.org/docs/pdd/pdd26_ast.html</a> 
+</li><li> R. Dice (May 16, 2008), "TPF receives large donation in support of Perl 6 development", <a class='urllink' href='http://news.perlfoundation.org/2008/05/tpf_receives_large_donation_in.html' rel='nofollow'>http://news.perlfoundation.org/2008/05/tpf_receives_large_donation_in.html</a>
+</li><li> J. Worthington (August 5, 2008), "Multiple Dispatch Design Work", <a class='urllink' href='http://use.perl.org/user/JonathanWorthington/journal/37101' rel='nofollow'>http://use.perl.org/user/JonathanWorthington/journal/37101</a>
+</li><li> "Perl 6 Development Roadmap", <a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP' rel='nofollow'>http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP</a>
+</li></ol>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Thank You!</h2>
+<h3><a href="/user/amoore/">amoore</a> on 2008-09-11T13:19:35</h3>
+Thanks for your recent and continued work on Perl 6, Patrick.
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

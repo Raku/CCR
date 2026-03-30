@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Status of perl6 on Parrot, 2007-12-04</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Status of perl6 on Parrot, 2007-12-04</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-12-05T15:51:23</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>This is an update on the status of Perl 6 on Parrot development
+as of December 4, 2007.<br/><br/>
+Progress in November 2007
+-------------------------
+The last report was published in November as a "road map" [1]
+for continued development of the Perl 6 on Parrot compiler (perl6).
+Since then we've basically been following the steps outlined
+on the road map and we are seeing significant progress on the
+compiler.<br/><br/>The big news for this month is that we are now using a
+lightweight Perl 6 translator ("NQP") to implement the
+translation components of the perl6 compiler.  Making this
+transition means we are currently failing quite a few tests
+in the test suite, but Jerry Gay and I are rapidly cleaning
+those up.  This is also a good place for others to join in if
+you're interested -- see "How to hack and contribute" below.<br/><br/>So, as mentioned in the previous status report, the perl6 compiler
+has four major components:  the parse grammar, specialized parsing
+routines, the ast transformation, and the runtime support.  Now
+that we're using NQP for the ast transformation, this means that
+the bulk of the compiler--the parse grammar and the ast
+transformation--are written using Perl 6 syntax.  If you want to
+take a quick peek at these without downloading Parrot, they're
+currently available at:<br/><br/>  <url:http://svn.perl.org/parrot/trunk/languages/perl6/src/parser/grammar.pg>
+  <url:http://svn.perl.org/parrot/trunk/languages/perl6/src/parser/actions.pm><br/><br/>We're also looking into the possibility of rewriting much of
+the runtime support as Perl 6.  One of the significant things
+we added this past week is the ability to embed PIR code directly
+inside subroutines compiled using NQP.  This has turned out to be
+extremely useful for development -- we use Perl 6 syntax for most
+things, but can drop in and out of PIR whenever we (temporarily)
+need it.<br/><br/>Another major item completed yesterday is a new set of routines
+for parsing and transforming Perl 6's quote syntax.  Of course, the
+primary reference for this is the STD.pm grammar [2], and if
+you take a look you'll see that it's a fairly complex component
+because of the many options, interpolation forms, and extensions
+that are available.  It will likely be a while before we have all
+of the pieces to implement quotes exactly as STD.pm has them,
+so in the meantime I've written up a couple of parse subroutines
+(in PIR) that handle most of the quoting forms and options we're
+likely to encounter, including interpolation.  The only major
+forms not available at present are the ÃÂ«...ÃÂ» and heredocs, and
+the ÃÂ«...ÃÂ» form is waiting only on some Unicode fixes in PGE
+and Parrot (RT#48108).<br/><br/>While I'm on the topic of STD.pm and parsing:  I do need to
+compliment Larry, Damian, and others who have been building
+STD.pm and the language specification for the improvements
+made in the language syntax over the past year or so, such
+as in quoting.  The version of Perl 6 we have now is *much*
+easier to parse--by both humans and machines--than what we
+had a year ago.<br/><br/>
+Where things are headed next
+----------------------------<br/><br/>There are two major items we will be focusing on for the
+next couple of weeks.  The first will be continued development
+of the perl6 compiler -- getting it back to passing the tests
+it was previously passing, as well as adding new features and
+tests.  Progress on this is already being made and should
+accelerate nicely.<br/><br/>The other area of focus will be in writing a lot of prose --
+documents that will help new developers figure out where
+things are and how it's all put together.  For instance, we
+really need a "getting started" document for perl6 that
+describes how to build the compiler, how to invoke it,
+and how/where to report bugs and patches.  Much of this
+information is currently in the ROADMAP, but would probably
+be better placed in a getting started document.  We also want
+a developer's roadmap of some sort.<br/><br/>I'm also planning to publish a "developer's glossary" somewhere
+to identify many of the various terms that get thrown around
+in development (PCT, PGE, NQP, STD.pm, regex, PAST, etc.).<br/><br/>Also on the horizon we will start looking at reviewing and
+possibly restructuring the Perl 6 test suite, and coming
+up with a mechanism to quickly update/publish the status
+of various language features in the compiler (hopefully with
+references back to the language spec).<br/><br/>
+How to hack and contribute
+--------------------------<br/><br/>If you're interested in hacking on the compiler, this is
+a unique time to start getting involved.  There are a lot
+of relatively easy features to be tested and added, and
+the discussions are about the basics of the compiler and
+how it's put together.<br/><br/>As mentioned above, we need a good "getting started" document,
+but for now here's a quick overview.  First, you'll want to
+download and build Parrot -- instructions for this are at
+<url:http://www.parrotcode.org/>.  Once you have Parrot built,
+you can change to the languages/perl6/ directory and type
+'make' to build the perl6 compiler.  Then use the command<br/><br/>    $ parrot perl6.pbc hello.pl<br/><br/>to run a hello.pl program (written in Perl 6).<br/><br/>To learn more about how compilers are being structured
+in Parrot in general, I recommend looking at languages/abc/ [3].
+This is an implementation of the bc(1) language using the
+same tools we're using to implement perl6, with the advantage
+of being a lot simpler language than Perl 6.  We've also tried
+to put a lot of comments into the source files for abc that
+explain what each component is doing.<br/><br/>After that, you can look at perl6's source code files and
+running some tests (either from the suite or files that
+you build).  If you want to see perl6's intermediate compilation
+results, use --target=parse, --target=past, or --target=pir
+immediately after the "perl6.pbc" part.<br/><br/>In the next couple of weeks we'll be writing up the documents
+that describe the details of the compiler implementation, but
+in the meantime please ask us questions!  We'll use the questions
+to help author the documents.  The perl6 and Parrot developers
+tend to hang out on irc.perl.org/#parrot, and questions are
+welcome on the perl6-compiler mailing list [4].<br/><br/>If you find a bug or have a suggested patch, send it to
+perl6-bug@perl.org.  Please use the moniker [PATCH], [BUG],
+or [TODO] (including the brackets) at the start of the subject
+so that RT can appropriately tag the item.<br/><br/>Thanks for reading!<br/><br/>Pm<br/><br/>1.  http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP
+2.  http://svn.pugscode.org/pugs/src/perl6/STD.pm
+3.  http://svn.perl.org/parrot/trunk/languages/abc/
+4.  http://dev.perl.org/perl6/lists/<br/><br/></p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

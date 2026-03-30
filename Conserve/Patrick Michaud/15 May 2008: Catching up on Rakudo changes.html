@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Catching up on Rakudo changes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Catching up on Rakudo changes</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-05-15T01:46:54</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Development of Rakudo Perl is continuing along quite nicely.  Jonathan has been doing outstanding work with his one-day-per-week grant from Vienna.pm, primarily looking at classes, grammars, objects, etc., but also the occasional other features here and there.<br/><br/>We've also had some outstanding contributions from Stephen Weeks (Tene++ on IRC), who provided an implementation of placeholder parameters in Rakudo.  In fact, Stephen's implementation works for both positional ($^a) and named ($:a) placeholder parameters, and even supports the @_ and %_ placeholders!  There are still a few items to be tidied up -- especially when dealing with placeholder variables in the body of loops -- but I'm sure those fixes will be made soon also.<br/><br/>Chromatic has also continued to find <a href='http://use.perl.org/user/chromatic/journal/36410'>small fixes to Parrot that dramatically improve performance</a>.  For example, just yesterday he made a small tweak to Parrot's garbage collector that made a 15%-30% improvement in our "build rakudo" benchmark.  We're continuing to find a lot of low-hanging fruit for improvement Parrot's overall speed.<br/><br/>Since Friday I've been able to do a fair amount of useful hacking on Rakudo and Parrot.  I managed to close about fifteen or so tickets in the RT queue, which is nice.<br/><br/>In my last post I noted that the "fat arrow" syntax is now working, meaning that named arguments can be passed with:<br/><br/>    foo(x =&gt; 1, y =&gt; 'hello');<br/><br/>The trick to getting this work was to get the operator precedence parser to again recognize "stop levels", such that it only parses expressions above (tighter) than a given precedence level.  The code for this in the grammar looks something like<br/><br/>    token fatarrow {
+        &lt;key=ident&gt; \h* '=&gt;' &lt;val=EXPR: 'i='&gt;
+        {*}
+    }<br/><br/>The important part is the 'i=' parameter being passed to the &lt;EXPR&gt; subrule... it tells the operator precedence parser to only parse operators above "item assignment" precedence.  (Look for %item_assignment in <a href='http://svn.pugscode.org/pugs/src/perl6/STD.pm'>STD.pm</a> to see where the 'i=' comes from.) Yes, this approach doesn't exactly match the way STD.pm does it, but it's close enough until we get a more general expression parser into PGE's subrule calls.<br/><br/>Having the ability to control the range of expression parsing meant that I could also implement default values for parameters, as in:<br/><br/>    sub foo($x = 3, $y = 'block') { ... }<br/><br/>Again, this involved getting the default_value rule to parse everything after an '=' up to a lower-precedence operator:<br/><br/>    rule default_value {
+        '=' &lt;EXPR: 'i='&gt;
+    }<br/><br/>Since PCT already had support for default values on parameters, it was a fairly small change to the actions.pm module to get this to work.<br/><br/>Over the weekend I also looked a bit more at the official test suite, and cleaned up some tests in t/spec/S02-literals/ .  In the process I found that Rakudo's Test.pm wasn't handling "todo" markers properly, and fixed that.  The fudge-based preprocessor for the spec tests works extremely well -- it makes it very easy to mark sections of tests to be avoided when running the tests.  A goal for May is to get the spectests and makefile targets updated enough such that "make spectest" in Rakudo tends to report relatively few errors.<br/><br/>As Stephen Weeks was performing his implementation of placeholder variables we also discovered a place where NQP (and PCT) run into problems trying to distinguish hash accesses from array accesses in various objects.  At its core, Parrot uses integer versus non-integer indexes to distinguish between array and hash accesses, but NQP and PCT didn't provide a good way for high-level languages to make that distinction.<br/><br/>There was a lot of discussion about this on IRC, but after thinking about it a bit, I decided it was time for PCT to evolve a bit to do a better job of register handling.  So, I spent the last 2-3 days doing just that, and we have some very good results -- about a 10% reduction in overall generated code size and substantially fewer gc-able objects created.  There are a lot more details to share on this, but since this post is focused more about Rakudo and is getting a bit long, I'll write up the PCT details in a separate article.<br/><br/>Overall, there's a growing of things I'm eager to work on in Rakudo, and it's difficult to decide "what to do next", as all are useful or important.  At this point I'm thinking that I may focus on updating protoobject and class handling next.  Currently we have two separate protoobject systems in place: one for PGE and the compiler tools and another for Rakudo.  On the surface they look fairly similar, but there are some minor differences and we really ought to be serving both needs from a single base.  Plus getting the classes in Rakudo and PCT straightened out should make it easier for others to participate, so that seems like a Big Win for now.<br/><br/>Plus, I need to make sure all of my presentations are ready for this summer's conferences.  Speaking of which, I have apparently neglected to provide links to materials for some of the talks I have already given this year, for those that are curious:<br/><br/>    FOSDEM 2008 Presentation
+      "Perl 6"
+        <url:http://video.fosdem.org/2008/maintracks/FOSDEM2008-perl6.ogg> (video)
+        <url:http://www.pmichaud.com/2008/pres/fosdem-perl6/>  (slides)<br/><br/>    Texas Open Source Symposium Talks
+      "An Introduction to Perl 6"
+        <url:http://www.pmichaud.com/2008/pres/texasoss-perl6/>
+      "Programming Parrot"
+        <url:http://www.pmichaud.com/2008/pres/texasoss-parrot/><br/><br/>    DFW.pm April 2008 meeting
+      "Rakudo Perl - Perl 6 on Parrot"
+        <url:http://www.pmichaud.com/2008/pres/dfwpm-rakudo/><br/><br/>Finally, on <a href='http://www.parrotblog.org/2008/05/parrot-bug-day-17-may-2008.html>Saturday we're planning to have a "Parrot Bug Day"</a> -- I hope to be around early in the morning and later in the evening to work with others to track down bugs and otherwise prepare for next Tuesday's monthly release.<br/><br/>Pm
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

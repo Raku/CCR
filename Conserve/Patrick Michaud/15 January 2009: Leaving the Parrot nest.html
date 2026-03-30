@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Leaving the Parrot nest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Leaving the Parrot nest</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-01-15T02:53:47</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>As many of you will have gathered from discussions on other mailing
+lists and IRC, it's time for Rakudo Perl to "leave the Parrot nest" 
+and move to its own repository.  I think we should also take this
+opportunity to re-evaluate the entire Rakudo Perl infrastructure
+and decide what will be most productive for the community for
+the upcoming year.  Indeed, as part of any move we need to
+communicate the details of the changes to others, which brings
+to the surface some of the shortcomings of what we have now.
+</p>
+
+<p>By "infrastructure" I'm primarily referring to the following items:
+</p><ul><li>source code repositories (note: plural)
+</li><li>web sites
+</li><li>blog / news
+</li><li>wiki
+</li><li>issue tracking
+</li><li>mailing lists
+</li></ul>
+<p>Currently these things are spread in many different locations with
+different tools, and while I don't believe it's necessary for them
+completely unified, we should at least aim to reduce the overall 
+complexity of what we do have so that we can better serve those 
+who are interested (or are yet to become interested) in Rakudo Perl.
+In fact, it may be that in many cases we'll keep what we have now,
+but at least it'll be a confirmed decision instead of simply going
+along with what we've had in the past.
+</p>
+
+<p>Also, I'm sure it will be easy and tempting to address
+larger issues about Perl 6 as a whole (as opposed to just
+"Rakudo").  I'm not at all opposed to seeing that larger discussion
+take place, but for my purposes I'll be tending to focus on Rakudo's 
+immediate needs.
+</p>
+
+<p>Here's my off-the-cuff inventory of where things are in Rakudo today
+and where things might head.  It's entirely possible that my
+description below misunderstands or misrepresents reality in
+some areas -- but I'm dedicating this week to resolving that.
+Indeed, that's the primary purpose of this message, to help us
+all clear up confusion surrounding Rakudo (and Perl 6).
+</p>
+
+<p><strong>Source code repository</strong>
+</p>
+
+<p>This is the immediate issue at hand, because we need to move Rakudo
+out of the Parrot repository so that it can cleanly move to its new
+home at parrot.org.  Currently Rakudo Perl lives at
+<a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/' rel='nofollow'>http://svn.perl.org/parrot/trunk/languages/perl6/</a> , while the 
+spectest suite (on which development/testing depends) lives at
+<a class='urllink' href='http://svn.pugscode.org/pugs/t/spec/' rel='nofollow'>http://svn.pugscode.org/pugs/t/spec/</a> .
+</p>
+
+<p>Many people have strongly suggested that we switch to
+using "git" as our version control system.  At the moment I'm
+neither strongly in favor of nor strongly opposed to switching
+version control systems, but we have to recognize that at least
+two of Rakudo's "dependencies" (Parrot and the spectest suite) 
+are using Subversion and are likely to remain that way for 
+a while.  We don't want to require non-developers to install a 
+lot of different source code control systems simply to run and 
+test the latest incarnation of Rakudo Perl.
+</p>
+
+<p>I have a lot more comments on source code management for
+Rakudo Perl, but to keep to the "overview" nature of this post
+I'll save the rest for a longer post.  Feel free to start
+submitting your opinions, however!
+</p>
+
+<p><strong>Web site / blog / wiki</strong>
+</p>
+
+<p>Currently Rakudo really does not have a dedicated website
+providing basic information about it.  There is the 
+<a class='urllink' href='http://rakudo.org/' rel='nofollow'>http://rakudo.org/</a> site, but it's currently more of a
+blog than a true web site.  For example, someone visiting
+rakudo.org would not be able to easily find out how to 
+download and run Rakudo Perl.
+</p>
+
+<p>Here's what we <em>do</em> have at the moment (as best as I can recall):
+</p>
+<ul><li>Rakudo.org is run by Andy Lester and currently provides a
+"blog" for Rakudo Perl.  Andy has mused about switching
+rakudo.org to Drupal instead of Movable Type, which could
+enable us to more easily have "introductory content" 
+information instead of just blog-type entries.
+</li><li>Of course, many of us regularly post to journals at 
+<a class='urllink' href='http://use.perl.org/' rel='nofollow'>http://use.perl.org/</a> .  This is good for keeping in touch 
+with the wider Perl community and provides a good blog-like
+interface, but again isn't useful at basic Rakudo information
+and orientation.
+</li><li>The Perl Foundation hosts a "Perl 6 wiki" at
+<a class='urllink' href='http://www.perlfoundation.org/perl6/index.cgi?perl_6' rel='nofollow'>http://www.perlfoundation.org/perl6/index.cgi?perl_6</a> ,
+and Rakudo has a few pages there.  Currently I find the
+wiki to be not very well organized, and it's difficult to
+find Rakudo out of the many other items that appear there.
+Beyond that, I'm not impressed with the wiki engine the
+site uses, but if a sizable group of people think that's
+where Rakudo information should be centered then I can
+live with it.
+</li><li>TPF also hosts the "Perl 6" website at 
+<a class='urllink' href='http://dev.perl.org/perl6/' rel='nofollow'>http://dev.perl.org/perl6/</a> , but "Rakudo Perl" isn't even 
+mentioned there, and I don't even really know the correct 
+procedure for getting updates or modifications to those pages.  
+My impression is that this site isn't really conducive to 
+frequent updates or lots of contributors (but perhaps I'm 
+incorrect about that).
+</li><li>Planet Perl 6 (http://planetsix.perlfoundation.org<a class='apprlink' 
+  href='http://www.pmwiki.org/wiki/Perl6/RakudoMigration?action=approvesites'>(approve links)</a>) is an
+excellent aggregator of Perl 6 related posts, including those
+involving Rakudo Perl.  
+</li></ul>
+<p>Also, for the record, I currently own the "rakudoperl.org"
+and "rakudoperl.com" domains, so if we want to do something
+somehow separate from any of the existing domains cited above, 
+we can use those domains, and I may have (or be able to acquire)
+additional server resources to support it.
+</p>
+
+<p><strong>Issue tracking</strong>
+</p>
+
+<p>Currently issue tracking for Rakudo is being done using RT
+at <a class='urllink' href='http://rt.perl.org/' rel='nofollow'>http://rt.perl.org/</a>  (the same RT instance that does Perl 5 
+bug tracking).  In the past I've stated that Rakudo bugs will
+continue to use this tracker, and I'm still planning for that
+to be the case, but in recent weeks I've encountered a
+number of times were rt.perl.org was too slow/unreachable
+to be an effective tool.  I'm not (yet?) advocating that we
+switch to a different issue tracker, but since we're looking
+at the whole of infrastructure items I did want to leave the
+possibility open for discussion.
+</p>
+
+<p><strong>Mailing list</strong>
+</p>
+
+<p>Currently Rakudo's primary mailing list is &lt;perl6-compiler@perl.org&gt;.
+I see no major reason to change anything here, as it works
+well and is a good companion to the other "official"
+Perl 6 mailing lists.
+</p>
+
+<p>----------
+</p>
+
+<p>Throughout all of this, I'm looking at things from a very
+practical perspective -- i.e., what can we achieve with the
+resources currently at our disposal.  It's also important
+to consider the needs of the various audiences -- not only
+the Rakudo developers, but also people who want to experiment
+with Rakudo and those who want to start building applications
+for it.  So, we need to keep in mind the many perspectives on
+the issue as we go through the discussion.
+</p>
+
+<p>Also, I'm expecting that some of the decisions I eventually
+make may disappoint some; apologies in advance, but such is
+the nature of decisions.
+</p>
+
+<p>With that background in place, I'll now (with great trepidation)
+open the discussion for others to comment and/or make suggestions
+of what they'd like to see changed about the way we currently
+manage Rakudo Perl.
+</p>
+
+<p>Thanks in advance,
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+<hr/>
+
+
+
+<h2>Parrot management</h2>
+<h3><a href="/user/infinoid/">infinoid</a> on 2009-01-15T03:36:51</h3>
+<p>Earlier today on the IRC channel, Will Coleda made an interesting comment regarding partcl.
+</p><p>
+
+
+07:28 &lt;@Coke&gt; I'd rather have folks go to<nobr> <wbr></nobr>/partcl/ to get parrot.
+
+
+</p><p>That makes a lot of sense.  So, have you given much thought to how you want to enforce and/or manage the version of Parrot you will be running Rakudo under?  I think this may be an important issue.  Given how much breakage we see in languages <b>still in the parrot repository</b>, I worry that decoupling of parrot from rakudo will only make the "moving target" problem worse.
+</p><p>Presumably, Rakudo itself is in the best position to define which version(s) of Parrot it expects to run under.  So do you think there should be some kind of startup sanity check?  Or going even farther, a "make parrot" target which (if the appropriate version of parrot isn't found on the system) goes and fetches it, unpacks and builds it?
+</p>
+
+
+
+<blockquote>
+
+<h2>Re:Parrot management</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-01-15T17:25:16</h3>
+<p>I've just posted a reply to this comment on the perl6-compilers mailing list -- when perl6.org's mailing list manager catches up it should appear <a href="http://groups.google.com/group/perl.perl6.compiler/browse_thread/thread/e8b52511384fb75e#" title="google.com">here</a google.com>.</p><p>(It seemed more useful to put it on the mailing list than to try to keep separate threads on use.perl, rakudo.org, and the mailing list.)</p><p>Pm</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>Re:  Leaving the Parrot nest</h2>
+<h3><a href="/user/kid51/">kid51</a> on 2009-01-15T03:38:18</h3>
+Patrick:
+<p>
+Thank you for this thorough and temperate summation of the issues.  I don't follow Rakudo or Perl 6 that closely; I barely have tuits to follow Parrot.  So I don't have much to say one way or the other about how Rakudo's infrastructure should evolve.
+</p><p>
+I just wish we had had a blog post like this concerning Parrot's infrastructure before all these changes started happening.
+</p><p>
+Thank you very much.</p>
+
+
+
+<h2>What are our constraints?</h2>
+<h3><a href="/user/geoffrey/">geoffrey</a> on 2009-01-15T03:47:37</h3>
+To frame the discussion, it might help to know what our current constraints are.  For example, if we decide to replace rt.perl.org, are we limited in our choice by available hosting hardware, or admin expertise (of other tracking products), or admin tuits?<br/><br/>Are any of those constraints so tight that we will need to seek donations or grants to allow us to make the best choice for Rakudo and Perl 6?
+
+
+
+<blockquote>
+
+<h2>Re:What are our constraints?</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-01-15T14:29:00</h3>
+<p>I agree that knowing about constraints is important; that said, I haven't been able to come up with any limitations or constraints along the lines you've mentioned that I think are insurmountable.</p><p>Pm</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>mod_perl6 dependencies</h2>
+<h3><a href="/user/jhorwitz/">jhorwitz</a> on 2009-01-15T16:52:03</h3>
+Something just occurred to me.  Since I'm also in the process of moving mod_perl6 out of the mod_parrot repository, building mod_perl6 will soon require 4 separate SVN checkouts (parrot, rakudo, mod_parrot, mod_perl6).  Of course, in the future stable releases of each project will ease this pain, but still...ouch!
+
+
+
+<blockquote>
+
+<h2>Re:mod_perl6 dependencies</h2>
+<h3><a href="/user/pmichaud/">pmichaud</a> on 2009-01-15T17:26:23</h3>
+<p>I'm thinking we might be able to eliminate the Parrot checkout for many/most projects.  Maybe not mod_parrot itself, but who knows?</p><p>Pm</p>
+
+
+
+<h2>Re:mod_perl6 dependencies</h2>
+<h3><a href="/user/duff/">duff</a> on 2009-01-15T18:29:37</h3>
+<p>This sounds like one place where svn:externals can be put to good use.  You could make an "umbrella repository" that gets all of the proper revisions of all the required pieces and to the outside universe, it'll be just a single "svn checkout".</p>
+
+
+
+
+
+</blockquote>
+
+
+<h2>No need to switch to Drupal</h2>
+<h3><a href="/user/stu42j/">stu42j</a> on 2009-01-20T18:43:05</h3>
+<p>MT4 can easily be used to create standard "web pages" in addition to a blog.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

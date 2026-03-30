@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Recent rakudo news</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Recent rakudo news</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-08-25T18:09:45</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>Given that most of July and August for me was spent attending conferences, 
+travel, vacation, and periods of limited network connectivity, it's been
+a while since I've been able to update Rakudo progress.  So, this is
+a very brief update, to be followed by a longer post in a day or so.
+</p>
+
+<p>First, we continue to make progress on passing more spectests.  As
+of this writing Rakudo is passing 2278 spectests.  A graph of our
+progress is available 
+from <a class='urllink' href='http://www.pmichaud.com/perl6/rakudo-tests-2008-08-25.png' rel='nofollow'>http://www.pmichaud.com/perl6/rakudo-tests-2008-08-25.png</a>.
+Much of the credit for passing tests over the past few weeks goes
+to Jonathan Worthington, Moritz Lenz, and Carl M&auml;sak (again, 
+apologies if I've overlooked anyone).  It's really good to see 
+progress coming from so many sources.
+</p>
+
+<p>OSCON and YAPC::EU were both excellent conferences, my compliments
+to the organizers of each of those.  In particular, Jonathan, Allison,
+and I were able to use our time together at YAPC::EU to discuss and
+map out many of the outstanding issues for Parrot and Rakudo, which
+we can now begin documenting and implementing over the next few
+weeks and months.  These include things like code initialization,
+handling Perl 6 parameter passing and signatures, MMD, strings,
+and many other issues.
+</p>
+
+<p>One of the outcomes of this was that early last week I finally
+got the code in 
+place to enable pre-compiled Perl 6 modules to function properly.
+At the moment this has a quite dramatic effect on running the
+spectest regression suite, because we aren't having to parse and
+recompile <a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/Test.pm' rel='nofollow'>Test.pm</a>
+on each test file execution (and parsing is still our biggest
+bottleneck).  So, running the regression suite dropped from twelve 
+minutes to under four minutes on my system, which isn't quite so
+interminable.
+</p>
+
+<p>Of course, the next step will be to enable Rakudo to compiler
+Perl 6 programs into standalone PIR or PBC files that can
+automatically load the Perl 6 runtime.  I expect to accomplish
+this sometime this week -- at present we need some refactors
+to the signature generation code that is blocking this from
+happening.
+</p>
+
+<p>We're also working on enabling parts of the standard runtime
+library ("Prelude") to be written in Perl 6 and precompiled by
+Rakudo, instead of having it all written in PIR.  As part of this
+we may implement a Perl 6-with-inline-PIR capability to help
+with the builtins, to make it easier to attach MMD signatures
+to the builtin functions and make sure they're exported properly.
+</p>
+
+<p>We also have more of the interface for loading external modules
+(written in PIR or otherwise) specified, and will be working
+on that over the next couple of weeks.
+</p>
+
+<p>At the YAPC::EU hackathon, Jesse Vincent and I also spent some
+time updating the Rakudo 
+<a class='urllink' href='http://svn.perl.org/parrot/trunk/languages/perl6/ROADMAP' rel='nofollow'>ROADMAP</a>
+document.  This newer version of the ROADMAP identifies some
+of the specific components that are left to be developed, along
+with estimates of their complexity and dependencies.  If you
+look at the document you'll see some notations about how long
+it will take to develop each feature; these estimates are all in
+"idealized programmer units".  An "idealized programmer unit"
+here assumes that the people involved have no interruptions or
+distractions, has all of the needed prerequisites in place, 
+is mentally charged and ready for programming, doesn't have to
+wait to coordinate questions or answers with others, etc.  As
+such, the times given should be taken only as relative estimates
+of task difficulty, and not how long a particular task will
+take in real-world time units.
+</p>
+
+<p>The major subsystem redesign coming up for Rakudo will be
+changes to the parser and grammar engine to support
+protoregexes and longest token matching.  This will enable us
+to support even more of the 
+<a class='urllink' href='http://svn.pugscode.org/pugs/src/perl6/STD.pm' rel='nofollow'>STD.pm</a> "standard grammar".
+I expect much of this work to take place over the next four
+calendar months, as many elements are likely to require some
+intensive and sustained design and development effort (while
+trying to maintain progress in other areas).  More on this as it
+progresses.
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

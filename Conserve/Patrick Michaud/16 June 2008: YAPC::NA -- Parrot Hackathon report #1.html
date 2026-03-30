@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: YAPC::NA -- Parrot Hackathon report #1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>YAPC::NA -- Parrot Hackathon report #1</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2008-06-16T06:07:50</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>[Rakudo spec regression status:  64 files, 779 tests]
+</p>
+
+<p>Throughout YAPC::NA I'm hoping to make frequent posts about various
+events taking place, including the hackathons and other
+discussions.  The Parrot hackathon took place yesterday
+and today, and we've had a lot of contributors and some
+excellent progress.  A brief summary of some things that
+have occurred during the hackathon:
+</p>
+
+<p>Moritz noticed <a class='urllink' href='http://www.perlmonks.org/?node_id=692090' rel='nofollow'>a post on Perl Monks</a> about Rakudo not yet supporting %*ENV; I forwarded it to rakudobug@perl.org to be filed as an <a class='urllink' href='http://rt.perl.org/rt3/Ticket/Display.html?id=55840' rel='nofollow'>RT ticket</a>, and just a few minutes after that Jonathan had a working implementation.
+</p>
+
+<p>Scott Duff (PerlJam) tested and closed a long-standing patch from Zev Benjamin to supply the 'run' function in Rakudo.
+</p>
+
+<p>Bacek made some fixes to S29-list/minmax.t and so we've been able to add that as another set of tests to our spectest_regression suite.  Jerry Gay also noticed some additional tests for spectest_regression.  As of this writing Rakudo is now passing 779 tests in the spectest_regression suite.
+</p>
+
+<p>Jerry Gay (particle) updated the mk_language_shell.pl script to automatically include the optable rules.
+</p>
+
+<p>I did more refactoring and updating of the Range operators, as well as added the ternary ?? !! operator to Rakudo.
+</p>
+
+<p>Olivier Mengu&eacute; (dolmen) supplied patches to add the .perl method to Bool and Range types.
+</p>
+
+<p>Chromatic has been cleaning up a lot of IMCC issues, improving constant string handling, and otherwise applying tons of patches to Parrot.  Right now Parrot has 658 outstanding tickets -- we're hoping that can go below 650 by Tuesday's Parrot release.
+</p>
+
+<p>Allison, chromatic, and I had a discussion about adding new branch opcodes to Parrot that PGE can use in lieu of bsr/ret for local subroutines.  We came up with the "push and branch/jump" and "pop and branch/return" opcodes.  These work like bsr/ret, but instead of using Parrot's internal control stack they allow the user to provide a stack such as ResizableIntegerArray, which can be much more efficient at storing and processing addresses.
+</p>
+
+<p>Coke struggled a bit with Tcl on Parrot, but managed to update it to use the new control exception types in Parrot (and that Rakudo and NQP are now using for their 'return' statements).
+</p>
+
+<p>I spent most of Saturday looking at trying to make a precompiled form of Rakudo's Test.pm script, so that we aren't re-compiling it upon each test execution.  But I ran into some snags having to do with :load/:init handling, so I've stepped back from that for a day or two to re-think it (and there's been plenty of other good things going on).
+</p>
+
+<p>Everyone at the hackathon seems to be having a terrific time, and we're getting lots done.  I know that this report misses a few people who were working on documentation -- I'll try to get details in my next post.
+</p>
+
+<p>Pm
+</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

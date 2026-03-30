@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: steps forward and back</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>steps forward and back</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-11-30T10:15:32</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Well, we take several steps forward and then one or two back.  Lots of good things happened today -- particle++ and Tene++ came up with some very helpful suggestions for inlining PIR directly into NQP blocks.  Of course, the trick to this is that whatever syntax we use needs to be parseable by Perl 6.<br/><br/>Perl 6's inlining mechanism is essentially eval(), which also provides a :lang<whatever> adverb to indicate the code being executed.  But somehow that feels more like a runtime function to me (compile and execute the string), whereas in NQP we really want some way of embedding the code directly into a subroutine.<br/><br/>After much discussion we've decided on a 'PIR' function (or maybe 'pir') with an argument of a quoted string.  So, one would be able to write things like:<br/><br/>    PIR <load_bytecode 'Module.pbc'>;     # insert a single PIR statement<br/><br/>    PIR q:to:'END';
+        load_bytecode 'PGE.pbc'
+        say 'Module.pbc loaded successfully'
+        $P0 = get_global '$foo'
+        say $P0
+    END<br/><br/>To a normal Perl 6 compiler, these would look like simple calls to a function named "PIR", so it's still valid Perl 6 syntax, and might even do something useful in a real Perl 6 compiler.  But for NQP we can just parse the above as specialized statements in the language, the same way that make() is being handled as a specialized statement.<br/><br/>Of course, NQP doesn't support a true heredoc syntax yet -- that's a bit tricky to write and was the topic of much discussion today.  However, we don't need a full heredoc syntax -- we can just have the PIR "statement" recognize the q:to:... form directly and parse the subsequent lines as part of the statement.  Particle and I even hashed out a few regexes for it.  Handling inline PIR blocks this way is a bit of a cheat, yes, but that's partially what NQP is for.<br/><br/>The end result of this is that we could end up using NQP for nearly *all* of the compiler components -- including the builtins.  We just write normal Perl 6 subs, and then embed PIR in those places where Perl 6 isn't up to the task yet (e.g., when bootstrapping or for primitives).  For example, the definition of an abs() function can initially be something like:<br/><br/>    sub abs($x) {
+        PIR q:to:'END';
+            $P0 = find_lex '$x'
+            $P0 = abs $P0
+            .return ($P0)
+        END
+    }<br/><br/>The other big improvement of the day was refactoring the Parrot Compiler Toolkit a bit to make it easier to load and to use only specific components of the toolkit.  Thanks to particle++, barney++, and PerlJam++ for suggesting this.  Most compilers can simply include the 'PCT.pbc' module; but compilers that just want PAST/POST without the grammar components can load 'PCT/PAST.pbc'.  Much cleaner.<br/><br/>Working on these also led to the delays of the day -- the big one was a segfault that was showing up in Parrot at odd times while I was moving things around in PCT.  I kept finding that I was unable to get 'make test' to run all the way through so I could confidently commit my changes -- lost a lot of time tracking it down to ccache, of all things.  Anyway, it's filed as RT#47970 and chromatic++ is looking at it.<br/><br/>The other delays come from Parrot needing some more improvements to its handling of lexical variables -- at the moment it doesn't know how to have a BEGIN sub with a nested lexical scope or methods inside of outer lexical scopes.  So, these are now posted as RT#47794 and RT#47956 so someone else can hack on them a bit.  In the meantime we have some temporary workarounds in PCT to keep this from stalling things completely.<br/><br/>Lastly, tonight I used the information gleaned from the day to class declarations in NQP to actually construct the class.  We don't have instance attributes yet or inheritance, but having NQP automatically create the classes means less for us to manually code in PIR.<br/><br/>Anyway, it's late again and I need some rest.  Tomorrow we'll probably work on inline PIR support in NQP, and then start to work on migrating perl6 to its new NQP-based implementation.  And we need to update more todo documents, status documents, and planning notions.<br/><br/>Pm
+</p>
+
+
+<hr/>
+
+
+
+<h2>thanks</h2>
+<h3><a href="/user/markjugg/">markjugg</a> on 2007-12-02T01:14:14</h3>
+Thanks for the update. It's nice to hear what's going on with the progress on Perl 6, and I look forward to playing this incarnation.<br><br>
+&nbsp; &nbsp; Mark
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

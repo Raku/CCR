@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Perl 6, Perl 1, PHP, Python, mod_parrot, Parrot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Perl 6, Perl 1, PHP, Python, mod_parrot, Parrot</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-12-11T17:00:33</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>More and more interesting things are happening in the Parrot world -- it's hard to keep up.  Here's a laundry list of things that have happened since my last journal post.<br/><br/>* In perl6, Jerry Gay and I have re-enabled arrays, try blocks, testing for defined values, if/unless statement modifiers, booleans, ranges, and a whole lot more.  More details about perl6 in an upcoming post.<br/><br/>* Last week I had to go out of town on business for a day, but while I was on the planes I was able to convert the fledgling Python on Parrot compiler ("pynie") to use NQP and the compiler toolkit.  This reduces the compiler to using only 473 lines of PIR, including comments -- the rest is all written in Perl 6 (809 lines).<br/><br/>* Bernhard Schmalhofer has been updating the PHP on Parrot implementation ("Plumhead") to use PCT, and then he and Jeff Horwitz surprised us all with <a href='http://www.smashing.org/jeff/node/24'>PHP running in mod_parrot</a> !<br/><br/>* Jerry Gay is also making great progress in updating the Perl 1 compiler ("punie") to be written in NQP+PCT instead of PIR... in fact, as I write this he has just merged his development branch back into the trunk ( languages/punie/ ).  Yay!  Punie is also passing some TODO tests that weren't passing in the previous version.  Yay again!<br/><br/>* There have been a lot of minor improvements to the compiler toolkit, especially in the area of error reporting and the overall API.  More will undoubtedly come as we continue to explore the compiler space.<br/><br/>For any interested C programmers out there, I think that a patch for <a href='http://rt.perl.org/rt3/Ticket/Display.html?id=47992'>RT#47992</a> would be very appreciated.  I wouldn't think this would require a lot of knowledge of parrot internals -- just some changes to Parrot's command-line argument handling.<br/><br/>For Perl (5) hackers, the language implementors on Parrot could really use some improvements to the test harness(es).  Right now several languages (perl6, punie, pynie, pheme) are able to implement their own 'make test' target, but we don't have a good way to incorporate those into Parrot's top-level 'make languages-test' or 'make languages-smoke' targets.  It has to do with the fact that the test files for each language aren't written in Perl 5 (the harness is, but not the individual tests).  In October Colin Kuskie and a few others were working on this issue under the "unified-testing" branch, but that seems to have stalled.  With compiler and language development accelerating it would be really good to see that effort picked up again.<br/><br/>Finally, a brief note that every Tuesday at 18:30 UTC the Parrot committers hold an online status meeting on irc.perl.org/#parrotsketch .  Observers are welcome to attend, and the logs of the meetings are archived at <url:http://www.parrotcode.org/misc/parrotsketch.html> .<br/><br/>Pm</p>
+
+
+<hr/>
+
+
+
+<h2>Progress</h2>
+<h3><a href="/user/markjugg/">markjugg</a> on 2007-12-11T21:41:17</h3>
+The progress continues!<br><br>Thanks for the update, Patrick.
+
+
+
+<blockquote>
+
+<h2>Re:Progress</h2>
+<h3><a href="/user/davegaramond/">davegaramond</a> on 2007-12-12T17:02:34</h3>
+Indeed. These last two months are really interesting. Go Patrick and Parrot team!
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

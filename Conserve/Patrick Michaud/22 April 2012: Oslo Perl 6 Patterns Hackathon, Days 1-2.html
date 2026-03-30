@@ -1,0 +1,338 @@
+https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<title>Oslo Perl 6 Patterns Hackathon, Days 1-2 | Pmthium</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://pmthium.com/wp/wp-content/themes/pmthium-1/style.css" />
+<link rel="pingback" href="https://pmthium.com/wp/xmlrpc.php" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="Pmthium &raquo; Feed" href="https://pmthium.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Pmthium &raquo; Comments Feed" href="https://pmthium.com/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Pmthium &raquo; Oslo Perl 6 Patterns Hackathon, Days 1-2 Comments Feed" href="https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/pmthium.com\/wp\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.7.29"}};
+			!function(t,a,e){var r,n,i,o=a.createElement("canvas"),l=o.getContext&&o.getContext("2d");function c(t){var e=a.createElement("script");e.src=t,e.defer=e.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(e)}for(i=Array("flag","emoji4"),e.supports={everything:!0,everythingExceptFlag:!0},n=0;n<i.length;n++)e.supports[i[n]]=function(t){var e,a=String.fromCharCode;if(!l||!l.fillText)return!1;switch(l.clearRect(0,0,o.width,o.height),l.textBaseline="top",l.font="600 32px Arial",t){case"flag":return(l.fillText(a(55356,56826,55356,56819),0,0),o.toDataURL().length<3e3)?!1:(l.clearRect(0,0,o.width,o.height),l.fillText(a(55356,57331,65039,8205,55356,57096),0,0),e=o.toDataURL(),l.clearRect(0,0,o.width,o.height),l.fillText(a(55356,57331,55356,57096),0,0),e!==o.toDataURL());case"emoji4":return l.fillText(a(55357,56425,55356,57341,8205,55357,56507),0,0),e=o.toDataURL(),l.clearRect(0,0,o.width,o.height),l.fillText(a(55357,56425,55356,57341,55357,56507),0,0),e!==o.toDataURL()}return!1}(i[n]),e.supports.everything=e.supports.everything&&e.supports[i[n]],"flag"!==i[n]&&(e.supports.everythingExceptFlag=e.supports.everythingExceptFlag&&e.supports[i[n]]);e.supports.everythingExceptFlag=e.supports.everythingExceptFlag&&!e.supports.flag,e.DOMReady=!1,e.readyCallback=function(){e.DOMReady=!0},e.supports.everything||(r=function(){e.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",r,!1),t.addEventListener("load",r,!1)):(t.attachEvent("onload",r),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&e.readyCallback()})),(r=e.source||{}).concatemoji?c(r.concatemoji):r.wpemoji&&r.twemoji&&(c(r.twemoji),c(r.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-content/plugins/google-analyticator/external-tracking.min.js?ver=6.5.2'></script>
+<link rel='https://api.w.org/' href='https://pmthium.com/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://pmthium.com/wp/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://pmthium.com/wp/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='FLL: Matching LEGO wheels' href='https://pmthium.com/2012/02/wheels/' />
+<link rel='next' title='Roborama 2012a' href='https://pmthium.com/2012/05/roborama-2012a/' />
+<meta name="generator" content="WordPress 4.7.29" />
+<link rel="canonical" href="https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/" />
+<link rel='shortlink' href='https://pmthium.com/?p=230' />
+<link rel="alternate" type="application/json+oembed" href="https://pmthium.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fpmthium.com%2F2012%2F04%2Foslo-perl-6-patterns-hackathon-days-1-2%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://pmthium.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fpmthium.com%2F2012%2F04%2Foslo-perl-6-patterns-hackathon-days-1-2%2F&#038;format=xml" />
+<link rel="stylesheet" type="text/css" href="https://pmthium.com/wp/wp-content/plugins/wp-recaptcha/recaptcha.css" /><!-- Google Analytics Tracking by Google Analyticator 6.5.2: http://www.videousermanuals.com/google-analyticator/ -->
+<script type="text/javascript">
+    var analyticsFileTypes = [''];
+    var analyticsSnippet = 'disabled';
+    var analyticsEventTracking = 'enabled';
+</script>
+<script type="text/javascript">
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-21075795-1', 'auto');
+ 
+	ga('send', 'pageview');
+</script>
+</head>
+
+<body class="post-template-default single single-post postid-230 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="https://pmthium.com/" title="Pmthium" rel="home">Pmthium</a>
+					</span>
+				</div>
+				<div id="site-description">The Pm element</div>
+
+										<img src="https://pmthium.com/wp/wp-content/uploads/2011/02/pmthium-1.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+								<div class="menu"><ul>
+<li ><a href="https://pmthium.com/">Home</a></li><li class="page_item page-item-2"><a href="https://pmthium.com/about/">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="https://pmthium.com/2012/02/wheels/" rel="prev"><span class="meta-nav">&larr;</span> FLL: Matching LEGO wheels</a></div>
+					<div class="nav-next"><a href="https://pmthium.com/2012/05/roborama-2012a/" rel="next">Roborama 2012a <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-230" class="post-230 post type-post status-publish format-standard hentry category-uncategorized">
+					<h1 class="entry-title">Oslo Perl 6 Patterns Hackathon, Days 1-2</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">Posted on</span> <a href="https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/" title="00:41" rel="bookmark"><span class="entry-date">2012/04/22</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="https://pmthium.com/author/admin/" title="View all posts by pmichaud">pmichaud</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>For the past couple of days I&#8217;ve been in Oslo, Norway, attending the <a title="Perl 6 Patterns Hackathon" href="https://gist.github.com/1711730">Perl 6 Patterns Hackathon</a> sponsored by <a title="Oslo Perl Mongers" href="http://oslo.pm.org/">Oslo Perl Mongers</a>, Jan Ingvoldstad IT, and NUUG Foundation. A lot of things are happening at the hackathon, as you&#8217;ll see below.</p>
+<p>First, Oslo itself is every bit as nice as I remember from attending the <a title="Nordic Perl Workshop 2009" href="http://www.perlworkshop.no/npw2009/">Nordic Perl Workshop</a> in 2009 (and another hackathon that took place then). And once again, the hackathon organizers (Jan, Karl, Salve) &#8212; have done an amazing job in making sure that all of us at this hackathon can remain productive at working on Perl 6 as well as having a good time while we&#8217;re here. The food, facilities, and hospitality have been outstanding.</p>
+<p>moritz++ and jnthn++ have already <a href="http://perlgeek.de/blog-en/perl-6/2012-oslo-hackathon-report.html">blogged</a> <a href="http://6guts.wordpress.com/2012/04/21/hackathoning-in-oslo/">about</a> their work thus far at the hackathon; here are a few other things that have taken place while we&#8217;re here:</p>
+<p>* Friday morning I noticed in the latest Rakudo compiler release notes that autovivification of hashes and arrays still wasn&#8217;t fully implemented in the nom version of Rakudo. So, I spent a bit of time early Friday confirming with jnthn++ and masak++ about some autovivification edge cases, and then implemented the rest of what we need from autoviv. So, that&#8217;s an important feature restored.</p>
+<p>* jnthn++ worked on getting the :i (:ignorecase) flag working for interpolated literals in regexes; I helped a bit with that, but in the process noticed just how bad things were for people who had Parrot compiled without ICU. There were lots of failing spec tests and problems with doing case-insensitive regexes matches, even for simple strings. The crux of the problem was that Parrot simply threw exceptions for case conversions of several Unicode encodings whenver ICU was present, even if the strings involved had only ASCII or Latin-1 characters.  I noticed that this problem affected several of the people attending the hackathon today (including jnthn++), so I decided it could not be allowed to live.  So, I added a patch to Parrot that enables more case conversions when ICU isn&#8217;t present, as long as all of the codepoints involved are in ASCII or Latin-1 (which the majority of them are). If ICU is present, Parrot continues to use ICU, but if ICU isn&#8217;t available, Parrot is at least able to handle case conversions for most of the strings we encounter.</p>
+<p>* We had a lot of relative newcomers to Perl 6 today,  masak++ took some time to give them all an excellent tour of <a title="Perl 6 website" href="http://perl6.org/">the Perl 6 universe</a>.  Based on masak&#8217;s introduction, several of today&#8217;s attendees were able to quickly start contributing some very useful additions to Perl 6 and Rakudo.</p>
+<p>* Marcus Ramberg vastly improved the &#8220;-h&#8221; option to the Rakudo executable, listing many more of the available and useful options. Then Marcus and tadzik++ fixed up the &#8220;&#8211;doc&#8221; option as well, which extracts documentation from the program code and displays it in a readable form.</p>
+<p>* masak++ stumbled across a bug involving comparisons of Pair objects with uninitialized variables; we ultimately tracked it down to an issue of comparing things against +Inf and -Inf. A couple of short patches fixed that problem.</p>
+<p>* Geir Amdal added some methods to IO to retrieve file stat times from the operating system. We had these method in the Beijing release but they had not yet been ported to nom &#8212; it&#8217;s good to have them back.</p>
+<p>* Salve (sjn++) and several other hackers started a project of developing a much better set of reviewed examples for newcomers to examine. I pointed out the <a title="Perl 6 examples on github" href="https://github.com/perl6/perl6-examples">perl6-examples</a> repository (which hasn&#8217;t had updates in quite a long time) and suggested they work on adopting/reorganizing it. At sjn&#8217;s suggestion, moritz++ added the push hooks so that commits to perl6-examples show up on the #perl6 channel, and throughout the day we were all treated to seeing improvements to the existing examples and hearing very useful comments about what the folks were seeing and experiencing there.</p>
+<p>* sjn++ also asked about how one would determine the Rakudo version number from within a program; while that information has been somewhat available via $*PERL&lt;version&gt;; it wasn&#8217;t really in a useful form. So, late this evening I reworked the implementation of $*PERL somewhat so that it&#8217;s possible to determine the compiler, compiler version, compiler release number, and other information. moritz++ also at one point needed a way to determine the version of nqp being used to build Rakudo; I didn&#8217;t add it yet but will squeeze that in tomorrow. I&#8217;m not entirely happy with the way $*PERL is set up now; hopefully we can get some design and specification clarifications for it soon. At any rate, compiler version information is now available to programs to examine.</p>
+<p>* On a related note, while reviewing version number information in Synopsis 2 I noticed that there&#8217;s a Version class we don&#8217;t yet implement &#8212; it doesn&#8217;t seem too hard to add so I may prototype one tomorrow.</p>
+<p>* jnthn++ and I were able to spend some much needed time plotting out the next moves for the AST implementation, currently called QAST. QAST is part of the nqp implementation, and is the successor to PAST (part of the Parrot repository). Some of the refactors we&#8217;ll be able to make in QAST look like they will enable huge improvements in speed, readbility, and writability of compilers in NQP. (See <a href="http://6guts.wordpress.com/2012/04/21/hackathoning-in-oslo/">jnthn++&#8217;s blog post</a> for more details on QAST.)</p>
+<p>There&#8217;s of course much more that happened, including many bug fixes and improvements, but those are some of the bigger items. I&#8217;m hoping to find some time tomorrow to chase down some largish bugs in Rakudo&#8217;s regular expression engine, to ease the pain further for others. I think we may also have a discussion about Rakudo&#8217;s List implementation and its features and next steps.</p>
+<p>My thanks again to Salve, Jan, and Karl for organizing this hackathon &#8212; it has really enabled us to resolve some long standing issues and make good plans for the next phases of development.</p>
+<p>Pm</p>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						This entry was posted in <a href="https://pmthium.com/category/uncategorized/" rel="category tag">Uncategorized</a>. Bookmark the <a href="https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/" title="Permalink to Oslo Perl 6 Patterns Hackathon, Days 1-2" rel="bookmark">permalink</a>.											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="https://pmthium.com/2012/02/wheels/" rel="prev"><span class="meta-nav">&larr;</span> FLL: Matching LEGO wheels</a></div>
+					<div class="nav-next"><a href="https://pmthium.com/2012/05/roborama-2012a/" rel="next">Roborama 2012a <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">One Response to <em>Oslo Perl 6 Patterns Hackathon, Days 1-2</em></h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-2370">
+		<div id="comment-2370">
+			<div class="comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/916bcaf0f8dbf1a198589096b293c603?s=40&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/916bcaf0f8dbf1a198589096b293c603?s=80&amp;d=mm&amp;r=g 2x' class='avatar avatar-40 photo' height='40' width='40' />				<cite class="fn"><a href='http://thenceforward.net/parrot/' rel='external nofollow' class='url'>Jim Keenan</a></cite> <span class="says">says:</span>			</div><!-- .comment-author .vcard -->
+			
+			<div class="comment-meta commentmetadata"><a href="https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/#comment-2370">
+				2012/04/24 at 02:25</a>			</div><!-- .comment-meta .commentmetadata -->
+
+			<div class="comment-body"><p>On <a href="http://irclog.perlgeek.de/parrot/2012-04-21#i_5474425" rel="nofollow">IRC</a> on April 20 I saw:</p>
+<blockquote><p><i><br />
+parrot: f983396 | pmichaud++ | / (2 files):<br />
+</i></p></blockquote>
+<p>&#8230; and was I ever glad to see that handle again!</p>
+<p>Jim Keenan</p>
+</div>
+
+			<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/?replytocom=2370#respond' onclick='return addComment.moveForm( "comment-2370", "2370", "respond", "230" )' aria-label='Reply to Jim Keenan'>Reply</a>			</div><!-- .reply -->
+		</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+	
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/#respond" style="display:none;">Cancel reply</a></small></h3>			<form action="https://pmthium.com/wp/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" aria-required="true" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='230' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="da12c312b9" /></p>                <script type='text/javascript'>
+                    var RecaptchaOptions = { theme : 'red', lang : 'en' , tabindex : 5 };
+                </script><script type="text/javascript" src="https://www.google.com/recaptcha/api/challenge?k=6LeQI9MSAAAAAC2dGUcrFgLvU0LveGjdGUEvio-a"></script>
+
+	<noscript>
+  		<iframe src="https://www.google.com/recaptcha/api/noscript?k=6LeQI9MSAAAAAC2dGUcrFgLvU0LveGjdGUEvio-a" height="300" width="500" frameborder="0"></iframe><br/>
+  		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
+	</noscript>                        <div id="recaptcha-submit-btn-area">&nbsp;</div>
+                        <noscript>
+                         <style type='text/css'>#submit {display:none;}</style>
+                         <input name="submit" type="submit" id="submit-alt" tabindex="6" value="Submit Comment"/> 
+                        </noscript><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="121"/></p>			</form>
+			</div><!-- #respond -->
+	
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+
+<li id="search-2" class="widget-container widget_search"><form role="search" method="get" id="searchform" class="searchform" action="https://pmthium.com/">
+				<div>
+					<label class="screen-reader-text" for="s">Search for:</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="Search" />
+				</div>
+			</form></li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">Recent Posts</h3>		<ul>
+					<li>
+				<a href="https://pmthium.com/2015/02/suspending-rakudo-parrot/">Suspending Rakudo support for Parrot</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2014/10/apw2014/">APW2014 and the Rakudo Great List Refactor</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/">A Perl 6 developer&#8217;s reply to a Russian Perl Podcast</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2012/09/a-rakudo-performance/">A Rakudo Performance</a>
+						</li>
+					<li>
+				<a href="https://pmthium.com/2012/05/roborama-2012a/">Roborama 2012a</a>
+						</li>
+				</ul>
+		</li>		<li id="nav_menu-3" class="widget-container widget_nav_menu"><h3 class="widget-title">Related sites</h3><div class="menu-other-sites-container"><ul id="menu-other-sites" class="menu"><li id="menu-item-273" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-273"><a href="http://modelscoutrobotics.org/">Model Scout Robotics</a></li>
+<li id="menu-item-276" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-276"><a href="http://perl6.org/">Perl 6</a></li>
+<li id="menu-item-271" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-271"><a href="http://perlweekly.com/">Perl Weekly</a></li>
+<li id="menu-item-272" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-272"><a href="http://perl6maven.com/">Perl 6 Maven</a></li>
+<li id="menu-item-274" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-274"><a href="http://pmwiki.org/">PmWiki</a></li>
+</ul></div></li>
+<!-- Quick Adsense Wordpress Plugin: http://quicksense.net/ -->
+<li id="adswidget1-quick-adsense" class="widget-container  lambda_1">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-2896276000075357";
+/* pmthium-600w */
+google_ad_slot = "4343149604";
+google_ad_width = 160;
+google_ad_height = 600;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</li><li id="recent-comments-2" class="widget-container widget_recent_comments"><h3 class="widget-title">Recent Comments</h3><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link"><a href='https://www.csrgardens.in/sites/default/files/webform/Buy%20Atarax%2010%20mg,%2025%20mg%20online.html' rel='external nofollow' class='url'>Buy Atarax 10 mg, 25 mg online</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2013327">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='https://kaalama.org/read-blog/195793' rel='external nofollow' class='url'>как избавиться от чувства вины</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2011724">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='http://1190.bicyclesonthemoon.info/ott2/redirect?f=https://sway.office.com/7EaFL50sPMxn99sC' rel='external nofollow' class='url'>как избавиться от чувства вины и стыда</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2009503">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='https://techplanet.today/post/kak-izbavitsya-ot-trevoznosti-samostoyatelno-tabletki-protiv-trevogi#1' rel='external nofollow' class='url'>Как избавиться от страха и чувства тревоги, беспокойства без причины и стресса</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2005989">APW2014 and the Rakudo Great List Refactor</a></li><li class="recentcomments"><span class="comment-author-link"><a href='http://11qq.ru/go?https://techplanet.today/post/kak-izbavitsya-ot-trevoznosti-samostoyatelno-tabletki-protiv-trevogi' rel='external nofollow' class='url'>как избавиться от тревоги самостоятельно таблетки</a></span> on <a href="https://pmthium.com/2014/10/apw2014/#comment-2005937">APW2014 and the Rakudo Great List Refactor</a></li></ul></li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">Archives</h3>		<ul>
+			<li><a href='https://pmthium.com/2015/02/'>February 2015</a></li>
+	<li><a href='https://pmthium.com/2014/10/'>October 2014</a></li>
+	<li><a href='https://pmthium.com/2013/06/'>June 2013</a></li>
+	<li><a href='https://pmthium.com/2012/09/'>September 2012</a></li>
+	<li><a href='https://pmthium.com/2012/05/'>May 2012</a></li>
+	<li><a href='https://pmthium.com/2012/04/'>April 2012</a></li>
+	<li><a href='https://pmthium.com/2012/02/'>February 2012</a></li>
+	<li><a href='https://pmthium.com/2011/08/'>August 2011</a></li>
+	<li><a href='https://pmthium.com/2011/07/'>July 2011</a></li>
+	<li><a href='https://pmthium.com/2011/06/'>June 2011</a></li>
+	<li><a href='https://pmthium.com/2011/02/'>February 2011</a></li>
+	<li><a href='https://pmthium.com/2011/01/'>January 2011</a></li>
+		</ul>
+		</li><li id="categories-2" class="widget-container widget_categories"><h3 class="widget-title">Categories</h3>		<ul>
+	<li class="cat-item cat-item-9"><a href="https://pmthium.com/category/android/" >android</a>
+</li>
+	<li class="cat-item cat-item-21"><a href="https://pmthium.com/category/fll/" >fll</a>
+</li>
+	<li class="cat-item cat-item-22"><a href="https://pmthium.com/category/lego/" >lego</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="https://pmthium.com/category/linux/" >linux</a>
+</li>
+	<li class="cat-item cat-item-23"><a href="https://pmthium.com/category/northtexasfll/" >northtexasfll</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="https://pmthium.com/category/nqp/" >nqp</a>
+</li>
+	<li class="cat-item cat-item-8"><a href="https://pmthium.com/category/parrot/" >parrot</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="https://pmthium.com/category/perl6/" >perl6</a>
+</li>
+	<li class="cat-item cat-item-13"><a href="https://pmthium.com/category/projects/" >projects</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="https://pmthium.com/category/rakudo/" >rakudo</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="https://pmthium.com/category/review/" >review</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="https://pmthium.com/category/robotics/" >robotics</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="https://pmthium.com/category/uncategorized/" >Uncategorized</a>
+</li>
+		</ul>
+</li>
+<!-- Quick Adsense Wordpress Plugin: http://quicksense.net/ -->
+<li id="adswidget2-quick-adsense" class="widget-container  lambda_2">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-2896276000075357";
+/* pmthium-200 */
+google_ad_slot = "4170547563";
+google_ad_width = 200;
+google_ad_height = 200;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</li><li id="meta-2" class="widget-container widget_meta"><h3 class="widget-title">Meta</h3>			<ul>
+						<li><a href="https://pmthium.com/wp/wp-login.php">Log in</a></li>
+			<li><a href="https://pmthium.com/feed/">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://pmthium.com/comments/feed/">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>			</ul>
+			</li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="https://pmthium.com/" title="Pmthium" rel="home">
+					Pmthium				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.org/" title="Semantic Personal Publishing Platform">Proudly powered by WordPress.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+                <script type="text/javascript">
+                var sub = document.getElementById('submit');
+                document.getElementById('recaptcha-submit-btn-area').appendChild (sub);
+                document.getElementById('submit').tabIndex = 6;
+                if ( typeof _recaptcha_wordpress_savedcomment != 'undefined') {
+                        document.getElementById('comment').value = _recaptcha_wordpress_savedcomment;
+                }
+                document.getElementById('recaptcha_table').style.direction = 'ltr';
+                </script><script type='text/javascript' src='https://pmthium.com/wp/wp-content/plugins/akismet/_inc/form.js?ver=3.3'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/comment-reply.min.js?ver=4.7.29'></script>
+<script type='text/javascript' src='https://pmthium.com/wp/wp-includes/js/wp-embed.min.js?ver=4.7.29'></script>
+</body>
+</html>

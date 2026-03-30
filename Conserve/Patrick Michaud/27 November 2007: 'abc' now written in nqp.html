@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: 'abc' now written in nqp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>'abc' now written in nqp</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2007-11-27T06:56:59</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>Well, after a long and very fruitful day of hacking, the 'abc' compiler in Parrot is now written mostly in PGE and NQP, with all tests passing.<br/><br/>'abc' is an implementation of a basic calculator (like the unix bc(1) command) for Parrot.  While abc does support a lot of bc features, the primary purpose of abc is to serve as a simple example and tutorial of using the various Parrot toolkits to build compilers for Parrot.<br/><br/>Previously abc was written using a mixture of tools using a variety of languages.  After today's efforts abc is now written with only
+* a Perl 6 grammar (src/grammar.pg), 
+* some NQP code to build an ast from the parse tree (src/grammar-actions.pg)
+* the Parrot Compiler Toolkit library (PCT)
+* and some PIR for setup and builtin functions (abc.pir, src/builtins.pir)<br/><br/>In other words, the bulk of the code for the abc compiler is written in Perl 6.<br/><br/>With this we've been able to basically prove the workability of NQP and the Parrot Compiler Toolkit, and the next step is to start redesigning the perl6 compiler to use the same approach.<br/><br/>I also need to add a lot of documentation to the abc source files, to make it clearer as to what is happening at each step.  But I think that will have to wait for me to get some sleep first.<br/><br/>Pm</p>
+
+
+<hr/>
+
+
+
+<h2>Link</h2>
+<h3><a href="/user/mj41/">mj41</a> on 2007-11-27T16:44:10</h3>
+<a href="https://svn.perl.org/parrot/trunk/languages/abc" title="perl.org">abc src directory</a perl.org>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

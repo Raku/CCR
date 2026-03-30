@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo Perl development release #15 (&quot;Oslo&quot;)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Perl development release #15 (&quot;Oslo&quot;)</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2009-03-20T17:23:56</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p><p>On behalf of the Rakudo development team, I'm pleased to announce
+the March 2009 development release of Rakudo Perl #15 "Oslo".
+Rakudo is an implementation of Perl 6 on the Parrot Virtual Machine [1].
+The tarball for the March 2009 release is available from <url:http://www.pmichaud.com/perl6/rakudo-2009-03.tar.gz></p>
+
+<p>However, because of the rapid pace of Rakudo development and addition
+of new features, we still recommend that people wanting to use or work
+with Rakudo obtain the latest version directly from the main repository
+at github -- more on this in a bit.
+</p>
+
+<p>Rakudo Perl follows a monthly release cycle, with each release code named 
+after a Perl Mongers group.  This release is named "Oslo" in honor of 
+the organizers of the <a href='http://www.perlworkshop.no/npw2009/'>2009 Nordic Perl Workshop</a> [2], April 16-17, 2009.  
+The 2009 Nordic Perl Workshop will have a special focus on Perl 6, 
+Rakudo Perl, and Parrot, including Perl 6 tutorials and hackathons 
+after the conference itself.
+</p>
+
+<p>A list of the other planned release dates and codenames for 2009 is 
+available in the "docs/release_guide.pod" file.  In general, Rakudo 
+development releases are scheduled to occur two days after each 
+Parrot monthly release.  Parrot releases the third Tuesday of each month.
+</p>
+
+<p>Rakudo Perl now uses git [3] for its version control system, hosted 
+at <a class='urllink' href='http://github.com/rakudo/rakudo' rel='nofollow'>http://github.com/rakudo/rakudo</a> .  The README file there is kept 
+up-to-date with the latest instructions for obtaining and building 
+Rakudo Perl.
+</p>
+
+<p>In this release of Rakudo Perl, we've made the following major changes
+and improvements:
+</p>
+<ul><li>Rakudo is now passing 7273 spectests.  This is an increase of 197 
+passing tests since the February 2009 release.
+</li><li>The eval() construct now understands lexical variables from an
+outer scope.
+</li><li>More of the builtin functions ("settings") are being written in Perl 6.
+</li><li>Rakudo supports the "R" (reverse) metaoperator.
+</li><li>Parsing of if, unless, while, until, etc. statements after blocks
+now works correctly.
+</li><li>The Q quote operator is now implemented, along with several adverbial
+forms.  In particular, the Q:PIR form allows inline PIR to be
+included in Perl 6 code.
+</li><li>Multi-method dispatch now works with inheritance also.
+</li></ul>
+<p>The development team thanks all of our contributors and sponsors for
+making Rakudo Perl possible.  The next release of Rakudo (#16) is
+scheduled for April 23, 2009.
+</p>
+
+<p>References:
+<br  />[1]  Parrot, <a class='urllink' href='http://parrot.org/' rel='nofollow'>http://parrot.org/</a>
+<br  />[2]  Nordic Perl Workshop 2009, <a class='urllink' href='http://www.perlworkshop.no/npw2009/' rel='nofollow'>http://www.perlworkshop.no/npw2009/</a>
+<br  />[3]  Git version control system, <a class='urllink' href='http://git-scm.org/' rel='nofollow'>http://git-scm.org/</a>
+</p>
+</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

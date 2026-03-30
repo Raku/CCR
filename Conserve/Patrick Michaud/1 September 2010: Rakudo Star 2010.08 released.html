@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>use.perl.org journal of pmichaud: Rakudo Star 2010.08 released</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the
+bottom of the topbar */
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script
+src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse"
+data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/"><img src="/static/img/slashhead.png"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/authors/">Authors</a></li>
+              <li><a href="/journals/">Journals</a></li>
+              <li><a href="/stories/">Stories</a></li>
+            </ul>
+            <p class="navbar-text">All the Perl that's Practical to Extract and Report</p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+
+<div class="container">
+
+<div class="row">
+
+<div class="span4">
+<h1>Rakudo Star 2010.08 released</h1>
+<h2><a href="/user/pmichaud/">pmichaud</a> on 2010-09-01T12:36:56</h2>
+</div> <!-- /span4 -->
+
+
+<div class="span8">
+<p>[This announcement was made last week on rakudo.org -- I'm reposting to use.perl.org so it will show up in the various Perl aggregators. --Pm]<br/><br/>On behalf of the Rakudo and Perl 6 development teams, I'm happy to announce the August 2010 release of "Rakudo Star", a useful and usable distribution of Perl 6. The tarball for the August 2010 release is available from <url:http://github.com/rakudo/star/downloads>.<br/><br/>Rakudo Star is aimed at "early adopters" of Perl 6. We know that it still has some bugs, it is far slower than it ought to be, and there are some advanced pieces of the Perl 6 language specification that aren't implemented yet. But Rakudo Perl 6 in its current form is also proving to be viable (and fun) for developing applications and exploring a great new language. These "Star" releases are intended to make Perl 6 more widely available to programmers, grow the Perl 6 codebase, and gain additional end-user feedback about the Perl 6 language and Rakudo's implementation of it.<br/><br/>In the Perl 6 world, we make a distinction between the language ("Perl 6") and specific implementations of the language such as "Rakudo Perl". The August 2010 Star release includes release #32 of the Rakudo Perl 6 compiler [1], version 2.7.0 of the Parrot Virtual Machine [2], and various modules, documentation, and other resources collected from the Perl 6 community.<br/><br/>This release of Rakudo Star adds the following features over the previous Star release:
+* Nil is now undefined
+* Many regex modifiers are now recognized on the outside of regexes
+* Mathematic and range operations are now faster (they're still slow, but they're significantly faster than they were in the previous release)
+* Initial implementations of .pack and .unpack
+* MAIN can parse short arguments
+* Removed a significant memory leak for loops and other repeated blocks<br/><br/>This release (temporarily?) omits the Config::INI module that was included in the 2010.07 release, as it no longer builds with the shipped version of Rakudo. We hope to see Config::INI return soon.<br/><br/>There are some key features of Perl 6 that Rakudo Star does not yet handle appropriately, although they will appear in upcoming releases. Thus, we do not consider Rakudo Star to be a "Perl 6.0.0" or "1.0" release. Some of the not-quite-there features include:
+* nested package definitions
+* binary objects, native types, pack and unpack
+* typed arrays
+* macros
+* state variables
+* threads and concurrency
+* Unicode strings at levels other than codepoints
+* pre and post constraints, and some other phasers
+* interactive readline that understands Unicode
+* backslash escapes in regex <[...]> character classes
+* non-blocking I/O
+* most of Synopsis 9
+* perl6doc or pod manipulation tools<br/><br/>In many places we've tried to make Rakudo smart enough to inform the programmer that a given feature isn't implemented, but there are many that we've missed. Bug reports about missing and broken features are welcomed.<br/><br/>See <url:http://perl6.org/> for links to much more information about Perl 6, including documentation, example code, tutorials, reference materials, specification documents, and other supporting resources. An updated draft of a Perl 6 book is available as <docs/UsingPerl6-draft.pdf> in the release tarball.<br/><br/>The development team thanks all of the contributors and sponsors for making Rakudo Star possible. If you would like to contribute, see <url:http://rakudo.org/how-to-help>, ask on the perl6-compiler@perl.org mailing list, or join us on IRC channel #perl6 on freenode.<br/><br/>Rakudo Star releases are created on a monthly cycle or as needed in response to important bug fixes or improvements. The next planned release of Rakudo Star will be on September 28, 2010.<br/><br/>[1] <url:http://github.com/rakudo/rakudo>
+[2] <url:http://parrot.org/></p>
+
+
+<hr/>
+
+
+
+<h2>rakudo.org RSS feed...</h2>
+<h3><a href="/user/bpphillips/">bpphillips</a> on 2010-09-01T13:25:06</h3>
+...has been broken for quite some time (in case you didn't know)
+
+
+
+<h2>Cygwin</h2>
+<h3><a href="/user/jdavidb/">jdavidb</a> on 2010-09-02T14:19:57</h3>
+<p>I saw Rakudo pop up as a new Cygwin package this week, and I was impressed.</p><p>My thanks to the entire team.</p>
+
+
+
+
+
+</div> <!-- /span8 -->
+
+</div> <!-- row -->
+</div> <!-- /container -->
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

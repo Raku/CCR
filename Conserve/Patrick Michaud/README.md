@@ -85,7 +85,7 @@ The conserved blog posts of Patrick Michaud:
 - [4 February 2011: Adding USB ports to my monitor](4 February 2011: Adding USB ports to my monitor.html)
 - [5 August 2009: Building a &quot;useful release of Perl 6&quot;](5 August 2009: Building a &quot;useful release of Perl 6&quot;.html)
 - [5 December 2007: Status of perl6 on Parrot, 2007-12-04](5 December 2007: Status of perl6 on Parrot, 2007-12-04.html)
-- [5 September 2009: Rakudo day: Rats, contextual variables, and %*ENV fixes](5 September 2009: Rakudo day: Rats, contextual variables, and %*ENV fixes.html)
+- [5 September 2009: Rakudo day: Rats, contextual variables, and %\*ENV fixes](5 September 2009: Rakudo day: Rats, contextual variables, and %*ENV fixes.html)
 - [7 February 2011: Incognito FTW](7 February 2011: Incognito FTW.html)
 - [8 February 2011: New NQP repository, new “nom” Rakudo branch](8 February 2011: New NQP repository, new “nom” Rakudo branch.html)
 - [8 July 2009: Seeking future Rakudo release managers](8 July 2009: Seeking future Rakudo release managers.html)

@@ -1,26 +1,5 @@
 Blog posts by "Patrick Michaud"
 
-https://pmthium.com/
-
-- [31 January 2011: NQP Roadmap 2011](https://pmthium.com/2011/01/nqp-roadmap-2011-01/)
-- [4 February 2011: Adding USB ports to my monitor](https://pmthium.com/2011/02/adding-usb-ports-to-my-monitor-2/)
-- [7 February 2011: Incognito FTW](https://pmthium.com/2011/02/incognito-ftw/)
-- [8 February 2011: New NQP repository, new “nom” Rakudo branch](ihttps://pmthium.com/2011/02/new-nqp-repository-new-nom-rakudo-branch/)
-- [28 Fabruary 2011: Review: Samsung Galaxy Tab Leather Notebook Case](https://pmthium.com/2011/02/review-samsung-galaxy-tab-leather-notebook-case/)
-- [14 June 2011: Rakudo (nom) reaches milestone — no more .pir files!](https://pmthium.com/2011/06/rakudo-nom-reaches-milestone-no-more-pir-files/)
-- [22 June 2011: Perl 6 lists, episode 1](https://pmthium.com/2011/06/perl-6-lists-episode-1/)
-- [27 June 2011: Lots of Rakudo-nom progress, starts to run spectests](https://pmthium.com/2011/06/lots-of-rakudo-nom-progress-starts-to-run-spectests/)
-- [2 July 2011: More nom features and spectests, still 5x faster than master](https://pmthium.com/2011/07/more-nom-features-and-spectests-still-5x-faster-than-master/)
-- [14 July 2011: New regex engine for nqp and nom, now passing 7K spectests](https://pmthium.com/2011/07/new-regex-engine-for-nqp-and-nom-now-passing-7k-spectests/)
-- [18 August 2011: Some thoughts on YAPC::EU 2011](https://pmthium.com/2011/08/ye2011-thoughts/)
-- [10 February 2012: FLL: Matching LEGO wheels](https://pmthium.com/2012/02/wheels/)
-- [22 April 2012: Oslo Perl 6 Patterns Hackathon, Days 1-2](https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/)
-- [28 May 2012: Roborama 2012a](https://pmthium.com/2012/05/roborama-2012a/)
-- [2 September 2012: A Rakudo Performance](https://pmthium.com/2012/09/a-rakudo-performance/)
-- [3 June 2013: A Perl 6 developer’s reply to a Russian Perl Podcast](https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/)
-- [15 October 2014: APW2014 and the Rakudo Great List Refactor](https://pmthium.com/2014/10/apw2014/)
-- [16 February 2015: Suspending Rakudo support for Parrot](https://pmthium.com/2015/02/suspending-rakudo-parrot/)
-
 https://use.perl.org
 
 - [26 November 2007: Perl 6 on Parrot Roadmap](https://use-perl.github.io/user/pmichaud/journal/34973/)
@@ -95,3 +74,24 @@ https://use.perl.org
 - [19 June 2010: Rakudo Star (a &quot;usable Perl 6&quot;) to be released by July 29](https://use-perl.github.io/user/pmichaud/journal/40407/)
 - [29 July 2010: Rakudo Star - an &quot;early adopter&quot; distribution of Perl 6](https://use-perl.github.io/user/pmichaud/journal/40469/)
 - [1 September 2010: Rakudo Star 2010.08 released](https://use-perl.github.io/user/pmichaud/journal/40518/)
+
+https://pmthium.com/
+
+- [31 January 2011: NQP Roadmap 2011](https://pmthium.com/2011/01/nqp-roadmap-2011-01/)
+- [4 February 2011: Adding USB ports to my monitor](https://pmthium.com/2011/02/adding-usb-ports-to-my-monitor-2/)
+- [7 February 2011: Incognito FTW](https://pmthium.com/2011/02/incognito-ftw/)
+- [8 February 2011: New NQP repository, new “nom” Rakudo branch](ihttps://pmthium.com/2011/02/new-nqp-repository-new-nom-rakudo-branch/)
+- [28 Fabruary 2011: Review: Samsung Galaxy Tab Leather Notebook Case](https://pmthium.com/2011/02/review-samsung-galaxy-tab-leather-notebook-case/)
+- [14 June 2011: Rakudo (nom) reaches milestone — no more .pir files!](https://pmthium.com/2011/06/rakudo-nom-reaches-milestone-no-more-pir-files/)
+- [22 June 2011: Perl 6 lists, episode 1](https://pmthium.com/2011/06/perl-6-lists-episode-1/)
+- [27 June 2011: Lots of Rakudo-nom progress, starts to run spectests](https://pmthium.com/2011/06/lots-of-rakudo-nom-progress-starts-to-run-spectests/)
+- [2 July 2011: More nom features and spectests, still 5x faster than master](https://pmthium.com/2011/07/more-nom-features-and-spectests-still-5x-faster-than-master/)
+- [14 July 2011: New regex engine for nqp and nom, now passing 7K spectests](https://pmthium.com/2011/07/new-regex-engine-for-nqp-and-nom-now-passing-7k-spectests/)
+- [18 August 2011: Some thoughts on YAPC::EU 2011](https://pmthium.com/2011/08/ye2011-thoughts/)
+- [10 February 2012: FLL: Matching LEGO wheels](https://pmthium.com/2012/02/wheels/)
+- [22 April 2012: Oslo Perl 6 Patterns Hackathon, Days 1-2](https://pmthium.com/2012/04/oslo-perl-6-patterns-hackathon-days-1-2/)
+- [28 May 2012: Roborama 2012a](https://pmthium.com/2012/05/roborama-2012a/)
+- [2 September 2012: A Rakudo Performance](https://pmthium.com/2012/09/a-rakudo-performance/)
+- [3 June 2013: A Perl 6 developer’s reply to a Russian Perl Podcast](https://pmthium.com/2013/06/a-perl-6-developers-reply-to-a-russian-perl-podcast/)
+- [15 October 2014: APW2014 and the Rakudo Great List Refactor](https://pmthium.com/2014/10/apw2014/)
+- [16 February 2015: Suspending Rakudo support for Parrot](https://pmthium.com/2015/02/suspending-rakudo-parrot/)

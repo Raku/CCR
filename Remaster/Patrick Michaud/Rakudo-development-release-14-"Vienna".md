@@ -1,0 +1,63 @@
+# Rakudo Perl development release #14 ("Vienna")
+    
+*Originally published on [27 February 2009](https://use-perl.github.io/user/pmichaud/journal/38562/) by Patrick Michaud.*
+
+On behalf of the Rakudo development team, I'm pleased to announce
+the February 2009 development release of Rakudo #14 "Vienna".
+Rakudo is an implementation of Raku on the Parrot Virtual Machine [1].
+The tarball for the February 2009 release is available.
+
+However, because of the rapid pace of Rakudo development and addition
+of new features, we still recommend that people wanting to use or work
+with Rakudo obtain the latest version directly from the main repository
+at github -- more on this in a bit.
+
+This is the fourteenth development release of Rakudo, but it's
+the first release independent from Parrot releases.  We will continue
+to follow a monthly release cycle, with each release to be code named
+after a Perl Mongers group.  This release is named for [Vienna.pm](https://vienna.pm.org),
+who have been sponsoring Jonathan Worthington's
+work on Rakudo since April 2008.  A list of the other planned release
+dates and codenames for 2009 is available in the "docs/release_guide.pod"
+file.  In general, Rakudo development releases are scheduled to occur
+two days after each Parrot monthly release.  Parrot releases the third
+Tuesday of each month.
+
+Rakudo Perl now uses git for its version control system, hosted 
+at [https://github.com/rakudo/rakudo](https://github.com/rakudo/rakudo).  The README file there is kept 
+up-to-date with the latest instructions for obtaining and building 
+Rakudo.
+
+In this release of Rakudo, we've made the following major changes
+and improvements:
+
+- Rakudo is now passing 7076 spectests.  This is an increase of 796
+passing tests since the January 2009 release.
+- The Configure.pl script supports a "--gen-parrot" option to
+automatically fetch and build the appropriate version of Parrot.
+- The default make target now builds a binary executable directly, either
+raku or raku.exe.  It's still a Parrot "fakecutable", but we think
+we've made it more reliable so that it doesn't generate segmentation
+faults on exits.  (If you don't know what a "fakecutable" is you can
+safely ignore this.)
+- Many builtins are beginning to be written in pure Raku, or Raku
+functions with inline PIR.  These builtins are part of the core
+"setting" for Raku, and appear in the src/setting/ directory.
+Previously this was known as the "prelude".
+- Improved Test.pm diagnostic output.
+
+
+Also, Rakudo now implements the following Raku features:
+
+- Anonymous classes may be specified using ::
+- Existing parameterized roles are now reused instead of creating new ones.
+- Roles pun a class when .new is invoked on them.
+- "proto" now marks all same-named routines as "multi".
+- "XopX" is now "Xop".
+- <-> (rw) pointy blocks.
+- min= and max= metaoperators.
+- Many many bugfixes and documentation improvements.
+
+The development team thanks all of our contributors and sponsors for
+making Rakudo possible.  The next release of Rakudo (#15) is
+scheduled for March 19, 2009.

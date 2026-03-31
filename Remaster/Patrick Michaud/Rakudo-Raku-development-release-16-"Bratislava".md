@@ -1,0 +1,49 @@
+# Rakudo Raku development release #16 ("Bratislava")
+    
+*Originally published on [23 April 2009](https://use-perl.github.io/user/pmichaud/journal/38853/) by Patrick Michaud.*
+
+On behalf of the Rakudo development team, I'm pleased to announce
+the April 2009 development release of Rakudo Perl #16 "Bratislava".
+Rakudo is an implementation of Raku on the Parrot Virtual Machine [1].
+The tarball for the April 2009 release is available.
+
+Due to the continued rapid pace of Rakudo development and the
+frequent addition of new Raku features and bugfixes, we continue
+to recommend that people wanting to use or work with Rakudo obtain
+the latest source directly from the main repository at github.
+More details are available at [https://rakudo.org/downloads](https://rakudo.org/downloads) .
+
+Rakudo follows a monthly release cycle, with each release code named
+after a Perl Mongers group.  This release is named "Bratislava",
+home to Jonathan Worthington and reportedly an excellent place to
+obtain beer (a key component of Jonathan's contributions to Perl).
+The Bratislava.pm group is quite active [2], with regular technical
+presentations and social gatherings.
+
+In this release of Rakudo Perl, we've made the following major changes
+and improvements:
+
+- Rakudo is now passing 10,467 spectests, an increase of 3,194 passing tests since the March 2009 release.  With this release Rakudo is now passing approximately 65% of the available spectest suite.
+- About 2/3 of the increase in passing tests is due to improved Unicode support in Rakudo; constructs such as "\c[LATIN CAPITAL LETTER A]" and Unicode character properties in regexes are now supported.
+- The prefix:<=> operator is now gone from the Raku specification (and thus from Rakudo).  Use .get for reading individual items from iterators.
+- Rakudo now supports typed arrays and hashes (my Int @array), as well as parametric versions of the Associative, Positional, and Callable roles, and parametric role subtyping.
+- Rakudo now has sockets support (IO::Socket).
+- Subroutine return types are now enforced in some cases.
+- Rakudo now supports lexical sub declarations.
+- Rakudo now supports some Perl-style regexes.
+- The "quantify-by-separator" feature has been added, so that one can write  / [\w+] ** ',' / to get a comma-separated list of words.
+- More builtin functions and methods have been rewritten in Raku and placed as part of the setting.
+- Release tar files now contain local copies of the appropriate spectests, instead of obtaining checkout copies via Subversion.
+- There are additional improvements and features in this release, see docs/ChangeLog for a more complete list.
+
+The development team thanks all of our contributors and sponsors for
+making Rakudo possible.  If you would like to contribute,
+ask on IRC #raku on libera.chat..
+
+The next release of Rakudo (#17) is scheduled for May 21, 2009.
+A list of the other planned release dates and codenames for 2009 is
+available in the "docs/release_guide.pod" file.  In general, Rakudo
+development releases are scheduled to occur two days after each
+Parrot monthly release.  Parrot releases the third Tuesday of each month.
+
+Have fun!

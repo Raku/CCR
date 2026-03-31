@@ -1,0 +1,50 @@
+# Rakudo Perl development release #15 ("Oslo")
+    
+*Originally published on [20 March 2009](https://use-perl.github.io/user/pmichaud/journal/38673/) by Patrick Michaud.*
+
+On behalf of the Rakudo development team, I'm pleased to announce
+the March 2009 development release of Rakudo #15 "Oslo".
+Rakudo is an implementation of Raku on the Parrot Virtual Machine [1].
+The tarball for the March 2009 release is available.
+
+However, because of the rapid pace of Rakudo development and addition
+of new features, we still recommend that people wanting to use or work
+with Rakudo obtain the latest version directly from the main repository
+at github -- more on this in a bit.
+
+Rakudo follows a monthly release cycle, with each release code named 
+after a Perl Mongers group.  This release is named "Oslo" in honor of 
+the organizers of the [2009 Nordic Perl Workshop](https://www.perlworkshop.no/npw2009/) [2], April 16-17, 2009.  
+The 2009 Nordic Perl Workshop will have a special focus on Raku, 
+Rakudo, and Parrot, including Raku tutorials and hackathons 
+after the conference itself.
+
+A list of the other planned release dates and codenames for 2009 is 
+available in the "docs/release_guide.pod" file.  In general, Rakudo 
+development releases are scheduled to occur two days after each 
+Parrot monthly release.  Parrot releases the third Tuesday of each month.
+
+Rakudo now uses git for its version control system, hosted 
+at [https://github.com/rakudo/rakudo](https://github.com/rakudo/rakudo).  The README file there is kept 
+up-to-date with the latest instructions for obtaining and building 
+Rakudo.
+
+In this release of Rakudo, we've made the following major changes
+and improvements:
+
+- Rakudo is now passing 7273 spectests.  This is an increase of 197 
+passing tests since the February 2009 release.
+- The `eval` construct now understands lexical variables from an
+outer scope.
+- More of the builtin functions ("settings") are being written in Raku.
+- Rakudo supports the "R" (reverse) metaoperator.
+- Parsing of if, unless, while, until, etc. statements after blocks
+now works correctly.
+- The Q quote operator is now implemented, along with several adverbial
+forms.  In particular, the Q:PIR form allows inline PIR to be
+included in Raku code.
+- Multi-method dispatch now works with inheritance also.
+
+The development team thanks all of our contributors and sponsors for
+making Rakudo Perl possible.  The next release of Rakudo (#16) is
+scheduled for April 23, 2009.

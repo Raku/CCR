@@ -81,7 +81,7 @@ https://pmthium.com/
 - [4 February 2011: Adding USB ports to my monitor](https://pmthium.com/2011/02/adding-usb-ports-to-my-monitor-2/)
 - [7 February 2011: Incognito FTW](https://pmthium.com/2011/02/incognito-ftw/)
 - [8 February 2011: New NQP repository, new “nom” Rakudo branch](ihttps://pmthium.com/2011/02/new-nqp-repository-new-nom-rakudo-branch/)
-- [28 Fabruary 2011: Review: Samsung Galaxy Tab Leather Notebook Case](https://pmthium.com/2011/02/review-samsung-galaxy-tab-leather-notebook-case/)
+- [28 February 2011: Review: Samsung Galaxy Tab Leather Notebook Case](https://pmthium.com/2011/02/review-samsung-galaxy-tab-leather-notebook-case/)
 - [14 June 2011: Rakudo (nom) reaches milestone — no more .pir files!](https://pmthium.com/2011/06/rakudo-nom-reaches-milestone-no-more-pir-files/)
 - [22 June 2011: Perl 6 lists, episode 1](https://pmthium.com/2011/06/perl-6-lists-episode-1/)
 - [27 June 2011: Lots of Rakudo-nom progress, starts to run spectests](https://pmthium.com/2011/06/lots-of-rakudo-nom-progress-starts-to-run-spectests/)

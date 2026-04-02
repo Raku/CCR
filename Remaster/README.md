@@ -8,5 +8,6 @@ It currently provides remastered blog posts by:
 - [Robert Lemmen](Robert Lemmen)
 - [Carl Mäsak](Carl Mäsak)
 - [Elizabeth Mattijsen](Elizabeth Mattijsen)
+- [Patrick Michaud](Patrick Michaud)
 - [Jonathan Worthington](Jonathan Worthington)
 - [Zoffix Znet](Zoffix Znet)

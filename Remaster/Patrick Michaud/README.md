@@ -1,4 +1,4 @@
-This directory contains remastered versions of 71 blog posts by Patrick Michaud.
+This directory contains remastered versions of 89 blog posts by Patrick Michaud.
 
 - 2007-11-26 [NQP news](NQP-news.md)
 - 2007-11-26 [Raku on Parrot Roadmap](Raku-on-Parrot-Roadmap.md)
@@ -71,3 +71,21 @@ This directory contains remastered versions of 71 blog posts by Patrick Michaud.
 - 2010-06-19 [Rakudo Star (a "usable Raku") to be released by July 29](Rakudo-Star-a-"usable-Raku"-to-be-released-by-July-29.md)
 - 2010-07-29 [Rakudo Star - an "early adopter" distribution of Raku](Rakudo-Star--an-"early-adopter"-distribution-of-Raku.md)
 - 2010-09-01 [Rakudo Star 2010.08 released](Rakudo-Star-201008-released.md)
+- 2011-01-31 [NQP Roadmap 2011.01](NQP-Roadmap-201101.md)
+- 2011-02-04 [Adding USB ports to my monitor](Adding-USB-ports-to-my-monitor.md)
+- 2011-02-07 [Incognito FTW](Incognito-FTW.md)
+- 2011-02-08 [New NQP repository, new “nom” Rakudo branch](New-NQP-repository-new-nom-Rakudo-branch.md)
+- 2011-02-28 [Review: Samsung Galaxy Tab Leather Notebook Case](Review-Samsung-Galaxy-Tab-Leather-Notebook-Case.md)
+- 2011-06-14 [Rakudo (nom) reaches milestone — no more .pir files!](Rakudo-nom-reaches-milestone-—-no-more-pir-files.md)
+- 2011-06-22 [Raku lists, episode 1](Raku-lists-episode-1.md)
+- 2011-06-27 [Lots of Rakudo-nom progress, starts to run spectests](Lots-of-Rakudo-nom-progress-starts-to-run-spectests.md)
+- 2011-07-02 [More nom features and spectests, still 5x faster than master](More-nom-features-and-spectests-still-5x-faster-than-master.md)
+- 2011-07-14 [New regex engine for nqp and nom, now passing 7K spectests](New-regex-engine-for-nqp-and-nom-now-passing-7K-spectests.md)
+- 2011-08-18 [Some thoughts on YAPC::EU 2011](Some-thoughts-on-YAPC-EU-2011.md)
+- 2012-02-10 [FLL: Matching LEGO wheels](FLL-Matching-LEGO-wheels.md)
+- 2012-04-22 [Oslo Raku Patterns Hackathon, Days 1-2](Oslo-Raku-Patterns-Hackathon-Days-1-2.md)
+- 2012-05-28 [Roborama 2012a](Roborama-2012a.md)
+- 2012-09-02 [A Rakudo Performance](A-Rakudo-Performance.md)
+- 2013-06-03 [A Raku developer’s reply to a Russian Perl Podcast](A-Raku-developers-reply-to-a-Russian-Perl-Podcast.md)
+- 2014-10-15 [APW2014 and the Rakudo Great List Refactor](APW2014-and-the-Rakudo-Great-List-Refactor.md)
+- 2015-02-16 [Suspending Rakudo support for Parrot](Suspending-Rakudo-support-for-Parrot.md)

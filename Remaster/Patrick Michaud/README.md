@@ -60,7 +60,7 @@ This directory contains remastered versions of 89 blog posts by Patrick Michaud.
 - 2009-08-05 [Building a "useful release of Raku"](Building-a-"useful-release-of-Raku".md)
 - 2009-08-09 ["Raku 'finished'" isn't the story I want to tell]("Raku-finished"-isnt-the-story-I-want-to-tell.md)
 - 2009-08-28 [Rakudo Day:  operator overloading, faster isa, better build](Rakudo-Day--operator-overloading-faster-isa-better-build.md)
-- 2009-09-05 [Rakudo day: Rats, contextual variables, and %*ENV fixes](Rakudo-day-Rats-contextual-variables-and-%*ENV-fixes.md)
+- 2009-09-05 [Rakudo day: Rats, contextual variables, and `%*ENV` fixes](Rakudo-day-Rats-contextual-variables-and-%*ENV-fixes.md)
 - 2009-10-21 [Hague grant work: the new regex engine and NQP](Hague-grant-work-the-new-regex-engine-and-NQP.md)
 - 2009-11-03 [A brief report on progress](A-brief-report-on-progress.md)
 - 2009-11-11 [The Rakudo-ng branch](The-Rakudo-ng-branch.md)
